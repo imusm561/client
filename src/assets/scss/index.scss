@@ -1,0 +1,72 @@
+// Fonts
+@import './fonts/fonts';
+
+// Core files
+@import './core/bootstrap';
+@import './core/theme-light';
+@import './core/theme-dark';
+
+// Structure
+@import './structure/topbar';
+@import './structure/page-head';
+@import './structure/footer';
+@import './structure/vertical';
+
+// Components
+@import './components/waves';
+@import './components/avatar';
+@import './components/accordion';
+@import './components/helper';
+@import './components/ribbons';
+@import './components/reboot';
+@import './components/alerts';
+@import './components/backgrounds';
+@import './components/badge';
+@import './components/buttons';
+@import './components/breadcrumb';
+@import './components/card';
+@import './components/dropdown';
+@import './components/nav';
+@import './components/table';
+@import './components/modal';
+@import './components/offcanvas';
+@import './components/pagination';
+@import './components/progress';
+@import './components/popover';
+@import './components/type';
+@import './components/form-check';
+@import './components/form-control';
+@import './components/list-group';
+
+// Plugins
+@import './plugins/apexcharts';
+@import './plugins/ckeditor';
+@import './plugins/flatpicker';
+@import './plugins/fullcalendar';
+@import './plugins/monaco-editor';
+@import './plugins/simplebar';
+@import './plugins/toast';
+@import './plugins/tree';
+@import './plugins/v-select';
+
+// Pages
+@import './pages/authentication';
+@import './pages/dashboard';
+@import './pages/timeline';
+@import './pages/errors';
+@import './pages/profile';
+
+// Apps
+@import './app/chat';
+@import './app/task';
+@import './app/calendar';
+@import './app/mail';
+
+// Icons
+@import './icons/materialdesignicons';
+@import './icons/boxicons';
+@import './icons/line-awesome';
+@import './icons/remixicon';
+
+// Custom
+@import 'custom';

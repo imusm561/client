@@ -1,0 +1,15 @@
+.m-editor {
+  position: relative;
+  border: $input-border-width solid $input-border-color;
+  border-radius: $input-border-radius;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  &.is-invalid {
+    border-color: #f06548;
+    padding-right: calc(1.5em + 1rem);
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.25rem) center;
+    background-size: calc(0.75em + 0.5rem) calc(0.75em + 0.5rem);
+  }
+}

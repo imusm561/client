@@ -1,0 +1,32 @@
+//
+// _timeline.scss
+//
+
+.timeline {
+  position: relative;
+  overflow: hidden;
+
+  .item {
+    position: relative;
+
+    .flex-shrink-0 {
+      z-index: 2;
+    }
+
+    &:before {
+      content: '';
+      position: absolute;
+      border-left: 1px dashed $border-color;
+      left: 16px;
+      height: 100%;
+      top: 0px;
+      z-index: 0;
+    }
+
+    &:last-child {
+      &::before {
+        border-color: transparent;
+      }
+    }
+  }
+}

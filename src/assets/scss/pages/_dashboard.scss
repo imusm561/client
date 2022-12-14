@@ -1,0 +1,177 @@
+//
+// _dashboard.scss
+//
+
+.dash-filter-picker {
+  min-width: 210px !important;
+}
+
+// Flatpickr Calendar
+.upcoming-scheduled {
+  position: relative;
+
+  .flatpickr-months {
+    display: none;
+  }
+
+  .flatpickr-calendar {
+    box-shadow: none !important;
+
+    .flatpickr-current-month {
+      font-size: 13px;
+      width: 100%;
+      left: 0;
+    }
+
+    .flatpickr-monthDropdown-months {
+      border: 1px solid $border-color;
+      border-radius: 4px;
+      height: 26px;
+    }
+
+    .flatpickr-weekdays {
+      background-color: var(--#{$variable-prefix}light);
+      border: none;
+
+      span.flatpickr-weekday {
+        color: var(--#{$variable-prefix}dark);
+      }
+    }
+
+    .flatpickr-day {
+      &.today {
+        color: $white !important;
+        background-color: $info;
+        border-color: $info !important;
+
+        &:hover {
+          color: $info !important;
+          background-color: rgba($info, 0.2) !important;
+        }
+      }
+
+      &.selected {
+        background-color: $info !important;
+        border-color: $info !important;
+        color: $white;
+      }
+    }
+
+    .numInputWrapper {
+      width: 7.5ch;
+      margin-left: 10px;
+    }
+  }
+
+  .flatpickr-days {
+    border: none !important;
+  }
+}
+
+.upcoming-scheduled {
+  .flatpickr-input {
+    display: none;
+  }
+
+  .flatpickr-calendar {
+    .flatpickr-monthDropdown-months {
+      color: $text-muted !important;
+    }
+
+    .flatpickr-current-month input.cur-year {
+      color: $text-muted !important;
+    }
+
+    .dayContainer {
+      .flatpickr-day {
+        &.today {
+          background-color: $info !important;
+
+          &:hover {
+            color: $white !important;
+          }
+        }
+      }
+    }
+
+    .flatpickr-weekdays {
+      background-color: var(--#{$variable-prefix}light) !important;
+
+      span {
+        &.flatpickr-weekday {
+          color: var(--#{$variable-prefix}dark);
+        }
+      }
+    }
+  }
+}
+
+.crm-widget {
+  .col {
+    border-right: 1px solid $border-color;
+
+    &:last-child {
+      border: 0px;
+    }
+
+    @media (min-width: 768px) and (max-width: 1399.98px) {
+      &:nth-child(3) {
+        border-right: 0px;
+      }
+
+      &:last-child {
+        border-right: 1px solid $border-color;
+      }
+    }
+
+    @media (max-width: 767.98px) {
+      border-right: 0px;
+      border-bottom: 1px solid $border-color;
+    }
+  }
+}
+
+.crypto-widget {
+  max-width: 130px !important;
+}
+
+// mini-stats-wid
+.mini-stats-wid {
+  position: relative;
+
+  .mini-stat-icon {
+    overflow: hidden;
+    position: relative;
+
+    &:before,
+    &:after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 69px;
+      background-color: rgba($success, 0.1);
+      left: 3px;
+      transform: rotate(32deg);
+      top: -8px;
+      transition: all 0.4s;
+    }
+
+    &::after {
+      left: 27px;
+      width: 8px;
+      transition: all 0.2s;
+    }
+  }
+
+  &:hover {
+    .mini-stat-icon {
+      &::after {
+        left: 60px;
+      }
+
+      &::before {
+        left: 50px;
+      }
+    }
+  }
+}

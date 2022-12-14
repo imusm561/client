@@ -1,0 +1,514 @@
+<template>
+  <div>
+    <div class="row">
+      <div class="col-xxl-3">
+        <div class="card">
+          <div class="card-body p-4">
+            <div class="text-center">
+              <div class="profile-user position-relative d-inline-block mx-auto mb-4">
+                <Avatar :data="user" size="xl" thumbnail />
+                <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
+                  <input id="profile-img-file-input" type="file" accept="image/*" class="profile-img-file-input" @change="handleUploadAvatar" />
+                  <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">
+                    <span class="avatar-title rounded-circle bg-light text-body">
+                      <i class="mdi mdi-camera fs-16"></i>
+                    </span>
+                  </label>
+                </div>
+              </div>
+              <h5 class="fs-16 mb-1 text-capitalize">
+                {{ user.fullname }}
+              </h5>
+              <p class="text-muted mb-0">{{ user.post }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-4">
+              <div class="flex-grow-1">
+                <h5 class="card-title mb-0">{{ $t('layout.navbar.user.dropdown.setting.social') }}</h5>
+              </div>
+            </div>
+            <div class="mb-3 d-flex">
+              <div class="avatar-xs d-block flex-shrink-0 me-3">
+                <span class="avatar-title rounded-circle fs-16 bg-success">
+                  <i class="mdi mdi-wechat"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" :placeholder="$t('layout.navbar.user.dropdown.setting.social.wechat')" v-model="user.wechat" />
+            </div>
+            <div class="mb-3 d-flex">
+              <div class="avatar-xs d-block flex-shrink-0 me-3">
+                <span class="avatar-title rounded-circle fs-16 bg-secondary">
+                  <i class="mdi mdi-qqchat"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" :placeholder="$t('layout.navbar.user.dropdown.setting.social.qq')" v-model="user.qq" />
+            </div>
+            <div class="mb-3 d-flex">
+              <div class="avatar-xs d-block flex-shrink-0 me-3">
+                <span class="avatar-title rounded-circle fs-16 bg-dark text-light">
+                  <i class="mdi mdi-github"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" :placeholder="$t('layout.navbar.user.dropdown.setting.social.github')" v-model="user.github" />
+            </div>
+            <div class="d-flex">
+              <div class="avatar-xs d-block flex-shrink-0 me-3">
+                <span class="avatar-title rounded-circle fs-16 bg-primary">
+                  <i class="mdi mdi-web"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" :placeholder="$t('layout.navbar.user.dropdown.setting.social.website')" v-model="user.website" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xxl-9">
+        <div class="card">
+          <div class="card-header">
+            <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link" :class="{ active: !$route.query.tab || $route.query.tab === 'personal_details' }" data-bs-toggle="tab" href="#personalDetails" role="tab">
+                  <i class="fas fa-home"></i>
+                  {{ $t('layout.navbar.user.dropdown.setting.personalDetails') }}
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" :class="{ active: $route.query.tab === 'change_password' }" data-bs-toggle="tab" href="#changePassword" role="tab">
+                  <i class="far fa-user"></i>
+                  {{ $t('layout.navbar.user.dropdown.setting.changePassword') }}
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" :class="{ active: $route.query.tab === 'app_notification' }" data-bs-toggle="tab" href="#appNotification" role="tab">
+                  <i class="far fa-envelope"></i>
+                  {{ $t('layout.navbar.user.dropdown.setting.appNotification') }}
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="card-body p-4">
+            <div class="tab-content">
+              <div class="tab-pane" :class="{ active: !$route.query.tab || $route.query.tab === 'personal_details' }" id="personalDetails" role="tabpanel">
+                <Form v-slot="{ errors }" @submit="handleSaveUserInfo">
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="username" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.username') }}</label>
+                        <Field
+                          name="username"
+                          disabled
+                          v-model="user.username"
+                          :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.username')"
+                          :class="['form-control', errors.username && 'is-invalid']"
+                          rules="required"
+                        />
+                        <span class="invalid-feedback">{{ errors.username }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="fullname" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.fullname') }}</label>
+                        <Field
+                          name="fullname"
+                          v-model="user.fullname"
+                          :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.fullname')"
+                          :class="['form-control', errors.fullname && 'is-invalid']"
+                          rules="required"
+                        />
+                        <span class="invalid-feedback">{{ errors.fullname }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="phone" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.phone') }}</label>
+                        <Field
+                          name="phone"
+                          v-model="user.phone"
+                          :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.phone')"
+                          :class="['form-control', errors.phone && 'is-invalid']"
+                          rules="required|phone"
+                        />
+                        <span class="invalid-feedback">{{ errors.phone }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="email" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.email') }}</label>
+                        <Field
+                          name="email"
+                          v-model="user.email"
+                          :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.email')"
+                          :class="['form-control', errors.email && 'is-invalid']"
+                          rules="required|email"
+                        />
+                        <span class="invalid-feedback">{{ errors.email }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="JoiningdatInput" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.birthday') }}</label>
+                        <FlatPickr class="form-control" v-model="user.birthday" :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.birthday')"></FlatPickr>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="JoiningdatInput" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.gender') }}</label>
+                        <VueSelect
+                          v-model="user.gender"
+                          :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.gender')"
+                          :reduce="(item) => item.value"
+                          label="text"
+                          :options="[
+                            { text: $t('layout.navbar.user.dropdown.setting.personalDetails.gender.secrecy'), value: -1 },
+                            { text: $t('layout.navbar.user.dropdown.setting.personalDetails.gender.male'), value: 1 },
+                            { text: $t('layout.navbar.user.dropdown.setting.personalDetails.gender.female'), value: 0 },
+                          ]"
+                        >
+                          <template #option="{ text }">
+                            <span class="ml-50 align-middle">{{ text }}</span>
+                          </template>
+
+                          <template #selected-option="{ text }">
+                            <span class="ml-50 align-middle">{{ text }}</span>
+                          </template>
+
+                          <template v-slot:no-options="{ search, searching }">
+                            <template v-if="searching">
+                              <span v-html="$t('components.vs.search', { search })"></span>
+                            </template>
+                            <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+                          </template>
+                        </VueSelect>
+                      </div>
+                    </div>
+                    <div class="col-lg-12">
+                      <div class="mb-3">
+                        <label for="skillsInput" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.skills') }}</label>
+                        <VueSelect
+                          v-model="user.skills"
+                          multiple
+                          :close-on-select="false"
+                          taggable
+                          push-tags
+                          :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.skills')"
+                          :options="['Java', 'Python', 'PHP', 'Nodejs', 'HTML', 'JavaScript', 'CSS', 'Vue', 'React', 'Ps', 'Ae']"
+                        ></VueSelect>
+                      </div>
+                    </div>
+                    <div class="col-lg-12">
+                      <div class="mb-3">
+                        <label for="zipcodeInput" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.address') }}</label>
+                        <input type="text" class="form-control" :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.address')" v-model="user.address" />
+                      </div>
+                    </div>
+                    <div class="col-lg-12">
+                      <div class="mb-3 pb-2">
+                        <label for="exampleFormControlTextarea" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.about') }}</label>
+                        <textarea class="form-control" v-model="user.about" :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.about')" rows="3" />
+                      </div>
+                    </div>
+                    <div class="col-lg-12">
+                      <div class="hstack gap-2 justify-content-end">
+                        <button type="submit" class="btn btn-primary" :disabled="Object.keys(errors).length">
+                          <i class="mdi mdi-content-save-outline" />
+                          {{ $t('layout.navbar.user.dropdown.setting.save') }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </Form>
+              </div>
+              <div class="tab-pane" :class="{ active: $route.query.tab === 'change_password' }" id="changePassword" role="tabpanel">
+                <Form v-slot="{ errors }" @submit="handleChangePassword">
+                  <div class="row g-2">
+                    <div class="col-lg-4">
+                      <div>
+                        <label for="currentpassword" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.changePassword.currentPassoprd') }}</label>
+                        <div class="position-relative">
+                          <Field
+                            :type="isCurrentPasswordVisible ? 'text' : 'password'"
+                            name="currentpassword"
+                            v-model="currentpassword"
+                            :placeholder="$t('layout.navbar.user.dropdown.setting.changePassword.currentPassoprd')"
+                            :class="['form-control', errors.currentpassword && 'is-invalid']"
+                            rules="required"
+                          />
+                          <span class="invalid-feedback">{{ errors.currentpassword }}</span>
+                          <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
+                            <i :class="['align-middle mdi', isCurrentPasswordVisible ? 'mdi-eye-off' : 'mdi-eye']" @click="isCurrentPasswordVisible = !isCurrentPasswordVisible"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4">
+                      <div>
+                        <label for="newpassword" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.changePassword.newPassoprd') }}</label>
+                        <div class="position-relative">
+                          <Field
+                            :type="isNewPasswordVisible ? 'text' : 'password'"
+                            name="newpassword"
+                            v-model="newpassword"
+                            :placeholder="$t('layout.navbar.user.dropdown.setting.changePassword.newPassoprd')"
+                            :class="['form-control', errors.newpassword && 'is-invalid']"
+                            rules="required|password"
+                          />
+                          <span class="invalid-feedback">{{ errors.newpassword }}</span>
+                          <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
+                            <i :class="['align-middle mdi', isNewPasswordVisible ? 'mdi-eye-off' : 'mdi-eye']" @click="isNewPasswordVisible = !isNewPasswordVisible"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4">
+                      <div>
+                        <label for="confirmpassword" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.changePassword.confirmPassoprd') }}</label>
+                        <div class="position-relative">
+                          <Field
+                            :type="isConfirmPasswordVisible ? 'text' : 'password'"
+                            name="confirmpassword"
+                            v-model="confirmpassword"
+                            :placeholder="$t('layout.navbar.user.dropdown.setting.changePassword.confirmPassoprd')"
+                            :class="['form-control', errors.confirmpassword && 'is-invalid']"
+                            rules="required|confirmed:@newpassword"
+                          />
+                          <span class="invalid-feedback">{{ errors.confirmpassword }}</span>
+                          <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
+                            <i :class="['align-middle mdi', isConfirmPasswordVisible ? 'mdi-eye-off' : 'mdi-eye']" @click="isConfirmPasswordVisible = !isConfirmPasswordVisible"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-12">
+                      <div class="mb-3">
+                        <router-link :to="{ name: 'forgotPassword' }" class="link-primary text-decoration-underline">
+                          {{ $t('layout.navbar.user.dropdown.setting.changePassword.forgotPassoprd') }}
+                        </router-link>
+                      </div>
+                    </div>
+                    <div class="col-lg-12">
+                      <div class="text-end">
+                        <button type="submit" class="btn btn-danger" :disabled="Object.keys(errors).length">{{ $t('layout.navbar.user.dropdown.setting.changePassword.changePassword') }}</button>
+                      </div>
+                    </div>
+                  </div>
+                </Form>
+                <div class="mt-4 mb-3 border-bottom pb-2">
+                  <h5 class="card-title">{{ $t('layout.navbar.user.dropdown.setting.changePassword.loginHistory') }}</h5>
+                </div>
+                <div class="d-flex align-items-center mb-3" v-for="item in login_history" :key="item.id">
+                  <div class="flex-shrink-0 avatar-sm">
+                    <div class="avatar-title bg-light text-primary rounded-3 fs-18">
+                      <i class="mdi" :class="resolveDeviceIcon(uaParser(item.agent).device.type || 'desktop')" />
+                    </div>
+                  </div>
+                  <div class="flex-grow-1 ms-3">
+                    <div class="text-capitalize">{{ uaParser(item.agent).device.type || 'desktop' }}</div>
+                    <p class="text-muted mb-0">
+                      {{ item.ip }} - {{ $moment(item.created_at).format('llll') }}
+                      <span class="badge bg-soft-info text-dark ms-1">{{ $moment(item.created_at).fromNow() }}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" :class="{ active: $route.query.tab === 'app_notification' }" id="appNotification" role="tabpanel">
+                <ul class="list-unstyled mb-0">
+                  <li class="d-flex mt-2">
+                    <div class="flex-grow-1">
+                      <label class="form-check-label fs-14" for="chatNotify">{{ $t('layout.navbar.user.dropdown.setting.appNotification.chat') }}</label>
+                      <p class="text-muted">{{ $t('layout.navbar.user.dropdown.setting.appNotification.chat.desc') }}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="chatNotify" v-model="user.config.chatNotify" />
+                      </div>
+                    </div>
+                  </li>
+                  <li class="d-flex mt-2">
+                    <div class="flex-grow-1">
+                      <label class="form-check-label fs-14" for="mailNotify">{{ $t('layout.navbar.user.dropdown.setting.appNotification.mail') }}</label>
+                      <p class="text-muted">{{ $t('layout.navbar.user.dropdown.setting.appNotification.mail.desc') }}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="mailNotify" v-model="user.config.mailNotify" />
+                      </div>
+                    </div>
+                  </li>
+                  <li class="d-flex mt-2">
+                    <div class="flex-grow-1">
+                      <label class="form-check-label fs-14" for="commentNotify">{{ $t('layout.navbar.user.dropdown.setting.appNotification.comment') }}</label>
+                      <p class="text-muted">{{ $t('layout.navbar.user.dropdown.setting.appNotification.comment.desc') }}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="commentNotify" v-model="user.config.commentNotify" />
+                      </div>
+                    </div>
+                  </li>
+                  <li class="d-flex mt-2">
+                    <div class="flex-grow-1">
+                      <label class="form-check-label fs-14" for="offlineNotify">{{ $t('layout.navbar.user.dropdown.setting.appNotification.offline') }}</label>
+                      <p class="text-muted">{{ $t('layout.navbar.user.dropdown.setting.appNotification.offline.desc') }}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="offlineNotify" v-model="user.config.offlineNotify" />
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+                <div class="col-lg-12">
+                  <div class="hstack gap-2 justify-content-end">
+                    <button type="submit" class="btn btn-primary" @click="handleSaveUserInfo">
+                      <i class="mdi mdi-content-save-outline" />
+                      {{ $t('layout.navbar.user.dropdown.setting.save') }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, onMounted, computed } from 'vue';
+import store from '@store';
+import i18n from '@utils/i18n';
+import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
+import router from '@router';
+import { clearUserData, deepCompare } from '@utils';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+import FlatPickr from '@components/FlatPickr';
+import Avatar from '@components/Avatar';
+import uaParser from 'ua-parser-js';
+export default {
+  components: {
+    FlatPickr,
+    Avatar,
+  },
+  setup() {
+    const toast = useToast();
+    const user = ref(JSON.parse(JSON.stringify(store.state.user.data)));
+
+    const login_history = ref([]);
+    onMounted(() => {
+      getUserLogs({ type: 1 }).then(({ code, data, msg }) => {
+        if (code === 200) {
+          login_history.value = data;
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    });
+
+    const resolveDeviceIcon = computed(() => {
+      return (type) => {
+        if (type.toLowerCase().includes('mobile')) return 'mdi-cellphone';
+        else if (type.toLowerCase().includes('safari')) return 'mdi-tablet';
+        else return 'mdi-desktop-mac';
+      };
+    });
+
+    const currentpassword = ref('');
+    const newpassword = ref('');
+    const confirmpassword = ref('');
+
+    const isCurrentPasswordVisible = ref(false);
+    const isNewPasswordVisible = ref(false);
+    const isConfirmPasswordVisible = ref(false);
+
+    const handleUploadAvatar = (e) => {
+      let formData = new FormData();
+      formData.append('avatar', e.target.files[0], e.target.files[0].name);
+      uploadAvatar(formData).then(({ code, msg, data }) => {
+        if (code === 200) {
+          user.value.avatar = data.url;
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    };
+
+    const handleSaveUserInfo = () => {
+      const changes = deepCompare(user.value, store.state.user.data);
+      if (Object.keys(changes).length) {
+        changes.id = user.value.id;
+        updateUser(changes).then(() => {
+          user.value = JSON.parse(JSON.stringify(store.state.user.data));
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'success',
+              icon: 'mdi-check-circle',
+              text: i18n.global.t('layout.navbar.user.dropdown.setting.save.success'),
+            },
+          });
+        });
+      }
+    };
+    const handleChangePassword = () => {
+      changePassword({
+        currentpassword: currentpassword.value,
+        newpassword: newpassword.value,
+      }).then(async ({ code, msg }) => {
+        if (code === 200) {
+          // Clean user information
+          await clearUserData();
+          // Redirect to login page
+          router.replace({ name: 'login' });
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    };
+    return {
+      user,
+
+      uaParser,
+      login_history,
+      resolveDeviceIcon,
+
+      currentpassword,
+      newpassword,
+      confirmpassword,
+
+      isCurrentPasswordVisible,
+      isNewPasswordVisible,
+      isConfirmPasswordVisible,
+
+      handleUploadAvatar,
+      handleSaveUserInfo,
+      handleChangePassword,
+    };
+  },
+};
+</script>

@@ -1,0 +1,394 @@
+<template>
+  <div class="card m-0">
+    <div class="card-header border-0 p-2 pb-0">
+      <i class="mdi mdi-refresh fs-16 cursor-pointer text-muted float-end pe-2" @click="handleRefetchPubForm"></i>
+      <i v-if="tabs.length > 1" class="mdi fs-16 cursor-pointer text-muted float-end pe-2" :class="no_tabs ? 'mdi-tab' : 'mdi-view-dashboard-outline'" @click="no_tabs = !no_tabs"></i>
+    </div>
+    <div class="card-body pt-0">
+      <Form v-slot="{ errors }" @submit="handleSubmitFormData">
+        <div v-if="tabs.length > 1 && no_tabs">
+          <div class="p-3 mt-2 border-bottom border-bottom-dashed ribbon-box right" v-for="(tab, index) in tabs" :key="index">
+            <div v-if="tab.name" class="ribbon ribbon-primary round-shape">
+              <i v-if="tab.cfg.icon" :class="`mdi ${tab.cfg.icon} me-2`"></i>
+              {{ tab.name }}
+            </div>
+            <div class="row">
+              <template v-for="column in tab.columns">
+                <h5 :key="column.id" v-if="column._visible" class="fs-14 mb-2 mt-2" :class="`col-sm-${column.col}`">
+                  <component
+                    :is="column.component"
+                    type="EDIT"
+                    :column="column"
+                    v-model="data[column.field]"
+                    :required="column._required"
+                    :editable="column._editable"
+                    :error="errors[column.field]"
+                    @search="handleSelecterSearch"
+                    @selected="($event) => (column.cfg.selected = $event)"
+                    @syntax-error="
+                      ($event) => {
+                        syntax_error = $event;
+                      }
+                    "
+                  ></component>
+                </h5>
+              </template>
+            </div>
+          </div>
+          <div class="p-3 border-0 d-flex justify-content-end gap-2">
+            <button type="submit" class="btn btn-sm btn-primary" :disabled="Object.keys(errors).length || syntax_error">{{ $t('public.form.submit') }}</button>
+          </div>
+        </div>
+        <div v-else>
+          <div v-if="tabs[0] && tabs[0].id" class="row align-items-center mt-3">
+            <div class="col">
+              <ul class="nav nav-tabs nav-tabs-custom nav-primary">
+                <li class="nav-item" v-for="(tab, index) in tabs" :key="tab.id">
+                  <a :class="`nav-link text-${tab.cfg.style} ${index === current_tab && 'active'}`" data-bs-toggle="tab" :href="`#tab_${tab.id}`" @click="current_tab = index">
+                    <i v-if="tab.cfg.icon" :class="`mdi ${tab.cfg.icon}`"></i>
+                    {{ tab.name }}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="tab-content text-muted">
+            <div class="tab-pane" :class="{ active: index === current_tab }" :id="`tab_${tab.id}`" v-for="(tab, index) in tabs" :key="tab.id">
+              <div class="row p-3">
+                <template v-for="column in tab.columns">
+                  <h5 :key="column.id" v-if="column._visible" class="fs-14 mb-2 mt-2" :class="`col-sm-${column.col}`">
+                    <component
+                      :is="column.component"
+                      type="EDIT"
+                      :column="column"
+                      v-model="data[column.field]"
+                      :required="column._required"
+                      :editable="column._editable"
+                      :error="errors[column.field]"
+                      @search="handleSelecterSearch"
+                      @selected="($event) => (column.cfg.selected = $event)"
+                      @syntax-error="
+                        ($event) => {
+                          syntax_error = $event;
+                        }
+                      "
+                    ></component>
+                  </h5>
+                </template>
+              </div>
+              <div v-if="index === tabs.length - 1">
+                <div class="p-3 border-top border-top-dashed border-0 d-flex justify-content-end gap-2">
+                  <button type="submit" class="btn btn-sm btn-primary" :disabled="Object.keys(errors).length || syntax_error">{{ $t('public.form.submit') }}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Form>
+    </div>
+    <button id="showResultModalBtn" type="button" class="d-none" data-bs-toggle="modal" data-bs-target="#result"></button>
+    <div class="modal fade" id="result" data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body">
+            <p v-html="pub.message"></p>
+            <button v-if="pub.tags?.includes('allowContinuousSubmission')" class="btn btn-sm btn-primary float-end" data-bs-dismiss="modal">
+              {{ $t('public.form.result.submitAgain') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { onMounted, ref, computed, watch } from 'vue';
+import { createData } from '@api/data';
+import { getPubForm } from '@api/pub';
+import { useRouter, useSocket, replaceVariables, getDataByFormula, getRulesByFormula, deepCompare } from '@utils';
+
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+
+import InputText from '@components/Column/Input/Text/index.vue';
+import InputNumber from '@components/Column/Input/Number/index.vue';
+import InputMaska from '@components/Column/Input/Maska/index.vue';
+import InputTextarea from '@components/Column/Input/Textarea/index.vue';
+import InputRichtext from '@components/Column/Input/Richtext/index.vue';
+import InputCode from '@components/Column/Input/Code/index.vue';
+
+import SelectSingle from '@components/Column/Select/Single/index.vue';
+import SelectMultiple from '@components/Column/Select/Multiple/index.vue';
+import SelectTags from '@components/Column/Select/Tags/index.vue';
+import SelectDatetime from '@components/Column/Select/Datetime/index.vue';
+import SelectPosition from '@components/Column/Select/Position/index.vue';
+import SelectFile from '@components/Column/Select/File/index.vue';
+import SelectSwitch from '@components/Column/Select/Switch/index.vue';
+
+import LayoutButton from '@components/Column/Layout/Button/index.vue';
+import LayoutTitle from '@components/Column/Layout/Title/index.vue';
+import LayoutSeparator from '@components/Column/Layout/Separator/index.vue';
+import LayoutTab from '@components/Column/Layout/Tab/index.vue';
+export default {
+  components: {
+    InputText,
+    InputNumber,
+    InputMaska,
+    InputTextarea,
+    InputRichtext,
+    InputCode,
+
+    SelectSingle,
+    SelectMultiple,
+    SelectTags,
+    SelectDatetime,
+    SelectPosition,
+    SelectFile,
+    SelectSwitch,
+
+    LayoutButton,
+    LayoutTitle,
+    LayoutSeparator,
+    LayoutTab,
+  },
+  setup() {
+    const { route } = useRouter();
+    const socket = useSocket();
+    const toast = useToast();
+
+    const pub = ref({});
+    const form = ref({});
+    const columns = ref([]);
+    const no_tabs = ref(false);
+    const tabs = ref([]);
+    const current_tab = ref(0);
+    const alias = ref({});
+    const data = ref({ id: 0 });
+    const syntax_error = ref(null);
+
+    const formData = computed(() => {
+      return JSON.parse(JSON.stringify(data.value));
+    });
+
+    const initialized = ref(false);
+    onMounted(() => {
+      watch(
+        () => route.value.params.uuid,
+        (newVal, oldVal) => {
+          if (route.value.name === 'pubForm' && newVal !== oldVal) {
+            fetchPubForm(newVal);
+          }
+        },
+        { immediate: true },
+      );
+
+      // let timer = null;
+      watch(
+        () => formData.value,
+        async (newVal, oldVal) => {
+          if (initialized.value) {
+            // if (timer) clearTimeout(timer);
+            // timer = setTimeout(() => {
+            const changes = deepCompare(newVal || {}, oldVal || {});
+            for (let field in changes) {
+              columns.value
+                .filter(
+                  (column) =>
+                    column.default?.includes(`data.${field}`) ||
+                    column.cfg?.source?.includes(`data.${field}`) ||
+                    column.cfg?.prefix?.includes(`data.${field}`) ||
+                    column.cfg?.href?.includes(`data.${field}`),
+                )
+                .forEach((column) => setColumnConfiguration(column));
+
+              columns.value
+                .filter((column) => column.visible?.includes(`data.${field}`) || column.required?.includes(`data.${field}`) || column.editable?.includes(`data.${field}`))
+                .forEach((column) => setColumnRules(column));
+            }
+            // }, 300);
+          }
+        },
+        { immediate: true, deep: true },
+      );
+    });
+
+    const fetchPubForm = async (uuid) => {
+      const { code, data: res, msg } = await getPubForm({ uuid });
+      if (code === 200) {
+        initialized.value = false;
+        sessionStorage.setItem('publicToken', res.token);
+        sessionStorage.setItem('publicUsername', res.username);
+        socket.emit('login', { username: res.username });
+        pub.value = res.pub;
+        document.title = pub.value.title;
+
+        form.value = res.form;
+        columns.value = res.columns;
+        alias.value = res.alias;
+        data.value = res.data;
+
+        await Promise.all([setFormConfiguration(), setFormColumns()]);
+        current_tab.value = current_tab.value || 0;
+        initialized.value = true;
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    };
+
+    const handleRefetchPubForm = () => {
+      fetchPubForm(route.value.params.uuid);
+    };
+
+    const setFormConfiguration = () => {
+      if (form.value.script) form.value.script = replaceVariables(form.value.script, alias.value);
+    };
+
+    const setFormColumns = async () => {
+      tabs.value = [];
+      if (columns.value.filter((column) => column.component === 'LayoutTab').length === 0) tabs.value.push({ columns: [] });
+      for (let column of columns.value) {
+        if (column.component.includes('Basic')) {
+          // Basic Columns: id, uuid, data_state, created_by, created_at, updated_by, updated_at, acl_view, acl_edit
+          if (Number(data.value.id) === 0) {
+            if (column.field === 'acl_view' && form.value.acl_view.length) data.value.acl_view = Array.from(new Set([...form.value.acl_view, ...(data.value.acl_view || [])]));
+            if (column.field === 'acl_edit' && form.value.acl_edit.length) data.value.acl_edit = Array.from(new Set([...form.value.acl_edit, ...(data.value.acl_edit || [])]));
+          }
+        } else if (column.component === 'LayoutTab') {
+          tabs.value.push({ ...column, ...{ columns: [] } });
+        } else {
+          await setColumnConfiguration(column);
+          await setColumnRules(column);
+          tabs.value[tabs.value.length - 1].columns.push(column);
+        }
+      }
+    };
+
+    const setColumnConfiguration = async (column) => {
+      if (column.default) {
+        column.default = replaceVariables(column.default, alias.value);
+        if (Number(data.value.id) === 0 || initialized.value) {
+          const val = await getDataByFormula(data.value, column.default);
+          if (val && val.includes('Error: ')) column.cfg.placeholder = val;
+          else data.value[column.field] = val;
+        }
+      }
+
+      if (column.cfg?.source) {
+        column.cfg.search = [];
+        column.cfg.source = replaceVariables(column.cfg.source, alias.value);
+        column.cfg.options = await getDataByFormula(data.value, column.cfg.source, { value: !initialized.value ? data.value[column.field] : null });
+
+        if (column.cfg.options.length) {
+          data.value[column.field] =
+            column.component == 'SelectMultiple'
+              ? column.cfg.options
+                  .filter((option) => data.value[column.field]?.includes(option.value))
+                  .map((option) => {
+                    return option.value;
+                  })
+              : column.cfg.options.find((option) => option.value == data.value[column.field])?.value || null;
+        } else {
+          data.value[column.field] = column.component == 'SelectMultiple' ? [] : null;
+        }
+      }
+
+      if (column.cfg?.prefix) {
+        column.cfg.prefix = replaceVariables(column.cfg.prefix, alias.value);
+        column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
+      }
+
+      if (column.cfg?.href) {
+        column.cfg.href = replaceVariables(column.cfg.href, alias.value);
+        column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
+      }
+    };
+
+    const setColumnRules = async (column) => {
+      if (column.visible) column.visible = replaceVariables(column.visible, alias.value);
+      if (column.required) column.required = replaceVariables(column.required, alias.value);
+      if (column.editable) column.editable = replaceVariables(column.editable, alias.value);
+      const { visible, required, editable } = await getRulesByFormula(data.value, column);
+      column._visible = visible;
+      column._required = required;
+      column._editable = editable;
+    };
+
+    const handleSelecterSearch = async ({ search, loading, column }) => {
+      loading(true);
+      column.cfg.search = await getDataByFormula(data.value, column.cfg.source, { search });
+      loading(false);
+    };
+
+    const handleSubmitFormData = () => {
+      const formdata = JSON.parse(JSON.stringify(data.value));
+      formdata.tid = form.value.id;
+      formdata.id = 0;
+      columns.value.forEach((column) => {
+        if (!column.component.includes('Basic') && !column._visible) delete formdata[column.field];
+      });
+
+      if (form.value.script) {
+        let formScriptResult = null;
+        try {
+          const fn = new Function('data', form.value.script);
+          formScriptResult = fn(formdata);
+        } catch (error) {
+          formScriptResult = error.message;
+        }
+        if (formScriptResult) {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: formScriptResult,
+            },
+          });
+          return;
+        }
+      }
+
+      createData(formdata).then((res) => {
+        if (res.code === 200) {
+          data.value = res.data;
+          document.getElementById('showResultModalBtn').click();
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: res.msg,
+            },
+          });
+        }
+      });
+    };
+
+    return {
+      pub,
+      form,
+      data,
+      syntax_error,
+
+      no_tabs,
+      tabs,
+      current_tab,
+
+      fetchPubForm,
+      handleRefetchPubForm,
+      handleSelecterSearch,
+
+      handleSubmitFormData,
+    };
+  },
+};
+</script>

@@ -1,0 +1,28 @@
+<template>
+  <span v-if="params.value" class="text-secondary text-decoration-underline cursor-pointer fs-16 fw-medium" @click="handleViewData" @dblclick="handleEditData">#{{ params.value }}</span>
+  <span v-else></span>
+</template>
+
+<script>
+import { defineComponent } from 'vue';
+import router from '@/router';
+export default defineComponent({
+  setup(props) {
+    let timer = null;
+    const handleViewData = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        router.push({ name: 'view', params: { tid: props.params._form.id, rid: props.params.value } });
+      }, 200);
+    };
+    const handleEditData = () => {
+      clearTimeout(timer);
+      router.push({ name: 'edit', params: { tid: props.params._form.id, rid: props.params.value } });
+    };
+    return {
+      handleViewData,
+      handleEditData,
+    };
+  },
+});
+</script>

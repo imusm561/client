@@ -1,0 +1,45 @@
+//
+// toast.scss
+//
+
+.Vue-Toastification__container {
+  padding: 5px !important;
+  max-width: 450px;
+
+  .Vue-Toastification__toast {
+    border-radius: 10px !important;
+    padding: 0 !important;
+    background-color: $toast-background-color !important;
+  }
+}
+
+.toast-body {
+  color: $input-color !important;
+}
+
+// toast
+.toast {
+  border-radius: 8px !important;
+
+  .toast-header {
+    border-top-right-radius: 8px !important;
+    border-top-left-radius: 8px !important;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: $toast-padding-x;
+  }
+}
+
+@mixin toast-border-variant($bg) {
+  .toast-body {
+    color: $bg;
+    border-bottom: 3px solid $bg;
+  }
+}
+
+@each $color, $value in $theme-colors {
+  .toast-border-#{$color} {
+    @include toast-border-variant($value);
+  }
+}

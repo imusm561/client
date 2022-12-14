@@ -1,0 +1,81 @@
+//
+// _task.scss
+//
+
+.task-wrapper {
+  position: relative;
+  overflow-x: hidden;
+  height: calc(100vh - #{$header-height} - #{$footer-height} - 5px);
+}
+
+.tasks-board {
+  display: flex;
+  overflow-x: auto;
+  align-items: stretch;
+
+  .tasks-list {
+    min-width: 300px;
+    margin-right: 24px;
+  }
+
+  &::-webkit-scrollbar {
+    -webkit-appearance: none;
+  }
+
+  &::-webkit-scrollbar:vertical {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar:horizontal {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--#{$variable-prefix}dark-rgb), 0.075);
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 8px;
+  }
+}
+
+.tasks-box {
+  .progress {
+    border-radius: 0px 0px $card-border-radius $card-border-radius;
+  }
+
+  .tasks-img {
+    height: 135px;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+    margin: 12px 0px;
+  }
+
+  &:last-child {
+    margin-bottom: 2px;
+  }
+}
+
+.tasks-wrapper {
+  height: calc(100vh - #{$header-height} - #{$footer-height} - 150px);
+}
+
+.tasks {
+  position: relative;
+}
+
+#tasksList {
+  tr {
+    .tasks-list-menu {
+      opacity: 0;
+    }
+
+    &:hover {
+      .tasks-list-menu {
+        opacity: 1;
+      }
+    }
+  }
+}
