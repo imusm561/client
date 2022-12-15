@@ -37,7 +37,7 @@
                 </div>
               </div>
               <div class="col">
-                <calendar-heatmap :values="data.activities" :end-date="$moment().format('YYYY-MM-DD')" :max="100" tooltip-unit="actions" :range-color="heatmapRangeColor" />
+                <calendar-heatmap :values="activities" :end-date="$moment().format('YYYY-MM-DD')" :max="100" tooltip-unit="actions" :range-color="heatmapRangeColor" />
               </div>
             </div>
           </div>
@@ -52,12 +52,12 @@
                   <div>
                     <p class="fw-medium text-muted mb-0 text-capitalize">{{ item.title }}</p>
                     <h2 class="mt-4 ff-secondary fw-semibold">
-                      {{ data.analytics[item.type].count || 0 }}
+                      {{ analytics[item.type].count || 0 }}
                     </h2>
                     <p class="mb-0 text-muted">
-                      <span class="badge badge-soft-info mb-0" :class="data.analytics[item.type].growth === 0 ? 'text-info' : data.analytics[item.type].growth > 0 ? 'text-success' : 'text-danger'">
-                        <i class="mdi align-middle" :class="data.analytics[item.type].growth === 0 ? '' : data.analytics[item.type].growth > 0 ? 'mdi-arrow-up' : 'mdi-arrow-down'"></i>
-                        {{ data.analytics[item.type].growth }} %
+                      <span class="badge badge-soft-info mb-0" :class="analytics[item.type].growth === 0 ? 'text-info' : analytics[item.type].growth > 0 ? 'text-success' : 'text-danger'">
+                        <i class="mdi align-middle" :class="analytics[item.type].growth === 0 ? '' : analytics[item.type].growth > 0 ? 'mdi-arrow-up' : 'mdi-arrow-down'"></i>
+                        {{ analytics[item.type].growth }} %
                       </span>
                       {{ $t('dashboard.analytics.vs') }}
                     </p>
@@ -84,7 +84,7 @@
                 <h4 class="card-title mb-0">{{ $t('dashboard.task') }}</h4>
               </div>
               <div v-if="tasks.length" class="card-body p-0 table-responsive">
-                <table class="table table-hover table-borderless table-hover table-striped align-middle table-nowrap">
+                <table class="table table-hover table-borderless table-hover table-striped align-middle table-nowrap mb-0">
                   <thead class="bg-light text-muted">
                     <tr>
                       <th>{{ $t('dashboard.task.title') }}</th>
@@ -97,12 +97,12 @@
                   </thead>
 
                   <tbody>
-                    <tr v-for="(task, index) of tasks.slice(0, 7)" :key="index">
-                      <td class="fw-medium text-truncate" style="max-width: 100px">{{ task.title }}</td>
-                      <td>
+                    <tr v-for="(task, index) of tasks.slice(0, 9)" :key="index">
+                      <td class="fw-medium text-truncate" style="width: 200px">{{ task.title }}</td>
+                      <td style="width: 40px">
                         <Avatar :data="getUserInfo(task.created_by)" size="xxs" />
                       </td>
-                      <td>
+                      <td style="width: auto">
                         <div class="d-flex align-items-center">
                           <div class="flex-shrink-0 me-1 text-muted fs-13">{{ task.progress }}%</div>
                           <div class="progress progress-sm flex-grow-1 bg-soft-primary" :style="{ width: `${task.progress}%` }">
@@ -110,7 +110,7 @@
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td style="width: 160px">
                         <Avatar
                           :data="
                             task.users.map((username) => {
@@ -120,14 +120,14 @@
                           size="xxs"
                         />
                       </td>
-                      <td>
+                      <td style="width: 70px">
                         <span :class="`badge bg-${resolveTaskVariant(task.status)} text-uppercase`">{{ $t(`dashboard.task.status.${task.status}`) }}</span>
                       </td>
-                      <td class="text-muted">{{ $moment(task.due_date).format('ll') }}</td>
+                      <td class="text-muted" style="width: 150px">{{ $moment(task.due_date).format('ll') }}</td>
                     </tr>
                   </tbody>
                 </table>
-                <div v-if="tasks.length > 7" class="p-2 text-center">
+                <div v-if="tasks.length > 9" class="p-2 text-center">
                   <router-link to="/app/task" class="text-muted text-decoration-underline">{{ $t('dashboard.task.viewAllTasks') }}</router-link>
                 </div>
               </div>
@@ -144,8 +144,8 @@
                 <h4 class="card-title mb-0">{{ $t('dashboard.calendar.upcomingEvents') }}</h4>
               </div>
               <div v-if="events.length" class="card-body pt-0">
-                <ul class="list-group list-group-flush border-dashed">
-                  <li class="list-group-item ps-0" v-for="(event, index) of events.slice(0, 5)" :key="index">
+                <ul class="list-group list-group-flush border-dashed mb-2">
+                  <li class="list-group-item ps-0 pb-2 pt-2" v-for="(event, index) of events.slice(0, 7)" :key="index">
                     <div class="row align-items-center g-3">
                       <div class="col-auto">
                         <div class="avatar-sm p-1 py-1 h-auto bg-light rounded-3 shadow">
@@ -160,12 +160,19 @@
                         <small class="text-muted mb-0" :title="event.description">{{ event.description }}</small>
                       </div>
                       <div class="col-sm-auto">
-                        <Avatar size="xxs" :data="$store.state.org.users.filter((user) => event.users.includes(user.username))"></Avatar>
+                        <Avatar
+                          size="xxs"
+                          :data="
+                            event.users.map((username) => {
+                              return getUserInfo(username);
+                            })
+                          "
+                        ></Avatar>
                       </div>
                     </div>
                   </li>
                 </ul>
-                <div v-if="events.length > 5" class="p-2 text-center">
+                <div v-if="events.length > 7" class="p-2 text-center">
                   <router-link to="/app/calendar" class="text-muted text-decoration-underline">{{ $t('dashboard.calendar.viewAllEvents') }}</router-link>
                 </div>
               </div>
@@ -179,7 +186,7 @@
 </template>
 
 <script>
-import { onMounted, computed, reactive } from 'vue';
+import { onMounted, computed, reactive, ref } from 'vue';
 import store from '@store';
 import Breadcrumb from '@/layouts/breadcrumb';
 import { CalendarHeatmap } from 'vue3-calendar-heatmap';
@@ -206,42 +213,6 @@ export default {
       { title: i18n.global.t('dashboard.analytics.view'), type: 'view', icon: 'mdi-eye-outline', variant: 'success' },
     ]);
 
-    const data = reactive({ analytics: { create: {}, update: {}, view: {}, delete: {} }, activities: [] });
-
-    const heatmapRangeColor = computed(() => {
-      return store.state.sys.theme === 'dark' ? ['#414653', '#516939', '#6c8b4b', '#86ab63', '#9fbc82', '#b6cda1'] : ['#ebedf0', '#dae2ef', '#c0ddf9', '#73b3f3', '#3886e1', '#17459e'];
-    });
-
-    const mergeActivities = (arr) => {
-      const result = arr.reduce((obj, item) => {
-        if (!obj[item.date]) {
-          obj[item.date] = 0;
-        }
-        obj[item.date] += item.count;
-        return obj;
-      }, {});
-      return Object.keys(result).map((date) => ({ date: date, count: result[date] }));
-    };
-
-    onMounted(() => {
-      getUserDashboard().then(({ code, data: { analytics, activities }, msg }) => {
-        if (code === 200) {
-          data.analytics = analytics;
-          data.activities = mergeActivities([...activities.st, ...activities.zz]);
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    });
-
-    const tasks = reactive(store.state.user.notices.task);
     const resolveTaskVariant = computed(() => {
       return (status) => {
         switch (status) {
@@ -261,16 +232,55 @@ export default {
       };
     });
 
-    const events = reactive(store.state.user.notices.calendar);
+    const heatmapRangeColor = computed(() => {
+      return store.state.sys.theme === 'dark' ? ['#414653', '#516939', '#6c8b4b', '#86ab63', '#9fbc82', '#b6cda1'] : ['#ebedf0', '#dae2ef', '#c0ddf9', '#73b3f3', '#3886e1', '#17459e'];
+    });
+
+    const mergeActivities = (arr) => {
+      const result = arr.reduce((obj, item) => {
+        if (!obj[item.date]) {
+          obj[item.date] = 0;
+        }
+        obj[item.date] += item.count;
+        return obj;
+      }, {});
+      return Object.keys(result).map((date) => ({ date: date, count: result[date] }));
+    };
+
+    const activities = ref([]);
+    const analytics = ref({ create: {}, update: {}, view: {}, delete: {} });
+    const tasks = ref([]);
+    const events = ref([]);
+
+    onMounted(() => {
+      getUserDashboard().then(({ code, data, msg }) => {
+        if (code === 200) {
+          activities.value = mergeActivities([...data.activities.st, ...data.activities.zz]);
+          analytics.value = data.analytics;
+          tasks.value = data.tasks;
+          events.value = data.events;
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    });
 
     return {
       types,
-      data,
       heatmapRangeColor,
-      tasks,
       resolveTaskVariant,
-      getUserInfo,
+      activities,
+      analytics,
+      tasks,
       events,
+      getUserInfo,
     };
   },
 };
