@@ -294,6 +294,7 @@ export default {
   setup() {
     const toast = useToast();
     const socket = useSocket();
+    const moment = window.moment;
 
     const search_users = ref([]);
     const search_keyword = ref('');
@@ -430,7 +431,7 @@ export default {
         description: '',
         tags: [],
         users: [store.state.user.data.username],
-        due_date: window.moment().add('day', 7).format('YYYY-MM-DD'),
+        due_date: moment().add('day', 7).format('YYYY-MM-DD'),
         progress: 0,
         status: 'todo',
         sort: 0,
