@@ -481,8 +481,8 @@ export default {
       const data = {
         title: event.title,
         description: event.extendedProps.description,
-        start: event.start,
-        end: event.allDay ? event.start : new Date(new Date(event.start).getTime() + 60 * 60 * 1000),
+        start: moment(event.start).format('YYYY-MM-DD'),
+        end: moment(event.allDay ? event.start : new Date(event.start).getTime() + 60 * 60 * 1000).format('YYYY-MM-DD'),
         all_day: event.allDay,
         category: event.extendedProps.category,
         users: event.extendedProps.users,
@@ -624,8 +624,8 @@ export default {
       const data = {
         title: current_event.value.title,
         description: current_event.value.description,
-        start: current_event.value.start,
-        end: current_event.value.end,
+        start: moment(current_event.value.start).format('YYYY-MM-DD'),
+        end: moment(current_event.value.end).format('YYYY-MM-DD'),
         all_day: current_event.value.all_day,
         location: current_event.value.location,
         category: current_event.value.category,
@@ -645,8 +645,8 @@ export default {
           return;
         }
 
-        data.start = `${data.start} ${current_event.value.start_time}`;
-        data.end = `${data.end} ${current_event.value.end_time}`;
+        data.start = `${data.start} ${current_event.value.start_time}`.trim();
+        data.end = `${data.end} ${current_event.value.end_time}`.trim();
       }
 
       if (current_event.value.id) {
