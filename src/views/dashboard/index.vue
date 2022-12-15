@@ -182,7 +182,6 @@
 import { onMounted, computed, reactive } from 'vue';
 import store from '@store';
 import Breadcrumb from '@/layouts/breadcrumb';
-import 'vue3-calendar-heatmap/dist/style.css';
 import { CalendarHeatmap } from 'vue3-calendar-heatmap';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
