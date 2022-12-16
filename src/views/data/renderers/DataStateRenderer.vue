@@ -1,5 +1,5 @@
 <template>
-  <span class="badge text-uppercase" :class="resolveBadgeBg(params.value)">{{ params.value }}</span>
+  <span class="badge text-uppercase" :class="resolveBadgeBg(params.value)">{{ $t(`data.column.BasicDataState.${params.value}`) }}</span>
 </template>
 
 <script>
