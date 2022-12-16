@@ -144,11 +144,21 @@
               <h5 class="modal-title">#{{ current_column.id || 0 }}</h5>
               <div v-if="current_column.created_at" class="vr me-2 ms-2"></div>
               <div v-if="current_column.created_at" class="text-muted">
-                {{ $t('layout.navbar.helper.form.column.config.create', { user: getUserInfo(current_column.created_by)?.fullname, time: $moment(current_column.created_at).format('llll') }) }}
+                {{
+                  $t('layout.navbar.helper.form.column.config.create', {
+                    user: getUserInfo(current_column.created_by)?.fullname || current_column.created_by,
+                    time: $moment(current_column.created_at).format('llll'),
+                  })
+                }}
               </div>
               <div v-if="current_column.updated_at" class="vr me-2 ms-2"></div>
               <div v-if="current_column.updated_at" class="text-muted">
-                {{ $t('layout.navbar.helper.form.column.config.update', { user: getUserInfo(current_column.updated_by)?.fullname, time: $moment(current_column.updated_at).format('llll') }) }}
+                {{
+                  $t('layout.navbar.helper.form.column.config.update', {
+                    user: getUserInfo(current_column.updated_by)?.fullname || current_column.updated_by,
+                    time: $moment(current_column.updated_at).format('llll'),
+                  })
+                }}
               </div>
               <button type="button" class="btn-close" :disabled="Object.keys(errors).length" data-bs-dismiss="modal"></button>
             </div>

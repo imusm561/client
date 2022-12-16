@@ -3,7 +3,7 @@
     <Avatar :data="getUserInfo(comment.created_by)" />
     <div class="flex-grow-1 ms-3">
       <div class="fw-medium fs-10">
-        {{ getUserInfo(comment.created_by)?.fullname }}
+        {{ getUserInfo(comment.created_by)?.fullname || comment.created_by }}
         <i
           v-if="comment.created_by != $store.state.user.data.username"
           class="mdi mdi-chat-processing-outline text-muted cursor-pointer"

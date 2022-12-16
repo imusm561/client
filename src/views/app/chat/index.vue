@@ -148,7 +148,7 @@
                           <div class="ctext-wrap-content">
                             <span v-if="data.quote && data.quote.id" class="mb-0 ctext-content">
                               <span class="d-flex justify-content-between">
-                                <p>“ {{ getUserInfo(data.quote.sender)?.fullname }}&nbsp;&nbsp;&nbsp;</p>
+                                <p>“ {{ getUserInfo(data.quote.sender)?.fullname || data.quote.sender }}&nbsp;&nbsp;&nbsp;</p>
                                 <p>{{ $moment(data.quote.created_at).format('HH:mm') }}</p>
                               </span>
                               <p>{{ data.quote.message }}</p>

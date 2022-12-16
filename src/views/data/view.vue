@@ -87,11 +87,11 @@
                 </h6>
                 <h6 class="pb-1">
                   <span class="text-muted">{{ $t('data.column.BasicCreatedAt') }}:&nbsp;</span>
-                  <span>{{ $moment(data.created_at).format('llll') }} by {{ data.created_by }}</span>
+                  <span>{{ getUserInfo(data.created_by)?.fullname || data.created_by }} @ {{ $moment(data.created_at).format('llll') }}</span>
                 </h6>
                 <h6 class="pb-1" v-if="data.updated_at && data.updated_by">
                   <span class="text-muted">{{ $t('data.column.BasicUpdatedAt') }}:&nbsp;</span>
-                  <span>{{ $moment(data.updated_at).format('llll') }} by {{ data.updated_by }}</span>
+                  <span>{{ getUserInfo(data.updated_by)?.fullname || data.updated_by }} @ {{ $moment(data.updated_at).format('llll') }}</span>
                 </h6>
               </div>
             </div>
@@ -203,7 +203,7 @@
               <div class="flex-grow-1 ms-3">
                 <span>
                   <div class="fw-medium fs-10">
-                    {{ getUserInfo(flow.created_by)?.fullname }}
+                    {{ getUserInfo(flow.created_by)?.fullname || flow.created_by}}
                     <i
                       v-if="flow.created_by != $store.state.user.data.username"
                       class="mdi mdi-chat-processing-outline text-muted cursor-pointer"
@@ -275,7 +275,7 @@
                       <Avatar class="me-2" :data="getUserInfo(item.username)" size="xs" />
                       <div>
                         <div class="fw-medium text-dark">
-                          {{ getUserInfo(item.username)?.fullname }}
+                          {{ getUserInfo(item.username)?.fullname || item.username }}
                           <i
                             v-if="item.username != $store.state.user.data.username"
                             class="mdi mdi-chat-processing-outline text-muted cursor-pointer"

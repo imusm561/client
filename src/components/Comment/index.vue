@@ -20,7 +20,7 @@
     <Empty :text="$t('component.comment.empty')" v-else />
     <Form class="mt-1" v-slot="{ errors }" @submit="handleCreateComment">
       <label v-if="comment.reply">
-        {{ $t('component.comment.replyTo', { user: getUserInfo(comment.reply.created_by)?.fullname }) }}
+        {{ $t('component.comment.replyTo', { user: getUserInfo(comment.reply.created_by)?.fullname || comment.reply.created_by }) }}
         <i class="mdi mdi-close-circle text-danger cursor-pointer" @click="comment.reply = null" />
       </label>
       <label v-else>{{ $t('layout.navbar.helper.jobDetail.comments') }}:</label>

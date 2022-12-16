@@ -65,8 +65,8 @@
                       <Avatar :data="getUserInfo(log.created_by)" />
                     </div>
                     <div>
-                      <div>{{ getUserInfo(log.created_by)?.fullname }}</div>
-                      <small>{{ getUserInfo(log.created_by)?.username }}</small>
+                      <div>{{ getUserInfo(log.created_by)?.fullname || log.created_by }}</div>
+                      <small>{{ log.created_by }}</small>
                     </div>
                   </div>
                 </td>
