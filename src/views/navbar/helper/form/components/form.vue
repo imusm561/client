@@ -59,11 +59,15 @@
               </h4>
               <div class="hstack gap-3 flex-wrap">
                 <div class="text-muted">
-                  {{ $t('layout.navbar.helper.form.create', { user: getUserInfo(current_form.created_by)?.fullname || current_form.created_by, time: $moment(current_form.created_at).format('llll') }) }}
+                  {{
+                    $t('layout.navbar.helper.form.create', { user: getUserInfo(current_form.created_by)?.fullname || current_form.created_by, time: $moment(current_form.created_at).format('llll') })
+                  }}
                 </div>
                 <div v-if="current_form.updated_at" class="vr"></div>
                 <div v-if="current_form.updated_at" class="text-muted">
-                  {{ $t('layout.navbar.helper.form.update', { user: getUserInfo(current_form.updated_by)?.fullname || current_form.updated_by, time: $moment(current_form.updated_at).format('llll') }) }}
+                  {{
+                    $t('layout.navbar.helper.form.update', { user: getUserInfo(current_form.updated_by)?.fullname || current_form.updated_by, time: $moment(current_form.updated_at).format('llll') })
+                  }}
                 </div>
               </div>
             </div>

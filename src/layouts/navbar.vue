@@ -247,7 +247,7 @@
                         <Avatar class="me-3" :data="getUserInfo(comment.created_by)" />
                         <div class="flex-1 w-50" @click="handleClickCommentNotice(comment)">
                           <span class="stretched-link">
-                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">{{ getUserInfo(comment.created_by)?.fullname || comment.created_by}}</h6>
+                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">{{ getUserInfo(comment.created_by)?.fullname || comment.created_by }}</h6>
                           </span>
                           <div class="fs-13 text-muted">
                             <p class="mb-1 text-truncate">{{ replaceHtml(comment.content) }}</p>

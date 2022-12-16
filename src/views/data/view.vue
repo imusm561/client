@@ -203,7 +203,7 @@
               <div class="flex-grow-1 ms-3">
                 <span>
                   <div class="fw-medium fs-10">
-                    {{ getUserInfo(flow.created_by)?.fullname || flow.created_by}}
+                    {{ getUserInfo(flow.created_by)?.fullname || flow.created_by }}
                     <i
                       v-if="flow.created_by != $store.state.user.data.username"
                       class="mdi mdi-chat-processing-outline text-muted cursor-pointer"
