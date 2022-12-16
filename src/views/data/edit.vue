@@ -59,9 +59,16 @@
                 <VueSelect
                   v-model="data.data_state"
                   :placeholder="$t('data.column.BasicDataState')"
-                  :options="['published', 'deleted', 'drafted', 'archived']"
+                  :reduce="(item) => item.value"
+                  label="title"
+                  :options="[
+                    { title: $t('data.column.BasicDataState.published'), value: 'published' },
+                    { title: $t('data.column.BasicDataState.deleted'), value: 'deleted' },
+                    { title: $t('data.column.BasicDataState.drafted'), value: 'drafted' },
+                    { title: $t('data.column.BasicDataState.archived'), value: 'archived' },
+                  ]"
                   :disabled="data.data_state === 'approving'"
-                  :selectable="(option) => (form.flow?.length ? (data.id === 0 ? option === 'drafted' : init_data.data_state != 'published' ? option != 'published' : option) : option)"
+                  :selectable="(option) => (form.flow?.length ? (data.id === 0 ? option.value === 'drafted' : init_data.data_state != 'published' ? option.value != 'published' : option.value) : true)"
                 >
                   <template v-slot:no-options="{ search, searching }">
                     <template v-if="searching">
@@ -161,9 +168,18 @@
                       <VueSelect
                         v-model="data.data_state"
                         :placeholder="$t('data.column.BasicDataState')"
-                        :options="['published', 'deleted', 'drafted', 'archived']"
+                        :reduce="(item) => item.value"
+                        label="title"
+                        :options="[
+                          { title: $t('data.column.BasicDataState.published'), value: 'published' },
+                          { title: $t('data.column.BasicDataState.deleted'), value: 'deleted' },
+                          { title: $t('data.column.BasicDataState.drafted'), value: 'drafted' },
+                          { title: $t('data.column.BasicDataState.archived'), value: 'archived' },
+                        ]"
                         :disabled="data.data_state === 'approving'"
-                        :selectable="(option) => (form.flow?.length ? (data.id === 0 ? option === 'drafted' : init_data.data_state != 'published' ? option != 'published' : option) : option)"
+                        :selectable="
+                          (option) => (form.flow?.length ? (data.id === 0 ? option.value === 'drafted' : init_data.data_state != 'published' ? option.value != 'published' : option.value) : true)
+                        "
                       >
                         <template v-slot:no-options="{ search, searching }">
                           <template v-if="searching">

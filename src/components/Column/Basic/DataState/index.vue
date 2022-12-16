@@ -9,7 +9,12 @@
       v-model="value"
       :reduce="(item) => item.value"
       label="title"
-      :options="options"
+      :options="[
+        { title: $t('data.column.BasicDataState.published'), value: 'published' },
+        { title: $t('data.column.BasicDataState.deleted'), value: 'deleted' },
+        { title: $t('data.column.BasicDataState.drafted'), value: 'drafted' },
+        { title: $t('data.column.BasicDataState.archived'), value: 'archived' },
+      ]"
     >
       <template v-slot:no-options="{ search, searching }">
         <template v-if="searching">
@@ -25,7 +30,6 @@
 <script>
 import { defineComponent, computed } from 'vue';
 import { resolveColumnTitle } from '@utils';
-import i18n from '@utils/i18n';
 export default defineComponent({
   props: {
     column: {
@@ -53,12 +57,6 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     return {
-      options: [
-        { title: i18n.global.t('data.column.BasicDataState.published'), value: 'published' },
-        { title: i18n.global.t('data.column.BasicDataState.deleted'), value: 'deleted' },
-        { title: i18n.global.t('data.column.BasicDataState.drafted'), value: 'drafted' },
-        { title: i18n.global.t('data.column.BasicDataState.archived'), value: 'archived' },
-      ],
       resolveColumnTitle,
       value: computed({
         get() {
