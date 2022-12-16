@@ -276,7 +276,7 @@ export default {
         column.default = replaceVariables(column.default, alias.value);
         if (Number(data.value.id) === 0 || initialized.value) {
           const val = await getDataByFormula(data.value, column.default);
-          if (val && val.includes('Error: ')) column.cfg.placeholder = val;
+          if (val && typeof val === 'string' && val.includes('Error: ')) column.cfg.placeholder = val;
           else data.value[column.field] = val;
         }
       }
