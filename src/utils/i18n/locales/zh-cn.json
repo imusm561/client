@@ -233,6 +233,7 @@
   "layout.navbar.helper.form.tab.approvalFlow.nodeTitle": "节点标题",
 
   "layout.navbar.helper.form.column.modified": "请先保存字段设计！",
+  "layout.navbar.helper.form.column.columns": "表字段",
   "layout.navbar.helper.form.column.components": "组件",
   "layout.navbar.helper.form.column.components.copy": "复制",
   "layout.navbar.helper.form.column.components.copy.success": "复制成功",

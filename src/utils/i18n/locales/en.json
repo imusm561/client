@@ -233,6 +233,7 @@
   "layout.navbar.helper.form.tab.approvalFlow.nodeTitle": "Node Title",
 
   "layout.navbar.helper.form.column.modified": "Save Columns First!",
+  "layout.navbar.helper.form.column.columns": "From Columns",
   "layout.navbar.helper.form.column.components": "Components",
   "layout.navbar.helper.form.column.components.copy": "Copy",
   "layout.navbar.helper.form.column.components.copy.success": "Copied!",
