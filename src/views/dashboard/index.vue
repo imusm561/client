@@ -37,7 +37,42 @@
                 </div>
               </div>
               <div class="col">
-                <calendar-heatmap :values="activities" :end-date="$moment().format('YYYY-MM-DD')" :max="100" tooltip-unit="actions" :range-color="heatmapRangeColor" />
+                <calendar-heatmap
+                  :values="activities"
+                  :end-date="$moment().format('YYYY-MM-DD')"
+                  :max="100"
+                  :tooltip-unit="$t('dashboard.heatmap.tooltipUnit')"
+                  :no-data-text="false"
+                  :range-color="heatmapRangeColor"
+                  :locale="{
+                    months: [
+                      $t('dashboard.heatmap.locale.months.jan'),
+                      $t('dashboard.heatmap.locale.months.feb'),
+                      $t('dashboard.heatmap.locale.months.mar'),
+                      $t('dashboard.heatmap.locale.months.apr'),
+                      $t('dashboard.heatmap.locale.months.may'),
+                      $t('dashboard.heatmap.locale.months.jun'),
+                      $t('dashboard.heatmap.locale.months.jul'),
+                      $t('dashboard.heatmap.locale.months.aug'),
+                      $t('dashboard.heatmap.locale.months.sep'),
+                      $t('dashboard.heatmap.locale.months.oct'),
+                      $t('dashboard.heatmap.locale.months.nov'),
+                      $t('dashboard.heatmap.locale.months.dec'),
+                    ],
+                    days: [
+                      $t('dashboard.heatmap.locale.days.sun'),
+                      $t('dashboard.heatmap.locale.days.mon'),
+                      $t('dashboard.heatmap.locale.days.tue'),
+                      $t('dashboard.heatmap.locale.days.wed'),
+                      $t('dashboard.heatmap.locale.days.thu'),
+                      $t('dashboard.heatmap.locale.days.fri'),
+                      $t('dashboard.heatmap.locale.days.sat'),
+                    ],
+                    on: $t('dashboard.heatmap.locale.on'),
+                    less: $t('dashboard.heatmap.locale.less'),
+                    more: $t('dashboard.heatmap.locale.more'),
+                  }"
+                />
               </div>
             </div>
           </div>
