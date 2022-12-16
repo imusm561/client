@@ -30,7 +30,7 @@
             <div class="flex-grow-1">
               <h4>
                 <code>#{{ form.id }}</code>
-                <span class="ms-2">{{ form.title }} Columns</span>
+                <span class="ms-2">{{ form.title }} {{ $t('layout.navbar.helper.form.column.columns') }}</span>
               </h4>
             </div>
             <div class="flex-shrink-0">
@@ -608,14 +608,12 @@ export default {
 <style lang="scss" scoped>
 @import '~@/assets/scss/index.scss';
 .drag-item {
-  border: 1px dashed $pagination-border-color;
-  background-color: $pagination-bg;
-  color: $pagination-color;
   border-radius: 5px;
+  border: 1px dashed $text-muted;
+  background-color: $pagination-bg;
   &:hover {
-    border: 1px dashed $primary;
+    border: 1px solid $primary;
     background-color: $pagination-hover-bg;
-    color: $pagination-hover-color;
   }
 }
 </style>
