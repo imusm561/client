@@ -347,6 +347,8 @@
 
   "layout.navbar.helper.code": "代码管理",
   "layout.navbar.helper.code.tree": "目录树",
+  "layout.navbar.helper.code.file.info": "由{created_by}创建于{created_at}\r\n由{updated_by}更新于{updated_at}",
+  "layout.navbar.helper.code.file.info.system": "系统",
   "layout.navbar.helper.code.modified": "请先保存当前文件！",
   "layout.navbar.helper.code.modified.success": "保存成功！",
   "layout.navbar.helper.code.create.error": "文件名已存在！",

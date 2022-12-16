@@ -347,6 +347,8 @@
 
   "layout.navbar.helper.code": "Code",
   "layout.navbar.helper.code.tree": "Directory",
+  "layout.navbar.helper.code.file.info": "Created by {created_by} At {created_at}\r\nUpdated by {updated_by} At {updated_at}",
+  "layout.navbar.helper.code.file.info.system": "System",
   "layout.navbar.helper.code.modified": "Please save the file first!",
   "layout.navbar.helper.code.modified.success": "Save successfully!",
   "layout.navbar.helper.code.create.error": "File name already exists!",
