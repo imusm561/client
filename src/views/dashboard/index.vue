@@ -137,7 +137,7 @@
                       <td style="width: 40px">
                         <Avatar :data="getUserInfo(task.created_by)" size="xxs" />
                       </td>
-                      <td style="width: auto">
+                      <td style="width: 200px">
                         <div class="d-flex align-items-center">
                           <div class="flex-shrink-0 me-1 text-muted fs-13">{{ task.progress }}%</div>
                           <div class="progress progress-sm flex-grow-1 bg-soft-primary" :style="{ width: `${task.progress}%` }">
@@ -155,7 +155,7 @@
                           size="xxs"
                         />
                       </td>
-                      <td style="width: 70px">
+                      <td style="width: auto">
                         <span :class="`badge bg-${resolveTaskVariant(task.status)} text-uppercase`">{{ $t(`dashboard.task.status.${task.status}`) }}</span>
                       </td>
                       <td class="text-muted" style="width: 150px">{{ $moment(task.due_date).format('ll') }}</td>
