@@ -531,7 +531,7 @@ export default {
         eventData: function (eventEl) {
           return {
             title: eventEl.innerText.trim(),
-            description: '',
+            description: i18n.global.t('app.calendar.viewAndEditEventModal.form.description'),
             start: new Date(),
             category: eventEl.getAttribute('data-category'),
             users: [store.state.user.data.username],
