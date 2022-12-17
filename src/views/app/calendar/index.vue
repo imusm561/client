@@ -64,7 +64,7 @@
             <h5 class="modal-title">{{ current_event.id ? current_event.title : $t('app.calendar.viewAndEditEventModal.newEvent') }}</h5>
             <button type="button" id="hideViewAndEditEventModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-          <Form v-slot="{ errors }">
+          <Form v-slot="{ errors }" @submit="handleSubmitEvent">
             <div class="modal-body p-0">
               <div v-if="is_editing" data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
                 <div class="row g-3">
@@ -226,15 +226,8 @@
                 <i class="mdi mdi-delete-outline"></i>
                 {{ $t('app.calendar.viewAndEditEventModal.form.footer.delete') }}
               </span>
-              <span
-                v-if="is_editing"
-                class="btn btn-sm btn-success"
-                @click="
-                  () => {
-                    if (Object.keys(errors).length === 0) handleSubmitEvent();
-                  }
-                "
-              >
+              <button type="submit" class="d-none" ref="submitEventBtn"></button>
+              <span type="submit" v-if="is_editing" class="btn btn-sm btn-success" @click="Object.keys(errors).length === 0 && $refs.submitEventBtn.click()">
                 <i class="mdi mdi-content-save-outline"></i>
                 {{ current_event.id ? $t('app.calendar.viewAndEditEventModal.form.footer.save') : $t('app.calendar.viewAndEditEventModal.form.footer.create') }}
               </span>
