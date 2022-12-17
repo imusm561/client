@@ -177,6 +177,9 @@ ClassicEditor.defaultConfig = {
   simpleUpload: {
     uploadUrl: '/cor/file/ckeditor',
   },
+  link: {
+    addTargetToExternalLinks: true,
+  },
   image: {
     toolbar: ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:alignCenter', 'imageStyle:alignRight', 'imageStyle:alignBlockLeft', 'imageStyle:inline', 'imageStyle:alignBlockRight'],
     styles: ['alignLeft', 'alignCenter', 'alignRight', 'alignBlockLeft', 'inline', 'alignBlockRight'],
