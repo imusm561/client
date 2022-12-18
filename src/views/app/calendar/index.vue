@@ -475,7 +475,7 @@ export default {
         title: event.title,
         description: event.extendedProps.description,
         start: moment(event.start).format('YYYY-MM-DD 00:00:00'),
-        end: event.allDay ? moment(event.start).format('YYYY-MM-DD 00:00:00') :  moment(event.start).add(1, 'd').format('YYYY-MM-DD 00:00:00'),
+        end: event.allDay ? moment(event.start).format('YYYY-MM-DD 00:00:00') : moment(event.start).add(1, 'd').format('YYYY-MM-DD 00:00:00'),
         all_day: event.allDay,
         category: event.extendedProps.category,
         users: event.extendedProps.users,
