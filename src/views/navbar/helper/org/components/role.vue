@@ -15,8 +15,8 @@
                 <h6 class="fs-15 mb-1 flex-grow-1 text-truncate">
                   <span class="cursor-pointer" @click="$emit('setRole', role)">{{ role.name }}</span>
                 </h6>
-                <div class="dropdown">
-                  <span class="text-muted cursor-pointer" id="role-actions" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-horizontal"></i></span>
+                <div class="dropdown" v-if="role.id != 1 || $store.state.user.data.id === 1">
+                  <span class="text-muted cursor-pointer" id="role-actions" data-bs-toggle="dropdown"><i class="mdi mdi-dots-horizontal"></i></span>
                   <ul class="dropdown-menu" aria-labelledby="role-actions">
                     <li class="dropdown-item cursor-pointer" @click="handleCreateOrEditRole(role)">
                       <i class="ri-edit-2-line align-bottom me-2 text-muted"></i>

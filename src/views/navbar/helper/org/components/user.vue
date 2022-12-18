@@ -475,7 +475,7 @@
               </div>
             </div>
             <div class="modal-footer p-3 pt-1 pb-1">
-              <a v-if="current_user.id" class="btn btn-sm btn-primary" @click="is_editing = !is_editing">
+              <a v-if="current_user.id && (current_user.id != 1 || $store.state.user.data.id === 1)" class="btn btn-sm btn-primary" @click="is_editing = !is_editing">
                 <i class="mdi" :class="is_editing ? 'mdi-content-save-off-outline' : 'mdi-account-edit-outline'"></i>
                 {{ is_editing ? $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.footer.cancel') : $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.footer.edit') }}
               </a>
