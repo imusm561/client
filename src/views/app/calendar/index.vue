@@ -352,8 +352,8 @@ export default {
 
     const fetchUpcomingEvents = () => {
       getEvents({
-        start: moment().format('YYYYMMDD'),
-        end: moment().add('M', 1).format('YYYYMMDD'),
+        start: moment().format('YYYY-MM-DD'),
+        end: moment().add('M', 1).format('YYYY-MM-DD'),
       }).then(({ code, data, msg }) => {
         if (code === 200) {
           upcoming_events.value = data
@@ -380,8 +380,8 @@ export default {
 
     const fetchEvents = (info, successCallback) => {
       getEvents({
-        start: moment(info.start).format('YYYYMMDD'),
-        end: moment(info.end).format('YYYYMMDD'),
+        start: moment(info.start).format('YYYY-MM-DD'),
+        end: moment(info.end).format('YYYY-MM-DD'),
       }).then(({ code, data, msg }) => {
         if (code === 200) {
           events.value = data.map((event) => {
@@ -437,10 +437,13 @@ export default {
         title: event.title,
         description: event.extendedProps ? event.extendedProps.description : event.description,
 
-        date: [moment(event.start).format('YYYY-MM-DD'), moment(event.end || event.start).format('YYYY-MM-DD')],
+        date: [
+          moment(event.start).format('YYYY-MM-DD'),
+          event.allDay && event.end && event.endStr != event.startStr ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD') : moment(event.end || event.start).format('YYYY-MM-DD'),
+        ],
 
         start: event.start,
-        end: event.end || event.start,
+        end: event.allDay && event.end && event.endStr != event.startStr ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD') : event.end || event.start,
         all_day: event.allDay,
 
         start_time: moment(event.start).format('HH:mm:ss'),
@@ -479,8 +482,8 @@ export default {
         title: event.title,
         description: event.extendedProps.description,
         start: moment(event.start).format('YYYY-MM-DD 00:00:00'),
-        end: event.allDay ? moment(event.start).format('YYYY-MM-DD 00:00:00') : moment(event.start).add(1, 'd').format('YYYY-MM-DD 00:00:00'),
-        all_day: event.allDay,
+        end: moment(event.start).format('YYYY-MM-DD 00:00:00'),
+        all_day: true,
         category: event.extendedProps.category,
         users: event.extendedProps.users,
       };
@@ -592,6 +595,7 @@ export default {
         if (e.target.value.split(' ').length === 3) {
           current_event.value.start = e.target.value.split(' ')[0];
           current_event.value.end = e.target.value.split(' ')[2];
+          current_event.value.all_day = true;
         } else {
           current_event.value.start = current_event.value.end = e.target.value;
         }
@@ -631,8 +635,8 @@ export default {
       };
 
       if (current_event.value.all_day) {
-        data.start = `${data.start} 00:00:00`;
-        data.end = `${data.end} 00:00:00`;
+        data.end = data.end === data.start ? moment(data.end).format('YYYY-MM-DD 00:00:00') : moment(data.end).add(1, 'd').format('YYYY-MM-DD 00:00:00');
+        data.start = moment(data.start).format('YYYY-MM-DD 00:00:00');
       } else {
         if (current_event.value.start_time.split(':').length !== 3) {
           current_event.value.start_time = '';
