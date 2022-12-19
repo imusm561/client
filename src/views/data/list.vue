@@ -985,7 +985,7 @@ export default {
               params.successCallback(res.data.rows, res.data.count);
             })
             .catch((error) => {
-              console.error(error);
+              console.log(error);
               params.failCallback();
             });
         }
