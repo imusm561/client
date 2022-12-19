@@ -64,7 +64,7 @@
             <h5 class="modal-title">{{ current_event.id ? current_event.title : $t('app.calendar.viewAndEditEventModal.newEvent') }}</h5>
             <button type="button" id="hideViewAndEditEventModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-          <Form v-slot="{ errors }" @submit="handleSubmitEvent">
+          <Form v-slot="{ errors }" @submit="handleSubmitEvent" :key="viewAndEditEventModalKey">
             <div class="modal-body p-0">
               <div v-if="is_editing" data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
                 <div class="row g-3">
@@ -405,6 +405,8 @@ export default {
       });
     };
 
+    const viewAndEditEventModalKey = ref(null);
+
     const handleDateClick = (e) => {
       current_event.value = {
         title: '',
@@ -424,6 +426,7 @@ export default {
         users: [store.state.user.data.username],
       };
       is_editing.value = true;
+      viewAndEditEventModalKey.value = Math.random().toString(36).slice(-6);
       document.getElementById('showViewAndEditEventModalBtn').click();
     };
 
@@ -451,11 +454,12 @@ export default {
     };
 
     const handleEventDrop = ({ event }) => {
-      updateEvent({
+      const data = {
         id: event.id,
-        start: event.start,
-        end: event.end || event.start,
-      }).then(({ code, msg }) => {
+        start: moment(event.start).format('YYYY-MM-DD HH:mm:ss'),
+        end: moment(event.end || event.start).format('YYYY-MM-DD HH:mm:ss'),
+      };
+      updateEvent(data).then(({ code, msg }) => {
         if (code !== 200) {
           toast({
             component: ToastificationContent,
@@ -579,6 +583,7 @@ export default {
         users: [store.state.user.data.username],
       };
       is_editing.value = true;
+      viewAndEditEventModalKey.value = Math.random().toString(36).slice(-6);
       document.getElementById('showViewAndEditEventModalBtn').click();
     };
 
@@ -685,6 +690,7 @@ export default {
       upcoming_events,
       current_event,
       is_editing,
+      viewAndEditEventModalKey,
       handleEventClick,
       handleCreateEvent,
       handleChangeDate,
