@@ -84,7 +84,7 @@
                         <div class="flex-grow-1 overflow-hidden">
                           <h5 class="text-truncate mb-0 fs-16">
                             <a class="text-reset username" data-bs-toggle="offcanvas" href="#userProfileOffCanvas" aria-controls="userProfileOffCanvas">
-                              {{ current_chat.fullname || current_chat.username }}123
+                              {{ current_chat.fullname || current_chat.username }}
                             </a>
                           </h5>
                           <p class="text-truncate text-muted fs-14 mb-0 mt-1 userStatus">
