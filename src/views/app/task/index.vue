@@ -206,7 +206,12 @@
                       label="title"
                       :options="status"
                       :selectable="
-                        (option) => (current_task.progress <= 0 ? option.value === 'todo' : current_task.progress >= 100 ? option.value === 'completed' : !['todo', 'completed'].includes(option.value))
+                        (option) =>
+                          current_task.progress <= 0
+                            ? ['todo'].includes(option.value)
+                            : current_task.progress >= 100
+                            ? ['review', 'completed'].includes(option.value)
+                            : ['urgent', 'inprogress'].includes(option.value)
                       "
                     >
                       <template v-slot:no-options="{ search, searching }">
@@ -228,7 +233,7 @@
                       :placeholder="$t('app.task.editTaskModal.form.progress')"
                       v-model="current_task.progress"
                       rules="required|between:0,100"
-                      @input="current_task.status = current_task.progress <= 0 ? 'todo' : current_task.progress >= 100 ? 'completed' : 'inprogress'"
+                      @input="current_task.status = current_task.progress <= 0 ? 'todo' : current_task.progress >= 100 ? 'review' : 'inprogress'"
                     />
                     <span class="invalid-feedback">{{ errors.progress }}</span>
                   </div>
@@ -322,7 +327,11 @@ export default {
           name: 'group',
           /* eslint-disable-next-line no-unused-vars */
           put: (to, from, dragEl, evt) => {
-            return to.el.id === 'todo' ? Number(dragEl.getAttribute('data-progress')) <= 0 : to.el.id === 'completed' ? Number(dragEl.getAttribute('data-progress')) >= 100 : true;
+            return ['todo'].includes(to.el.id)
+              ? Number(dragEl.getAttribute('data-progress')) <= 0
+              : ['review', 'completed'].includes(to.el.id)
+              ? Number(dragEl.getAttribute('data-progress')) >= 100
+              : true;
           },
           pull: true,
         };
