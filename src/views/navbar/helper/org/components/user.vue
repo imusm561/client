@@ -350,15 +350,14 @@
 
                   <div class="col-lg-12">
                     <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.skills') }}</label>
-                    <VueSelect
-                      v-model="current_user.skills"
-                      multiple
-                      :close-on-select="false"
-                      taggable
-                      push-tags
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.skills')"
-                      :options="['Java', 'Python', 'PHP', 'Nodejs', 'HTML', 'JavaScript', 'CSS', 'Vue', 'React', 'Ps', 'Ae']"
-                    ></VueSelect>
+                    <VueSelect v-model="current_user.skills" multiple :close-on-select="false" taggable push-tags :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.skills')">
+                      <template v-slot:no-options="{ search, searching }">
+                        <template v-if="searching">
+                          <span v-html="$t('components.vs.search', { search })"></span>
+                        </template>
+                        <em v-else style="opacity: 0.5">{{ $t('components.vs.generateSkill') }}</em>
+                      </template>
+                    </VueSelect>
                   </div>
 
                   <div class="col-lg-3">

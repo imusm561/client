@@ -36,7 +36,14 @@
                         { text: $t('layout.navbar.helper.job.EditJobModal.form.status.disabled'), value: 0 },
                       ]"
                       :clearable="false"
-                    ></VueSelect>
+                    >
+                      <template v-slot:no-options="{ search, searching }">
+                        <template v-if="searching">
+                          <span v-html="$t('components.vs.search', { search })"></span>
+                        </template>
+                        <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+                      </template>
+                    </VueSelect>
                   </div>
                   <div class="col-md-4">
                     <label class="form-label cursor-pointer" :title="expression.interval.join('\n')">{{ $t('layout.navbar.helper.job.EditJobModal.form.rule') }}</label>

@@ -109,8 +109,15 @@
                       taggable
                       push-tags
                       :placeholder="$t('layout.navbar.helper.org.role.editOrCreateRoleModal.form.tags')"
-                      :options="['DBA']"
-                    ></VueSelect>
+                      :options="['HRD', 'OE', 'DBA']"
+                    >
+                      <template v-slot:no-options="{ search, searching }">
+                        <template v-if="searching">
+                          <span v-html="$t('components.vs.search', { search })"></span>
+                        </template>
+                        <em v-else style="opacity: 0.5">{{ $t('components.vs.generateTag') }}</em>
+                      </template>
+                    </VueSelect>
                   </div>
 
                   <div class="col-lg-12">

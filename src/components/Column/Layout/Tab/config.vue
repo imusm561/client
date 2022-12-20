@@ -35,11 +35,7 @@
             <span v-if="search.length > 2">
               <span v-html="$t('components.vs.search', { search })"></span>
             </span>
-            <span v-else>
-              Enter at least
-              <em>3</em>
-              letters.
-            </span>
+            <span v-else v-html="$t('components.vs.searchRule')"></span>
           </template>
           <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
         </template>

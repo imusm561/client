@@ -773,6 +773,7 @@
   "components.userSelector.userAll": "所有人",
 
   "components.vs.search": "未找到<em>{search}</em>相关的内容",
+  "components.vs.searchRule": "至少输入 <em>3</em> 个字符",
   "components.vs.searchUser": "输入来搜索一个用户",
   "components.vs.searchOption": "输入来搜索一个选项",
   "components.vs.searchCategory": "输入来搜索一个分类",
@@ -784,6 +785,7 @@
   "components.vs.generateTag": "输入来生成一个标签",
   "components.vs.generateOption": "输入来生成一个选项",
   "components.vs.generateMaska": "输入来生成一个规则",
+  "components.vs.generateSkill": "输入来生成一个技能",
 
   "socket.disconnect.toast.title": "与服务端断开连接...",
   "socket.disconnect.toast.text": "可能由于网络原因或代码更新导致的服务端重启",

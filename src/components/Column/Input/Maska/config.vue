@@ -42,9 +42,7 @@
       <VueSelect v-model="column.alias" :placeholder="$t('layout.navbar.helper.form.column.config.alias')" :options="alias">
         <template v-slot:no-options="{ search, searching }">
           <template v-if="searching">
-            <span>
-              <span v-html="$t('components.vs.search', { search })"></span>
-            </span>
+            <span v-html="$t('components.vs.search', { search })"></span>
           </template>
           <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
         </template>
@@ -109,7 +107,7 @@
         taggable
         push-tags
         :placeholder="$t('layout.navbar.helper.form.column.config.tags')"
-        :options="['dataTitle', 'cellEdit', 'batchUpdate', 'searchable']"
+        :options="['cellEdit', 'batchUpdate', 'searchable']"
       >
         <template v-slot:no-options="{ search, searching }">
           <template v-if="searching">

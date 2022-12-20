@@ -614,7 +614,7 @@ export default {
       read: [],
     });
 
-    const all = { value: 0, label: i18n.global.t('app.mail.composeModal.userAll'), title: i18n.global.t('app.mail.composeModal.userAll') };
+    const all = [{ value: 0, label: i18n.global.t('app.mail.composeModal.userAll'), title: i18n.global.t('app.mail.composeModal.userAll') }];
     const users = JSON.parse(JSON.stringify(store.state.org.users))
       .filter((user) => user.username != store.state.user.data.username)
       .map((user) => {
@@ -644,7 +644,7 @@ export default {
       })
       .filter((dept) => dept.users.length != 0);
 
-    const options4to = ref([...[all], ...depts, ...users]);
+    const options4to = ref([...(users.length ? all : []), ...depts, ...users]);
     const options4cc = ref([...depts, ...users]);
     const options4bcc = ref([...depts, ...users]);
 

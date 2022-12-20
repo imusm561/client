@@ -161,11 +161,7 @@
                             <span v-if="search.length > 2">
                               <span v-html="$t('components.vs.search', { search })"></span>
                             </span>
-                            <span v-else>
-                              Enter at least
-                              <em>3</em>
-                              letters.
-                            </span>
+                            <span v-else v-html="$t('components.vs.searchRule')"></span>
                           </template>
                           <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
                         </template>
@@ -220,7 +216,14 @@
                         push-tags
                         :placeholder="$t('layout.navbar.helper.form.tab.basicInfo.tags')"
                         :options="[]"
-                      ></VueSelect>
+                      >
+                        <template v-slot:no-options="{ search, searching }">
+                          <template v-if="searching">
+                            <span v-html="$t('components.vs.search', { search })"></span>
+                          </template>
+                          <em v-else style="opacity: 0.5">{{ $t('components.vs.generateTag') }}</em>
+                        </template>
+                      </VueSelect>
                     </div>
                   </div>
                   <div class="col-12">
@@ -499,7 +502,14 @@
                       push-tags
                       :placeholder="$t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.tags')"
                       :options="['allowContinuousSubmission']"
-                    ></VueSelect>
+                    >
+                      <template v-slot:no-options="{ search, searching }">
+                        <template v-if="searching">
+                          <span v-html="$t('components.vs.search', { search })"></span>
+                        </template>
+                        <em v-else style="opacity: 0.5">{{ $t('components.vs.generateTag') }}</em>
+                      </template>
+                    </VueSelect>
                   </div>
 
                   <div class="col-12">
@@ -1038,7 +1048,6 @@ export default {
       acl_edit: [],
     });
 
-    // const all = { value: 0, label: 'All', title: 'All' };
     const users = JSON.parse(JSON.stringify(store.state.org.users)).map((user) => {
       return {
         value: user.username,
@@ -1065,8 +1074,6 @@ export default {
       })
       .filter((dept) => dept.users.length != 0);
 
-    // const options4acl_view = ref([...[all], ...depts, ...users]);
-    // const options4acl_edit = ref([...[all], ...depts, ...users]);
     const options4acl_view = ref([...depts, ...users]);
     const options4acl_edit = ref([...depts, ...users]);
 

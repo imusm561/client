@@ -773,6 +773,7 @@
   "components.userSelector.userAll": "All",
 
   "components.vs.search": "No results found for<em>{search}</em>.",
+  "components.vs.searchRule": "Enter at least <em>3</em> letters.",
   "components.vs.searchUser": "Start typing to search for a user.",
   "components.vs.searchOption": "Start typing to search for an option.",
   "components.vs.searchCategory": "Start typing to search for an category.",
@@ -784,6 +785,7 @@
   "components.vs.generateTag": "Start typing to generate a tag.",
   "components.vs.generateOption": "Start typing to generate an option.",
   "components.vs.generateMaska": "Start typing to generate a maska.",
+  "components.vs.generateSkill": "Start typing to generate a skill.",
 
   "socket.disconnect.toast.title": "Disconnected from the server...",
   "socket.disconnect.toast.text": "Possible server restart due to current network fluctution or code update",
