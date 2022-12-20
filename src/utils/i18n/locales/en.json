@@ -373,7 +373,7 @@
   "layout.navbar.helper.redis.confirmDeleteKeyModal.confirmed": "Confirm",
 
   "layout.navbar.helper.log": "Log",
-  "layout.navbar.helper.log.filter.user": "u",
+  "layout.navbar.helper.log.filter.user": "Filter User",
   "layout.navbar.helper.log.filter.url": "Filter url",
   "layout.navbar.helper.log.user": "User",
   "layout.navbar.helper.log.createdAt": "Created At",
