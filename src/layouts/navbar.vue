@@ -9,9 +9,18 @@
             </button>
           </div>
 
-          <form class="app-search d-none d-md-block">
+          <div class="app-search d-none d-md-block">
             <div class="position-relative">
-              <input type="text" class="form-control" :placeholder="$t('layout.navbar.search.placeholder')" autocomplete="off" id="search-options" v-model="search.keyword" @input="handleSearch" />
+              <input
+                type="text"
+                class="form-control"
+                :placeholder="$t('layout.navbar.search.placeholder')"
+                autocomplete="off"
+                id="search-options"
+                v-model="search.keyword"
+                @input="handleSearch"
+                @keyup.enter.stop="handleEnter"
+              />
               <span class="mdi mdi-magnify search-widget-icon"></span>
               <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none" id="search-close-options"></span>
             </div>
@@ -29,7 +38,7 @@
                 />
               </div>
             </div>
-          </form>
+          </div>
         </div>
 
         <div class="d-flex align-items-center">
@@ -45,10 +54,10 @@
               <i class="bx bx-search fs-22"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0">
-              <form class="p-0">
+              <div class="p-0">
                 <div class="form-group p-3 m-0">
                   <div class="input-group">
-                    <input type="text" class="form-control" :placeholder="$t('layout.navbar.search.placeholder')" v-model="search.keyword" @input="handleSearch" />
+                    <input type="text" class="form-control" :placeholder="$t('layout.navbar.search.placeholder')" v-model="search.keyword" @input="handleSearch" @keyup.enter.stop="handleEnter" />
                     <button class="btn btn-primary" type="submit">
                       <i class="mdi mdi-magnify"></i>
                     </button>
@@ -66,7 +75,7 @@
                     "
                   />
                 </div>
-              </form>
+              </div>
             </div>
           </div>
 
@@ -388,7 +397,6 @@ export default {
     });
     const handleSearch = () => {
       if (!search.keyword) return;
-
       getSearchResult({
         keyword: search.keyword,
       }).then(({ code, data, msg }) => {
@@ -434,6 +442,49 @@ export default {
           user.username != store.state.user.data.username &&
           (user.username?.toLowerCase().includes(search.keyword?.toLowerCase()) || user.fullname?.toLowerCase().includes(search.keyword?.toLowerCase())),
       );
+    };
+
+    const handleEnter = () => {
+      if (!search.keyword) return;
+      if (search.result.user.length) {
+        router.push({
+          name: 'chat',
+          query: {
+            contact: search.result.user[0].username,
+          },
+        });
+        return;
+      }
+
+      if (search.result.form.length) {
+        const forms = search.result.form.filter((form) => form.status === 1 && (form.redirect || form.route));
+        if (forms?.[0]?.route) {
+          router.push(forms[0].route);
+          return;
+        }
+        if (forms?.[0]?.redirect) {
+          window.open(forms[0].redirect, '_blank');
+          return;
+        }
+      }
+
+      if (search.result.data.length) {
+        router.push({
+          name: 'view',
+          params: {
+            tid: search.result.data[0].tid,
+            rid: search.result.data[0].rid,
+          },
+        });
+        return;
+      }
+
+      if (search.result.file.length) {
+        router.push({
+          path: search.result.file[0].source,
+        });
+        return;
+      }
     };
 
     onMounted(() => {
@@ -641,6 +692,7 @@ export default {
       toggleMenu,
       search,
       handleSearch,
+      handleEnter,
 
       chat_notices,
       handleClickChatNotice,

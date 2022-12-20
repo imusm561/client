@@ -101,7 +101,7 @@
           </div>
           <small class="text-muted">
             {{ size2Str(file.size) }}
-            <i class="mdi mdi-eye cursor-pointer ms-1 text-primary" :title="file.source" @click.stop="handleViewFileSouce(file)" />
+            <i class="mdi mdi-eye cursor-pointer ms-1 text-primary" :title="file.source" @click.stop="$router.push({ path: file.source })" />
             <i class="mdi mdi-download cursor-pointer ms-1 text-primary" @click.stop="handleDownloadFile(file)" />
           </small>
         </div>
@@ -144,11 +144,6 @@ export default defineComponent({
       window.open(href, '_blank');
     };
 
-    const handleViewFileSouce = (file) => {
-      const { href } = router.resolve({ path: file.source });
-      window.open(href, '_blank');
-    };
-
     const handleDownloadFile = (file) => {
       let downloadElement = document.createElement('a');
       downloadElement.href = `/cor/file/load/${file.uuid}`;
@@ -160,7 +155,6 @@ export default defineComponent({
 
     return {
       handlePreviewFile,
-      handleViewFileSouce,
       handleDownloadFile,
       size2Str,
       replaceHtml,
