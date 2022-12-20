@@ -11,7 +11,7 @@ import store from '@store';
 // Routes
 
 import _public from './routes/public';
-import _dashboard from './routes/dashboard';
+import _home from './routes/home';
 import _helper from './routes/navbar/helper';
 import _user from './routes/navbar/user';
 import _app from './routes/app';
@@ -20,10 +20,10 @@ import _data from './routes/data';
 const routes = [
   {
     path: '/',
-    redirect: { name: 'dashboard' },
+    redirect: { name: 'home' },
   },
   ..._public,
-  ..._dashboard,
+  ..._home,
   ..._helper,
   ..._user,
   ..._app,
@@ -53,7 +53,7 @@ router.beforeEach(async (to, from, next) => {
   if (token && token.exp > Math.round(new Date() / 1000)) {
     await checkUserData();
     if (['login'].includes(to.name)) {
-      next({ name: 'dashboard' });
+      next({ name: 'home' });
     } else {
       if (
         (['list', 'view', 'edit'].includes(to.name) && !(store.state.user.data.tags.includes('ALL') || store.state.user.data.permissions?.[Number(to.params?.tid)]?.checked)) ||

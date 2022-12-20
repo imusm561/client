@@ -62,6 +62,6 @@ export const createUser = (data) => {
   });
 };
 
-export const getUserDashboard = () => {
-  return axios.get('/cor/user/dashboard');
+export const getUserHome = () => {
+  return axios.get('/cor/user/home');
 };

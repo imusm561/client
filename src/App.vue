@@ -98,7 +98,7 @@ export default {
             if (!store.state.user.data.username || token.username === store.state.user.data.username) {
               if (route.value.name === 'login') {
                 await getUserData();
-                router.replace({ name: 'dashboard' });
+                router.replace({ name: 'home' });
               }
             } else {
               router.go(0);

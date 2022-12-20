@@ -6,11 +6,11 @@
         <div v-if="$store.state.user.data.is_initial_password" class="alert alert-danger alert-solid alert-label-icon d-flex align-items-center">
           <i class="mdi mdi-alert-outline text-light me-2 fs-16 label-icon"></i>
           <div class="flex-grow-1 text-truncate">
-            <span v-html="$t('dashboard.changePassword')"></span>
+            <span v-html="$t('home.changePassword')"></span>
           </div>
           <div class="flex-shrink-0">
             <router-link to="/user/setting?tab=change_password" class="text-reset text-decoration-underline">
-              <b>{{ $t('dashboard.changePassword.change') }}</b>
+              <b>{{ $t('home.changePassword.change') }}</b>
             </router-link>
           </div>
         </div>
@@ -30,9 +30,9 @@
                 <div class="d-flex">
                   <Avatar :data="$store.state.user.data" size="md" />
                   <div class="ps-3">
-                    <h3 class="mb-1 fw-bold">{{ $t('dashboard.hello') }}, {{ $store.state.user.data.fullname }}!</h3>
+                    <h3 class="mb-1 fw-bold">{{ $t('home.hello') }}, {{ $store.state.user.data.fullname }}!</h3>
                     <div class="mb-1 fs-14 fw-medium">{{ $store.state.org.depts.find((dept) => dept.id === $store.state.user.data.dept).name }} | {{ $store.state.user.data.post }}</div>
-                    <p class="text-muted mb-0">{{ $t('dashboard.message') }}</p>
+                    <p class="text-muted mb-0">{{ $t('home.message') }}</p>
                   </div>
                 </div>
               </div>
@@ -41,36 +41,36 @@
                   :values="activities"
                   :end-date="$moment().format('YYYY-MM-DD')"
                   :max="100"
-                  :tooltip-unit="$t('dashboard.heatmap.tooltipUnit')"
+                  :tooltip-unit="$t('home.heatmap.tooltipUnit')"
                   :no-data-text="false"
                   :range-color="heatmapRangeColor"
                   :locale="{
                     months: [
-                      $t('dashboard.heatmap.locale.months.jan'),
-                      $t('dashboard.heatmap.locale.months.feb'),
-                      $t('dashboard.heatmap.locale.months.mar'),
-                      $t('dashboard.heatmap.locale.months.apr'),
-                      $t('dashboard.heatmap.locale.months.may'),
-                      $t('dashboard.heatmap.locale.months.jun'),
-                      $t('dashboard.heatmap.locale.months.jul'),
-                      $t('dashboard.heatmap.locale.months.aug'),
-                      $t('dashboard.heatmap.locale.months.sep'),
-                      $t('dashboard.heatmap.locale.months.oct'),
-                      $t('dashboard.heatmap.locale.months.nov'),
-                      $t('dashboard.heatmap.locale.months.dec'),
+                      $t('home.heatmap.locale.months.jan'),
+                      $t('home.heatmap.locale.months.feb'),
+                      $t('home.heatmap.locale.months.mar'),
+                      $t('home.heatmap.locale.months.apr'),
+                      $t('home.heatmap.locale.months.may'),
+                      $t('home.heatmap.locale.months.jun'),
+                      $t('home.heatmap.locale.months.jul'),
+                      $t('home.heatmap.locale.months.aug'),
+                      $t('home.heatmap.locale.months.sep'),
+                      $t('home.heatmap.locale.months.oct'),
+                      $t('home.heatmap.locale.months.nov'),
+                      $t('home.heatmap.locale.months.dec'),
                     ],
                     days: [
-                      $t('dashboard.heatmap.locale.days.sun'),
-                      $t('dashboard.heatmap.locale.days.mon'),
-                      $t('dashboard.heatmap.locale.days.tue'),
-                      $t('dashboard.heatmap.locale.days.wed'),
-                      $t('dashboard.heatmap.locale.days.thu'),
-                      $t('dashboard.heatmap.locale.days.fri'),
-                      $t('dashboard.heatmap.locale.days.sat'),
+                      $t('home.heatmap.locale.days.sun'),
+                      $t('home.heatmap.locale.days.mon'),
+                      $t('home.heatmap.locale.days.tue'),
+                      $t('home.heatmap.locale.days.wed'),
+                      $t('home.heatmap.locale.days.thu'),
+                      $t('home.heatmap.locale.days.fri'),
+                      $t('home.heatmap.locale.days.sat'),
                     ],
-                    on: $t('dashboard.heatmap.locale.on'),
-                    less: $t('dashboard.heatmap.locale.less'),
-                    more: $t('dashboard.heatmap.locale.more'),
+                    on: $t('home.heatmap.locale.on'),
+                    less: $t('home.heatmap.locale.less'),
+                    more: $t('home.heatmap.locale.more'),
                   }"
                 />
               </div>
@@ -94,7 +94,7 @@
                         <i class="mdi align-middle" :class="analytics[item.type].growth === 0 ? '' : analytics[item.type].growth > 0 ? 'mdi-arrow-up' : 'mdi-arrow-down'"></i>
                         {{ analytics[item.type].growth }} %
                       </span>
-                      {{ $t('dashboard.analytics.vs') }}
+                      {{ $t('home.analytics.vs') }}
                     </p>
                   </div>
                   <div>
@@ -116,18 +116,18 @@
           <div class="col-12">
             <div class="card card-height-100">
               <div class="card-header">
-                <h4 class="card-title mb-0">{{ $t('dashboard.task') }}</h4>
+                <h4 class="card-title mb-0">{{ $t('home.task') }}</h4>
               </div>
               <div v-if="tasks.length" class="card-body p-0 table-responsive">
                 <table class="table table-hover table-borderless table-hover table-striped align-middle table-nowrap mb-0">
                   <thead class="bg-light text-muted">
                     <tr>
-                      <th>{{ $t('dashboard.task.title') }}</th>
-                      <th>{{ $t('dashboard.task.creator') }}</th>
-                      <th>{{ $t('dashboard.task.progress') }}</th>
-                      <th>{{ $t('dashboard.task.users') }}</th>
-                      <th>{{ $t('dashboard.task.status') }}</th>
-                      <th>{{ $t('dashboard.task.dueDate') }}</th>
+                      <th>{{ $t('home.task.title') }}</th>
+                      <th>{{ $t('home.task.creator') }}</th>
+                      <th>{{ $t('home.task.progress') }}</th>
+                      <th>{{ $t('home.task.users') }}</th>
+                      <th>{{ $t('home.task.status') }}</th>
+                      <th>{{ $t('home.task.dueDate') }}</th>
                     </tr>
                   </thead>
 
@@ -156,17 +156,17 @@
                         />
                       </td>
                       <td style="width: auto">
-                        <span :class="`badge bg-${resolveTaskVariant(task.status)} text-uppercase`">{{ $t(`dashboard.task.status.${task.status}`) }}</span>
+                        <span :class="`badge bg-${resolveTaskVariant(task.status)} text-uppercase`">{{ $t(`home.task.status.${task.status}`) }}</span>
                       </td>
                       <td class="text-muted" style="width: 150px">{{ $moment(task.due_date).format('ll') }}</td>
                     </tr>
                   </tbody>
                 </table>
                 <div v-if="tasks.length > 9" class="p-2 text-center">
-                  <router-link to="/app/task" class="text-muted text-decoration-underline">{{ $t('dashboard.task.viewAllTasks') }}</router-link>
+                  <router-link to="/app/task" class="text-muted text-decoration-underline">{{ $t('home.task.viewAllTasks') }}</router-link>
                 </div>
               </div>
-              <Empty v-else :text="$t('dashboard.task.empty')" />
+              <Empty v-else :text="$t('home.task.empty')" />
             </div>
           </div>
         </div>
@@ -176,7 +176,7 @@
           <div class="col-12">
             <div class="card card-height-100">
               <div class="card-header">
-                <h4 class="card-title mb-0">{{ $t('dashboard.calendar.upcomingEvents') }}</h4>
+                <h4 class="card-title mb-0">{{ $t('home.calendar.upcomingEvents') }}</h4>
               </div>
               <div v-if="events.length" class="card-body pt-0">
                 <ul class="list-group list-group-flush border-dashed mb-2">
@@ -208,10 +208,10 @@
                   </li>
                 </ul>
                 <div v-if="events.length > 7" class="p-2 text-center">
-                  <router-link to="/app/calendar" class="text-muted text-decoration-underline">{{ $t('dashboard.calendar.viewAllEvents') }}</router-link>
+                  <router-link to="/app/calendar" class="text-muted text-decoration-underline">{{ $t('home.calendar.viewAllEvents') }}</router-link>
                 </div>
               </div>
-              <Empty v-else :text="$t('dashboard.calendar.empty')" />
+              <Empty v-else :text="$t('home.calendar.empty')" />
             </div>
           </div>
         </div>
@@ -227,7 +227,7 @@ import Breadcrumb from '@/layouts/breadcrumb';
 import { CalendarHeatmap } from 'vue3-calendar-heatmap';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
-import { getUserDashboard } from '@api/user';
+import { getUserHome } from '@api/user';
 import { getUserInfo } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -242,10 +242,10 @@ export default {
   setup() {
     const toast = useToast();
     const types = reactive([
-      { title: i18n.global.t('dashboard.analytics.create'), type: 'create', icon: 'mdi-creation', variant: 'primary' },
-      { title: i18n.global.t('dashboard.analytics.delete'), type: 'delete', icon: 'mdi-delete-variant', variant: 'danger' },
-      { title: i18n.global.t('dashboard.analytics.update'), type: 'update', icon: 'mdi-square-edit-outline', variant: 'warning' },
-      { title: i18n.global.t('dashboard.analytics.view'), type: 'view', icon: 'mdi-eye-outline', variant: 'success' },
+      { title: i18n.global.t('home.analytics.create'), type: 'create', icon: 'mdi-creation', variant: 'primary' },
+      { title: i18n.global.t('home.analytics.delete'), type: 'delete', icon: 'mdi-delete-variant', variant: 'danger' },
+      { title: i18n.global.t('home.analytics.update'), type: 'update', icon: 'mdi-square-edit-outline', variant: 'warning' },
+      { title: i18n.global.t('home.analytics.view'), type: 'view', icon: 'mdi-eye-outline', variant: 'success' },
     ]);
 
     const resolveTaskVariant = computed(() => {
@@ -288,7 +288,7 @@ export default {
     const events = ref([]);
 
     onMounted(() => {
-      getUserDashboard().then(({ code, data, msg }) => {
+      getUserHome().then(({ code, data, msg }) => {
         if (code === 200) {
           activities.value = mergeActivities([...data.activities.st, ...data.activities.zz]);
           analytics.value = data.analytics;
