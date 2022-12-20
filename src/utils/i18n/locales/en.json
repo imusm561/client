@@ -300,8 +300,8 @@
   "layout.navbar.helper.form.column.save.success": "Columns save successfully!",
 
   "layout.navbar.helper.job": "Job",
-  "layout.navbar.helper.job.filter": "Filter status",
-  "layout.navbar.helper.job.search": "Search tasks",
+  "layout.navbar.helper.job.filter": "Filter Status",
+  "layout.navbar.helper.job.search": "Search Tasks",
   "layout.navbar.helper.job.create": "Create",
   "layout.navbar.helper.job.status.disabled": "Disabled",
   "layout.navbar.helper.job.status.tobestarted": "To be started",
@@ -374,7 +374,7 @@
 
   "layout.navbar.helper.log": "Log",
   "layout.navbar.helper.log.filter.user": "Filter User",
-  "layout.navbar.helper.log.filter.url": "Filter url",
+  "layout.navbar.helper.log.filter.url": "Filter Url",
   "layout.navbar.helper.log.user": "User",
   "layout.navbar.helper.log.createdAt": "Created At",
   "layout.navbar.helper.log.device": "Device",
@@ -609,8 +609,8 @@
   "app.mail.deleteMailConfirmModal.cancel": "Cancel",
   "app.mail.deleteMailConfirmModal.confirmed": "Confirm",
 
-  "app.task.filter": "Filter user",
-  "app.task.search": "Search task",
+  "app.task.filter": "Filter User",
+  "app.task.search": "Search Task",
   "app.task.create": "Create",
   "app.task.status.todo": "Todo",
   "app.task.status.urgent": "Urgent",
