@@ -84,7 +84,7 @@
                         </h6>
                       </div>
                       <div class="flex-shrink-0">
-                        <span class="text-muted" :title="task.due_date">{{ $moment(task.due_date).fromNow() }}</span>
+                        <span class="text-muted" :title="task.due_date">{{ $moment(task.due_date).add(1, 'd').fromNow() }}</span>
                       </div>
                     </div>
                     <div class="progress rounded-3 progress-sm">
@@ -431,7 +431,7 @@ export default {
         description: '',
         tags: [],
         users: [store.state.user.data.username],
-        due_date: moment().add('day', 7).format('YYYY-MM-DD'),
+        due_date: moment().add(7, 'd').format('YYYY-MM-DD'),
         progress: 0,
         status: 'todo',
         sort: 0,

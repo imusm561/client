@@ -163,7 +163,7 @@ export default {
         rule: '0 0 * * * *',
         description: '',
         start: moment().format('YYYY-MM-DD HH:mm:ss'),
-        end: moment().add(7, 'days').format('YYYY-MM-DD HH:mm:ss'),
+        end: moment().add(7, 'd').format('YYYY-MM-DD HH:mm:ss'),
         tags: [],
         config: '{\n  "executor": "axios",\n  "config": {\n    "url": "...",\n    "method": "GET"\n  }\n}',
       };

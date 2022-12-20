@@ -353,7 +353,7 @@ export default {
     const fetchUpcomingEvents = () => {
       getEvents({
         start: moment().format('YYYY-MM-DD'),
-        end: moment().add('M', 1).format('YYYY-MM-DD'),
+        end: moment().add(1, 'M').format('YYYY-MM-DD'),
       }).then(({ code, data, msg }) => {
         if (code === 200) {
           upcoming_events.value = data

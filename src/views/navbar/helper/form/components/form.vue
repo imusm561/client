@@ -266,7 +266,7 @@
                         <div class="flex-shrink-0">
                           <span class="text-success" @click="handleShowPubFormQr">
                             {{
-                              $moment().valueOf() > $moment(item.end).add(1, 'days').valueOf()
+                              $moment().valueOf() > $moment(item.end).add(1, 'd').valueOf()
                                 ? $t('layout.navbar.helper.form.tab.pubForm.state.expired')
                                 : item.status === 0
                                 ? $t('layout.navbar.helper.form.tab.pubForm.state.disabled')
