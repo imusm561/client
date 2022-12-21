@@ -12,6 +12,7 @@
 <script>
 import { defineComponent, ref } from 'vue';
 import store from '@store';
+import i18n from '@utils/i18n';
 import Avatar from '@components/Avatar';
 export default defineComponent({
   components: {
@@ -19,7 +20,8 @@ export default defineComponent({
   },
   setup(props) {
     const user = ref(null);
-    if (props.params.value === null) user.value = ['BasicCreatedBy', 'BasicUpdatedBy'].includes(props.params._column.component) ? null : { username: 0, fullname: 'All' };
+    if (props.params.value === null)
+      user.value = ['BasicCreatedBy', 'BasicUpdatedBy'].includes(props.params._column.component) ? null : { username: 0, fullname: i18n.global.t('data.list.filter.user.userAll') };
     else if (props.params.value === '@system') user.value = { username: '@system', fullname: 'System' };
     else if (props.params.value.includes('@pub')) user.value = { username: props.params.value, fullname: props.params.value.replace('@pub_', '') };
     else user.value = store.state.org.users.find((user) => user.username === props.params.value);

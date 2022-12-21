@@ -701,6 +701,8 @@
   "data.list.filter.blank": "(Blanks)",
   "data.list.filter.switch.true": "TRUE",
   "data.list.filter.switch.false": "FALSE",
+  "data.list.filter.user.userAll": "All",
+  "data.list.renderer.user.userAll": "All",
   "data.list.cellEdit.error": "This type of field dose not support cell editing...",
   "data.list.import.success": "Successfully imported {count} record | Successfully imported {count} records",
 

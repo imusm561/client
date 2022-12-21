@@ -2,7 +2,7 @@
   <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)">
     <div class="mt-1" style="line-height: initial">
       <Avatar v-if="params.value && params.value.length" :data="$store.state.org.users.filter((user) => params.value.includes(user.username))" size="xs" />
-      <Avatar v-else :data="{ username: 0, fullname: 'All' }" size="xs" />
+      <Avatar v-else :data="{ username: 0, fullname: $t('data.list.renderer.user.userAll') }" size="xs" />
     </div>
   </span>
   <span v-else>
