@@ -221,7 +221,7 @@ export default defineComponent({
       video: ['mp4', 'mov', 'rmvb', 'webm', 'avi', 'swf', '3gp', 'mkv', 'flv'],
       audio: ['mp3', 'wav', 'wma', 'ogg', 'aac', 'flac'],
       office: ['doc', 'docx', 'csv', 'xls', 'xlsx', 'ppt', 'pptx'],
-      document: ['txt', 'log', 'ini', 'pdf', 'md', 'xml'],
+      document: ['txt', 'log', 'json', 'cnf', 'conf', 'ini', 'js', 'html', 'css', 'pdf', 'md', 'xml'],
     };
 
     const options = ref({
