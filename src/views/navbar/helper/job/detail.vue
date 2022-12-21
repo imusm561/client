@@ -121,7 +121,7 @@
                       <td>{{ log.cost }}</td>
                       <td>
                         <span class="cursor-pointer" @click="handleViewJobData(log)">
-                          <i class="mdi mdi-code-braces-box fs-16 text-info"></i>
+                          <i class="mdi mdi-code-braces fs-16 text-info"></i>
                         </span>
                       </td>
                     </tr>

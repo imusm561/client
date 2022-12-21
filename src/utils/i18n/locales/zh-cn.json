@@ -422,6 +422,7 @@
   "layout.navbar.user.dropdown.profil.uploads.action": "操作",
   "layout.navbar.user.dropdown.profil.uploads.action.source": "数据源",
   "layout.navbar.user.dropdown.profil.uploads.action.download": "下载",
+  "layout.navbar.user.dropdown.profil.uploads.empty": "暂无上传的文件",
 
   "layout.navbar.user.dropdown.setting": "设置中心",
   "layout.navbar.user.dropdown.setting.social": "社交信息",

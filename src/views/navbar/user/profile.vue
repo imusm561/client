@@ -231,8 +231,10 @@
           </div>
           <div class="tab-pane fade" id="uploads">
             <div class="card">
-              <div class="card-body">
-                <h5 class="card-title mb-3">{{ $t('layout.navbar.user.dropdown.profil.uploads.files') }}</h5>
+              <div class="card-header border-0">
+                <h5 class="card-title mb-0">{{ $t('layout.navbar.user.dropdown.profil.uploads.files') }}</h5>
+              </div>
+              <div v-if="uploads.length" class="card-body p-0 table-responsive">
                 <table class="table table-hover table-striped table-borderless align-middle mb-0">
                   <thead class="table-light">
                     <tr>
@@ -246,7 +248,7 @@
                   </thead>
                   <tbody>
                     <tr v-for="file in uploads" :key="file.uuid">
-                      <td style="max-width: 20px">
+                      <td style="width: 40px">
                         <img
                           v-if="file.category == 'image'"
                           :src="`/cor/file/load/${file.uuid}`"
@@ -277,10 +279,10 @@
                       <td style="white-space: nowrap">{{ $moment(file.created_at).format('llll') }}</td>
                       <td>
                         <div class="dropdown">
-                          <button class="btn btn-primary btn-icon" id="dropdownMenuLink15" data-bs-toggle="dropdown" aria-expanded="true">
-                            <i class="mdi mdi-dots-horizontal"></i>
+                          <button class="btn btn-sm btn-icon" data-bs-toggle="dropdown" aria-expanded="true">
+                            <i class="mdi mdi-dots-vertical text-dark"></i>
                           </button>
-                          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink15">
+                          <ul class="dropdown-menu dropdown-menu-end">
                             <li class="dropdown-item cursor-pointer" @click="handleViewFileSource(file.source)">
                               <i class="mdi mdi-table-eye me-2 align-middle text-muted"></i>
                               {{ $t('layout.navbar.user.dropdown.profil.uploads.action.source') }}
@@ -299,6 +301,7 @@
                   <Pagination :total="pagination.totalCount" :page-num="pagination.pageNum" :page-size="pagination.pageSize" @changed="handlePaginationChange" />
                 </div>
               </div>
+              <Empty v-else :text="$t('layout.navbar.user.dropdown.profil.uploads.empty')" />
             </div>
           </div>
         </div>
@@ -329,11 +332,13 @@ import { useToast } from 'vue-toastification';
 import { useRouter, size2Str } from '@utils';
 import ToastificationContent from '@components/ToastificationContent';
 import MonacoEditor from '@components/MonacoEditor';
+import Empty from '@components/Empty';
 import Avatar from '@components/Avatar';
 import uaParser from 'ua-parser-js';
 import Pagination from '@components/Pagination';
 export default {
   components: {
+    Empty,
     Avatar,
     MonacoEditor,
     Pagination,

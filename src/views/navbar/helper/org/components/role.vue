@@ -16,8 +16,8 @@
                   <span class="cursor-pointer" @click="$emit('setRole', role)">{{ role.name }}</span>
                 </h6>
                 <div class="dropdown" v-if="role.id != 1 || $store.state.user.data.id === 1">
-                  <span class="text-muted cursor-pointer" id="role-actions" data-bs-toggle="dropdown"><i class="mdi mdi-dots-horizontal"></i></span>
-                  <ul class="dropdown-menu" aria-labelledby="role-actions">
+                  <span class="text-muted cursor-pointer" data-bs-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></span>
+                  <ul class="dropdown-menu">
                     <li class="dropdown-item cursor-pointer" @click="handleCreateOrEditRole(role)">
                       <i class="ri-edit-2-line align-bottom me-2 text-muted"></i>
                       {{ $t('layout.navbar.helper.org.role.action.edit') }}
