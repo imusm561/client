@@ -626,4 +626,12 @@ export default {
     background-color: $pagination-hover-bg;
   }
 }
+
+[data-theme='dark'] {
+  .drag-item {
+    &:hover {
+      border: 1px solid $success;
+    }
+  }
+}
 </style>
