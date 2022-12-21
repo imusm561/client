@@ -48,6 +48,16 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+  const modelEl = document.getElementsByClassName('modal show')?.[0];
+  if (modelEl) {
+    modelEl.classList.remove('show');
+    const modelBackdropEl = document.getElementsByClassName('modal-backdrop show')?.[0];
+    if (modelBackdropEl) {
+      setTimeout(() => {
+        modelBackdropEl.parentNode.removeChild(modelBackdropEl);
+      }, 200);
+    }
+  }
   NProgress.start();
   const token = jwt.decode(localStorage.getItem('accessToken'));
   if (token && token.exp > Math.round(new Date() / 1000)) {
