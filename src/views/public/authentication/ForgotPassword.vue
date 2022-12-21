@@ -140,7 +140,7 @@
 import { ref, computed } from 'vue';
 import { resetPassword } from '@api/user';
 import { sendVerificationCode, verifyVerificationCode } from '@api/com/sms';
-import { useRouter } from '@utils';
+import { useRouter, hashData } from '@utils';
 import store from '@store';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -212,7 +212,7 @@ export default {
         canSubmit.value = false;
         const params = {
           phone: phone.value,
-          password: newpassword.value,
+          password: hashData(newpassword.value),
         };
         resetPassword(params).then(({ code, msg }) => {
           if (code === 200) {

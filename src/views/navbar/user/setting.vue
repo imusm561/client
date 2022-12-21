@@ -382,7 +382,7 @@ import store from '@store';
 import i18n from '@utils/i18n';
 import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
 import router from '@router';
-import { clearUserData, deepCompare } from '@utils';
+import { clearUserData, deepCompare, hashData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import FlatPickr from '@components/FlatPickr';
@@ -469,8 +469,8 @@ export default {
     };
     const handleChangePassword = () => {
       changePassword({
-        currentpassword: currentpassword.value,
-        newpassword: newpassword.value,
+        currentpassword: hashData(currentpassword.value),
+        newpassword: hashData(newpassword.value),
       }).then(async ({ code, msg }) => {
         if (code === 200) {
           // Clean user information

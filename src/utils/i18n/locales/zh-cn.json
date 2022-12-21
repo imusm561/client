@@ -803,8 +803,8 @@
   "vee.validate.include": "字段值必须包含{target}",
   "vee.validate.exclude": "字段值不能包含{target}",
   "vee.validate.username": "用户名由4-10位小写字母组成",
-  "vee.validate.fullname": "全名由2-16位大小写英文|中文|数字组成",
+  "vee.validate.fullname": "全名由2-16位大小写字母，中文，数字组成",
   "vee.validate.email": "邮箱地址错误",
   "vee.validate.phone": "手机号格式错误",
-  "vee.validate.password": "密码由8位及以上大小写字母|数字|特殊字符[!@#$%&*()?,.]组成"
+  "vee.validate.password": "密码由8位及以上大小写字母，数字，特殊字符组成"
 }

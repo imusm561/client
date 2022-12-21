@@ -806,5 +806,5 @@
   "vee.validate.fullname": "Fullname must be 2 to 16 characters",
   "vee.validate.email": "Incorrect email address",
   "vee.validate.phone": "Incorrect cell-phone number",
-  "vee.validate.password": "Password must contain at least one uppercase, lowercase, special character[!@#$%&*()?,.] and digit with min 8 chars"
+  "vee.validate.password": "Password must contain at least one uppercase, lowercase, digit, and special character with min 8 chars"
 }

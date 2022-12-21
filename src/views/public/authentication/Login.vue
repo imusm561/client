@@ -160,7 +160,7 @@
 import { ref, computed } from 'vue';
 import { userLogin, getUserData } from '@api/user';
 import { sendVerificationCode } from '@api/com/sms';
-import { useRouter } from '@utils';
+import { useRouter, hashData } from '@utils';
 import store from '@store';
 export default {
   page: {
@@ -240,7 +240,7 @@ export default {
         params.remember = remember.value;
         if (params.logintype == 'account_password') {
           params.username = username.value;
-          params.password = password.value;
+          params.password = hashData(password.value);
         } else if (params.logintype == 'sms_verification') {
           params.phone = phone.value;
           params.code = code.value;
