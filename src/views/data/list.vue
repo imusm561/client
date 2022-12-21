@@ -595,8 +595,8 @@ export default {
             params.data.created_by === store.state.user.data.username ||
             params.data.updated_by === store.state.user.data.username ||
             params.data.acl_edit.includes(store.state.user.data.username) ||
-            (params.data.acl_edit === null && params.data.acl_view.includes(store.state.user.data.username)) ||
-            (params.data.acl_view === null && params.data.acl_edit === null))
+            (params.data.acl_edit.length === 0 && params.data.acl_view.includes(store.state.user.data.username)) ||
+            (params.data.acl_view.length === 0 && params.data.acl_edit.length === 0))
         ) {
           if (['InputRichtext', 'InputCode', 'SelectFile'].includes(column.component)) {
             toast({

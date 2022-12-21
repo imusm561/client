@@ -156,8 +156,8 @@
               data.created_by === $store.state.user.data.username ||
               data.updated_by === $store.state.user.data.username ||
               data.acl_edit.includes($store.state.user.data.username) ||
-              (data.acl_edit === null && data.acl_view.includes($store.state.user.data.username)) ||
-              (data.acl_view === null && data.acl_edit === null)
+              (data.acl_edit.length === 0 && data.acl_view.includes($store.state.user.data.username)) ||
+              (data.acl_view.length === 0 && data.acl_edit.length === 0)
             "
             class="btn btn-sm btn-primary"
             @click="$router.push({ name: 'edit', params: { tid: $route.params.tid, rid: data.id } })"
