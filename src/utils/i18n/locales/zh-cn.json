@@ -596,6 +596,8 @@
   "app.mail.composeModal.form.attachments": "附件",
   "app.mail.composeModal.form.footer.cancel": "取消",
   "app.mail.composeModal.form.footer.send": "发送",
+  "app.mail.content.to.user": "用户:{user}",
+  "app.mail.content.to.dept": "部门:{dept}",
   "app.mail.reply2AllConfirmModal.title": "回复所有收件人？",
   "app.mail.reply2AllConfirmModal.confirm": "你不在此邮件的收件人列表中，如果你回复所有人，那么其他收件人将知道你也收到了此邮件！",
   "app.mail.reply2AllConfirmModal.replyToSender": "回复发送人",
@@ -772,7 +774,7 @@
 
   "components.userSelector.userAll": "所有人",
 
-  "components.vs.search": "未找到<em>{search}</em>相关的内容",
+  "components.vs.search": "未找到与 <em>{search}</em> 相关的内容",
   "components.vs.searchRule": "至少输入 <em>3</em> 个字符",
   "components.vs.searchUser": "输入来搜索一个用户",
   "components.vs.searchOption": "输入来搜索一个选项",

@@ -596,6 +596,8 @@
   "app.mail.composeModal.form.attachments": "attachments",
   "app.mail.composeModal.form.footer.cancel": "Cancel",
   "app.mail.composeModal.form.footer.send": "Send",
+  "app.mail.content.to.user": "USER:{user}",
+  "app.mail.content.to.dept": "DEPT:{dept}",
   "app.mail.reply2AllConfirmModal.title": "Reply to all recipients ?",
   "app.mail.reply2AllConfirmModal.confirm": "You are not in the recipient list of this mail, if you reply to all of them, the other recipients will know that you have received this mail!",
   "app.mail.reply2AllConfirmModal.replyToSender": "Reply to sender",
@@ -772,7 +774,7 @@
 
   "components.userSelector.userAll": "All",
 
-  "components.vs.search": "No results found for<em>{search}</em>.",
+  "components.vs.search": "No results found for <em>{search}</em>.",
   "components.vs.searchRule": "Enter at least <em>3</em> letters.",
   "components.vs.searchUser": "Start typing to search for a user.",
   "components.vs.searchOption": "Start typing to search for an option.",

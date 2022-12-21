@@ -627,13 +627,12 @@ export default {
         };
       });
     const depts = JSON.parse(JSON.stringify(store.state.org.depts))
-      .filter((dept) => dept.id != store.state.user.data.dept)
       .map((dept) => {
         return {
           value: dept.id,
           label: dept.name,
           users: users
-            .filter((user) => user.dept === dept.id)
+            .filter((user) => user.username != store.state.user.data.username && user.dept === dept.id)
             .map((user) => {
               return {
                 username: user.value,
@@ -708,6 +707,7 @@ export default {
               );
             }
           });
+        if (field === 'to' && depts.every((dept) => vs.value[field].includes(dept.value))) vs.value.to = [0];
       }
     };
 
@@ -1017,25 +1017,25 @@ export default {
       return (arr) => {
         return arr.map((item) => {
           if (item == 0) {
-            return all;
+            return all[0];
           } else if (!Number(item)) {
             const user = getUserInfo(item);
             return {
-              label: user ? user.fullname : `USER:${item}`,
-              title: user ? user.fullname : `USER:${item}`,
+              label: user ? user.fullname : i18n.global.t('app.mail.content.to.user', { user: item }),
+              title: user ? user.fullname : i18n.global.t('app.mail.content.to.user', { user: item }),
             };
           } else {
             item = Number(item);
             const dept = store.state.org.depts.find((dept) => dept.id === item);
             return {
-              label: dept ? dept.name : `DEPT:${item}`,
+              label: dept ? dept.name : i18n.global.t('app.mail.content.to.dept', { dept: item }),
               title: dept
                 ? store.state.org.users
                     .map((user) => {
                       return user.fullname;
                     })
                     .join(',')
-                : `DEPT:${item}`,
+                : i18n.global.t('app.mail.content.to.dept', { dept: item }),
             };
           }
         });
