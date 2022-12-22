@@ -115,13 +115,13 @@
         }
       }
 
-      &.collapsed {
-        &.active {
-          &::after {
-            transform: rotate(90deg);
-          }
-        }
-      }
+      // &.collapsed {
+      //   &.active {
+      //     &::after {
+      //       transform: rotate(90deg);
+      //     }
+      //   }
+      // }
     }
 
     > .nav-item {
