@@ -3,34 +3,38 @@
     <Breadcrumb :key="$route" />
 
     <div class="card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <div class="w-25 d-none d-md-block">
-            <VueSelect
-              v-model="search_status"
-              multiple
-              :close-on-select="false"
-              :placeholder="$t('layout.navbar.helper.job.filter')"
-              :reduce="(item) => item.value"
-              label="text"
-              :options="statusOptions"
-            >
-              <template v-slot:no-options="{ search, searching }">
-                <template v-if="searching">
-                  <span v-html="$t('components.vs.search', { search })"></span>
-                </template>
-                <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+      <div class="card-body d-md-none d-flex justify-content-between">
+        <div class="search-box w-75">
+          <input v-model="search_keyword" type="text" class="form-control search" :placeholder="$t('layout.navbar.helper.job.search')" />
+          <i class="mdi mdi-magnify fs-16 search-icon"></i>
+        </div>
+        <button class="btn btn-primary ms-3 text-nowrap" @click="handleCreateJob">{{ $t('layout.navbar.helper.job.create') }}</button>
+      </div>
+      <div class="card-body d-none d-md-flex justify-content-between">
+        <div class="w-25">
+          <VueSelect
+            v-model="search_status"
+            multiple
+            :close-on-select="false"
+            :placeholder="$t('layout.navbar.helper.job.filter')"
+            :reduce="(item) => item.value"
+            label="text"
+            :options="statusOptions"
+          >
+            <template v-slot:no-options="{ search, searching }">
+              <template v-if="searching">
+                <span v-html="$t('components.vs.search', { search })"></span>
               </template>
-            </VueSelect>
+              <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+            </template>
+          </VueSelect>
+        </div>
+        <div class="d-flex">
+          <div class="search-box w-100">
+            <input v-model="search_keyword" type="text" class="form-control search" :placeholder="$t('layout.navbar.helper.job.search')" />
+            <i class="mdi mdi-magnify fs-16 search-icon"></i>
           </div>
-          <div></div>
-          <div class="d-flex">
-            <div class="search-box w-100">
-              <input v-model="search_keyword" type="text" class="form-control search" :placeholder="$t('layout.navbar.helper.job.search')" />
-              <i class="mdi mdi-magnify fs-16 search-icon"></i>
-            </div>
-            <button class="btn btn-primary ms-3 text-nowrap" @click="handleCreateJob">{{ $t('layout.navbar.helper.job.create') }}</button>
-          </div>
+          <button class="btn btn-primary ms-3 text-nowrap" @click="handleCreateJob">{{ $t('layout.navbar.helper.job.create') }}</button>
         </div>
       </div>
     </div>

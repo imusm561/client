@@ -463,6 +463,8 @@
   "layout.navbar.user.dropdown.setting.save.success": "Save successfully!",
 
   "layout.navbar.user.dropdown.fullScreen": "Full Screen",
+  "layout.navbar.user.dropdown.fullScreen.exit": "Exit Full Screen",
+
   "layout.navbar.user.dropdown.Logout": "Logout",
 
   "component.comment.empty": "No Comments!",

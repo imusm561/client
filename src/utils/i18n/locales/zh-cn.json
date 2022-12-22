@@ -381,8 +381,7 @@
   "layout.navbar.helper.log.os": "系统",
   "layout.navbar.helper.log.browser": "浏览器",
   "layout.navbar.helper.log.data": "数据",
-
-  "layout.navbar.notifications": "消息中心",
+  "layout.navbar.notifications": "通知消息",
   "layout.navbar.notifications.total": "{total}条新消息",
   "layout.navbar.notifications.chats": "聊天",
   "layout.navbar.notifications.chats.empty": "暂无聊天消息",
@@ -393,7 +392,7 @@
   "layout.navbar.notifications.flows": "审批",
   "layout.navbar.notifications.flows.empty": "暂无审批请求",
 
-  "layout.navbar.user.dropdown.profile": "个人资料",
+  "layout.navbar.user.dropdown.profile": "个人信息",
   "layout.navbar.user.dropdown.profil.department": "部门",
   "layout.navbar.user.dropdown.profil.post": "岗位",
   "layout.navbar.user.dropdown.profil.phone": "手机",
@@ -463,6 +462,8 @@
   "layout.navbar.user.dropdown.setting.save.success": "保存成功！",
 
   "layout.navbar.user.dropdown.fullScreen": "网页全屏",
+  "layout.navbar.user.dropdown.fullScreen.exit": "退出全屏",
+
   "layout.navbar.user.dropdown.Logout": "注销登录",
 
   "component.comment.empty": "暂无评论",

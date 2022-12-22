@@ -3,8 +3,32 @@
     <Breadcrumb :key="$route" />
 
     <div class="card">
-      <div class="card-body d-flex justify-content-between">
-        <div style="width: 280px">
+      <div class="card-body d-block d-md-none">
+        <VueSelect v-model="search_user" :placeholder="$t('layout.navbar.helper.log.filter.user')" :reduce="(item) => item.username" label="fullname" :options="$store.state.org.users">
+          <template #option="data">
+            <div class="d-flex align-items-center">
+              <Avatar class="me-2" :data="data" size="xxs" />
+              <span class="ml-50 align-middle">{{ data.fullname }}</span>
+            </div>
+          </template>
+
+          <template #selected-option="data">
+            <div class="d-flex align-items-center">
+              <Avatar class="me-2" :data="data" size="xxs" />
+              <span class="ml-50 align-middle">{{ data.fullname }}</span>
+            </div>
+          </template>
+
+          <template v-slot:no-options="{ search, searching }">
+            <template v-if="searching">
+              <span v-html="$t('components.vs.search', { search })"></span>
+            </template>
+            <em v-else style="opacity: 0.5">{{ $t('components.vs.searchUser') }}</em>
+          </template>
+        </VueSelect>
+      </div>
+      <div class="card-body justify-content-between d-none d-md-flex">
+        <div class="w-25">
           <VueSelect v-model="search_user" :placeholder="$t('layout.navbar.helper.log.filter.user')" :reduce="(item) => item.username" label="fullname" :options="$store.state.org.users">
             <template #option="data">
               <div class="d-flex align-items-center">
@@ -28,7 +52,7 @@
             </template>
           </VueSelect>
         </div>
-        <div class="d-none d-md-block" style="width: 280px">
+        <div class="w-25">
           <VueSelect v-model="search_url" :placeholder="$t('layout.navbar.helper.log.filter.url')" :reduce="(item) => item.url" label="url" :options="urls">
             <template v-slot:no-options="{ search, searching }">
               <template v-if="searching">
@@ -47,19 +71,19 @@
           <table class="table table-hover table-striped align-middle mb-0">
             <thead class="table-light">
               <tr>
-                <th class="text-capitalize">id</th>
-                <th class="text-capitalize">{{ $t('layout.navbar.helper.log.user') }}</th>
-                <th class="text-capitalize">{{ $t('layout.navbar.helper.log.createdAt') }}</th>
-                <th class="text-capitalize">{{ $t('layout.navbar.helper.log.device') }}</th>
-                <th class="text-capitalize">{{ $t('layout.navbar.helper.log.os') }}</th>
-                <th class="text-capitalize">{{ $t('layout.navbar.helper.log.browser') }}</th>
-                <th class="text-capitalize">{{ $t('layout.navbar.helper.log.data') }}</th>
+                <th class="text-capitalize" style="white-space: nowrap">id</th>
+                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.user') }}</th>
+                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.createdAt') }}</th>
+                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.device') }}</th>
+                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.os') }}</th>
+                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.browser') }}</th>
+                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.data') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="log in logs" :key="log.id">
-                <td>#{{ log.id }}</td>
-                <td>
+                <td style="white-space: nowrap">#{{ log.id }}</td>
+                <td style="white-space: nowrap">
                   <div class="d-flex gap-2 align-items-center">
                     <div>
                       <Avatar :data="getUserInfo(log.created_by)" />
@@ -70,7 +94,7 @@
                     </div>
                   </div>
                 </td>
-                <td>
+                <td style="white-space: nowrap">
                   <div class="d-flex gap-2 align-items-center">
                     <i class="fs-32 mb-n2 mt-n2 mdi mdi-calendar-clock text-primary" />
                     <div>
@@ -79,7 +103,7 @@
                     </div>
                   </div>
                 </td>
-                <td>
+                <td style="white-space: nowrap">
                   <div class="d-flex gap-2 align-items-center">
                     <i class="fs-32 mb-n2 mt-n2 mdi" :class="resolveDeviceIcon(uaParser(log.agent).device.type || 'desktop')" />
                     <div>
@@ -88,7 +112,7 @@
                     </div>
                   </div>
                 </td>
-                <td>
+                <td style="white-space: nowrap">
                   <div class="d-flex gap-2 align-items-center">
                     <i class="fs-32 mb-n2 mt-n2 mdi" :class="reslovOsIcon(uaParser(log.agent).os.name)" />
                     <div>
@@ -97,7 +121,7 @@
                     </div>
                   </div>
                 </td>
-                <td>
+                <td style="white-space: nowrap">
                   <div class="d-flex gap-2 align-items-center">
                     <i class="fs-32 mb-n2 mt-n2 mdi" :class="resolveBrowserIcon(uaParser(log.agent).browser.name)" />
                     <div>
@@ -106,7 +130,7 @@
                     </div>
                   </div>
                 </td>
-                <td>
+                <td style="white-space: nowrap">
                   <div class="d-flex gap-2 align-items-center">
                     <i class="fs-32 mb-n2 mt-n2 mdi" :class="log.method === 'POST' ? 'text-warning mdi-file-upload' : 'text-info mdi-file-download'" />
                     <div>

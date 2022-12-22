@@ -1,61 +1,55 @@
 <template>
   <div class="task-wrapper mt-n4 mx-n4 pe-1 ps-1 pt-1">
     <div class="card mb-2" style="border-radius: 0px">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <div class="w-25 d-none d-md-block">
-            <VueSelect
-              v-model="search_users"
-              multiple
-              :close-on-select="false"
-              :placeholder="$t('app.task.filter')"
-              :reduce="(item) => item.username"
-              label="fullname"
-              :options="$store.state.org.users"
-            >
-              <template #option="data">
-                <div class="d-flex align-items-center">
-                  <Avatar class="me-2" :data="data" size="xxs" />
-                  <span class="ml-50 align-middle">{{ data.fullname }}</span>
-                </div>
-              </template>
+      <div class="card-body d-md-none d-flex justify-content-between">
+        <div class="search-box w-75">
+          <input v-model="search_keyword" type="text" class="form-control" :placeholder="$t('app.task.search')" />
+          <i class="mdi mdi-magnify fs-16 search-icon"></i>
+        </div>
+        <button class="btn btn-primary ms-3 text-nowrap" data-bs-toggle="modal" data-bs-target="#editTaskModal" @click="handleCreateTask">{{ $t('app.task.create') }}</button>
+      </div>
+      <div class="card-body d-none d-md-flex justify-content-between">
+        <div class="w-25 d-none d-md-block">
+          <VueSelect v-model="search_users" multiple :close-on-select="false" :placeholder="$t('app.task.filter')" :reduce="(item) => item.username" label="fullname" :options="$store.state.org.users">
+            <template #option="data">
+              <div class="d-flex align-items-center">
+                <Avatar class="me-2" :data="data" size="xxs" />
+                <span class="ml-50 align-middle">{{ data.fullname }}</span>
+              </div>
+            </template>
 
-              <template #selected-option="data">
-                <div class="d-flex align-items-center">
-                  <Avatar class="me-2" :data="data" size="xxs" />
-                  <span class="ml-50 align-middle">{{ data.fullname }}</span>
-                </div>
-              </template>
+            <template #selected-option="data">
+              <div class="d-flex align-items-center">
+                <Avatar class="me-2" :data="data" size="xxs" />
+                <span class="ml-50 align-middle">{{ data.fullname }}</span>
+              </div>
+            </template>
 
-              <template v-slot:no-options="{ search, searching }">
-                <template v-if="searching">
-                  <span v-html="$t('components.vs.search', { search })"></span>
-                </template>
-                <em v-else style="opacity: 0.5">{{ $t('components.vs.searchUser') }}</em>
+            <template v-slot:no-options="{ search, searching }">
+              <template v-if="searching">
+                <span v-html="$t('components.vs.search', { search })"></span>
               </template>
-            </VueSelect>
+              <em v-else style="opacity: 0.5">{{ $t('components.vs.searchUser') }}</em>
+            </template>
+          </VueSelect>
+        </div>
+        <div class="d-flex">
+          <div class="search-box w-100">
+            <input v-model="search_keyword" type="text" class="form-control" :placeholder="$t('app.task.search')" />
+            <i class="mdi mdi-magnify fs-16 search-icon"></i>
           </div>
-          <div></div>
-          <div class="d-flex">
-            <div class="search-box w-100">
-              <input v-model="search_keyword" type="text" class="form-control" :placeholder="$t('app.task.search')" />
-              <i class="mdi mdi-magnify fs-16 search-icon"></i>
-            </div>
-            <button class="btn btn-primary ms-3 text-nowrap" data-bs-toggle="modal" data-bs-target="#editTaskModal" @click="handleCreateTask">{{ $t('app.task.create') }}</button>
-          </div>
+          <button class="btn btn-primary ms-3 text-nowrap" data-bs-toggle="modal" data-bs-target="#editTaskModal" @click="handleCreateTask">{{ $t('app.task.create') }}</button>
         </div>
       </div>
     </div>
 
     <div class="tasks-board p-2">
       <div class="tasks-list" v-for="(item, index) in status" :key="index">
-        <div class="d-flex mb-3">
-          <div class="flex-grow-1">
-            <h6 class="fs-14 text-uppercase fw-semibold mb-0">
-              {{ item.title }}
-              <small :class="`badge bg-${item.variant}`">{{ item.tasks.length }}</small>
-            </h6>
-          </div>
+        <div class="d-flex align-items-center mb-3">
+          <h5 class="text-uppercase fw-semibold mb-0 me-1">
+            {{ item.title }}
+          </h5>
+          <small :class="`badge bg-${item.variant}`">{{ item.tasks.length }}</small>
         </div>
         <div data-simplebar class="tasks-wrapper mb-1 px-3 mx-n3">
           <div class="tasks">

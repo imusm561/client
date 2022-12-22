@@ -344,7 +344,7 @@
 
               <div class="dropdown-item cursor-pointer" @click="toggleFullScreen">
                 <i :class="['fs-16 text-muted align-middle me-1 mdi', isFullScreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen']"></i>
-                <span class="align-middle">{{ $t('layout.navbar.user.dropdown.fullScreen') }}</span>
+                <span class="align-middle">{{ isFullScreen ? $t('layout.navbar.user.dropdown.fullScreen.exit') : $t('layout.navbar.user.dropdown.fullScreen') }}</span>
               </div>
               <div class="dropdown-divider"></div>
               <div class="dropdown-item cursor-pointer" @click="handleUserLogout">

@@ -44,7 +44,7 @@
                 </dl>
               </div>
               <div class="col-lg-7">
-                <div class="text-muted p-2">
+                <div class="text-muted">
                   <h6 class="mb-3 fw-semibold text-uppercase">{{ $t('layout.navbar.helper.jobDetail.description') }}</h6>
                   <div class="ck ck-content" v-html="job.description"></div>
                 </div>
@@ -104,22 +104,22 @@
                 <table class="table align-middle table-striped mb-0 table-hover">
                   <thead class="table-light">
                     <tr>
-                      <th class="text-capitalize">id</th>
-                      <th class="text-capitalize">UUID</th>
-                      <th class="text-capitalize">{{ $t('layout.navbar.helper.jobDetail.logs.executor') }}</th>
-                      <th class="text-capitalize">{{ $t('layout.navbar.helper.jobDetail.logs.executedAt') }}</th>
-                      <th class="text-capitalize">{{ $t('layout.navbar.helper.jobDetail.logs.timeConsuming') }}</th>
-                      <th class="text-capitalize">{{ $t('layout.navbar.helper.jobDetail.logs.data') }}</th>
+                      <th class="text-capitalize" style="white-space: nowrap">id</th>
+                      <th class="text-capitalize" style="white-space: nowrap">UUID</th>
+                      <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.jobDetail.logs.executor') }}</th>
+                      <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.jobDetail.logs.executedAt') }}</th>
+                      <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.jobDetail.logs.timeConsuming') }}</th>
+                      <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.jobDetail.logs.data') }}</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="log in logs" :key="log.id">
-                      <td>#{{ log.id }}</td>
-                      <td>{{ log.uuid }}</td>
-                      <td>{{ getUserInfo(log.created_by)?.fullname || log.created_by }}</td>
-                      <td>{{ $moment(log.created_at).format('llll') }}</td>
-                      <td>{{ log.cost }}</td>
-                      <td>
+                      <td style="white-space: nowrap">#{{ log.id }}</td>
+                      <td style="white-space: nowrap">{{ log.uuid }}</td>
+                      <td style="white-space: nowrap">{{ getUserInfo(log.created_by)?.fullname || log.created_by }}</td>
+                      <td style="white-space: nowrap">{{ $moment(log.created_at).format('llll') }}</td>
+                      <td style="white-space: nowrap">{{ log.cost }}</td>
+                      <td style="white-space: nowrap">
                         <span class="cursor-pointer" @click="handleViewJobData(log)">
                           <i class="mdi mdi-code-braces fs-16 text-info"></i>
                         </span>
