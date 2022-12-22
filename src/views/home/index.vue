@@ -154,7 +154,7 @@
                           <div class="fs-13 text-muted text-end" style="width: 30px !important">{{ task.progress }}%</div>
                         </div>
                       </td>
-                      <td class="text-muted">{{ $moment(task.due_date).format('ll') }}</td>
+                      <td class="text-muted text-end">{{ $moment(task.due_date).format('ll') }}</td>
                     </tr>
                   </tbody>
                 </table>
