@@ -81,7 +81,7 @@
 
           <div class="dropdown topbar-head-dropdown ms-1 header-item">
             <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="mdi mdi-view-grid-outline fs-22"></i>
+              <i class="mdi mdi-view-grid-outline fs-22 text-secondary"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-lg p-0 dropdown-menu-end">
               <div class="p-3 border-top-0 border-start-0 border-end-0 border-dashed border">
@@ -142,8 +142,8 @@
           </div>
 
           <div class="dropdown topbar-head-dropdown ms-1 header-item">
-            <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown">
-              <i class="mdi mdi-bell-outline fs-22"></i>
+            <button type="button" class="btn btn-icon btn-topbar btn-ghost-danger rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown">
+              <i class="mdi mdi-bell-outline fs-22 text-danger"></i>
               <span
                 class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger"
                 v-if="chat_notices.length + mail_notices.length + comment_notices.length + flow_notices.length !== 0"
@@ -304,18 +304,24 @@
 
           <!-- Theme Trigger -->
           <div class="ms-1 header-item d-none d-sm-flex">
-            <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" @click="theme = theme == 'dark' ? 'light' : 'dark'">
-              <i class="mdi mdi-theme-light-dark fs-22"></i>
-            </button>
+            <span class="btn btn-icon btn-topbar rounded-circle" :class="theme === 'dark' ? 'btn-ghost-warning' : 'btn-ghost-dark'" @click="theme = theme === 'dark' ? 'light' : 'dark'">
+              <i class="mdi mdi-theme-light-dark fs-22" :class="theme === 'dark' ? 'text-warning' : 'text-dark'"></i>
+            </span>
           </div>
 
           <!-- Language Selector-->
           <div class="dropdown ms-1 topbar-head-dropdown header-item">
-            <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown">
-              <i class="mdi mdi-translate fs-22"></i>
+            <button type="button" class="btn btn-icon btn-topbar btn-ghost-info rounded-circle" data-bs-toggle="dropdown">
+              <i class="mdi mdi-translate fs-22 text-info"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-end">
-              <div v-for="item in languages" :key="item.language" class="dropdown-item notify-item py-2 cursor-pointer" :class="{ active: lang === item.language }" @click="lang = item.language">
+              <div
+                v-for="item in languages"
+                :key="item.language"
+                class="dropdown-item notify-item py-2 cursor-pointer"
+                :class="{ active: lang === item.language }"
+                @click="handleChangeLang(item.language)"
+              >
                 <img :src="item.flag" class="me-2" height="24" />
                 <span class="align-middle">{{ item.title }}</span>
               </div>
@@ -653,6 +659,10 @@ export default {
       },
     });
 
+    const handleChangeLang = (value) => {
+      if (value != lang.value) lang.value = value;
+    };
+
     const isFullScreen = ref(false);
     const toggleFullScreen = () => {
       if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
@@ -712,6 +722,7 @@ export default {
 
       languages,
       lang,
+      handleChangeLang,
 
       isFullScreen,
       toggleFullScreen,
