@@ -65,7 +65,9 @@ router.beforeEach(async (to, from, next) => {
     if (['login'].includes(to.name)) {
       next({ name: 'home' });
     } else {
-      if (
+      if (['list', 'view', 'edit'].includes(to.name) && store.state.user.forms.some((form) => Number(form.pid) === Number(to.params?.tid))) {
+        next({ name: 'notFound' });
+      } else if (
         (['list', 'view', 'edit'].includes(to.name) && !(store.state.user.data.tags.includes('ALL') || store.state.user.data.permissions?.[Number(to.params?.tid)]?.checked)) ||
         (['edit'].includes(to.name) && Number(to.params?.rid) === 0 && !(store.state.user.data.tags.includes('ALL') || store.state.user.data.permissions?.[Number(to.params?.tid)]?.create)) ||
         (['edit'].includes(to.name) && Number(to.params?.rid) !== 0 && !(store.state.user.data.tags.includes('ALL') || store.state.user.data.permissions?.[Number(to.params?.tid)]?.modify)) ||
