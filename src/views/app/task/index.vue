@@ -88,7 +88,7 @@
                       </div>
                     </div>
                     <div class="progress rounded-3 progress-sm">
-                      <div class="progress-bar bg-success" role="progressbar" :style="{ width: `${task.progress}%` }" aria-valuemax="100"></div>
+                      <div class="progress-bar bg-success" :style="{ width: `${task.progress}%` }" aria-valuemax="100"></div>
                     </div>
                   </div>
                   <div class="d-flex align-items-center">

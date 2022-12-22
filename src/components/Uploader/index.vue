@@ -85,15 +85,15 @@
                     </div>
                     <div class="mt-1 mb-1">
                       <div class="progress" v-if="['computing'].includes(file._status.value)">
-                        <div class="progress-bar bg-info" role="progressbar" :style="{ width: `${file._status.text}%` }"></div>
+                        <div class="progress-bar bg-info" :style="{ width: `${file._status.text}%` }"></div>
                       </div>
                       <div class="progress" v-else-if="['waiting', 'uploading', 'paused'].includes(file._status.value)">
-                        <div class="progress-bar bg-primary" role="progressbar" :style="{ width: `${props.progress}%` }">
+                        <div class="progress-bar bg-primary" :style="{ width: `${props.progress}%` }">
                           <div class="label">{{ props.progress }}%</div>
                         </div>
                       </div>
                       <div class="progress" v-else>
-                        <div :class="`progress-bar bg-${file._status.value == 'merging' ? 'warning' : 'success'}`" role="progressbar" style="width: 100%">
+                        <div :class="`progress-bar bg-${file._status.value == 'merging' ? 'warning' : 'success'}`" style="width: 100%">
                           <div class="label">100%</div>
                         </div>
                       </div>

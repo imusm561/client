@@ -146,12 +146,12 @@
                       <td>
                         <span :class="`badge bg-${resolveTaskVariant(task.status)} text-uppercase`">{{ $t(`home.task.status.${task.status}`) }}</span>
                       </td>
-                      <td style="min-width: 150px">
+                      <td style="min-width: 120px">
                         <div class="d-flex align-items-center">
                           <div class="progress progress-sm flex-grow-1 bg-soft-primary me-1">
-                            <div class="progress-bar bg-primary rounded" role="progressbar" :style="{ width: `${task.progress}%` }"></div>
+                            <div class="progress-bar bg-primary rounded" :style="{ width: `${task.progress}%` }"></div>
                           </div>
-                          <div class="flex-shrink-0 me-1 text-muted fs-13 text-end" style="width: 20%">{{ task.progress }}%</div>
+                          <div class="fs-13 text-muted text-end" style="width: 30px !important">{{ task.progress }}%</div>
                         </div>
                       </td>
                       <td class="text-muted">{{ $moment(task.due_date).format('ll') }}</td>

@@ -40,7 +40,7 @@
                   </div>
                 </div>
                 <div class="progress rounded-3 progress-sm">
-                  <div class="progress-bar bg-soft-primary" role="progressbar" :style="{ width: `${(getCheckedMenuCount(role.permissions) / $store.state.user.forms.length) * 100}%` }"></div>
+                  <div class="progress-bar bg-soft-primary" :style="{ width: `${(getCheckedMenuCount(role.permissions) / $store.state.user.forms.length) * 100}%` }"></div>
                 </div>
               </div>
               <div class="d-flex justify-content-between">
