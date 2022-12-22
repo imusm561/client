@@ -775,6 +775,8 @@
   "components.uploader.status.uploading": "上传中...",
   "components.uploader.status.paused": "暂停",
   "components.uploader.status.merging": "合并中...",
+  "components.uploader.cancel.duplicate": "{name}已在上传列表中",
+  "components.uploader.cancel.empty": "{name}为空文件",
 
   "components.userSelector.userAll": "所有人",
 

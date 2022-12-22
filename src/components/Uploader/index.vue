@@ -293,9 +293,9 @@ export default defineComponent({
           let md5 = spark.end();
           spark.destroy();
           if (files.value.find((file) => file.identifier === md5)) {
-            handleCancelUpload(file, `Duplicate upload: ${file.name}`);
+            handleCancelUpload(file, i18n.global.t('components.uploader.cancel.duplicate', { name: file.name }));
           } else if (file.size === 0) {
-            handleCancelUpload(file, `Empty file: ${file.name}`);
+            handleCancelUpload(file, i18n.global.t('components.uploader.cancel.empty', { name: file.name }));
           } else {
             file.uniqueIdentifier = md5;
             file['_status'] = {

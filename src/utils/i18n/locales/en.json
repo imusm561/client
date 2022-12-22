@@ -776,6 +776,8 @@
   "components.uploader.status.uploading": "Uploading...",
   "components.uploader.status.paused": "paused",
   "components.uploader.status.merging": "Merging...",
+  "components.uploader.cancel.duplicate": "{name} is already in the upload list",
+  "components.uploader.cancel.empty": "{name} is empty",
 
   "components.userSelector.userAll": "All",
 
