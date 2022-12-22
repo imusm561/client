@@ -1,9 +1,10 @@
 <template>
   <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)">
-    <div class="mt-1" style="line-height: initial">
-      <Avatar v-if="params.value && params.value.length" :data="$store.state.org.users.filter((user) => params.value.includes(user.username))" size="xs" />
+    <div v-if="Array.isArray(params.value)" class="mt-1" style="line-height: initial">
+      <Avatar v-if="params.value.inputLength" :data="$store.state.org.users.filter((user) => params.value.includes(user.username))" size="xs" />
       <Avatar v-else :data="{ username: 0, fullname: $t('data.list.renderer.user.userAll') }" size="xs" />
     </div>
+    <span v-else></span>
   </span>
   <span v-else>
     <div v-if="user" class="d-flex align-items-center mt-1" style="line-height: initial">
