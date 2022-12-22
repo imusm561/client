@@ -72,7 +72,11 @@
                     less: $t('home.heatmap.locale.less'),
                     more: $t('home.heatmap.locale.more'),
                   }"
-                />
+                >
+                  <template #legend>
+                    <div></div>
+                  </template>
+                </calendar-heatmap>
               </div>
             </div>
           </div>
