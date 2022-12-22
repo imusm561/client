@@ -62,6 +62,15 @@ export default {
 
     provide('reload', reload);
 
+    const theme = localStorage.getItem('theme');
+    if (new Date().getHours() > 6 && new Date().getHours() < 18) {
+      if (theme === 'light') localStorage.removeItem('theme');
+      store.commit('sys/TOGGLE_THEME', theme || 'light');
+    } else {
+      if (theme === 'dark') localStorage.removeItem('theme');
+      store.commit('sys/TOGGLE_THEME', theme || 'dark');
+    }
+
     const locale = localStorage.getItem('locale') || navigator.language;
     store.commit('sys/TOGGLE_LANG', locale.toLowerCase());
 
@@ -129,12 +138,6 @@ export default {
     });
 
     sessionStorage.clear();
-
-    if (new Date().getHours() > 6 && new Date().getHours() < 18) {
-      store.commit('sys/TOGGLE_THEME', 'light');
-    } else {
-      store.commit('sys/TOGGLE_THEME', 'dark');
-    }
 
     return { backToTop, resolveLayoutVariant, isRouterAlive };
   },
