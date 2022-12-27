@@ -8,7 +8,7 @@
           <i class="mdi mdi-refresh fs-16 cursor-pointer text-muted pe-2" @click="handleRefetchDataList"></i>
         </span>
       </div>
-      <div class="card-body d-flex flex-column pt-0">
+      <div class="card-body d-flex flex-column pt-0" style="height: fit-content">
         <div class="data-list-header">
           <div v-if="form.description" class="ck ck-content p-0" v-html="form.description" />
           <div class="d-flex justify-content-end mt-2 gap-2">
