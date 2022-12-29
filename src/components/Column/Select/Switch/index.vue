@@ -14,7 +14,7 @@
     <label class="form-label" :title="resolveColumnTitle(column)">{{ column.name }}</label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
     <div :class="`ms-1 form-check form-switch form-switch-${column.cfg.style} form-switch-md`">
-      <input :id="`id_${column.field}${editable ? '' : '_disabled'}`" type="checkbox" :class="['form-check-input', error && 'is-invalid']" :disabled="!editable" :checked="value" v-model="value" />
+      <input :id="`${column.field}${editable ? '_enable' : '_disabled'}`" type="checkbox" :class="['form-check-input', error && 'is-invalid']" :disabled="!editable" :checked="value" v-model="value" />
     </div>
     <Field :name="column.field" v-model="value" class="d-none" :class="{ 'is-invalid': error }" :rules="`${required ? 'required' : ''}`" />
     <span class="invalid-feedback">{{ error }}</span>

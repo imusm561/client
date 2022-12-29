@@ -12,7 +12,7 @@
     <label class="form-label" :title="resolveColumnTitle(column)">{{ column.name }}</label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
     <textarea
-      :id="`id_${column.field}${editable ? '' : '_disabled'}`"
+      :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
       :class="['form-control', error && 'is-invalid']"
       :rows="column.cfg.rows"
       :placeholder="column.cfg.placeholder"

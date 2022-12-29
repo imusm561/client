@@ -1,5 +1,5 @@
 <template>
-  <span v-if="params.value" class="text-secondary text-decoration-underline cursor-pointer fs-16 fw-medium" @click="handleViewData" @dblclick="handleEditData">#{{ params.value }}</span>
+  <span v-if="params.value" class="text-primary text-decoration-underline cursor-pointer fw-medium" @click="handleViewData" @dblclick="handleEditData">#{{ params.value }}</span>
   <span v-else></span>
 </template>
 

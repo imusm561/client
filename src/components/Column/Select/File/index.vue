@@ -12,7 +12,7 @@
     <label class="form-label" :title="resolveColumnTitle(column)">{{ column.name }}</label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
     <Uploader
-      :id="`id_${column.field}${editable ? '' : '_disabled'}`"
+      :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
       :field-class="error ? 'btn-outline-danger' : column.cfg.style || 'btn-primary'"
       :placeholder="column.cfg.placeholder"
       :accept="column.cfg.accept"

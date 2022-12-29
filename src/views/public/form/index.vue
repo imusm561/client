@@ -7,14 +7,14 @@
     <div class="card-body pt-0">
       <Form v-slot="{ errors }" @submit="handleSubmitFormData">
         <div v-if="tabs.length > 1 && no_tabs">
-          <div class="p-3 mt-2 border-bottom border-bottom-dashed ribbon-box right" v-for="(tab, index) in tabs" :key="index">
+          <div :id="tab.field" class="p-3 mt-2 border-bottom border-bottom-dashed ribbon-box right" v-for="(tab, index) in tabs" :key="index">
             <div v-if="tab.name" class="ribbon ribbon-primary round-shape">
               <i v-if="tab.cfg.icon" :class="`mdi ${tab.cfg.icon} me-2`"></i>
               {{ tab.name }}
             </div>
             <div class="row">
               <template v-for="column in tab.columns">
-                <h5 :key="column.id" v-if="column._visible" class="fs-14 mb-2 mt-2" :class="`col-sm-${column.col}`">
+                <h5 :id="column.field" :key="column.id" v-if="column._visible" class="fs-14 mb-2 mt-2" :class="`col-sm-${column.col}`">
                   <component
                     :is="column.component"
                     type="EDIT"
@@ -44,7 +44,7 @@
             <div class="col">
               <ul class="nav nav-tabs nav-tabs-custom nav-primary">
                 <li class="nav-item" v-for="(tab, index) in tabs" :key="tab.id">
-                  <a :class="`nav-link text-${tab.cfg.style} ${index === current_tab && 'active'}`" data-bs-toggle="tab" :href="`#tab_${tab.id}`" @click="current_tab = index">
+                  <a :class="`nav-link text-${tab.cfg.style} ${index === current_tab && 'active'}`" data-bs-toggle="tab" :href="`#${tab.field}`" @click="current_tab = index">
                     <i v-if="tab.cfg.icon" :class="`mdi ${tab.cfg.icon}`"></i>
                     {{ tab.name }}
                   </a>
@@ -53,10 +53,10 @@
             </div>
           </div>
           <div class="tab-content text-muted">
-            <div class="tab-pane" :class="{ active: index === current_tab }" :id="`tab_${tab.id}`" v-for="(tab, index) in tabs" :key="tab.id">
+            <div class="tab-pane" :class="{ active: index === current_tab }" :id="tab.field" v-for="(tab, index) in tabs" :key="tab.id">
               <div class="row p-3">
                 <template v-for="column in tab.columns">
-                  <h5 :key="column.id" v-if="column._visible" class="fs-14 mb-2 mt-2" :class="`col-sm-${column.col}`">
+                  <h5 :id="column.field" :key="column.id" v-if="column._visible" class="fs-14 mb-2 mt-2" :class="`col-sm-${column.col}`">
                     <component
                       :is="column.component"
                       type="EDIT"

@@ -13,7 +13,7 @@
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
     <VueSelect
       v-if="column.cfg.source"
-      :id="`id_${column.field}${editable ? '' : '_disabled'}`"
+      :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
       :class="{ 'is-invalid': error }"
       :placeholder="column.cfg.placeholder"
       :disabled="!editable"
@@ -37,7 +37,7 @@
     </VueSelect>
     <VueSelect
       v-else
-      :id="`id_${column.field}${editable ? '' : '_disabled'}`"
+      :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
       :class="{ 'is-invalid': error }"
       :placeholder="column.cfg.placeholder"
       :disabled="!editable"

@@ -12,8 +12,8 @@
     <label class="form-label" :title="resolveColumnTitle(column)">{{ column.name }}</label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
     <CKEditor
-      :id="`ck_${column.field}${editable ? '' : '_disabled'}`"
-      :error="{ id: `ck_${column.field}${editable ? '' : '_disabled'}`, error }"
+      :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
+      :error="{ id: `${column.field}${editable ? '_enable' : '_disabled'}`, error }"
       :class="{ 'is-invalid': error }"
       :placeholder="column.cfg.placeholder"
       :disabled="!editable"

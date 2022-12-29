@@ -98,14 +98,14 @@
           </div>
 
           <div v-if="tabs.length > 1 && no_tabs">
-            <div class="p-3 mt-2 border-top border-top-dashed ribbon-box right" v-for="tab in tabs" :key="tab.id">
+            <div :id="tab.field" class="p-3 mt-2 border-top border-top-dashed ribbon-box right" v-for="tab in tabs" :key="tab.id">
               <div v-if="tab.name" class="ribbon ribbon-info round-shape">
                 <i v-if="tab.cfg.icon" :class="`mdi ${tab.cfg.icon} me-1`"></i>
                 {{ tab.name }}
               </div>
               <div class="row">
                 <template v-for="column in tab.columns" :class="`col-sm-${column.col} mb-2 mt-2`">
-                  <div :key="column.id" v-if="show_empty_value_columns || !(column.type && isEmpty(data[column.field]))" :class="`col-sm-${column.col} mb-2 mt-2`">
+                  <div :id="column.field" :key="column.id" v-if="show_empty_value_columns || !(column.type && isEmpty(data[column.field]))" :class="`col-sm-${column.col} mb-2 mt-2`">
                     <p class="mb-2 fw-semibold" :class="!(column.type && isEmpty(data[column.field])) ? 'text-muted' : 'text-danger'" v-if="column.type" :title="resolveColumnTitle(column)">
                       {{ column.name }}
                     </p>
@@ -122,7 +122,7 @@
               <div class="col">
                 <ul class="nav nav-tabs nav-tabs-custom nav-primary">
                   <li class="nav-item" v-for="(tab, index) in tabs" :key="tab.id">
-                    <a :class="`nav-link text-${tab.cfg.style} ${index === current_tab && 'active'}`" data-bs-toggle="tab" :href="`#tab_${tab.id}`" @click="current_tab = index">
+                    <a :class="`nav-link text-${tab.cfg.style} ${index === current_tab && 'active'}`" data-bs-toggle="tab" :href="`#${tab.field}`" @click="current_tab = index">
                       <i v-if="tab.cfg.icon" :class="`mdi ${tab.cfg.icon}`"></i>
                       {{ tab.name }}
                     </a>
@@ -131,10 +131,10 @@
               </div>
             </div>
             <div class="tab-content text-muted">
-              <div class="tab-pane" :class="{ active: index === current_tab }" :id="`tab_${tab.id}`" v-for="(tab, index) in tabs" :key="tab.id">
+              <div class="tab-pane" :class="{ active: index === current_tab }" :id="tab.field" v-for="(tab, index) in tabs" :key="tab.id">
                 <div class="row p-3">
                   <template v-for="column in tab.columns" :class="`col-sm-${column.col} mb-2 mt-2`">
-                    <div :key="column.id" v-if="show_empty_value_columns || !(column.type && isEmpty(data[column.field]))" :class="`col-sm-${column.col} mb-2 mt-2`">
+                    <div :id="column.field" :key="column.id" v-if="show_empty_value_columns || !(column.type && isEmpty(data[column.field]))" :class="`col-sm-${column.col} mb-2 mt-2`">
                       <p class="mb-2 fw-semibold" :class="!(column.type && isEmpty(data[column.field])) ? 'text-muted' : 'text-danger'" v-if="column.type" :title="resolveColumnTitle(column)">
                         {{ column.name }}
                       </p>

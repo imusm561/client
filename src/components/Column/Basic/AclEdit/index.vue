@@ -1,7 +1,7 @@
 <template>
   <div>
     <label class="form-label" :title="resolveColumnTitle(column)">{{ $t('data.column.BasicAclEdit') }}</label>
-    <UsersSelector :id="`id_${column.field}${editable ? '' : '_disabled'}`" v-model="value" :disabled="!editable" :placeholder="$t('data.column.BasicAclView')" />
+    <UsersSelector :id="`${column.field}${editable ? '_enable' : '_disabled'}`" v-model="value" :disabled="!editable" :placeholder="$t('data.column.BasicAclView')" />
   </div>
 </template>
 

@@ -2,7 +2,7 @@
   <div>
     <label class="form-label" :title="resolveColumnTitle(column)">{{ $t('data.column.BasicDataState') }}</label>
     <VueSelect
-      :id="`id_${column.field}${editable ? '' : '_disabled'}`"
+      :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
       :class="{ 'is-invalid': error }"
       :placeholder="$t('data.column.BasicDataState')"
       :disabled="!editable"
