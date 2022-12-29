@@ -145,44 +145,6 @@
                     />
                     <span class="invalid-feedback">{{ errors.title }}</span>
                   </div>
-                  <div class="col-12">
-                    <label class="form-label">{{ $t('app.task.editTaskModal.form.description') }}</label>
-                    <CKEditor
-                      v-model="current_task.description"
-                      id="ck_task_description"
-                      :error="{ id: 'ck_task_description', error: errors.description }"
-                      :class="errors.description && 'is-invalid'"
-                    />
-                    <Field name="description" v-model="current_task.description" rules="required" class="d-none" />
-                    <span class="invalid-feedback">{{ errors.description }}</span>
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label">{{ $t('app.task.editTaskModal.form.tags') }}</label>
-                    <VueSelect
-                      v-model="current_task.tags"
-                      multiple
-                      :close-on-select="false"
-                      taggable
-                      push-tags
-                      :placeholder="$t('app.task.editTaskModal.form.tags')"
-                      :class="errors.tags && 'is-invalid'"
-                    >
-                      <template v-slot:no-options="{ search, searching }">
-                        <template v-if="searching">
-                          <span v-html="$t('components.vs.search', { search })"></span>
-                        </template>
-                        <em v-else style="opacity: 0.5">{{ $t('components.vs.generateTag') }}</em>
-                      </template>
-                    </VueSelect>
-                    <Field name="tags" v-model="current_task.tags" rules="" class="d-none" />
-                    <span class="invalid-feedback">{{ errors.tags }}</span>
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label">{{ $t('app.task.editTaskModal.form.users') }}</label>
-                    <UsersSelector v-model="current_task.users" :placeholder="$t('app.task.editTaskModal.form.users')" :class="[errors.users && 'is-invalid']" />
-                    <Field name="users" v-model="current_task.users" :rules="`required|include:${$store.state.user.data.username}`" class="d-none" />
-                    <span class="invalid-feedback">{{ errors.users }}</span>
-                  </div>
 
                   <div class="col-md-4">
                     <label class="form-label">{{ $t('app.task.editTaskModal.form.dueDate') }}</label>
@@ -230,6 +192,47 @@
                       @input="current_task.status = current_task.progress <= 0 ? 'todo' : current_task.progress >= 100 ? 'review' : 'inprogress'"
                     />
                     <span class="invalid-feedback">{{ errors.progress }}</span>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">{{ $t('app.task.editTaskModal.form.users') }}</label>
+                    <UsersSelector v-model="current_task.users" :placeholder="$t('app.task.editTaskModal.form.users')" :class="[errors.users && 'is-invalid']" />
+                    <Field name="users" v-model="current_task.users" :rules="`required|include:${$store.state.user.data.username}`" class="d-none" />
+                    <span class="invalid-feedback">{{ errors.users }}</span>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">{{ $t('app.task.editTaskModal.form.tags') }}</label>
+                    <VueSelect
+                      v-model="current_task.tags"
+                      multiple
+                      :close-on-select="false"
+                      taggable
+                      push-tags
+                      :placeholder="$t('app.task.editTaskModal.form.tags')"
+                      :class="errors.tags && 'is-invalid'"
+                    >
+                      <template v-slot:no-options="{ search, searching }">
+                        <template v-if="searching">
+                          <span v-html="$t('components.vs.search', { search })"></span>
+                        </template>
+                        <em v-else style="opacity: 0.5">{{ $t('components.vs.generateTag') }}</em>
+                      </template>
+                    </VueSelect>
+                    <Field name="tags" v-model="current_task.tags" rules="" class="d-none" />
+                    <span class="invalid-feedback">{{ errors.tags }}</span>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">{{ $t('app.task.editTaskModal.form.description') }}</label>
+                    <CKEditor
+                      v-model="current_task.description"
+                      id="ck_task_description"
+                      :error="{ id: 'ck_task_description', error: errors.description }"
+                      :class="errors.description && 'is-invalid'"
+                    />
+                    <Field name="description" v-model="current_task.description" rules="required" class="d-none" />
+                    <span class="invalid-feedback">{{ errors.description }}</span>
                   </div>
                 </div>
               </div>
