@@ -4,6 +4,8 @@ import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
 import AutoFormat from '@ckeditor/ckeditor5-autoformat/src/autoformat';
 import PasteFromOffice from '@ckeditor/ckeditor5-paste-from-office/src/pastefromoffice';
 
+import SourceEditing from '@ckeditor/ckeditor5-source-editing/src/sourceediting';
+
 import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import Heading from '@ckeditor/ckeditor5-heading/src/heading';
 
@@ -51,6 +53,8 @@ ClassicEditor.builtinPlugins = [
   AutoFormat,
   PasteFromOffice,
 
+  SourceEditing,
+
   Paragraph,
   Heading,
 
@@ -96,6 +100,7 @@ ClassicEditor.defaultConfig = {
   language: store.state.sys.lang,
   toolbar: {
     items: [
+      'sourceEditing',
       'heading',
       '|',
       'bold',

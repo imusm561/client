@@ -186,6 +186,7 @@
     'Align cell text to the top': '上对齐',
     'Align cell text to the middle': '垂直居中',
     'Align cell text to the bottom': '下对齐',
+    Source: '源码',
   })),
     (t.getPluralForm = function (e) {
       return 0;

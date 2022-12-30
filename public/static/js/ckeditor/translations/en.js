@@ -186,6 +186,7 @@
     'Align cell text to the top': 'Align cell text to the top',
     'Align cell text to the middle': 'Align cell text to the middle',
     'Align cell text to the bottom': 'Align cell text to the bottom',
+    Source: 'Source',
   })),
     (t.getPluralForm = function (e) {
       return 0;
