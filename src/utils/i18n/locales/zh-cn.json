@@ -482,7 +482,7 @@
   "public.authentication.login.form.username": "用户名",
   "public.authentication.login.form.password": "密码",
   "public.authentication.login.form.forgotPassword": "忘记密码？",
-  "public.authentication.login.form.rememberMe": "记住我",
+  "public.authentication.login.form.remember": "7天内保持登录",
   "public.authentication.login.form.signIn": "登录",
   "public.authentication.login.form.phone": "手机号",
   "public.authentication.login.form.resendVerificationCodeCountDown": "{count}秒后重新发送",

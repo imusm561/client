@@ -483,7 +483,7 @@
   "public.authentication.login.form.username": "Username",
   "public.authentication.login.form.password": "Password",
   "public.authentication.login.form.forgotPassword": "Forgot password ?",
-  "public.authentication.login.form.rememberMe": "Remember Me",
+  "public.authentication.login.form.remember": "Stay signed in for 7 days",
   "public.authentication.login.form.signIn": "Sign In",
   "public.authentication.login.form.phone": "Phone",
   "public.authentication.login.form.resendVerificationCodeCountDown": "Resend after {count} second | Resend after {count} seconds",

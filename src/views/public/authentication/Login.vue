@@ -60,7 +60,7 @@
 
                       <div class="form-check">
                         <input v-model="remember" id="remember-check-for-account-password" type="checkbox" class="form-check-input" />
-                        <label class="form-check-label" for="remember-check-for-account-password">{{ $t('public.authentication.login.form.rememberMe') }}</label>
+                        <label class="form-check-label" for="remember-check-for-account-password">{{ $t('public.authentication.login.form.remember') }}</label>
                       </div>
 
                       <div class="mt-4">
@@ -105,7 +105,7 @@
 
                       <div class="form-check">
                         <input v-model="remember" id="remember-check-for-sms-verification" type="checkbox" class="form-check-input" />
-                        <label class="form-check-label" for="remember-check-for-sms-verification">{{ $t('public.authentication.login.form.rememberMe') }}</label>
+                        <label class="form-check-label" for="remember-check-for-sms-verification">{{ $t('public.authentication.login.form.remember') }}</label>
                       </div>
 
                       <div class="mt-4">
