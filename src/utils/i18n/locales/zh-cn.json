@@ -200,6 +200,7 @@
   "layout.navbar.helper.form.tab.basicInfo.aclEdit.placeholder": "创建数据时，数据的编辑权限默认为所选的用户",
   "layout.navbar.helper.form.tab.basicInfo.description": "表单描述",
   "layout.navbar.helper.form.tab.presaveScript": "前端脚本",
+  "layout.navbar.helper.form.tab.formStyle": "表单样式",
   "layout.navbar.helper.form.tab.pubForm": "公网发布",
   "layout.navbar.helper.form.tab.pubForm.state.expired": "过期",
   "layout.navbar.helper.form.tab.pubForm.state.disabled": "禁用",

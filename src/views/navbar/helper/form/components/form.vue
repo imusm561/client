@@ -116,6 +116,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a class="nav-link" :class="{ active: current_tab === 'form_style' }" data-bs-toggle="tab" href="#form_style" @click="current_tab = 'form_style'">
+                  <i class="mdi mdi-language-css3"></i>
+                  {{ $t('layout.navbar.helper.form.tab.formStyle') }}
+                </a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" :class="{ active: current_tab === 'pub_from' }" data-bs-toggle="tab" href="#pub_from" @click="current_tab = 'pub_from'">
                   <i class="mdi mdi-web"></i>
                   {{ $t('layout.navbar.helper.form.tab.pubForm') }}
@@ -249,6 +255,11 @@
               <div class="tab-pane" :class="{ active: current_tab === 'presave_script' }" id="presave_script">
                 <div class="col-12">
                   <MonacoEditor :key="current_form.id" v-model="current_form.script" language="javascript" />
+                </div>
+              </div>
+              <div class="tab-pane" :class="{ active: current_tab === 'form_style' }" id="form_style">
+                <div class="col-12">
+                  <MonacoEditor :key="current_form.id" v-model="current_form.style" language="css" />
                 </div>
               </div>
               <div class="tab-pane" :class="{ active: current_tab === 'pub_from' }" id="pub_from">

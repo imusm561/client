@@ -200,6 +200,7 @@
   "layout.navbar.helper.form.tab.basicInfo.aclEdit.placeholder": "When creating data, the data is edited by default by the selected user",
   "layout.navbar.helper.form.tab.basicInfo.description": "Description",
   "layout.navbar.helper.form.tab.presaveScript": "Presave Script",
+  "layout.navbar.helper.form.tab.formStyle": "Form Style",
   "layout.navbar.helper.form.tab.pubForm": "Pub Form",
   "layout.navbar.helper.form.tab.pubForm.state.expired": "Expired",
   "layout.navbar.helper.form.tab.pubForm.state.disabled": "Disabled",

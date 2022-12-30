@@ -5,7 +5,7 @@
       <i v-if="tabs.length > 1" class="mdi fs-16 cursor-pointer text-muted float-end pe-2" :class="no_tabs ? 'mdi-tab' : 'mdi-view-dashboard-outline'" @click="no_tabs = !no_tabs"></i>
     </div>
     <div class="card-body pt-0">
-      <Form v-slot="{ errors }" @submit="handleSubmitFormData">
+      <Form :id="`zz_${form.id}`" v-slot="{ errors }" @submit="handleSubmitFormData">
         <div v-if="tabs.length > 1 && no_tabs">
           <div :id="tab.field" class="p-3 mt-2 border-bottom border-bottom-dashed ribbon-box right" v-for="(tab, index) in tabs" :key="index">
             <div v-if="tab.name" class="ribbon ribbon-primary round-shape">
@@ -249,6 +249,11 @@ export default {
 
     const setFormConfiguration = () => {
       if (form.value.script) form.value.script = replaceVariables(form.value.script, alias.value);
+      if (form.value.style) {
+        const style = document.createElement('style');
+        style.innerHTML = form.value.style;
+        document.querySelector('head').appendChild(style);
+      }
     };
 
     const setFormColumns = async () => {
