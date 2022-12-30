@@ -1,7 +1,7 @@
 <template>
   <div>
     <Breadcrumb :key="$route" />
-    <div class="card adaptive">
+    <div class="card">
       <div class="card-header border-0 p-2 pb-0">
         <span class="float-end">
           <i class="mdi mdi-table-eye fs-16 cursor-pointer text-muted pe-2" data-bs-toggle="modal" data-bs-target="#formInfoModal"></i>
@@ -90,8 +90,8 @@
         </div>
         <AgGridVue
           :key="$route.params.tid"
-          style="height: 100%"
-          class="mt-2"
+          style="min-height: 500px"
+          class="mt-2 ag-height"
           :class="$store.state.sys.theme === 'dark' ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
           :columnDefs="columnDefs"
           multiSortKey="ctrl"
