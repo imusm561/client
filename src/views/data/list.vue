@@ -9,9 +9,9 @@
         </span>
       </div>
       <div class="card-body d-flex flex-column pt-0" style="height: fit-content">
-        <div class="data-list-header">
+        <div class="mb-2">
           <div v-if="form.description" class="ck ck-content p-0" v-html="form.description" />
-          <div class="d-flex justify-content-end mt-2 gap-2">
+          <div class="d-flex justify-content-end gap-2">
             <div
               v-if="
                 ($store.state.user.data?.tags?.includes('ALL') || $store.state.user.data?.permissions?.[$route.params.tid]?.batch) &&
@@ -90,8 +90,7 @@
         </div>
         <AgGridVue
           :key="$route.params.tid"
-          style="min-height: 500px"
-          class="mt-2 ag-height"
+          class="ag-height"
           :class="$store.state.sys.theme === 'dark' ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
           :columnDefs="columnDefs"
           multiSortKey="ctrl"
@@ -836,23 +835,25 @@ export default {
       // ============================================================================
       // ============================================================================
 
-      column.width = ['uuid'].includes(column.field)
+      columnDef.width = ['id'].includes(column.field)
+        ? 120
+        : ['uuid'].includes(column.field)
         ? 350
-        : ['data_state', 'created_by', 'updated_by', 'acl_view', 'acl_edit'].includes(column.field)
+        : ['data_state'].includes(column.field)
         ? 150
-        : ['created_at', 'updated_at'].includes(column.field)
-        ? 180
-        : 120;
+        : ['created_by', 'created_at', 'updated_by', 'updated_at', 'acl_view', 'acl_edit'].includes(column.field)
+        ? 200
+        : 220;
       columnDef.minWidth = 100;
       columnDef.maxWidth = ['id'].includes(column.field)
-        ? 150
-        : ['uuid'].includes(column.field)
-        ? 380
-        : ['data_state'].includes(column.field)
-        ? 180
-        : ['created_at', 'updated_at', 'created_by', 'updated_by', 'acl_view', 'acl_edit'].includes(column.field)
         ? 200
-        : 600;
+        : ['uuid'].includes(column.field)
+        ? 400
+        : ['data_state'].includes(column.field)
+        ? 200
+        : ['created_by', 'created_at', 'updated_by', 'updated_at', 'acl_view', 'acl_edit'].includes(column.field)
+        ? 250
+        : 880;
       columnDef.resizable = true;
       // columnDef.flex = 1
       // ============================================================================

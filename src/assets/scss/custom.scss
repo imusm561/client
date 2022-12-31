@@ -258,10 +258,11 @@ input:-webkit-autofill {
 }
 
 .ag-height {
-  height: calc(100vh - #{$header-height} - #{$footer-height} - 182px);
+  min-height: 500px;
+  height: calc(100vh - #{$header-height} - #{$footer-height} - 175px);
 
   @media (max-width: 767.98px) {
-    height: calc(100vh - #{$header-height} - #{$footer-height} - 142px);
+    height: calc(100vh - #{$header-height} - #{$footer-height} - 135px);
   }
 }
 
