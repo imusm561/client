@@ -258,7 +258,11 @@ input:-webkit-autofill {
 }
 
 .ag-height {
-  height: calc(100vh - #{$header-height} - #{$footer-height} - 85px);
+  height: calc(100vh - #{$header-height} - #{$footer-height} - 182px);
+
+  @media (max-width: 767.98px) {
+    height: calc(100vh - #{$header-height} - #{$footer-height} - 142px);
+  }
 }
 
 .ag-popup-editor {
