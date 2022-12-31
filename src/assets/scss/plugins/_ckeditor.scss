@@ -103,6 +103,18 @@
   }
 }
 
+.ck-source-editing-area {
+  height: 30vh;
+
+  :first-child {
+    height: 30vh;
+    overflow: auto;
+    background: $input-bg !important;
+    border: unset !important;
+    box-shadow: none !important;
+  }
+}
+
 .ck.ck-button,
 a.ck.ck-button {
   &:focus,
