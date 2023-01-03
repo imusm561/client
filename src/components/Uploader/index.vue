@@ -447,6 +447,7 @@ export default defineComponent({
       const uploadDropdownMenu = document.getElementById('uploadDropdownMenu');
       if (uploadDropdownMenu) {
         uploadDropdownMenu.addEventListener('show.bs.dropdown', () => {
+          qrcode.value = null;
           if (props.qrable) hendleClickMobileUpload();
         });
         uploadDropdownMenu.addEventListener('hide.bs.dropdown', () => {
