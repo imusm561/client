@@ -356,7 +356,7 @@
 
 <script>
 import Breadcrumb from '@/layouts/breadcrumb';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import store from '@store';
 import { useRouter, replaceVariables, getDataByFormula, getRulesByFormula, deepCompare, getUserLeaders, generateFlowByCurrentUser, getUserInfo, encryptData, decryptData } from '@utils';
 import { getDataEdit, getDataTitle, createData, checkData, forceData, updateData } from '@api/data';
@@ -479,6 +479,10 @@ export default {
         },
         { immediate: true, deep: true },
       );
+    });
+
+    onUnmounted(() => {
+      if (Number(init_data.value.id)) forceData({ tid: form.value.id, rid: Number(init_data.value.id), user: null });
     });
 
     const fetchDataEdit = async (tid, rid) => {
