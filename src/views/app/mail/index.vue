@@ -531,7 +531,7 @@
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-primary" data-bs-dismiss="modal" @click="handleCancelCompose(false)">{{ $t('app.mail.cancelConfirmModal.hold') }}</button>
+              <button type="button" class="btn w-sm btn-primary" data-bs-dismiss="modal" @click="handleCancelCompose(false)">{{ $t('app.mail.cancelConfirmModal.staged') }}</button>
               <button type="button" class="btn w-sm btn-danger" data-bs-dismiss="modal" @click="handleCancelCompose()">{{ $t('app.mail.cancelConfirmModal.discard') }}</button>
             </div>
           </div>
@@ -1097,14 +1097,15 @@ export default {
     };
 
     const handleComposeMail = () => {
-      const hold = localStorage.getItem(`hode_${store.state.user.data.id}`);
-      if (hold) {
+      const staged = localStorage.getItem(`staged_app_mail_${store.state.user.data.id}`);
+      if (staged) {
         try {
-          new_mail.value = JSON.parse(decryptData(hold));
+          new_mail.value = JSON.parse(decryptData(staged));
         } catch (error) {
           console.log(error);
         }
       }
+      localStorage.removeItem(`staged_app_mail_${store.state.user.data.id}`);
       handleCloseMail();
       randerVsUsers(new_mail.value);
     };
@@ -1114,7 +1115,7 @@ export default {
         if (code === 200) {
           handleCancelCompose();
           document.getElementById('hideComposeModalBtn').click();
-          localStorage.removeItem(`hode_${store.state.user.data.id}`);
+          localStorage.removeItem(`staged_app_mail_${store.state.user.data.id}`);
         } else {
           toast({
             component: ToastificationContent,
@@ -1219,9 +1220,9 @@ export default {
           read: [],
         };
         randerVsUsers(new_mail.value);
-        localStorage.removeItem(`hode_${store.state.user.data.id}`);
+        localStorage.removeItem(`staged_app_mail_${store.state.user.data.id}`);
       } else {
-        localStorage.setItem(`hode_${store.state.user.data.id}`, encryptData(JSON.stringify(new_mail.value)));
+        localStorage.setItem(`staged_app_mail_${store.state.user.data.id}`, encryptData(JSON.stringify(new_mail.value)));
       }
     };
 
