@@ -53,6 +53,14 @@ export const createData = (data) => {
   return axios.post('/cor/data/create', data);
 };
 
+export const checkData = (params) => {
+  return axios.get('/cor/data/check' + generateApiQuery(params));
+};
+
+export const forceData = (data) => {
+  return axios.post('/cor/data/force', data);
+};
+
 export const updateData = (data) => {
   return axios.post('/cor/data/update', data);
 };

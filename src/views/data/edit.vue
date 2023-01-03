@@ -23,7 +23,7 @@
             <em v-else style="opacity: 0.5">{{ $t('components.vs.searchRecord') }}</em>
           </template>
         </VueSelect>
-        <Form :id="`zz_${form.id}`" v-slot="{ errors }" @submit="handleSubmitFormData">
+        <Form :id="`zz_${form.id}`" v-slot="{ errors }" @submit="handleSubmitFormData()">
           <div v-if="tabs.length > 1 && no_tabs">
             <div :id="tab.field" class="p-3 mt-2 border-bottom border-bottom-dashed ribbon-box right" v-for="(tab, index) in tabs" :key="index">
               <div v-if="tab.name" class="ribbon ribbon-primary round-shape">
@@ -285,8 +285,67 @@
             </div>
 
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal" @click="cancel_edit_confirm = false">{{ $t('data.edit.confirmCancelEditModal.cancel') }}</button>
-              <button type="button" class="btn w-sm btn-danger" data-bs-dismiss="modal" @click="cancel_edit_confirm = true">{{ $t('data.edit.confirmCancelEditModal.confirmed') }}</button>
+              <button type="button" class="btn w-sm btn-success" data-bs-dismiss="modal" @click="cancel_edit_confirm = false">{{ $t('data.edit.confirmCancelEditModal.cancel') }}</button>
+              <button
+                type="button"
+                class="btn w-sm btn-info"
+                data-bs-dismiss="modal"
+                @click="
+                  handleStagedUpdate(() => {
+                    cancel_edit_confirm = true;
+                  })
+                "
+              >
+                {{ $t('data.edit.confirmCancelEditModal.staged') }}
+              </button>
+              <button type="button" class="btn w-sm btn-danger" data-bs-dismiss="modal" @click="cancel_edit_confirm = true">{{ $t('data.edit.confirmCancelEditModal.back') }}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" id="showUpdateConflictsModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#updateConflictsModal"></button>
+    <div id="updateConflictsModal" class="modal fade zoomIn">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" id="hideUpdateConflictsModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mt-2 text-center">
+              <div class="fs-15 mx-4 mx-sm-5">
+                <h4>{{ $t('data.edit.updateConflictsModal.title') }}</h4>
+                <p class="text-muted mx-4 mb-0 mb-2" style="white-space: nowrap">
+                  {{ $t('data.edit.updateConflictsModal.tips', { user: getUserInfo(update_conflicts)?.fullname || update_conflicts }) }}
+                </p>
+              </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+              <button type="button" class="btn w-sm btn-danger" @click="handleSubmitFormData(true)">{{ $t('data.edit.updateConflictsModal.forceUpdate') }}</button>
+              <button type="button" class="btn w-sm btn-success" @click="handleStagedUpdate">{{ $t('data.edit.updateConflictsModal.staged') }}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" id="showUseStageDataConfirmModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#useStagedDataConfirmModal"></button>
+    <div id="useStagedDataConfirmModal" class="modal fade zoomIn">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" id="hideUseStagedDataConfirmModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mt-2 text-center">
+              <div class="fs-15 mx-4 mx-sm-5">
+                <h4>{{ $t('data.edit.useStagedDataConfirmModal.title', { user: getUserInfo(update_conflicts)?.fullname || update_conflicts }) }}</h4>
+              </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+              <button type="button" class="btn w-sm btn-success" data-bs-dismiss="modal" @click="handleApplyStagedData">{{ $t('data.edit.useStagedDataConfirmModal.apply') }}</button>
+              <button type="button" class="btn w-sm btn-primary" data-bs-dismiss="modal" @click="handleDiscardStagedData">{{ $t('data.edit.useStagedDataConfirmModal.discard') }}</button>
             </div>
           </div>
         </div>
@@ -299,8 +358,8 @@
 import Breadcrumb from '@/layouts/breadcrumb';
 import { computed, onMounted, ref, watch } from 'vue';
 import store from '@store';
-import { useRouter, replaceVariables, getDataByFormula, getRulesByFormula, deepCompare, getUserLeaders, generateFlowByCurrentUser } from '@utils';
-import { getDataEdit, getDataTitle, createData, updateData } from '@api/data';
+import { useRouter, replaceVariables, getDataByFormula, getRulesByFormula, deepCompare, getUserLeaders, generateFlowByCurrentUser, getUserInfo, encryptData, decryptData } from '@utils';
+import { getDataEdit, getDataTitle, createData, checkData, forceData, updateData } from '@api/data';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import i18n from '@utils/i18n';
@@ -385,6 +444,7 @@ export default {
             return;
           }
           if (route.value.name === 'edit' && newVal !== oldVal) {
+            if (Number(init_data.value.id)) forceData({ tid: route.value.params.tid, rid: Number(init_data.value.id), user: null });
             fetchDataEdit(route.value.params.tid, newVal);
           }
         },
@@ -436,6 +496,8 @@ export default {
         fetchDataTitle();
         current_tab.value = current_tab.value || 0;
         initialized.value = true;
+        const staged = localStorage.getItem(`staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`);
+        if (staged) document.getElementById('showUseStageDataConfirmModalBtn').click();
       } else {
         toast({
           component: ToastificationContent,
@@ -611,8 +673,9 @@ export default {
       loading(false);
     };
 
+    const update_conflicts = ref(null);
     const result = ref({});
-    const handleSubmitFormData = () => {
+    const handleSubmitFormData = (force = false) => {
       const formdata = JSON.parse(JSON.stringify(data.value));
       columns.value.forEach((column) => {
         if (!column.component.includes('Basic') && !column._visible) delete formdata[column.field];
@@ -648,6 +711,7 @@ export default {
             data.value = res.data;
             init_data.value = JSON.parse(JSON.stringify(res.data));
             titles.value.splice(1, 0, { id: res.data.id, title: res.data.title });
+            forceData({ tid: form.value.id, rid: data.value.id });
             document.getElementById('showResultModalBtn').click();
           } else {
             toast({
@@ -661,31 +725,72 @@ export default {
           }
         });
       } else {
-        const changes = deepCompare(formdata, init_data.value);
-        if (Object.keys(changes).length) {
-          changes.tid = form.value.id;
-          changes.id = formdata.id;
-          changes.data_state = formdata.data_state;
-          changes.flow = form.value.flow;
-          updateData(changes).then((res) => {
-            if (res.code === 200) {
-              result.value = res;
-              data.value = res.data;
-              init_data.value = JSON.parse(JSON.stringify(res.data));
-              document.getElementById('showResultModalBtn').click();
+        checkData({ tid: form.value.id, rid: formdata.id }).then(({ code, data: editing, msg }) => {
+          if (code === 200) {
+            if (editing === null || editing === store.state.user.data.username || force) {
+              const changes = deepCompare(formdata, init_data.value);
+              if (Object.keys(changes).length) {
+                changes.tid = form.value.id;
+                changes.id = formdata.id;
+                changes.data_state = formdata.data_state;
+                changes.flow = form.value.flow;
+                updateData(changes).then((res) => {
+                  document.getElementById('hideUpdateConflictsModalBtn').click();
+                  forceData({ tid: changes.tid, rid: changes.id });
+                  if (res.code === 200) {
+                    result.value = res;
+                    data.value = res.data;
+                    init_data.value = JSON.parse(JSON.stringify(res.data));
+                    document.getElementById('showResultModalBtn').click();
+                    handleDiscardStagedData();
+                  } else {
+                    toast({
+                      component: ToastificationContent,
+                      props: {
+                        variant: 'danger',
+                        icon: 'mdi-alert',
+                        text: res.msg,
+                      },
+                    });
+                  }
+                });
+              }
             } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: res.msg,
-                },
-              });
+              update_conflicts.value = editing;
+              document.getElementById('showUpdateConflictsModalBtn').click();
             }
-          });
-        }
+          } else {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: msg,
+              },
+            });
+          }
+        });
       }
+    };
+
+    const handleStagedUpdate = (callback) => {
+      localStorage.setItem(`staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`, encryptData(JSON.stringify(data.value)));
+      document.getElementById('hideUpdateConflictsModalBtn').click();
+      callback && callback();
+    };
+
+    const handleApplyStagedData = () => {
+      const staged = localStorage.getItem(`staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`);
+      try {
+        data.value = JSON.parse(decryptData(staged));
+      } catch (error) {
+        console.log(error);
+      }
+      localStorage.removeItem(`staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`);
+    };
+
+    const handleDiscardStagedData = () => {
+      localStorage.removeItem(`staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`);
     };
 
     const cancel_edit_confirm = ref(null);
@@ -727,6 +832,13 @@ export default {
 
       handleSubmitFormData,
       result,
+
+      update_conflicts,
+      getUserInfo,
+
+      handleStagedUpdate,
+      handleApplyStagedData,
+      handleDiscardStagedData,
 
       cancel_edit_confirm,
       handleCancelEdit,
