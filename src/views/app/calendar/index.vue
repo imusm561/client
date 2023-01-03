@@ -196,13 +196,19 @@
                     </h6>
                   </div>
                 </div>
-                <div class="d-flex align-items-center mb-2" v-if="current_event.location">
+                <div v-if="current_event.location" class="d-flex align-items-center mb-2">
                   <div class="flex-shrink-0 me-3">
                     <i class="mdi mdi-google-maps text-muted fs-16"></i>
                   </div>
-
                   <div class="flex-grow-1">
-                    <h6 class="d-block fw-semibold mb-0">
+                    <img
+                      v-if="$store.state.sys.cfg.amap && $store.state.sys.cfg.amap.api_key && isLngLat(current_event.location)"
+                      :src="`//restapi.amap.com/v3/staticmap?location=${current_event.location}&zoom=12&size=700*300&markers=,,:${current_event.location}&key=${$store.state.sys.cfg.amap.api_key}`"
+                      @dblclick="handleDblClickMap(current_event.location)"
+                      class="img-fluid"
+                      :alt="current_event.location"
+                    />
+                    <h6 v-else class="d-block fw-semibold mb-0">
                       <span>{{ current_event.location }}</span>
                     </h6>
                   </div>
@@ -264,7 +270,7 @@
 <script>
 import { ref, onMounted, onUnmounted } from 'vue';
 import store from '@store';
-import { useSocket, getUserInfo } from '@utils';
+import { useSocket, getUserInfo, isLngLat } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import FullCalendar from '@fullcalendar/vue3';
@@ -685,6 +691,10 @@ export default {
       }
     };
 
+    const handleDblClickMap = (lnglat) => {
+      window.open(`//www.amap.com/regeo?lng=${lnglat.split(',')[0]}&lat=${lnglat.split(',')[1]}`, '_blank');
+    };
+
     return {
       calendar,
       calendarOptions,
@@ -694,12 +704,14 @@ export default {
       upcoming_events,
       current_event,
       is_editing,
+      isLngLat,
       viewAndEditEventModalKey,
       handleEventClick,
       handleCreateEvent,
       handleChangeDate,
       handleDelEvent,
       handleSubmitEvent,
+      handleDblClickMap,
     };
   },
 };
