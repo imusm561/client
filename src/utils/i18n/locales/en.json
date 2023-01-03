@@ -718,6 +718,8 @@
   "data.list.filter.user.userAll": "All",
   "data.list.renderer.user.userAll": "All",
   "data.list.cellEdit.error": "This type of field dose not support cell editing...",
+  "data.list.cellEdit.conflicts": "Update Conflicts: {user} is editing this data",
+  "data.list.batchUpdate.conflicts": "Batch Update Conflicts: {count} data [{ids}] is being edited by another user | Batch Update Conflicts: {count} data [{ids}] are being edited by another user",
   "data.list.import.success": "Successfully imported {count} record | Successfully imported {count} records",
 
   "data.view.flow.creation": "Create the approval flow.",

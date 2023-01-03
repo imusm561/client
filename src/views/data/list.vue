@@ -271,7 +271,7 @@ import { onMounted, onUnmounted, watch, ref, computed } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
 import { useRouter, useSocket, decryptData, replaceHtml, getUserInfo, copyToClipboard, replaceVariables, getRulesByFormula, getDataByFormula, generateFlowByCurrentUser } from '@utils';
-import { getDataForm, getDataList, getDataSets, getDataTemplate, importData, updateData } from '@api/data';
+import { getDataForm, getDataList, getDataSets, getDataTemplate, importData, checkData, updateData } from '@api/data';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Breadcrumb from '@/layouts/breadcrumb';
@@ -558,13 +558,43 @@ export default {
           }
         }
 
-        updateData({
-          tid: Number(route.value.params.tid),
-          id: params.data.id,
-          [params.column.colId]: params.newValue,
-          flow: form.value.flow,
-        }).then((res) => {
-          if (res.code != 200) {
+        checkData({ tid: Number(route.value.params.tid), rid: params.data.id }).then(({ code, data: editing, msg }) => {
+          if (code === 200) {
+            if (editing === null || editing === store.state.user.data.username) {
+              updateData({
+                tid: Number(route.value.params.tid),
+                id: params.data.id,
+                [params.column.colId]: params.newValue,
+                flow: form.value.flow,
+              }).then((res) => {
+                if (res.code != 200) {
+                  params.data[params.colDef.field] = params.oldValue;
+                  params.api.applyTransaction({ update: [params.data] });
+                  params.api.refreshCells();
+                  toast({
+                    component: ToastificationContent,
+                    props: {
+                      variant: 'danger',
+                      icon: 'mdi-alert',
+                      text: res.msg,
+                    },
+                  });
+                }
+              });
+            } else {
+              params.data[params.colDef.field] = params.oldValue;
+              params.api.applyTransaction({ update: [params.data] });
+              params.api.refreshCells();
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: i18n.global.t('data.list.cellEdit.conflicts', { user: getUserInfo(editing)?.fullname || editing }),
+                },
+              });
+            }
+          } else {
             params.data[params.colDef.field] = params.oldValue;
             params.api.applyTransaction({ update: [params.data] });
             params.api.refreshCells();
@@ -573,7 +603,7 @@ export default {
               props: {
                 variant: 'danger',
                 icon: 'mdi-alert',
-                text: res.msg,
+                text: msg,
               },
             });
           }
@@ -896,16 +926,42 @@ export default {
     });
 
     const handleSubmitBatchUpdate = () => {
-      updateData({
-        tid: Number(route.value.params.tid),
-        ids: selectedRows.value.map((row) => {
-          return row.id;
-        }),
-        field: batch.value.column.field,
-        value: batch.value.value,
-      }).then(({ code, msg }) => {
+      const tid = Number(route.value.params.tid);
+      const ids = selectedRows.value.map((row) => {
+        return row.id;
+      });
+      checkData({ tid, ids }).then(({ code, data: editing, msg }) => {
         if (code === 200) {
-          document.getElementById('hideBatchUpdateModalModalBtn').click();
+          if (editing.length === 0) {
+            updateData({
+              tid,
+              ids,
+              field: batch.value.column.field,
+              value: batch.value.value,
+            }).then(({ code, msg }) => {
+              if (code === 200) {
+                document.getElementById('hideBatchUpdateModalModalBtn').click();
+              } else {
+                toast({
+                  component: ToastificationContent,
+                  props: {
+                    variant: 'danger',
+                    icon: 'mdi-alert',
+                    text: msg,
+                  },
+                });
+              }
+            });
+          } else {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: i18n.global.t('data.list.batchUpdate.conflicts', { count: editing.length, ids: editing.toString() }),
+              },
+            });
+          }
         } else {
           toast({
             component: ToastificationContent,
