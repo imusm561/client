@@ -81,9 +81,6 @@ VueSelect.props.components.default = () => ({
   Deselect,
 });
 
-import { ElScrollbar } from 'element-plus';
-import 'element-plus/es/components/scrollbar/style/css';
-
 app
   .use(router)
   .use(store)
@@ -101,7 +98,6 @@ app
   .use(uploader)
   .use(VueViewer)
   .use(VueApexCharts)
-  .component('ElScrollbar', ElScrollbar)
   .component('Form', Form)
   .component('Field', Field)
   .component('VueSelect', VueSelect)
