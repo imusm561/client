@@ -1,3 +1,7 @@
+body {
+  overflow: auto !important;
+}
+
 [data-theme='dark'] {
   body {
     color-scheme: dark;
