@@ -63,28 +63,56 @@
                 >
                   <code>{{ current.path }}</code>
                 </h5>
-                <div v-if="current.type === 'file'">
-                  <button v-if="current.data != current._data" type="button" class="btn btn-sm btn-soft-secondary btn-icon waves-effect waves-light ms-1" @click="handleSaveCode">
-                    <i class="fs-20 mdi mdi-content-save"></i>
-                  </button>
-                  <button v-if="current.data != current._data" type="button" class="btn btn-sm btn-soft-success btn-icon waves-effect waves-light ms-1" @click="current.data = current._data">
-                    <i class="fs-20 mdi mdi-restore"></i>
+                <div class="d-none d-md-inline" v-if="current.type === 'file' && current.data != current._data">
+                  <button class="btn btn-sm btn-primary btn-icon waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#codeDiffModal">
+                    <i class="fs-20 mdi mdi-ab-testing"></i>
                   </button>
                 </div>
               </div>
-
               <MonacoEditor
                 :key="current.path"
                 v-model="current.data"
-                :old-value="current.file"
                 :language="current.language"
                 :options="{
                   readOnly: current.type === 'directory' || current.language === 'log',
-                  diff: current.type === 'file' && current.language != 'log',
                 }"
                 height="100%"
               />
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="codeDiffModal" data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+          <div class="modal-header p-2">
+            <h5 class="modal-title">{{ $t('layout.navbar.helper.code.codeDiffModal.title') }}</h5>
+            <button type="button" id="hideCodeDiffModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body p-0" style="height: 80vh">
+            <MonacoEditor
+              :key="`diff_${current.path}`"
+              v-model="current.data"
+              :old-value="current.file"
+              :language="current.language"
+              :options="{
+                readOnly: true,
+                diff: true,
+              }"
+              height="100%"
+            />
+          </div>
+          <div class="modal-footer p-1">
+            <button class="btn btn-sm btn-danger" data-bs-dismiss="modal" @click="current.data = current._data">
+              <i class="mdi mdi-restore"></i>
+              {{ $t('layout.navbar.helper.code.codeDiffModal.footer.restore') }}
+            </button>
+            <button class="btn btn-sm btn-success" @click="handleSaveCode">
+              <i class="mdi mdi-content-save-outline"></i>
+              {{ $t('layout.navbar.helper.code.codeDiffModal.footer.save') }}
+            </button>
           </div>
         </div>
       </div>
@@ -96,11 +124,10 @@
         <i class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute" style="z-index: 1; right: 10px; bottom: 0" data-bs-dismiss="offcanvas" />
         <MonacoEditor
           :key="current.path"
-          v-model="current.file"
+          v-model="current.data"
           :language="current.language"
           :options="{
             readOnly: true,
-            diff: false,
           }"
           height="100vh"
         />
@@ -492,6 +519,7 @@ export default {
     const handleSaveCode = () => {
       saveCode({ path: current.value.path, data: current.value.data }).then(({ code, msg }) => {
         if (code === 200) {
+          document.getElementById('hideCodeDiffModalBtn').click();
           current.value.file = current.value._data = current.value.data || '';
           toast({
             component: ToastificationContent,

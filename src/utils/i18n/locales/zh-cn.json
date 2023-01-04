@@ -367,9 +367,12 @@
   "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.title.directory": "删除目录确认",
   "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm.before": "请输入",
   "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm.after": "来验证此次操作",
-  "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.warning": "警告: 这不是个空目录！！！",
+  "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.warning": "警告: 此目录不为空",
   "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.cancel": "取消",
   "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm": "确认",
+  "layout.navbar.helper.code.codeDiffModal.title": "代码对比",
+  "layout.navbar.helper.code.codeDiffModal.footer.restore": "恢复",
+  "layout.navbar.helper.code.codeDiffModal.footer.save": "保存",
 
   "layout.navbar.helper.sql": "Sql查询",
   "layout.navbar.helper.sql.tip.before": "使用",

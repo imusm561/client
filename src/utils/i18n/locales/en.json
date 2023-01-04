@@ -367,9 +367,12 @@
   "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.title.directory": "Delete Directory Confirm",
   "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm.before": "Please enter",
   "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm.after": "to verify this operation",
-  "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.warning": "WARNING: THIS DIRECTORY IS NOT EMPTY!!!",
+  "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.warning": "WARNING: THIS DIRECTORY IS NOT EMPTY",
   "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.cancel": "Cancel",
   "layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm": "Confirm",
+  "layout.navbar.helper.code.codeDiffModal.title": "Code Diff",
+  "layout.navbar.helper.code.codeDiffModal.footer.restore": "Restore",
+  "layout.navbar.helper.code.codeDiffModal.footer.save": "Save",
 
   "layout.navbar.helper.sql": "Sql",
   "layout.navbar.helper.sql.tip.before": "Use",
