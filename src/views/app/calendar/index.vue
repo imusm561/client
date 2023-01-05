@@ -270,7 +270,7 @@
 <script>
 import { ref, onMounted, onUnmounted } from 'vue';
 import store from '@store';
-import { useSocket, getUserInfo, isLngLat } from '@utils';
+import { getUserInfo, isLngLat } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import FullCalendar from '@fullcalendar/vue3';
@@ -296,7 +296,7 @@ export default {
   },
   setup() {
     const toast = useToast();
-    const socket = useSocket();
+    const socket = window.socket;
     const moment = window.moment;
 
     const calendar = ref(null);

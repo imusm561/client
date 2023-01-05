@@ -34,11 +34,6 @@ export const useRouter = () => {
   return { ...toRefs(state), router: vm.$router };
 };
 
-export const useSocket = () => {
-  const vm = getCurrentInstance()?.proxy;
-  return vm.$socket;
-};
-
 export const generateApiQuery = (params) => {
   let query = '?';
   for (let key in params) {

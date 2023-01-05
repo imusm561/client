@@ -380,8 +380,7 @@
 import { ref, onMounted, computed } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
-import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
-import router from '@router';
+import { useRouter, uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
 import { clearUserData, deepCompare, hashData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -394,6 +393,7 @@ export default {
     Avatar,
   },
   setup() {
+    const { router } = useRouter();
     const toast = useToast();
     const user = ref(JSON.parse(JSON.stringify(store.state.user.data)));
 

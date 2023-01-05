@@ -18,7 +18,8 @@ export default {
   mutations: {
     TOGGLE_LANG(state, lang) {
       i18n.global.locale = lang;
-      window.moment.locale(lang);
+      const moment = window.moment;
+      moment.locale(lang);
       state.lang = lang;
       localStorage.setItem('locale', lang);
     },

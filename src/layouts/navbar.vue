@@ -372,8 +372,8 @@ import { userLogout } from '@api/user';
 import { getSearchResult } from '@api/com/search';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import { clearUserData, getUserInfo, replaceHtml } from '@utils';
-import router from '@router';
+import { useRouter, clearUserData, getUserInfo, replaceHtml } from '@utils';
+import { setWatermark, removeWatermark } from '@utils/watermark';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
 import SearchResultPanel from '@components/SearchResultPanel';
@@ -384,6 +384,8 @@ export default {
     SearchResultPanel,
   },
   setup() {
+    const { router } = useRouter();
+    const moment = window.moment;
     const reload = inject('reload');
     const toast = useToast();
 
@@ -655,6 +657,10 @@ export default {
       get: () => store.state.sys.lang,
       set: (value) => {
         store.commit('sys/TOGGLE_LANG', value);
+        if (store.state.sys.cfg.water_mark && store.state.user.data.id) {
+          removeWatermark();
+          setWatermark(`${store.state.user.data.username} - ${store.state.user.data.fullname}`, moment().format('ll'));
+        }
         reload();
       },
     });

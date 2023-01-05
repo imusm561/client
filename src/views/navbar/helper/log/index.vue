@@ -186,7 +186,7 @@ import Empty from '@components/Empty';
 import MonacoEditor from '@components/MonacoEditor';
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { getSysUrl, getSysLog } from '@api/sys';
-import { useSocket, getUserInfo } from '@utils';
+import { getUserInfo } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import uaParser from 'ua-parser-js';
@@ -201,7 +201,7 @@ export default {
   },
   setup() {
     const toast = useToast();
-    const socket = useSocket();
+    const socket = window.socket;
 
     const urls = ref([]);
     const logs = ref([]);

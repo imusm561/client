@@ -31,8 +31,8 @@ watch(
         transports: ['websocket'],
         secure: true,
       });
-      app.config.globalProperties.$socket = socket;
       initSocket(socket);
+      window.socket = socket;
     }
   },
   { immediate: true, deep: true },

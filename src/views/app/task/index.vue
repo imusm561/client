@@ -280,7 +280,7 @@ import { VueDraggableNext } from 'vue-draggable-next';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import store from '@store';
-import { replaceHtml, useSocket, getUserInfo } from '@utils';
+import { replaceHtml, getUserInfo } from '@utils';
 import FlatPickr from '@components/FlatPickr';
 import Avatar from '@components/Avatar';
 import UsersSelector from '@components/UsersSelector';
@@ -295,7 +295,7 @@ export default {
   },
   setup() {
     const toast = useToast();
-    const socket = useSocket();
+    const socket = window.socket;
     const moment = window.moment;
 
     const search_users = ref([]);

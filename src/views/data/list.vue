@@ -270,7 +270,7 @@
 import { onMounted, onUnmounted, watch, ref, computed } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
-import { useRouter, useSocket, decryptData, replaceHtml, getUserInfo, copyToClipboard, replaceVariables, getRulesByFormula, getDataByFormula, generateFlowByCurrentUser } from '@utils';
+import { useRouter, decryptData, replaceHtml, getUserInfo, copyToClipboard, replaceVariables, getRulesByFormula, getDataByFormula, generateFlowByCurrentUser } from '@utils';
 import { getDataForm, getDataList, getDataSets, getDataTemplate, importData, checkData, updateData } from '@api/data';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -378,7 +378,7 @@ export default {
   setup() {
     const { route, router } = useRouter();
     const toast = useToast();
-    const socket = useSocket();
+    const socket = window.socket;
 
     const form = ref({});
     const alias = ref({});

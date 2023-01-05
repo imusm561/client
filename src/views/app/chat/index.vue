@@ -275,7 +275,7 @@
 import store from '@store';
 import { computed, onMounted, ref, reactive, watch, onUnmounted } from 'vue';
 import { getChats, sendMsg, withdrawMsg, readMsg, delChat } from '@api/app/chat';
-import { useRouter, useSocket, getUserInfo } from '@utils';
+import { useRouter, getUserInfo } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Avatar from '@components/Avatar';
@@ -286,7 +286,7 @@ export default {
   },
   setup() {
     const toast = useToast();
-    const socket = useSocket();
+    const socket = window.socket;
     const { route } = useRouter();
 
     const _chats = ref([]);

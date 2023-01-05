@@ -68,7 +68,7 @@ import CKEditor from '@components/CKEditor';
 import Item from './components/Item';
 import { getComments, createComment, updateComment } from '@api/com/comment';
 import store from '@store';
-import { listToTree, useSocket, useRouter, getUserInfo } from '@utils';
+import { listToTree, useRouter, getUserInfo } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 export default defineComponent({
@@ -88,7 +88,7 @@ export default defineComponent({
     const toast = useToast();
     const comments = ref([]);
     const { route } = useRouter();
-    const socket = useSocket();
+    const socket = window.socket;
 
     const fetchComments = () => {
       return new Promise((resolve) => {

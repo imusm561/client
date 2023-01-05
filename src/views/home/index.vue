@@ -31,7 +31,7 @@
                   <Avatar :data="$store.state.user.data" size="md" />
                   <div class="ps-3">
                     <h3 class="mb-1 fw-bold">{{ $t('home.hello') }}, {{ $store.state.user.data.fullname }}!</h3>
-                    <div class="mb-1 fs-14 fw-medium">{{ $store.state.org.depts.find((dept) => dept.id === $store.state.user.data.dept).name }} | {{ $store.state.user.data.post }}</div>
+                    <div class="mb-1 fs-14 fw-medium">{{ $store.state.org.depts.find((dept) => dept.id === $store.state.user.data.dept)?.name }} | {{ $store.state.user.data.post }}</div>
                     <p class="text-muted mb-0">{{ $t('home.message') }}</p>
                   </div>
                 </div>

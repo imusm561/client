@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import router from '@router';
+import { useRouter } from '@utils';
 import Avatar from '@components/Avatar';
 export default {
   components: {
@@ -55,6 +55,7 @@ export default {
     },
   },
   setup(props, { emit }) {
+    const { router } = useRouter();
     const handleClickText = () => {
       if (props.to) {
         const to = JSON.parse(JSON.stringify(props.to));

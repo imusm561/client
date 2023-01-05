@@ -110,7 +110,7 @@ import { getJobs } from '@api/job';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import useJob from './useJob';
-import { replaceHtml, useSocket } from '@utils';
+import { replaceHtml } from '@utils';
 
 export default {
   components: {
@@ -122,7 +122,7 @@ export default {
   setup() {
     const toast = useToast();
     const moment = window.moment;
-    const socket = useSocket();
+    const socket = window.socket;
 
     onMounted(() => {
       fetchJobs();

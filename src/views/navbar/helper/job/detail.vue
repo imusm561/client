@@ -167,7 +167,7 @@ import Empty from '@components/Empty';
 import Comment from '@components/Comment';
 import i18n from '@utils/i18n';
 import { onMounted, onUnmounted, ref, watch, reactive } from 'vue';
-import { useRouter, getChartColorsArray, useSocket, getUserInfo } from '@utils';
+import { useRouter, getChartColorsArray, getUserInfo } from '@utils';
 import { getJobInfo, getJobLog, executeJob } from '@api/job';
 import useJob from './useJob';
 import MonacoEditor from '@components/MonacoEditor';
@@ -189,7 +189,7 @@ export default {
     const { route } = useRouter();
     const toast = useToast();
     const moment = window.moment;
-    const socket = useSocket();
+    const socket = window.socket;
 
     const job = ref({});
 

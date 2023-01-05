@@ -152,8 +152,7 @@
 import { defineComponent, computed, ref, nextTick, onMounted, onUnmounted } from 'vue';
 import SparkMD5 from 'spark-md5';
 import QRCode from 'qrcodejs2';
-import router from '@router';
-import { isMobile, useSocket, encryptData, getFileSuffix, size2Str, copyToClipboard } from '@utils';
+import { useRouter, isMobile, encryptData, getFileSuffix, size2Str, copyToClipboard } from '@utils';
 import store from '@store';
 import { mergeFile, addUpload } from '@api/file';
 import { useToast } from 'vue-toastification';
@@ -208,6 +207,7 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+    const { router } = useRouter();
     const uploaderRef = ref(null);
     const fileUploadRef = ref(null);
     const folderUploadRef = ref(null);
@@ -435,7 +435,7 @@ export default defineComponent({
       document.body.removeChild(downloadElement);
     };
 
-    const socket = useSocket();
+    const socket = window.socket;
 
     onMounted(() => {
       socket.on('fileChanged', ({ type, code, file }) => {

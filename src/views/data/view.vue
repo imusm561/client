@@ -347,7 +347,7 @@
 import Breadcrumb from '@/layouts/breadcrumb';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import store from '@store';
-import { useRouter, useSocket, getUserInfo, resolveColumnTitle, replaceVariables, generateFlowByCurrentUser, getDataByFormula, isEmpty, hashData } from '@utils';
+import { useRouter, getUserInfo, resolveColumnTitle, replaceVariables, generateFlowByCurrentUser, getDataByFormula, isEmpty, hashData } from '@utils';
 import { getDataView, getDataTitle, updateFlow } from '@api/data';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -405,7 +405,7 @@ export default {
   setup() {
     const { route } = useRouter();
     const toast = useToast();
-    const socket = useSocket();
+    const socket = window.socket;
 
     const form = ref([]);
     const columns = ref([]);

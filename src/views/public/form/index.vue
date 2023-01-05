@@ -106,7 +106,7 @@
 import { onMounted, ref, computed, watch } from 'vue';
 import { createData } from '@api/data';
 import { getPubForm } from '@api/pub';
-import { useRouter, useSocket, replaceVariables, getDataByFormula, getRulesByFormula, deepCompare } from '@utils';
+import { useRouter, replaceVariables, getDataByFormula, getRulesByFormula, deepCompare } from '@utils';
 
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -154,7 +154,7 @@ export default {
   },
   setup() {
     const { route } = useRouter();
-    const socket = useSocket();
+    const socket = window.socket;
     const toast = useToast();
 
     const pub = ref({});

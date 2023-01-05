@@ -578,7 +578,7 @@
 
 <script>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { replaceHtml, useRouter, useSocket, getUserInfo, encryptData, decryptData } from '@utils';
+import { replaceHtml, useRouter, getUserInfo, encryptData, decryptData } from '@utils';
 import store from '@store';
 import CKEditor from '@components/CKEditor';
 import Uploader from '@components/Uploader';
@@ -596,7 +596,7 @@ export default {
   setup() {
     const toast = useToast();
     const { route } = useRouter();
-    const socket = useSocket();
+    const socket = window.socket;
     const moment = window.moment;
 
     const new_mail = ref({
