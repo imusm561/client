@@ -184,6 +184,23 @@
                         </VueSelect>
                       </div>
                     </div>
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="zipcodeInput" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.address') }}</label>
+                        <input type="text" class="form-control" :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.address')" v-model="user.address" />
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="zipcodeInput" class="form-label" data-bs-toggle="dropdown" id="bindDropdownBtn">
+                          <span class="cursor-pointer text-info text-decoration-underline">OpenID</span>
+                        </label>
+                        <ul class="dropdown-menu p-1">
+                          <img :key="qr_key" :src="qr_src || require('@/assets/images/qr/qr.png')" width="200" height="200" />
+                        </ul>
+                        <input type="text" class="form-control" placeholder="OpenID" v-model="user.openid" disabled />
+                      </div>
+                    </div>
                     <div class="col-lg-12">
                       <div class="mb-3">
                         <label for="skillsInput" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.skills') }}</label>
@@ -195,12 +212,6 @@
                             <em v-else style="opacity: 0.5">{{ $t('components.vs.generateSkill') }}</em>
                           </template>
                         </VueSelect>
-                      </div>
-                    </div>
-                    <div class="col-lg-12">
-                      <div class="mb-3">
-                        <label for="zipcodeInput" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.address') }}</label>
-                        <input type="text" class="form-control" :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.address')" v-model="user.address" />
                       </div>
                     </div>
                     <div class="col-lg-12">
@@ -377,11 +388,12 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, inject } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
+import { getAuthQr } from '@api/auth';
 import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
-import { useRouter, clearUserData, deepCompare, hashData } from '@utils';
+import { useRouter, clearUserData, deepCompare, hashData, arrayBufferToBase64 } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import FlatPickr from '@components/FlatPickr';
@@ -395,9 +407,30 @@ export default {
   setup() {
     const { router } = useRouter();
     const toast = useToast();
+    const socket = window.socket;
+    const reload = inject('reload');
+
     const user = ref(JSON.parse(JSON.stringify(store.state.user.data)));
 
     const login_history = ref([]);
+
+    const qr_key = ref(null);
+    const qr_src = ref(null);
+
+    const generateQRCode = () => {
+      qr_key.value = Math.random().toString(36).slice(-6);
+      qr_src.value = null;
+
+      getAuthQr({
+        key: qr_key.value,
+        id: user.value.id,
+      }).then(({ code, data: { data: arrayBuffer } }) => {
+        if (code === 200) {
+          qr_src.value = `data:image/jpeg;base64,${arrayBufferToBase64(arrayBuffer)}`;
+        }
+      });
+    };
+
     onMounted(() => {
       getUserLogs({ type: 1 }).then(({ code, data, msg }) => {
         if (code === 200) {
@@ -413,6 +446,31 @@ export default {
           });
         }
       });
+
+      const bindDropdownBtn = document.getElementById('bindDropdownBtn');
+      if (bindDropdownBtn) {
+        bindDropdownBtn.addEventListener('show.bs.dropdown', () => {
+          generateQRCode();
+        });
+        bindDropdownBtn.addEventListener('hide.bs.dropdown', () => {
+          qr_key.value = null;
+          qr_src.value = null;
+        });
+      }
+
+      socket.on('BindQRCode', ({ key }) => {
+        if (key === qr_key.value && bindDropdownBtn) {
+          reload();
+        }
+      });
+    });
+
+    onUnmounted(() => {
+      const bindDropdownBtn = document.getElementById('bindDropdownBtn');
+      if (bindDropdownBtn) {
+        bindDropdownBtn.removeEventListener('show.bs.dropdown', () => {});
+        bindDropdownBtn.removeEventListener('hide.bs.dropdown', () => {});
+      }
     });
 
     const resolveDeviceIcon = computed(() => {
@@ -494,6 +552,10 @@ export default {
 
       uaParser,
       login_history,
+
+      qr_key,
+      qr_src,
+
       resolveDeviceIcon,
 
       currentpassword,

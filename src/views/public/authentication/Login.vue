@@ -115,8 +115,8 @@
 
                     <div v-show="logintype === 'scan_qrcode'">
                       <div class="text-center">
-                        <h2 v-if="qr_scaned" class="coming-soon-text">Coming Soon...</h2>
-                        <img v-else id="loginQRCode" width="250" height="250" />
+                        <div v-if="qr_scaned" class="fs-22" style="margin: 117px 0">{{ $t('public.authentication.login.qrScaned.authorization') }}</div>
+                        <img v-else-if="qr_src" :key="qr_key" :src="qr_src" width="243" height="243" />
                       </div>
                     </div>
                   </Form>
@@ -158,8 +158,9 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, nextTick, onUnmounted } from 'vue';
-import { getQRCode, userLogin, getUserData } from '@api/user';
+import { ref, computed, onMounted, onUnmounted, watch, reactive } from 'vue';
+import { userLogin, getUserData } from '@api/user';
+import { getAuthQr } from '@api/auth';
 import { sendVerificationCode } from '@api/com/sms';
 import { arrayBufferToBase64, useRouter, hashData } from '@utils';
 import store from '@store';
@@ -171,7 +172,7 @@ export default {
     const { router, route } = useRouter();
     const socket = window.socket;
 
-    const types = ref([
+    const types = reactive([
       {
         icon: 'mdi-account',
         name: 'account_password',
@@ -183,46 +184,62 @@ export default {
         class: 'btn-danger',
       },
     ]);
-    const logintype = ref(types.value[0].name);
 
+    const logintype = ref(types[0].name);
+
+    const qr_key = ref(null);
+    const qr_src = ref(null);
     const qr_scaned = ref(false);
-    const qr_scene = Math.random().toString(36).slice(-6);
+
+    watch(
+      () => logintype.value,
+      (newVal, oldVal) => {
+        if (oldVal === 'scan_qrcode' && newVal != oldVal) {
+          generateQRCode();
+        }
+      },
+      { immediate: true },
+    );
+
+    const generateQRCode = () => {
+      qr_key.value = Math.random().toString(36).slice(-6);
+      qr_src.value = null;
+      qr_scaned.value = false;
+
+      getAuthQr({
+        key: qr_key.value,
+        id: 0,
+      }).then(({ code, data: { data: arrayBuffer } }) => {
+        if (code === 200) {
+          if (types.findIndex((type) => type.name === 'scan_qrcode') === -1)
+            types.push({
+              icon: 'mdi-wechat',
+              name: 'scan_qrcode',
+              class: 'btn-success',
+            });
+          qr_src.value = `data:image/jpeg;base64,${arrayBufferToBase64(arrayBuffer)}`;
+        }
+      });
+    };
 
     onMounted(() => {
-      getQRCode({
-        scene: qr_scene,
-      }).then(({ code, data }) => {
-        if (code === 200 && data?.type === 'Buffer') {
-          const arrayBuffer = data.data;
-          socket.on('ScanQRCode', ({ scene }) => {
-            if (logintype.value === 'scan_qrcode' && scene === qr_scene) {
-              qr_scaned.value = true;
-            }
-          });
-          socket.on('QRCodeLogin', ({ scene, token }) => {
-            if (logintype.value === 'scan_qrcode' && qr_scaned.value === true && scene === qr_scene) {
-              // Set access token in localStorage so axios interceptor can use it
-              localStorage.setItem('accessToken', token);
-              // Getting user information
-              getUserData().then(() => {
-                // Redirect to home or query.redirect
-                router.replace(route.value.query.redirect ? { path: route.value.query.redirect } : '/');
-              });
-            }
-          });
-
-          types.value.push({
-            icon: 'mdi-wechat',
-            name: 'scan_qrcode',
-            class: 'btn-success',
-          });
-
-          nextTick(() => {
-            const img = document.getElementById('loginQRCode');
-            img.src = `data:image/jpeg;base64,${arrayBufferToBase64(arrayBuffer)}`;
+      socket.on('ScanQRCode', ({ key }) => {
+        if (logintype.value === 'scan_qrcode' && key === qr_key.value) {
+          qr_scaned.value = true;
+        }
+      });
+      socket.on('QRCodeLogin', ({ key, token }) => {
+        if (logintype.value === 'scan_qrcode' && qr_scaned.value === true && key === qr_key.value) {
+          // Set access token in localStorage so axios interceptor can use it
+          localStorage.setItem('accessToken', token);
+          // Getting user information
+          getUserData().then(() => {
+            // Redirect to home or query.redirect
+            router.replace(route.value.query.redirect ? { path: route.value.query.redirect } : '/');
           });
         }
       });
+      generateQRCode();
     });
 
     onUnmounted(() => {
@@ -314,6 +331,8 @@ export default {
       types,
       logintype,
 
+      qr_key,
+      qr_src,
       qr_scaned,
 
       username,

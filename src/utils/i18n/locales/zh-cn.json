@@ -502,6 +502,7 @@
   "public.authentication.login.form.resendVerificationCodeCountDown": "{count}秒后重新发送",
   "public.authentication.login.form.code": "验证码",
   "public.authentication.login.form.signInWith": "其他登录方式",
+  "public.authentication.login.qrScaned.text": "等待授权...",
 
   "public.authentication.forgotPassword.title": "忘记密码",
   "public.authentication.forgotPassword.tip": "重置{sys}密码",
