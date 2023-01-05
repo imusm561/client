@@ -2,6 +2,10 @@ import axios from '@utils/axios';
 import store from '@store';
 import { generateApiQuery } from '@utils';
 
+export const getQRCode = (params) => {
+  return axios.get('/cor/user/qrcode' + generateApiQuery(params));
+};
+
 export const userLogin = (data) => {
   return axios.post('/cor/user/login', data);
 };

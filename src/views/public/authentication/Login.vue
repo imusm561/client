@@ -113,9 +113,10 @@
                       </div>
                     </div>
 
-                    <div v-else-if="logintype === 'scan_wechat_qr'">
+                    <div v-show="logintype === 'scan_qrcode'">
                       <div class="text-center">
-                        <h2 class="coming-soon-text">Coming Soon...</h2>
+                        <h2 v-if="qr_scaned" class="coming-soon-text">Coming Soon...</h2>
+                        <img v-else id="loginQRCode" width="250" height="250" />
                       </div>
                     </div>
                   </Form>
@@ -157,16 +158,19 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
-import { userLogin, getUserData } from '@api/user';
+import { ref, computed, onMounted, nextTick, onUnmounted } from 'vue';
+import { getQRCode, userLogin, getUserData } from '@api/user';
 import { sendVerificationCode } from '@api/com/sms';
-import { useRouter, hashData } from '@utils';
+import { arrayBufferToBase64, useRouter, hashData } from '@utils';
 import store from '@store';
 export default {
   page: {
     title: 'Login',
   },
   setup() {
+    const { router, route } = useRouter();
+    const socket = window.socket;
+
     const types = ref([
       {
         icon: 'mdi-account',
@@ -178,13 +182,53 @@ export default {
         name: 'sms_verification',
         class: 'btn-danger',
       },
-      {
-        icon: 'mdi-wechat',
-        name: 'scan_wechat_qr',
-        class: 'btn-success',
-      },
     ]);
     const logintype = ref(types.value[0].name);
+
+    const qr_scaned = ref(false);
+    const qr_scene = Math.random().toString(36).slice(-6);
+
+    onMounted(() => {
+      getQRCode({
+        scene: qr_scene,
+      }).then(({ code, data }) => {
+        if (code === 200 && data?.type === 'Buffer') {
+          const arrayBuffer = data.data;
+          socket.on('ScanQRCode', ({ scene }) => {
+            if (logintype.value === 'scan_qrcode' && scene === qr_scene) {
+              qr_scaned.value = true;
+            }
+          });
+          socket.on('QRCodeLogin', ({ scene, token }) => {
+            if (logintype.value === 'scan_qrcode' && qr_scaned.value === true && scene === qr_scene) {
+              // Set access token in localStorage so axios interceptor can use it
+              localStorage.setItem('accessToken', token);
+              // Getting user information
+              getUserData().then(() => {
+                // Redirect to home or query.redirect
+                router.replace(route.value.query.redirect ? { path: route.value.query.redirect } : '/');
+              });
+            }
+          });
+
+          types.value.push({
+            icon: 'mdi-wechat',
+            name: 'scan_qrcode',
+            class: 'btn-success',
+          });
+
+          nextTick(() => {
+            const img = document.getElementById('loginQRCode');
+            img.src = `data:image/jpeg;base64,${arrayBufferToBase64(arrayBuffer)}`;
+          });
+        }
+      });
+    });
+
+    onUnmounted(() => {
+      socket.removeListener('ScanQRCode');
+      socket.removeListener('QRCodeLogin');
+    });
 
     const username = ref('');
     const password = ref('');
@@ -224,7 +268,6 @@ export default {
       }
     };
 
-    const { router, route } = useRouter();
     const canSubmit = ref(true);
     const handleFormSubmit = async () => {
       if (canSubmit.value) {
@@ -270,6 +313,8 @@ export default {
     return {
       types,
       logintype,
+
+      qr_scaned,
 
       username,
       password,
