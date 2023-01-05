@@ -380,8 +380,8 @@
 import { ref, onMounted, computed } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
-import { useRouter, uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
-import { clearUserData, deepCompare, hashData } from '@utils';
+import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
+import { useRouter, clearUserData, deepCompare, hashData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import FlatPickr from '@components/FlatPickr';
