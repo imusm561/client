@@ -3,13 +3,13 @@ export default [
   {
     path: '/user/profile',
     name: 'profile',
-    meta: { title: 'Profile', auth: [] },
+    meta: { title: 'layout.navbar.user.dropdown.profile', auth: [] },
     component: () => import('@/views/navbar/user/profile'),
   },
   {
     path: '/user/setting',
     name: 'setting',
-    meta: { title: 'Setting', auth: [] },
+    meta: { title: 'layout.navbar.user.dropdown.setting', auth: [] },
     component: () => import('@/views/navbar/user/setting'),
   },
 ];

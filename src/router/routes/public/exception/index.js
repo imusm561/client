@@ -4,7 +4,7 @@ export default [
     name: 'permissionDenied',
     component: () => import('@/views/public/exception/403'),
     meta: {
-      title: 'Permission Denied',
+      title: 'public.exception.403',
       layout: 'blank',
     },
   },
@@ -13,7 +13,7 @@ export default [
     name: 'notFound',
     component: () => import('@/views/public/exception/404'),
     meta: {
-      title: 'Page Not Found',
+      title: 'public.exception.404',
       layout: 'blank',
     },
   },
@@ -22,7 +22,7 @@ export default [
     name: 'serverError',
     component: () => import('@/views/public/exception/500'),
     meta: {
-      title: 'Internal Server Error',
+      title: 'public.exception.500',
       layout: 'blank',
     },
   },

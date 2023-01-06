@@ -4,7 +4,7 @@ export default [
     name: 'uploader',
     component: () => import('@/views/public/uploader'),
     meta: {
-      title: 'Uploader',
+      title: 'public.uploader',
       layout: 'blank',
     },
   },

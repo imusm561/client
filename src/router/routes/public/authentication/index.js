@@ -4,7 +4,7 @@ export default [
     name: 'login',
     component: () => import('@/views/public/authentication/Login.vue'),
     meta: {
-      title: 'Login',
+      title: 'public.authentication.login',
       layout: 'blank',
     },
   },
@@ -13,7 +13,7 @@ export default [
     name: 'forgotPassword',
     component: () => import('@/views/public/authentication/ForgotPassword.vue'),
     meta: {
-      title: 'Forgot Password',
+      title: 'public.authentication.forgotPassword',
       layout: 'blank',
     },
   },

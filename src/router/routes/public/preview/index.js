@@ -4,7 +4,7 @@ export default [
     name: 'preview',
     component: () => import('@/views/public/preview'),
     meta: {
-      title: 'Preview',
+      title: 'public.preview',
       layout: 'blank',
     },
   },

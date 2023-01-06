@@ -497,6 +497,7 @@
   "component.comment.deleteCommentModal.cancel": "Cancel",
   "component.comment.deleteCommentModal.confirmed": "Yes, Delete It!",
 
+  "public.authentication.login": "Login",
   "public.authentication.login.title": "Welcome Back",
   "public.authentication.login.tip": "Sign in to continue to {sys}",
   "public.authentication.login.form.username": "Username",
@@ -510,6 +511,7 @@
   "public.authentication.login.form.signInWith": "Sign in with",
   "public.authentication.login.qrScaned.authorization": "Waiting for authorization...",
 
+  "public.authentication.forgotPassword": "Forgot Password",
   "public.authentication.forgotPassword.title": "Forgot Password?",
   "public.authentication.forgotPassword.tip": "Reset password with {sys}",
   "public.authentication.forgotPassword.form.phone": "Phone",
@@ -522,14 +524,17 @@
   "public.authentication.forgotPassword.form.tontent": "Wait, I remember my password...",
   "public.authentication.forgotPassword.form.clickHere": "Click here",
 
+  "public.exception.403": "Permission Denied",
   "public.exception.403.title": "Permission Denied!",
   "public.exception.403.msg": "You have no permission to reach this page!",
   "public.exception.403.btn": "Back to home",
 
+  "public.exception.404": "Page not Found",
   "public.exception.404.title": "Page not Found!",
   "public.exception.404.msg": "The page you are looking for is not found!",
   "public.exception.404.btn": "Back to home",
 
+  "public.exception.500": "Internal Server Error",
   "public.exception.500.title": "Internal Server Error!",
   "public.exception.500.msg": "We're not exactly sure what happened, but our servers say something is wrong.",
   "public.exception.500.btn": "Back to home",
@@ -537,8 +542,10 @@
   "public.form.submit": "Submit",
   "public.form.result.submitAgain": "Submit Again",
 
+  "public.preview": "Preview",
   "public.preview.downloading": "Downloading...",
 
+  "public.uploader": "Uploader",
   "public.uploader.code": "Code",
   "public.uploader.tips": "Tips",
   "public.uploader.tips.content": "Please confirm the upload code before starting the upload and do not close the qrcode until the upload is complete!",

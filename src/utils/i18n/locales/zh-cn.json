@@ -497,6 +497,7 @@
   "component.comment.deleteCommentModal.cancel": "取消",
   "component.comment.deleteCommentModal.confirmed": "确定并删除！",
 
+  "public.authentication.login": "登录",
   "public.authentication.login.title": "欢迎回来",
   "public.authentication.login.tip": "登录并使用{sys}",
   "public.authentication.login.form.username": "用户名",
@@ -510,7 +511,8 @@
   "public.authentication.login.form.signInWith": "其他登录方式",
   "public.authentication.login.qrScaned.text": "等待授权...",
 
-  "public.authentication.forgotPassword.title": "忘记密码",
+  "public.authentication.forgotPassword": "忘记密码",
+  "public.authentication.forgotPassword.title": "忘记密码？",
   "public.authentication.forgotPassword.tip": "重置{sys}密码",
   "public.authentication.forgotPassword.form.phone": "手机号",
   "public.authentication.forgotPassword.form.resendVerificationCodeCountDown": "{count}秒后重新发送",
@@ -522,14 +524,17 @@
   "public.authentication.forgotPassword.form.tontent": "稍等，好像想起来密码是什么了",
   "public.authentication.forgotPassword.form.clickHere": "点击此处",
 
+  "public.exception.403": "无权访问",
   "public.exception.403.title": "无权访问！",
   "public.exception.403.msg": "你没有权限访问此地址！",
   "public.exception.403.btn": "返回首页",
 
+  "public.exception.404": "页面未找到",
   "public.exception.404.title": "页面未找到！",
   "public.exception.404.msg": "未找到你要找的页面！",
   "public.exception.404.btn": "返回首页",
 
+  "public.exception.500": "服务端错误",
   "public.exception.500.title": "服务端错误!",
   "public.exception.500.msg": "我也不知道发生了什么，服务端好像出现了点问题...",
   "public.exception.500.btn": "返回首页",
@@ -537,8 +542,10 @@
   "public.form.submit": "提交",
   "public.form.result.submitAgain": "继续提交",
 
+  "public.preview": "文件预览",
   "public.preview.downloading": "下载中...",
 
+  "public.uploader": "上传",
   "public.uploader.code": "上传码",
   "public.uploader.tips": "提示",
   "public.uploader.tips.content": "在开始上传前请先确认上传码是否正确，并确保在上传完成之前二维码不要被关闭！",
