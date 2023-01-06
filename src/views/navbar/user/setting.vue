@@ -195,7 +195,7 @@
                         <label for="zipcodeInput" class="d-flex form-label justify-content-between">
                           <span class="cursor-pointer text-primary text-decoration-underline" data-bs-toggle="dropdown" id="bindDropdownBtn">OpenID</span>
                           <ul class="dropdown-menu p-1">
-                            <img :key="qr_key" :src="qr_src || require('@/assets/images/qr/qr.png')" width="200" height="200" />
+                            <img :key="qr_key" :src="qr_src || require('@/assets/images/gif/loading.gif')" width="200" height="200" :style="{ padding: qr_src ? '5%' : '40%' }" />
                           </ul>
                           <span v-if="user.openid" class="cursor-pointer text-danger" data-bs-toggle="modal" data-bs-target="#unBindConfirmModal">Unbind</span>
                         </label>

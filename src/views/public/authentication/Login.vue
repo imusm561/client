@@ -116,7 +116,7 @@
                     <div v-show="logintype === 'scan_qrcode'">
                       <div class="text-center">
                         <div v-if="qr_scaned" class="fs-22" style="margin: 117px 0">{{ $t('public.authentication.login.qrScaned.authorization') }}</div>
-                        <img v-else-if="qr_src" :key="qr_key" :src="qr_src" width="243" height="243" />
+                        <img v-else :key="qr_key" :src="qr_src || require('@/assets/images/gif/loading.gif')" width="243" height="243" :style="{ padding: qr_src ? '5%' : '25%' }" />
                       </div>
                     </div>
                   </Form>
