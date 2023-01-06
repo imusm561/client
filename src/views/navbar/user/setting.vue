@@ -208,7 +208,7 @@
                             <img :key="qr_key" :src="qr_src || require('@/assets/images/gif/loading.gif')" width="200" height="200" :style="{ padding: qr_src ? '5%' : '40%' }" />
                           </ul>
                         </label>
-                        <input type="text" class="form-control" placeholder="OpenID" v-model="user.openid" />
+                        <input type="text" class="form-control" placeholder="OpenID" v-model="user.openid" disabled />
                       </div>
                     </div>
                     <div class="col-lg-12">
