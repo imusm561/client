@@ -65,3 +65,7 @@ export const createUser = (data) => {
 export const getUserHome = () => {
   return axios.get('/cor/user/home');
 };
+
+export const unbindUser = () => {
+  return axios.post('/cor/user/unbind');
+};

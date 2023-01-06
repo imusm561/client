@@ -475,6 +475,10 @@
   "layout.navbar.user.dropdown.setting.appNotification.offline.desc": "Get real-time offline alerts to protect the changes you make from being lost due to network problems.",
   "layout.navbar.user.dropdown.setting.save": "Save",
   "layout.navbar.user.dropdown.setting.save.success": "Save successfully!",
+  "layout.navbar.user.dropdown.setting.unBindConfirmModal.title": "Unbind Confirm",
+  "layout.navbar.user.dropdown.setting.unBindConfirmModal.confirm": "Are you sure to unbind this account ?",
+  "layout.navbar.user.dropdown.setting.unBindConfirmModal.cancel": "Cancel",
+  "layout.navbar.user.dropdown.setting.unBindConfirmModal.confirmed": "Confirm",
 
   "layout.navbar.user.dropdown.fullScreen": "Full Screen",
   "layout.navbar.user.dropdown.fullScreen.exit": "Exit Full Screen",

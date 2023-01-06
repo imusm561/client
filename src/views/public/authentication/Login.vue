@@ -208,7 +208,6 @@ export default {
 
       getAuthQr({
         key: qr_key.value,
-        id: 0,
       }).then(({ code, data: { data: arrayBuffer } }) => {
         if (code === 200) {
           if (types.findIndex((type) => type.name === 'scan_qrcode') === -1)

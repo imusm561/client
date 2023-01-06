@@ -192,12 +192,13 @@
                     </div>
                     <div class="col-lg-6">
                       <div class="mb-3">
-                        <label for="zipcodeInput" class="form-label" data-bs-toggle="dropdown" id="bindDropdownBtn">
-                          <span class="cursor-pointer text-info text-decoration-underline">OpenID</span>
+                        <label for="zipcodeInput" class="d-flex form-label justify-content-between">
+                          <span class="cursor-pointer text-primary text-decoration-underline" data-bs-toggle="dropdown" id="bindDropdownBtn">OpenID</span>
+                          <ul class="dropdown-menu p-1">
+                            <img :key="qr_key" :src="qr_src || require('@/assets/images/qr/qr.png')" width="200" height="200" />
+                          </ul>
+                          <span v-if="user.openid" class="cursor-pointer text-danger" data-bs-toggle="modal" data-bs-target="#unBindConfirmModal">Unbind</span>
                         </label>
-                        <ul class="dropdown-menu p-1">
-                          <img :key="qr_key" :src="qr_src || require('@/assets/images/qr/qr.png')" width="200" height="200" />
-                        </ul>
                         <input type="text" class="form-control" placeholder="OpenID" v-model="user.openid" disabled />
                       </div>
                     </div>
@@ -384,6 +385,27 @@
         </div>
       </div>
     </div>
+    <div id="unBindConfirmModal" class="modal fade zoomIn">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mt-2 text-center">
+              <div class="fs-15 mx-4 mx-sm-5">
+                <h4>{{ $t('layout.navbar.user.dropdown.setting.unBindConfirmModal.title') }}</h4>
+                <p class="text-muted mx-4 mb-0">{{ $t('layout.navbar.user.dropdown.setting.unBindConfirmModal.confirm') }}</p>
+              </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{ $t('layout.navbar.user.dropdown.setting.unBindConfirmModal.cancel') }}</button>
+              <button type="button" class="btn w-sm btn-danger" data-bs-dismiss="modal" @click="handleUnbindUser">{{ $t('layout.navbar.user.dropdown.setting.unBindConfirmModal.confirmed') }}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -392,7 +414,7 @@ import { ref, onMounted, onUnmounted, computed, inject } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
 import { getAuthQr } from '@api/auth';
-import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
+import { uploadAvatar, updateUser, changePassword, getUserLogs, unbindUser } from '@api/user';
 import { useRouter, clearUserData, deepCompare, hashData, arrayBufferToBase64 } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -459,7 +481,7 @@ export default {
       }
 
       socket.on('BindQRCode', ({ key }) => {
-        if (key === qr_key.value && bindDropdownBtn) {
+        if (key === qr_key.value) {
           reload();
         }
       });
@@ -480,6 +502,23 @@ export default {
         else return 'mdi-desktop-mac';
       };
     });
+
+    const handleUnbindUser = () => {
+      unbindUser().then(({ code, msg }) => {
+        if (code === 200) {
+          reload();
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    };
 
     const currentpassword = ref('');
     const newpassword = ref('');
@@ -555,6 +594,8 @@ export default {
 
       qr_key,
       qr_src,
+
+      handleUnbindUser,
 
       resolveDeviceIcon,
 

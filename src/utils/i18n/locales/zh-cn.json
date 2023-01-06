@@ -475,6 +475,10 @@
   "layout.navbar.user.dropdown.setting.appNotification.offline.desc": "获得实时离线提醒，以保护你所做的更改不会因网络问题而丢失。",
   "layout.navbar.user.dropdown.setting.save": "保存",
   "layout.navbar.user.dropdown.setting.save.success": "保存成功！",
+  "layout.navbar.user.dropdown.setting.unBindConfirmModal.title": "解绑确认",
+  "layout.navbar.user.dropdown.setting.unBindConfirmModal.confirm": "确定要解绑这个账号吗",
+  "layout.navbar.user.dropdown.setting.unBindConfirmModal.cancel": "取消",
+  "layout.navbar.user.dropdown.setting.unBindConfirmModal.confirmed": "确定",
 
   "layout.navbar.user.dropdown.fullScreen": "网页全屏",
   "layout.navbar.user.dropdown.fullScreen.exit": "退出全屏",
