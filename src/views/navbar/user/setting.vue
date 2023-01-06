@@ -414,7 +414,7 @@ import { ref, onMounted, onUnmounted, computed, inject } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
 import { getAuthQr } from '@api/auth';
-import { uploadAvatar, updateUser, changePassword, getUserLogs, unbindUser } from '@api/user';
+import { uploadAvatar, updateUser, changePassword, getUserLogs, unbindUser, getUserData } from '@api/user';
 import { useRouter, clearUserData, deepCompare, hashData, arrayBufferToBase64 } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -480,8 +480,9 @@ export default {
         });
       }
 
-      socket.on('BindQRCode', ({ key }) => {
+      socket.on('BindQRCode', async ({ key }) => {
         if (key === qr_key.value) {
+          await getUserData();
           reload();
         }
       });
@@ -504,8 +505,9 @@ export default {
     });
 
     const handleUnbindUser = () => {
-      unbindUser().then(({ code, msg }) => {
+      unbindUser().then(async ({ code, msg }) => {
         if (code === 200) {
+          await getUserData();
           reload();
         } else {
           toast({
