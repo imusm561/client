@@ -186,20 +186,29 @@
                     </div>
                     <div class="col-lg-6">
                       <div class="mb-3">
-                        <label for="zipcodeInput" class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.address') }}</label>
+                        <label class="form-label">{{ $t('layout.navbar.user.dropdown.setting.personalDetails.address') }}</label>
                         <input type="text" class="form-control" :placeholder="$t('layout.navbar.user.dropdown.setting.personalDetails.address')" v-model="user.address" />
                       </div>
                     </div>
                     <div class="col-lg-6">
                       <div class="mb-3">
-                        <label for="zipcodeInput" class="d-flex form-label justify-content-between">
-                          <span class="cursor-pointer text-primary text-decoration-underline" data-bs-toggle="dropdown" id="bindDropdownBtn">OpenID</span>
+                        <label v-if="user.openid" class="d-flex form-label justify-content-between">
+                          <span>
+                            {{ $t('layout.navbar.user.dropdown.setting.personalDetails.openid') }}
+                          </span>
+                          <span class="cursor-pointer text-danger text-decoration-underline" data-bs-toggle="modal" data-bs-target="#unBindConfirmModal">
+                            {{ $t('layout.navbar.user.dropdown.setting.personalDetails.unbind') }}
+                          </span>
+                        </label>
+                        <label v-else class="form-label">
+                          <span class="cursor-pointer text-primary text-decoration-underline" data-bs-toggle="dropdown" id="bindDropdownBtn">
+                            {{ $t('layout.navbar.user.dropdown.setting.personalDetails.openid') }}
+                          </span>
                           <ul class="dropdown-menu p-1">
                             <img :key="qr_key" :src="qr_src || require('@/assets/images/gif/loading.gif')" width="200" height="200" :style="{ padding: qr_src ? '5%' : '40%' }" />
                           </ul>
-                          <span v-if="user.openid" class="cursor-pointer text-danger" data-bs-toggle="modal" data-bs-target="#unBindConfirmModal">Unbind</span>
                         </label>
-                        <input type="text" class="form-control" placeholder="OpenID" v-model="user.openid" disabled />
+                        <input type="text" class="form-control" placeholder="OpenID" v-model="user.openid" />
                       </div>
                     </div>
                     <div class="col-lg-12">

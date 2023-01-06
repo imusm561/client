@@ -456,6 +456,8 @@
   "layout.navbar.user.dropdown.setting.personalDetails.gender.female": "Female",
   "layout.navbar.user.dropdown.setting.personalDetails.skills": "Skills",
   "layout.navbar.user.dropdown.setting.personalDetails.address": "Address",
+  "layout.navbar.user.dropdown.setting.personalDetails.openid": "OpenID",
+  "layout.navbar.user.dropdown.setting.personalDetails.unbind": "Unbind",
   "layout.navbar.user.dropdown.setting.personalDetails.about": "About",
   "layout.navbar.user.dropdown.setting.changePassword": "Change Password",
   "layout.navbar.user.dropdown.setting.changePassword.currentPassoprd": "Current Passoprd",

@@ -456,6 +456,8 @@
   "layout.navbar.user.dropdown.setting.personalDetails.gender.female": "女",
   "layout.navbar.user.dropdown.setting.personalDetails.skills": "技能",
   "layout.navbar.user.dropdown.setting.personalDetails.address": "住址",
+  "layout.navbar.user.dropdown.setting.personalDetails.openid": "OpenID",
+  "layout.navbar.user.dropdown.setting.personalDetails.unbind": "解绑",
   "layout.navbar.user.dropdown.setting.personalDetails.about": "关于",
   "layout.navbar.user.dropdown.setting.changePassword": "更改密码",
   "layout.navbar.user.dropdown.setting.changePassword.currentPassoprd": "当前密码",
