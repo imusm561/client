@@ -51,7 +51,6 @@ router.beforeEach((to, from, next) => {
   const interval = setInterval(async () => {
     if (window.socket) {
       clearInterval(interval);
-
       const modelEl = document.getElementsByClassName('modal show')?.[0];
       if (modelEl) {
         modelEl.classList.remove('show');
@@ -93,6 +92,7 @@ router.beforeEach((to, from, next) => {
 });
 
 router.afterEach((to) => {
+  document.body.removeAttribute('style');
   const path = getListPath(to.path);
   const page = store.state.user.forms.find((item) => item.route && item.route.path == path);
   const interval = setInterval(() => {
