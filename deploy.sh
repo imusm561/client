@@ -33,21 +33,26 @@ if [ $? -eq 0 ]; then
                 if [ $? -eq 0 ]; then
 
                     echo -e "\033[$info Which hostname do you want to deploy to ? \033[0m" 
-                    select selection in "www.imusm.cn" "192.168.0.3:6610" "Input"; do
-                    break;
+                    select selection in "www.imusm.cn" "192.168.0.3:6610" "Input"
+                    do
+                        case $selection in 
+                            "www.imusm.cn")
+                                deploy_url="https://www.imusm.cn/cor/sys/deploy"
+                                break
+                                ;;
+                            "192.168.0.3:6610")
+                                deploy_url="https://192.168.0.3:6610/cor/sys/deploy"
+                                break
+                                ;;
+                            "Input")
+                                read -p "Enter Your Hostname: " hostname
+                                deploy_url="${hostname}/cor/sys/deploy"
+                                break
+                                ;;
+                            *)
+                                echo -e "\033[$error Wrong selection! Please reselect...\033[0m" 
+                        esac
                     done
-                    if [ "$selection" = "www.imusm.cn" ]; then
-                        deploy_url="https://www.imusm.cn/cor/sys/deploy"
-                    elif [ "$selection" = "192.168.0.3:6610" ]; then
-                        deploy_url="https://192.168.0.3:6610/cor/sys/deploy"
-                    elif [ "$selection" = "Input" ]; then
-                        read -p "Enter Your Hostname: " hostname
-                        deploy_url="${hostname}/cor/sys/deploy"
-                    else
-                        echo -e "\033[$error Wrong selection. \033[0m" 
-                        echo $(rm $fn.tar.gz)
-                        exit
-                    fi
 
                     echo -e "\033[$info The project will deploy to [$deploy_url] \033[0m"
                     echo $(curl -F "file=@$fn.tar.gz" -F "type=client" "$deploy_url" )
