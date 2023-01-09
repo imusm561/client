@@ -135,7 +135,12 @@
                   <div class="col-12">
                     <label class="form-label">{{ $t('app.calendar.viewAndEditEventModal.form.allDay') }}</label>
                     <div class="form-check form-switch form-switch-md">
-                      <input type="checkbox" class="form-check-input" :disabled="new Date(current_event.start).getTime() != new Date(current_event.end).getTime()" v-model="current_event.all_day" />
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        :disabled="$moment(current_event.start).format('YYYY-MM-DD') != $moment(current_event.end).format('YYYY-MM-DD')"
+                        v-model="current_event.all_day"
+                      />
                     </div>
                   </div>
                   <div class="col-12" id="event-time" v-if="!current_event.all_day">
@@ -233,7 +238,7 @@
                 {{ $t('app.calendar.viewAndEditEventModal.form.footer.delete') }}
               </span>
               <button type="submit" class="d-none" ref="submitEventBtn"></button>
-              <span type="submit" v-if="is_editing" class="btn btn-sm btn-success" @click="Object.keys(errors).length === 0 && $refs.submitEventBtn.click()">
+              <span v-if="is_editing" class="btn btn-sm btn-success" @click="Object.keys(errors).length === 0 && $refs.submitEventBtn.click()">
                 <i class="mdi mdi-content-save-outline"></i>
                 {{ current_event.id ? $t('app.calendar.viewAndEditEventModal.form.footer.save') : $t('app.calendar.viewAndEditEventModal.form.footer.create') }}
               </span>
