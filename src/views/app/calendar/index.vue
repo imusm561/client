@@ -171,7 +171,7 @@
                   </div>
                   <div class="col-12">
                     <label class="form-label">{{ $t('app.calendar.viewAndEditEventModal.form.location') }}</label>
-                    <Amap v-model="current_event.location" :placeholder="$t('app.calendar.viewAndEditEventModal.form.location')" />
+                    <Amap id="event-location" v-model="current_event.location" :placeholder="$t('app.calendar.viewAndEditEventModal.form.location')" />
                   </div>
                 </div>
               </div>

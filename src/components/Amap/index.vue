@@ -1,71 +1,69 @@
 <template>
-  <div>
-    <div class="position-relative">
-      <input type="text" class="form-control pe-5 text-truncate" :class="fieldClass" :placeholder="placeholder" :disabled="disabled" v-model="vModel" />
-      <button
-        v-if="$store.state.sys.cfg.amap && $store.state.sys.cfg.amap.map_key"
-        type="button"
-        class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
-        :disabled="disabled"
-        @click="handleShowAmap"
-      >
-        <i class="align-middle mdi mdi-map-search-outline"></i>
-      </button>
-    </div>
-    <button type="button" id="showAmapOffcanvasBtn" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#amapOffcanvas"></button>
-    <div class="offcanvas offcanvas-top" id="amapOffcanvas" style="height: 100vh">
-      <i id="hideAmapOffcanvasBtn" class="cursor-pointer fs-24 text-muted mdi mdi-close-box-outline position-absolute" style="z-index: 1; right: 5px" data-bs-dismiss="offcanvas" />
-      <div id="amap" class="w-100 h-100">
-        <div class="position-absolute p-2 search" style="z-index: 1">
-          <input type="text" class="form-control mb-2" :placeholder="$t('components.amap.search')" v-model="search_str" style="z-index: 1" @click="handleClickSearcher" @input="handleSearchTips" />
+  <div class="position-relative">
+    <input type="text" class="form-control pe-5 text-truncate" :class="fieldClass" :placeholder="placeholder" :disabled="disabled" v-model="vModel" />
+    <button
+      v-if="$store.state.sys.cfg.amap && $store.state.sys.cfg.amap.map_key"
+      type="button"
+      class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
+      :disabled="disabled"
+      @click="handleShowAmap"
+      data-bs-toggle="offcanvas"
+      :data-bs-target="`#amapOffcanvas_${id}`"
+    >
+      <i class="align-middle mdi mdi-map-search-outline"></i>
+    </button>
+    <div class="offcanvas offcanvas-top" :id="`amapOffcanvas_${id}`" style="height: 100vh">
+      <i :id="`hideAmapOffcanvas_${id}Btn`" class="cursor-pointer fs-24 text-muted mdi mdi-close-box-outline position-absolute" style="z-index: 1; right: 5px" data-bs-dismiss="offcanvas" />
+      <div class="position-absolute p-2 search" style="z-index: 1">
+        <input type="text" class="form-control mb-2" :placeholder="$t('components.amap.search')" v-model="search_str" style="z-index: 1" @click="handleClickSearcher" @input="handleSearchTips" />
 
-          <div class="list-group" data-simplebar style="max-height: 40vh; z-index: 1">
-            <div
-              class="list-group-item list-group-item-action cursor-pointer text-truncate"
-              v-for="(tip, index) in tips"
-              :key="index"
-              :title="`${tip.name} - ${tip.district}`"
-              @click="handleClickTip(tip)"
-            >
-              {{ tip.name }} - {{ tip.district }}
-            </div>
-            <div class="list-group-item list-group-item-action cursor-pointer p-2" :class="{ active: poi.id === position.id }" v-for="(poi, index) in pois" :key="index" @click="handleClickPoi(poi)">
-              <div class="d-flex align-items-center">
-                <div class="flex-shrink-0">
-                  <img
-                    :src="poi.photos ? poi.photos[0].url : require('@/assets/images/amap/amap.png')"
-                    :alt="poi.photos ? poi.photos[0].title : ''"
-                    class="avatar-sm rounded"
-                    @click.stop.prevent="
-                      () => {
-                        if (poi.photos)
-                          $viewerApi({
-                            options: {
-                              focus: false,
-                              movable: false,
-                            },
-                            images: poi.photos.map((photo) => {
-                              return photo.url;
-                            }),
-                          });
-                      }
-                    "
-                  />
-                </div>
-                <div class="flex-grow-1 ms-2" style="width: 85%">
-                  <h5 class="list-title fs-15 mb-1 text-truncate" :title="poi.name">{{ index + 1 }}. {{ poi.name }}</h5>
-                  <p class="list-text mb-0 fs-12 text-truncate" :title="poi.address">{{ poi.address }}</p>
-                </div>
+        <div class="list-group" data-simplebar style="max-height: 40vh; z-index: 1">
+          <div
+            class="list-group-item list-group-item-action cursor-pointer text-truncate"
+            v-for="(tip, index) in tips"
+            :key="index"
+            :title="`${tip.name} - ${tip.district}`"
+            @click="handleClickTip(tip)"
+          >
+            {{ tip.name }} - {{ tip.district }}
+          </div>
+          <div class="list-group-item list-group-item-action cursor-pointer p-2" :class="{ active: poi.id === position.id }" v-for="(poi, index) in pois" :key="index" @click="handleClickPoi(poi)">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <img
+                  :src="poi.photos ? poi.photos[0].url : require('@/assets/images/amap/amap.png')"
+                  :alt="poi.photos ? poi.photos[0].title : ''"
+                  class="avatar-sm rounded"
+                  @click.stop.prevent="
+                    () => {
+                      if (poi.photos)
+                        $viewerApi({
+                          options: {
+                            focus: false,
+                            movable: false,
+                          },
+                          images: poi.photos.map((photo) => {
+                            return photo.url;
+                          }),
+                        });
+                    }
+                  "
+                />
+              </div>
+              <div class="flex-grow-1 ms-2" style="width: 85%">
+                <h5 class="list-title fs-15 mb-1 text-truncate" :title="poi.name">{{ index + 1 }}. {{ poi.name }}</h5>
+                <p class="list-text mb-0 fs-12 text-truncate" :title="poi.address">{{ poi.address }}</p>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="position-absolute text-end text-dark p-3" style="z-index: 1; right: 0; bottom: 0" v-if="position">
-          <div class="cursor-pointer" @click="handleSelectPosition('address')">{{ position.address }}</div>
-          <div class="cursor-pointer" @click="handleSelectPosition('location')">{{ position.location.lng }},{{ position.location.lat }}</div>
-        </div>
       </div>
+
+      <div class="position-absolute text-end text-dark p-3" style="z-index: 1; right: 0; bottom: 0" v-if="position">
+        <div class="cursor-pointer" @click="handleSelectPosition('address')">{{ position.address }}</div>
+        <div class="cursor-pointer" @click="handleSelectPosition('location')">{{ position.location.lng }},{{ position.location.lat }}</div>
+      </div>
+      <div :id="`amap_${id}`" class="w-100 h-100"></div>
     </div>
   </div>
 </template>
@@ -79,6 +77,11 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 export default defineComponent({
   props: {
+    id: {
+      type: String,
+      default: () => '',
+      requried: true,
+    },
     modelValue: {
       type: String,
       default: () => '',
@@ -132,7 +135,7 @@ export default defineComponent({
     });
 
     const handleSelectPosition = (key) => {
-      document.getElementById('hideAmapOffcanvasBtn').click();
+      document.getElementById(`hideAmapOffcanvas_${props.id}Btn`).click();
       copyToClipboard(`${position.value.address}@${position.value.location.lng},${position.value.location.lat}`);
       if (key === 'location') vModel.value = `${position.value.location.lng},${position.value.location.lat}`;
       else vModel.value = position.value.address;
@@ -170,11 +173,9 @@ export default defineComponent({
         return;
       }
 
-      document.getElementById('showAmapOffcanvasBtn').click();
-
       amap =
         amap ||
-        new _instance.Map('amap', {
+        new _instance.Map(`amap_${props.id}`, {
           zoom: 15,
           showIndoorMap: true,
           // showIndoorMap: false,

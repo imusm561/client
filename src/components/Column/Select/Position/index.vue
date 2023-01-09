@@ -5,7 +5,7 @@
       <span v-if="column.alias" class="badge bg-primary ms-2">{{ column.alias }}</span>
     </label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
-    <Amap :placeholder="column.cfg.placeholder" />
+    <Amap id="column-design" :placeholder="column.cfg.placeholder" />
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
   <div v-else-if="type === 'EDIT'">
