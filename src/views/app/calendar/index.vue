@@ -515,6 +515,7 @@ export default {
     const calendarOptions = ref({
       locales: [en, zhCn],
       locale: store.state.sys.lang,
+      firstDay: 0,
       timeZone: 'local',
       droppable: true,
       navLinks: true,
