@@ -13,10 +13,10 @@
       </button>
     </div>
     <button type="button" id="showAmapOffCanvasBtn" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#amapOffCanvas"></button>
-    <div class="offcanvas offcanvas-top" tabindex="-1" id="amapOffCanvas" style="height: 100vh">
-      <i id="hideAmapOffCanvasBtn" class="cursor-pointer fs-36 mdi mdi-exit-to-app position-absolute" style="z-index: 1; right: 10px; bottom: 50px" data-bs-dismiss="offcanvas" />
+    <div class="offcanvas offcanvas-top" id="amapOffCanvas" style="height: 100vh">
+      <i id="hideAmapOffCanvasBtn" class="cursor-pointer fs-36 mdi mdi-exit-to-app position-absolute" style="z-index: 1; right: 6px; top: 0px" data-bs-dismiss="offcanvas" />
       <div id="amap" class="w-100 h-100">
-        <div class="position-absolute p-3 search" style="z-index: 1">
+        <div class="position-absolute p-2 search" style="z-index: 1">
           <input type="text" class="form-control mb-2" :placeholder="$t('components.amap.search')" v-model="search_str" style="z-index: 1" @click="handleClickSearcher" @input="handleSearchTips" />
 
           <div class="list-group" data-simplebar style="max-height: 40vh; z-index: 1">
@@ -321,7 +321,7 @@ export default defineComponent({
   width: 390px;
 
   @media (max-width: 800px) {
-    width: 100% !important;
+    width: 88% !important;
   }
 }
 </style>
