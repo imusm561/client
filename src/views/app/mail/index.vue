@@ -1102,7 +1102,7 @@ export default {
         try {
           new_mail.value = JSON.parse(decryptData(staged));
         } catch (error) {
-          console.log(error);
+          console.error(error);
         }
       }
       localStorage.removeItem(`staged_app_mail_${store.state.user.data.id}`);

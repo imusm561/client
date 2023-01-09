@@ -788,7 +788,7 @@ export default {
       try {
         data.value = JSON.parse(decryptData(staged));
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
       localStorage.removeItem(`staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`);
     };
