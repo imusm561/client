@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref } from 'vue';
+import { defineComponent, computed, ref, onMounted, onUnmounted } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
 import { isLngLat, copyToClipboard } from '@utils';
@@ -105,6 +105,23 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const toast = useToast();
+
+    onMounted(() => {
+      if (props.id === 'event-location') {
+        const amapOffcanvas = document.getElementById(`amapOffcanvas_${props.id}`);
+        amapOffcanvas.style['z-index'] = 1080;
+        amapOffcanvas.parentNode.removeChild(amapOffcanvas);
+        const viewAndEditEventModal = document.getElementById('viewAndEditEventModal');
+        viewAndEditEventModal.parentNode.insertBefore(amapOffcanvas, viewAndEditEventModal);
+      }
+    });
+
+    onUnmounted(() => {
+      if (props.id === 'event-location') {
+        const amapOffcanvas = document.getElementById(`amapOffcanvas_${props.id}`);
+        amapOffcanvas.parentNode.removeChild(amapOffcanvas);
+      }
+    });
 
     let _instance = null;
     let count = 0;
