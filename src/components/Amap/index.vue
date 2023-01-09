@@ -12,9 +12,9 @@
         <i class="align-middle mdi mdi-map-search-outline"></i>
       </button>
     </div>
-    <button type="button" id="showAmapOffCanvasBtn" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#amapOffCanvas"></button>
-    <div class="offcanvas offcanvas-top" id="amapOffCanvas" style="height: 100vh">
-      <i id="hideAmapOffCanvasBtn" class="cursor-pointer fs-24 text-muted mdi mdi-close-box-outline position-absolute" style="z-index: 1; right: 5px" data-bs-dismiss="offcanvas" />
+    <button type="button" id="showAmapOffcanvasBtn" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#amapOffcanvas"></button>
+    <div class="offcanvas offcanvas-top" id="amapOffcanvas" style="height: 100vh">
+      <i id="hideAmapOffcanvasBtn" class="cursor-pointer fs-24 text-muted mdi mdi-close-box-outline position-absolute" style="z-index: 1; right: 5px" data-bs-dismiss="offcanvas" />
       <div id="amap" class="w-100 h-100">
         <div class="position-absolute p-2 search" style="z-index: 1">
           <input type="text" class="form-control mb-2" :placeholder="$t('components.amap.search')" v-model="search_str" style="z-index: 1" @click="handleClickSearcher" @input="handleSearchTips" />
@@ -132,7 +132,7 @@ export default defineComponent({
     });
 
     const handleSelectPosition = (key) => {
-      document.getElementById('hideAmapOffCanvasBtn').click();
+      document.getElementById('hideAmapOffcanvasBtn').click();
       copyToClipboard(`${position.value.address}@${position.value.location.lng},${position.value.location.lat}`);
       if (key === 'location') vModel.value = `${position.value.location.lng},${position.value.location.lat}`;
       else vModel.value = position.value.address;
@@ -170,7 +170,7 @@ export default defineComponent({
         return;
       }
 
-      document.getElementById('showAmapOffCanvasBtn').click();
+      document.getElementById('showAmapOffcanvasBtn').click();
 
       amap =
         amap ||

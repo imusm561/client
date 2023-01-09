@@ -83,7 +83,7 @@
                         </div>
                         <div class="flex-grow-1 overflow-hidden">
                           <h5 class="text-truncate mb-0 fs-16">
-                            <a class="text-reset username" data-bs-toggle="offcanvas" href="#userProfileOffCanvas" aria-controls="userProfileOffCanvas">
+                            <a class="text-reset username" data-bs-toggle="offcanvas" href="#userProfileOffcanvas" aria-controls="userProfileOffcanvas">
                               {{ current_chat.fullname || current_chat.username }}
                             </a>
                           </h5>
@@ -106,8 +106,8 @@
                           <span
                             class="dropdown-item cursor-pointer d-block d-lg-none user-profile-show"
                             data-bs-toggle="offcanvas"
-                            data-bs-target="#userProfileOffCanvas"
-                            aria-controls="userProfileOffCanvas"
+                            data-bs-target="#userProfileOffcanvas"
+                            aria-controls="userProfileOffcanvas"
                           >
                             <i class="mdi mdi-information align-bottom text-muted me-2"></i>
                           </span>
@@ -205,7 +205,7 @@
       </div>
     </div>
 
-    <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="userProfileOffCanvas">
+    <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="userProfileOffcanvas">
       <div v-if="current_chat.id" class="offcanvas-body profile-offcanvas p-0">
         <div class="">
           <div class="team-settings">
