@@ -420,6 +420,10 @@ export default {
           labelKey: 'columns',
           iconKey: 'columns',
           toolPanel: 'agColumnsToolPanel',
+          toolPanelParams: {
+            suppressPivots: true,
+            suppressPivotMode: true,
+          },
           minWidth: 225,
           width: 225,
           maxWidth: 225,

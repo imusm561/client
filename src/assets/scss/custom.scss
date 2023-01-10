@@ -4,10 +4,6 @@
   }
 }
 
-.ag-pivot-mode-panel {
-  display: none !important;
-}
-
 input:-webkit-autofill {
   border: 1px solid var(--#{$variable-prefix}-body-color);
   box-shadow: 0 0 0px 1000px var(--#{$variable-prefix}-input-bg) inset;
