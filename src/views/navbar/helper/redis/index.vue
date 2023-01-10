@@ -16,7 +16,7 @@
                     {{ node.data.name }}
                   </span>
                   <span class="tree-node-actions ms-3">
-                    <i class="cursor-pointer fs-16 text-denger mdi mdi-delete-outline" data-bs-toggle="modal" data-bs-target="#confirmDeleteKeyModal"></i>
+                    <i class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline" data-bs-toggle="modal" data-bs-target="#confirmDeleteKeyModal"></i>
                   </span>
                 </span>
               </template>

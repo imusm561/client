@@ -21,7 +21,7 @@
             </span>
             <span v-if="!node.data.edit" class="tree-node-actions ms-3">
               <i class="cursor-pointer fs-16 text-primary mdi mdi-plus-box-outline" @click.stop="handleAddDept(node)"></i>
-              <i v-if="!node.data.children && node.data.pid !== 0" class="cursor-pointer fs-16 text-denger mdi mdi-delete-outline" @click.stop="handlePreDelDept(node)"></i>
+              <i v-if="!node.data.children && node.data.pid !== 0" class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline" @click.stop="handlePreDelDept(node)"></i>
             </span>
           </span>
         </template>

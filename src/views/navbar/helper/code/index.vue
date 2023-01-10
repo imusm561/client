@@ -41,7 +41,7 @@
                   <span v-if="!node.data.edit && dirs.some((dir) => node.data.path.includes(dir))" class="tree-node-actions ms-3">
                     <i v-if="node.data.type === 'directory'" class="cursor-pointer fs-16 text-primary mdi mdi-folder-plus-outline ms-1" @click.stop="handleCreate('directory', node)"></i>
                     <i v-if="node.data.type === 'directory'" class="cursor-pointer fs-16 text-primary mdi mdi-file-plus-outline ms-1" @click.stop="handleCreate('file', node)"></i>
-                    <i v-if="!dirs.includes(node.data.path)" class="cursor-pointer fs-16 text-denger mdi mdi-delete-outline ms-1" @click.stop="handleDeleteConfirm(node)"></i>
+                    <i v-if="!dirs.includes(node.data.path)" class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline ms-1" @click.stop="handleDeleteConfirm(node)"></i>
                   </span>
                 </span>
               </template>
