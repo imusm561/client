@@ -740,7 +740,7 @@
   "data.list.import.success": "成功导入 {count} 条数据",
   "data.list.sideBar.toolPanels.customFilters": "定制过滤",
   "data.list.sideBar.toolPanels.customFilters.search": "搜索...",
-  "data.list.sideBar.toolPanels.customFilters.prefabricated": "预制过滤",
+  "data.list.sideBar.toolPanels.customFilters.prefabricated": "预制过滤（发布）",
   "data.list.sideBar.toolPanels.customFilters.prefabricated.createdByMe": "我创建的",
   "data.list.sideBar.toolPanels.customFilters.prefabricated.updatedByMe": "我更新的",
   "data.list.sideBar.toolPanels.customFilters.prefabricated.createdBeforeYesterday": "前天创建的",

@@ -740,7 +740,7 @@
   "data.list.import.success": "Successfully imported {count} record | Successfully imported {count} records",
   "data.list.sideBar.toolPanels.customFilters": "Custom Filters",
   "data.list.sideBar.toolPanels.customFilters.search": "Search...",
-  "data.list.sideBar.toolPanels.customFilters.prefabricated": "Prefabricated",
+  "data.list.sideBar.toolPanels.customFilters.prefabricated": "Prefabricated (Published)",
   "data.list.sideBar.toolPanels.customFilters.prefabricated.createdByMe": "Created By Me",
   "data.list.sideBar.toolPanels.customFilters.prefabricated.updatedByMe": "Updated By Me",
   "data.list.sideBar.toolPanels.customFilters.prefabricated.createdBeforeYesterday": "Created Before Yesterday",

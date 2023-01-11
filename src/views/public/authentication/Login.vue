@@ -208,15 +208,15 @@ export default {
 
       getAuthQr({
         key: qr_key.value,
-      }).then(({ code, data: { data: arrayBuffer } }) => {
+      }).then(({ code, data }) => {
         if (code === 200) {
-          if (types.findIndex((type) => type.name === 'scan_qrcode') === -1)
+          if (data?.data && types.findIndex((type) => type.name === 'scan_qrcode') === -1)
             types.push({
               icon: 'mdi-wechat',
               name: 'scan_qrcode',
               class: 'btn-success',
             });
-          qr_src.value = `data:image/jpeg;base64,${arrayBufferToBase64(arrayBuffer)}`;
+          qr_src.value = `data:image/jpeg;base64,${arrayBufferToBase64(data.data)}`;
         }
       });
     };

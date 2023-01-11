@@ -49,10 +49,10 @@
             <span
               class="ag-group-title ag-filter-toolpanel-group-title ms-1 text-truncate"
               style="cursor: pointer"
-              :title="`@${getUserInfo(item.created_by)?.fullname || item.created_by}\r\n${item.name}\r\n--------------------------------\r\n${JSON.stringify(item.model, null, 2)}`"
+              :title="`${item.name}@${getUserInfo(item.created_by)?.fullname || item.created_by}\r\n--------------------------------\r\n${JSON.stringify(item.model, null, 2)}`"
               @click="handleSetFilterModel(item)"
             >
-              {{ item.name }}
+              {{ item.name }}@{{ getUserInfo(item.created_by)?.fullname || item.created_by }}
             </span>
             <i
               v-if="item.created_by === $store.state.user.data.username"
@@ -171,6 +171,10 @@ export default defineComponent({
           id: 'createdByMe',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdByMe'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             created_by: {
               filterType: 'set',
               values: [store.state.user.data.username],
@@ -181,6 +185,10 @@ export default defineComponent({
           id: 'updatedByMe',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedByMe'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             updated_by: {
               filterType: 'set',
               values: [store.state.user.data.username],
@@ -191,6 +199,10 @@ export default defineComponent({
           id: 'createdBeforeYesterday',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdBeforeYesterday'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             created_at: {
               filterType: 'date',
               type: 'inRange',
@@ -203,6 +215,10 @@ export default defineComponent({
           id: 'createdYesterday',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdYesterday'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             created_at: {
               filterType: 'date',
               type: 'inRange',
@@ -215,6 +231,10 @@ export default defineComponent({
           id: 'createdToday',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdToday'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             created_at: {
               filterType: 'date',
               type: 'inRange',
@@ -227,6 +247,10 @@ export default defineComponent({
           id: 'createdLastWeek',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdLastWeek'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             created_at: {
               filterType: 'date',
               type: 'inRange',
@@ -239,6 +263,10 @@ export default defineComponent({
           id: 'createdThisWeek',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdThisWeek'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             created_at: {
               filterType: 'date',
               type: 'inRange',
@@ -251,6 +279,10 @@ export default defineComponent({
           id: 'createdLastMonth',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdLastMonth'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             created_at: {
               filterType: 'date',
               type: 'inRange',
@@ -263,6 +295,10 @@ export default defineComponent({
           id: 'createdThisMonth',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdThisMonth'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             created_at: {
               filterType: 'date',
               type: 'inRange',
@@ -275,6 +311,10 @@ export default defineComponent({
           id: 'createdLastYear',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdLastYear'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             created_at: {
               filterType: 'date',
               type: 'inRange',
@@ -287,6 +327,10 @@ export default defineComponent({
           id: 'createdThisYear',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdThisYear'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             created_at: {
               filterType: 'date',
               type: 'inRange',
@@ -299,6 +343,10 @@ export default defineComponent({
           id: 'updatedBeforeYesterday',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedBeforeYesterday'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             updated_at: {
               filterType: 'date',
               type: 'inRange',
@@ -311,6 +359,10 @@ export default defineComponent({
           id: 'updatedYesterday',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedYesterday'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             updated_at: {
               filterType: 'date',
               type: 'inRange',
@@ -323,6 +375,10 @@ export default defineComponent({
           id: 'updatedToday',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedToday'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             updated_at: {
               filterType: 'date',
               type: 'inRange',
@@ -335,6 +391,10 @@ export default defineComponent({
           id: 'updatedLastWeek',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedLastWeek'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             updated_at: {
               filterType: 'date',
               type: 'inRange',
@@ -347,6 +407,10 @@ export default defineComponent({
           id: 'updatedThisWeek',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedThisWeek'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             updated_at: {
               filterType: 'date',
               type: 'inRange',
@@ -359,6 +423,10 @@ export default defineComponent({
           id: 'updatedLastMonth',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedLastMonth'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             updated_at: {
               filterType: 'date',
               type: 'inRange',
@@ -371,6 +439,10 @@ export default defineComponent({
           id: 'updatedThisMonth',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedThisMonth'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             updated_at: {
               filterType: 'date',
               type: 'inRange',
@@ -383,6 +455,10 @@ export default defineComponent({
           id: 'updatedLastYear',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedLastYear'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             updated_at: {
               filterType: 'date',
               type: 'inRange',
@@ -395,6 +471,10 @@ export default defineComponent({
           id: 'updatedThisYear',
           name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedThisYear'),
           model: {
+            data_state: {
+              filterType: 'set',
+              values: ['published'],
+            },
             updated_at: {
               filterType: 'date',
               type: 'inRange',
@@ -431,9 +511,14 @@ export default defineComponent({
       const filterModel = props.params.api.getFilterModel();
       if (Object.keys(filterModel).length === 0) current_filter.value = {};
       else {
-        const filter =
-          prefabricated.children.find((filter) => Object.keys(deepCompare(filterModel, filter.model)).length === 0) ||
-          customfilters.find((filter) => Object.keys(deepCompare(filterModel, filter.model)).length === 0);
+        let filter;
+        filter = prefabricated.children.find((filter) => Object.keys(deepCompare(filterModel, filter.model)).length === 0 && Object.keys(deepCompare(filter.model, filterModel)).length === 0);
+        if (filter) {
+          prefabricated.visible = true;
+        } else {
+          prefabricated.visible = false;
+          filter = customfilters.find((filter) => Object.keys(deepCompare(filterModel, filter.model)).length === 0 && Object.keys(deepCompare(filter.model, filterModel)).length === 0);
+        }
         current_filter.value = filter || {};
       }
     };
@@ -456,7 +541,6 @@ export default defineComponent({
     const handleCreateFilter = () => {
       const new_model = JSON.stringify(props.params.api.getFilterModel(), null, 2);
       create_filter.value = {
-        tid: props.params.context.tid,
         name: create_filter.value.model === new_model ? create_filter.value.name : '',
         users: create_filter.value.model === new_model ? create_filter.value.users : [],
         model: new_model,
@@ -475,8 +559,12 @@ export default defineComponent({
           },
         });
       } else {
-        create_filter.value.model = JSON.parse(create_filter.value.model);
-        createFilter(create_filter.value).then(({ code, data, msg }) => {
+        createFilter({
+          tid: props.params.context.tid,
+          name: create_filter.value.name,
+          users: create_filter.value.users,
+          model: JSON.parse(create_filter.value.model),
+        }).then(({ code, data, msg }) => {
           if (code === 200) {
             customfilters.push(data);
             create_filter.value = {};
