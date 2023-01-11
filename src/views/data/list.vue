@@ -285,6 +285,7 @@ import AG_GRID_LOCALE_EN from '@utils/i18n/ag-gird/en.json';
 import AG_GRID_LOCALE_ZH_CN from '@utils/i18n/ag-gird/zh-cn.json';
 import Empty from '@components/Empty';
 import Log from '@components/Log';
+import CustomFiltersToolPanle from './panels/CustomFiltersToolPanle.vue';
 import IdRenderer from './renderers/IdRenderer.vue';
 import DataStateRenderer from './renderers/DataStateRenderer.vue';
 import UserRenderer from './renderers/UserRenderer.vue';
@@ -339,6 +340,7 @@ export default {
     AgGridVue,
     Empty,
     Log,
+    CustomFiltersToolPanle,
     agDateInput: DateTimeFilter,
 
     BasicDataStateEditor,
@@ -424,9 +426,9 @@ export default {
             suppressPivots: true,
             suppressPivotMode: true,
           },
-          minWidth: 225,
-          width: 225,
-          maxWidth: 225,
+          minWidth: 200,
+          maxWidth: 300,
+          width: 250,
         },
         {
           id: 'filters',
@@ -434,8 +436,23 @@ export default {
           labelKey: 'filters',
           iconKey: 'filter',
           toolPanel: 'agFiltersToolPanel',
-          minWidth: 180,
-          maxWidth: 400,
+          minWidth: 200,
+          maxWidth: 300,
+          width: 250,
+        },
+        {
+          id: 'custom_filters',
+          labelDefault: i18n.global.t('data.list.sideBar.toolPanels.customFilters'),
+          labelKey: 'custom_filters',
+          iconKey: 'filter',
+          toolPanel: 'CustomFiltersToolPanle',
+          toolPanelParams: {
+            context: {
+              tid: Number(route.value.params.tid),
+            },
+          },
+          minWidth: 200,
+          maxWidth: 300,
           width: 250,
         },
       ],
@@ -1041,6 +1058,7 @@ export default {
           init.value = false;
           params.successCallback([], 0);
         } else {
+          document.getElementById('handleSetCurrentFilter').click();
           getDataList({ ...{ tid: Number(route.value.params.tid) }, ...params.request })
             .then((res) => {
               params.successCallback(res.data.rows, res.data.count);

@@ -42,8 +42,8 @@ export default defineComponent({
       return date.value ? (!props.params.filterParams._column.cfg.dateFormat.includes('Y-m-d') ? new Date(`${moment().format('YYYY-MM-DD')} ${date.value}`) : new Date(date.value)) : null;
     };
 
-    const setDate = () => {
-      // date.value = res ? moment(res).format(props.params.filterParams._column.cfg.type === 'datetime' ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD') : null;
+    const setDate = (res) => {
+      date.value = res;
     };
 
     const disabled = ref(false);
