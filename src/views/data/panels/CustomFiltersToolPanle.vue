@@ -29,7 +29,14 @@
               :key="index"
             >
               <div class="ag-filter-toolpanel-header">
-                <span class="ag-header-cell-text ms-3" style="cursor: pointer" @click="handleSetFilterModel(item)">{{ item.name }}</span>
+                <span
+                  class="ag-header-cell-text ms-3"
+                  style="cursor: pointer"
+                  :title="`${item.name}\r\n--------------------------------\r\n${JSON.stringify(item.model, null, 2)}`"
+                  @click="handleSetFilterModel(item)"
+                >
+                  {{ item.name }}
+                </span>
                 <span v-if="current_filter.name === item.name" class="ag-filter-toolpanel-instance-header-icon"><span class="ag-icon ag-icon-filter"></span></span>
               </div>
             </div>
@@ -42,7 +49,7 @@
             <span
               class="ag-group-title ag-filter-toolpanel-group-title ms-1 text-truncate"
               style="cursor: pointer"
-              :title="`${item.name}@${$store.state.user.data.username}`"
+              :title="`@${getUserInfo(item.created_by)?.fullname || item.created_by}\r\n${item.name}\r\n--------------------------------\r\n${JSON.stringify(item.model, null, 2)}`"
               @click="handleSetFilterModel(item)"
             >
               {{ item.name }}
@@ -139,7 +146,7 @@
 
 <script>
 import { defineComponent, onMounted, reactive, ref } from 'vue';
-import { deepCompare } from '@utils';
+import { deepCompare, getUserInfo } from '@utils';
 import { getFilters, createFilter, updateFilter } from '@api/filter';
 import UsersSelector from '@components/UsersSelector';
 import MonacoEditor from '@components/MonacoEditor';
@@ -522,6 +529,8 @@ export default defineComponent({
       handleSubmitFilter,
       delete_filter,
       handleDeleteFilter,
+
+      getUserInfo,
     };
   },
 });
