@@ -440,7 +440,12 @@ export default defineComponent({
 
     const handleSetFilterModel = (item) => {
       if (current_filter.value.id === item.id) {
-        props.params.api.setFilterModel(null);
+        props.params.api.setFilterModel({
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+        });
       } else {
         props.params.api.setFilterModel(item.model);
       }
