@@ -48,6 +48,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  NProgress.start();
   const interval = setInterval(async () => {
     if (window.socket) {
       clearInterval(interval);
@@ -61,7 +62,6 @@ router.beforeEach((to, from, next) => {
           }, 200);
         }
       }
-      NProgress.start();
       const token = jwt.decode(localStorage.getItem('accessToken'));
       if (token && token.exp > Math.round(new Date() / 1000)) {
         await checkUserData();
