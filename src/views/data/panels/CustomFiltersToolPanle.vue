@@ -12,55 +12,50 @@
     </div>
     <div class="ag-filter-list-panel">
       <div class="ag-filter-toolpanel-group-wrapper">
-        <div class="ag-group ag-filter-toolpanel-group ag-filter-toolpanel-group-level-0" :class="prefabricated.children.find((child) => child.name === current_filter.name) && 'ag-has-filter'">
-          <div class="ag-group-title-bar ag-filter-toolpanel-group-level-0-header ag-filter-toolpanel-header" @click="prefabricated.visible = !prefabricated.visible">
-            <span class="ag-group-title-bar-icon ag-filter-toolpanel-group-title-bar-icon" :class="!prefabricated.visible && 'ag-hidden'">
+        <div
+          class="ag-group ag-filter-toolpanel-group ag-filter-toolpanel-group-level-0"
+          v-for="(item, index) in filters"
+          :key="index"
+          :class="[
+            item.children.find((filter) => filter.id === current_filter.id) && 'ag-has-filter',
+            item.children.filter((filter) => !keyword || filter.name.toLowerCase().includes(keyword.toLowerCase())).length === 0 && 'd-none',
+          ]"
+        >
+          <div class="ag-group-title-bar ag-filter-toolpanel-group-level-0-header ag-filter-toolpanel-header" @click="item.visible = !item.visible">
+            <span class="ag-group-title-bar-icon ag-filter-toolpanel-group-title-bar-icon" :class="!item.visible && 'ag-hidden'">
               <span class="ag-icon ag-icon-tree-open"></span>
             </span>
-            <span class="ag-group-title-bar-icon ag-filter-toolpanel-group-title-bar-icon" :class="prefabricated.visible && 'ag-hidden'">
+            <span class="ag-group-title-bar-icon ag-filter-toolpanel-group-title-bar-icon" :class="item.visible && 'ag-hidden'">
               <span class="ag-icon ag-icon-tree-closed"></span>
             </span>
-            <span class="ag-group-title ag-filter-toolpanel-group-title" style="cursor: pointer">{{ $t('data.list.sideBar.toolPanels.customFilters.prefabricated') }}</span>
+            <span class="ag-group-title ag-filter-toolpanel-group-title text-truncate" style="cursor: pointer">
+              {{ getUserInfo(item.created_by)?.fullname || item.created_by }}
+              [{{ item.children.filter((filter) => !keyword || filter.name.toLowerCase().includes(keyword.toLowerCase())).length }}]
+            </span>
           </div>
-          <div v-if="prefabricated.visible" class="ag-filter-toolpanel-group-container">
-            <div
-              class="ag-filter-toolpanel-group-item"
-              v-for="(item, index) in prefabricated.children.filter((item) => !keyword || item.name.toLowerCase().includes(keyword.toLowerCase()))"
-              :key="index"
-            >
-              <div class="ag-filter-toolpanel-header">
-                <span
-                  class="ag-header-cell-text ms-3"
-                  style="cursor: pointer"
-                  :title="`${item.name}\r\n--------------------------------\r\n${JSON.stringify(item.model, null, 2)}`"
-                  @click="handleSetFilterModel(item)"
-                >
-                  {{ item.name }}
+          <div v-if="item.visible" class="ag-filter-toolpanel-group-container">
+            <div class="ag-filter-toolpanel-group-item" v-for="(filter, index) in item.children.filter((filter) => !keyword || filter.name.toLowerCase().includes(keyword.toLowerCase()))" :key="index">
+              <div class="ag-filter-toolpanel-header justify-content-between">
+                <span class="text-truncate w-100">
+                  <span
+                    class="ag-header-cell-text ms-3"
+                    style="cursor: pointer"
+                    :title="`${filter.name}\r\n--------------------------------\r\n${JSON.stringify(filter.model, null, 2)}`"
+                    @click="handleSetFilterModel(filter)"
+                  >
+                    {{ filter.name }}
+                  </span>
+                  <span v-if="current_filter.id === filter.id" class="ag-filter-toolpanel-instance-header-icon"><span class="ag-icon ag-icon-filter"></span></span>
                 </span>
-                <span v-if="current_filter.name === item.name" class="ag-filter-toolpanel-instance-header-icon"><span class="ag-icon ag-icon-filter"></span></span>
+                <i
+                  v-if="item.created_by === $store.state.user.data.username"
+                  class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline me-2"
+                  @click.stop="delete_filter = filter"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteFilterConfirmModal"
+                ></i>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="ag-filter-toolpanel-group-wrapper" v-for="(item, index) in customfilters.filter((item) => !keyword || item.name.toLowerCase().includes(keyword.toLowerCase()))" :key="index">
-        <div class="ag-filter-toolpanel-group ag-filter-toolpanel-group-level-0" :class="current_filter.name === item.name && 'ag-has-filter'">
-          <div class="ag-group-title-bar ag-filter-toolpanel-group-level-0-header ag-filter-toolpanel-header">
-            <span
-              class="ag-group-title ag-filter-toolpanel-group-title ms-1 text-truncate"
-              style="cursor: pointer"
-              :title="`${item.name}@${getUserInfo(item.created_by)?.fullname || item.created_by}\r\n--------------------------------\r\n${JSON.stringify(item.model, null, 2)}`"
-              @click="handleSetFilterModel(item)"
-            >
-              {{ item.name }}@{{ getUserInfo(item.created_by)?.fullname || item.created_by }}
-            </span>
-            <i
-              v-if="item.created_by === $store.state.user.data.username"
-              class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline"
-              @click.stop="delete_filter = item"
-              data-bs-toggle="modal"
-              data-bs-target="#deleteFilterConfirmModal"
-            ></i>
           </div>
         </div>
       </div>
@@ -89,11 +84,6 @@
                       rules="required"
                     />
                     <span class="invalid-feedback">{{ errors.name }}</span>
-                  </div>
-
-                  <div class="col-12">
-                    <label class="form-label">{{ $t('data.list.sideBar.toolPanels.customFilters.createFilterModal.form.users') }}</label>
-                    <UsersSelector v-model="create_filter.users" :placeholder="$t('data.list.sideBar.toolPanels.customFilters.createFilterModal.form.users')" />
                   </div>
                   <div class="col-12">
                     <label class="form-label">{{ $t('data.list.sideBar.toolPanels.customFilters.createFilterModal.form.model') }}</label>
@@ -145,10 +135,9 @@
 </template>
 
 <script>
-import { defineComponent, onMounted, reactive, ref } from 'vue';
+import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import { deepCompare, getUserInfo } from '@utils';
 import { getFilters, createFilter, updateFilter } from '@api/filter';
-import UsersSelector from '@components/UsersSelector';
 import MonacoEditor from '@components/MonacoEditor';
 import store from '@store';
 import i18n from '@utils/i18n';
@@ -156,341 +145,396 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 export default defineComponent({
   components: {
-    UsersSelector,
     MonacoEditor,
   },
   setup(props) {
     const toast = useToast();
     const moment = window.moment;
+    const socket = window.socket;
+    const system = [
+      {
+        id: 'created_by_me',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdByMe'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          created_by: {
+            filterType: 'set',
+            values: [store.state.user.data.username],
+          },
+        },
+      },
+      {
+        id: 'updated_by_me',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedByMe'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          updated_by: {
+            filterType: 'set',
+            values: [store.state.user.data.username],
+          },
+        },
+      },
+      {
+        id: 'created_before_yesterday',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdBeforeYesterday'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          created_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
+            dateTo: moment().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
+          },
+        },
+      },
+      {
+        id: 'created_yesterday',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdYesterday'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          created_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
+            dateTo: moment().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
+          },
+        },
+      },
+      {
+        id: 'created_today',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdToday'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          created_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().format('YYYY-MM-DD 00:00:00'),
+            dateTo: moment().format('YYYY-MM-DD 23:59:59'),
+          },
+        },
+      },
+      {
+        id: 'created_last_week',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdLastWeek'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          created_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
+            dateTo: moment().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
+          },
+        },
+      },
+      {
+        id: 'created_this_week',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdThisWeek'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          created_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().startOf('week').format('YYYY-MM-DD 00:00:00'),
+            dateTo: moment().endOf('week').format('YYYY-MM-DD 23:59:59'),
+          },
+        },
+      },
+      {
+        id: 'created_last_month',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdLastMonth'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          created_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
+            dateTo: moment(moment().format('YYYY-MM-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
+          },
+        },
+      },
+      {
+        id: 'created_this_month',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdThisMonth'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          created_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().format('YYYY-MM-01 00:00:00'),
+            dateTo: moment(moment().add(1, 'M').format('YYYY-MM-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
+          },
+        },
+      },
+      {
+        id: 'created_last_year',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdLastYear'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          created_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
+            dateTo: moment(moment().format('YYYY-01-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
+          },
+        },
+      },
+      {
+        id: 'created_this_year',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdThisYear'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          created_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().format('YYYY-01-01 00:00:00'),
+            dateTo: moment(moment().add(1, 'Y').format('YYYY-01-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
+          },
+        },
+      },
+      {
+        id: 'updated_before_yesterday',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedBeforeYesterday'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          updated_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
+            dateTo: moment().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
+          },
+        },
+      },
+      {
+        id: 'updated_yesterday',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedYesterday'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          updated_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
+            dateTo: moment().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
+          },
+        },
+      },
+      {
+        id: 'updated_today',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedToday'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          updated_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().format('YYYY-MM-DD 00:00:00'),
+            dateTo: moment().format('YYYY-MM-DD 23:59:59'),
+          },
+        },
+      },
+      {
+        id: 'updated_last_week',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedLastWeek'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          updated_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
+            dateTo: moment().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
+          },
+        },
+      },
+      {
+        id: 'updated_this_week',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedThisWeek'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          updated_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().startOf('week').format('YYYY-MM-DD 00:00:00'),
+            dateTo: moment().endOf('week').format('YYYY-MM-DD 23:59:59'),
+          },
+        },
+      },
+      {
+        id: 'updated_last_month',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedLastMonth'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          updated_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
+            dateTo: moment(moment().format('YYYY-MM-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
+          },
+        },
+      },
+      {
+        id: 'updated_this_month',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedThisMonth'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          updated_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().format('YYYY-MM-01 00:00:00'),
+            dateTo: moment(moment().add(1, 'M').format('YYYY-MM-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
+          },
+        },
+      },
+      {
+        id: 'updated_last_year',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedLastYear'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          updated_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
+            dateTo: moment(moment().format('YYYY-01-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
+          },
+        },
+      },
+      {
+        id: 'updated_this_year',
+        created_by: '@system',
+        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedThisYear'),
+        model: {
+          data_state: {
+            filterType: 'set',
+            values: ['published'],
+          },
+          updated_at: {
+            filterType: 'date',
+            type: 'inRange',
+            dateFrom: moment().format('YYYY-01-01 00:00:00'),
+            dateTo: moment(moment().add(1, 'Y').format('YYYY-01-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
+          },
+        },
+      },
+    ];
     const keyword = ref(null);
-
-    const prefabricated = reactive({
-      visible: false,
-      children: [
-        {
-          id: 'createdByMe',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdByMe'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            created_by: {
-              filterType: 'set',
-              values: [store.state.user.data.username],
-            },
-          },
-        },
-        {
-          id: 'updatedByMe',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedByMe'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            updated_by: {
-              filterType: 'set',
-              values: [store.state.user.data.username],
-            },
-          },
-        },
-        {
-          id: 'createdBeforeYesterday',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdBeforeYesterday'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            created_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
-              dateTo: moment().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
-            },
-          },
-        },
-        {
-          id: 'createdYesterday',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdYesterday'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            created_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
-              dateTo: moment().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
-            },
-          },
-        },
-        {
-          id: 'createdToday',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdToday'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            created_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().format('YYYY-MM-DD 00:00:00'),
-              dateTo: moment().format('YYYY-MM-DD 23:59:59'),
-            },
-          },
-        },
-        {
-          id: 'createdLastWeek',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdLastWeek'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            created_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
-              dateTo: moment().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
-            },
-          },
-        },
-        {
-          id: 'createdThisWeek',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdThisWeek'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            created_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().startOf('week').format('YYYY-MM-DD 00:00:00'),
-              dateTo: moment().endOf('week').format('YYYY-MM-DD 23:59:59'),
-            },
-          },
-        },
-        {
-          id: 'createdLastMonth',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdLastMonth'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            created_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
-              dateTo: moment(moment().format('YYYY-MM-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
-            },
-          },
-        },
-        {
-          id: 'createdThisMonth',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdThisMonth'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            created_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().format('YYYY-MM-01 00:00:00'),
-              dateTo: moment(moment().add(1, 'M').format('YYYY-MM-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
-            },
-          },
-        },
-        {
-          id: 'createdLastYear',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdLastYear'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            created_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
-              dateTo: moment(moment().format('YYYY-01-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
-            },
-          },
-        },
-        {
-          id: 'createdThisYear',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.createdThisYear'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            created_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().format('YYYY-01-01 00:00:00'),
-              dateTo: moment(moment().add(1, 'Y').format('YYYY-01-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
-            },
-          },
-        },
-        {
-          id: 'updatedBeforeYesterday',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedBeforeYesterday'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            updated_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
-              dateTo: moment().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
-            },
-          },
-        },
-        {
-          id: 'updatedYesterday',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedYesterday'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            updated_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
-              dateTo: moment().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
-            },
-          },
-        },
-        {
-          id: 'updatedToday',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedToday'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            updated_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().format('YYYY-MM-DD 00:00:00'),
-              dateTo: moment().format('YYYY-MM-DD 23:59:59'),
-            },
-          },
-        },
-        {
-          id: 'updatedLastWeek',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedLastWeek'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            updated_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
-              dateTo: moment().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
-            },
-          },
-        },
-        {
-          id: 'updatedThisWeek',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedThisWeek'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            updated_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().startOf('week').format('YYYY-MM-DD 00:00:00'),
-              dateTo: moment().endOf('week').format('YYYY-MM-DD 23:59:59'),
-            },
-          },
-        },
-        {
-          id: 'updatedLastMonth',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedLastMonth'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            updated_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
-              dateTo: moment(moment().format('YYYY-MM-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
-            },
-          },
-        },
-        {
-          id: 'updatedThisMonth',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedThisMonth'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            updated_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().format('YYYY-MM-01 00:00:00'),
-              dateTo: moment(moment().add(1, 'M').format('YYYY-MM-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
-            },
-          },
-        },
-        {
-          id: 'updatedLastYear',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedLastYear'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            updated_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
-              dateTo: moment(moment().format('YYYY-01-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
-            },
-          },
-        },
-        {
-          id: 'updatedThisYear',
-          name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.prefabricated.updatedThisYear'),
-          model: {
-            data_state: {
-              filterType: 'set',
-              values: ['published'],
-            },
-            updated_at: {
-              filterType: 'date',
-              type: 'inRange',
-              dateFrom: moment().format('YYYY-01-01 00:00:00'),
-              dateTo: moment(moment().add(1, 'Y').format('YYYY-01-01 00:00:00')).add(-1, 's').format('YYYY-MM-DD HH:mm:ss'),
-            },
-          },
-        },
-      ],
-    });
-    const customfilters = reactive([]);
+    const _filters = ref([]);
+    const filters = ref([]);
 
     onMounted(() => {
+      socket.on('refetchFilters', (res) => {
+        if (res.tid === props.params.context.tid) fetchFormFilters();
+      });
+      fetchFormFilters();
+    });
+
+    onUnmounted(() => {
+      socket.removeListener('refetchFilters');
+    });
+
+    const fetchFormFilters = () => {
       getFilters({ tid: props.params.context.tid }).then(({ code, data, msg }) => {
         if (code === 200) {
-          customfilters.push(...data);
+          data = [...system, ...data];
+          _filters.value = JSON.parse(JSON.stringify(data));
+          const temp = [];
+          data.forEach((ei) => {
+            const item = temp.find((item) => item.created_by === ei.created_by);
+            if (item) {
+              item.children.push({
+                id: ei.id,
+                tid: ei.tid,
+                name: ei.name,
+                model: ei.model,
+              });
+            } else {
+              temp.push({
+                created_by: ei.created_by,
+                visible: filters.value.find((item) => item.created_by === ei.created_by)?.visible || false,
+                children: [
+                  {
+                    id: ei.id,
+                    tid: ei.tid,
+                    name: ei.name,
+                    model: ei.model,
+                  },
+                ],
+              });
+            }
+          });
+          filters.value = temp;
           handleSetCurrentFilter();
         } else {
           toast({
@@ -503,7 +547,7 @@ export default defineComponent({
           });
         }
       });
-    });
+    };
 
     const current_filter = ref({});
 
@@ -511,14 +555,7 @@ export default defineComponent({
       const filterModel = props.params.api.getFilterModel();
       if (Object.keys(filterModel).length === 0) current_filter.value = {};
       else {
-        let filter;
-        filter = prefabricated.children.find((filter) => Object.keys(deepCompare(filterModel, filter.model)).length === 0 && Object.keys(deepCompare(filter.model, filterModel)).length === 0);
-        if (filter) {
-          prefabricated.visible = true;
-        } else {
-          prefabricated.visible = false;
-          filter = customfilters.find((filter) => Object.keys(deepCompare(filterModel, filter.model)).length === 0 && Object.keys(deepCompare(filter.model, filterModel)).length === 0);
-        }
+        const filter = _filters.value.find((filter) => Object.keys(deepCompare(filterModel, filter.model)).length === 0 && Object.keys(deepCompare(filter.model, filterModel)).length === 0);
         current_filter.value = filter || {};
       }
     };
@@ -542,14 +579,13 @@ export default defineComponent({
       const new_model = JSON.stringify(props.params.api.getFilterModel(), null, 2);
       create_filter.value = {
         name: create_filter.value.model === new_model ? create_filter.value.name : '',
-        users: create_filter.value.model === new_model ? create_filter.value.users : [],
         model: new_model,
       };
       document.getElementById('showCreateFilterModalBtn').click();
     };
 
     const handleSubmitFilter = () => {
-      if (customfilters.find((filter) => filter.name === create_filter.value.name)) {
+      if (_filters.value.find((filter) => filter.name === create_filter.value.name)) {
         toast({
           component: ToastificationContent,
           props: {
@@ -562,11 +598,9 @@ export default defineComponent({
         createFilter({
           tid: props.params.context.tid,
           name: create_filter.value.name,
-          users: create_filter.value.users,
           model: JSON.parse(create_filter.value.model),
-        }).then(({ code, data, msg }) => {
+        }).then(({ code, msg }) => {
           if (code === 200) {
-            customfilters.push(data);
             create_filter.value = {};
             handleSetCurrentFilter();
             document.getElementById('hideCreateFilterModalBtn').click();
@@ -590,10 +624,6 @@ export default defineComponent({
       delete_filter.value.data_state = 'deleted';
       updateFilter(delete_filter.value).then(({ code, msg }) => {
         if (code === 200) {
-          customfilters.splice(
-            customfilters.findIndex((filter) => filter.id === delete_filter.value.id),
-            1,
-          );
           delete_filter.value = {};
           handleSetCurrentFilter();
           document.getElementById('hideDeleteFilterConfirmModalBtn').click();
@@ -611,9 +641,9 @@ export default defineComponent({
     };
 
     return {
+      getUserInfo,
       keyword,
-      prefabricated,
-      customfilters,
+      filters,
       current_filter,
       handleSetCurrentFilter,
       handleSetFilterModel,
@@ -622,8 +652,6 @@ export default defineComponent({
       handleSubmitFilter,
       delete_filter,
       handleDeleteFilter,
-
-      getUserInfo,
     };
   },
 });

@@ -66,6 +66,7 @@ export const clearUserData = () => {
 };
 
 export const getUserInfo = (value, key = 'username') => {
+  if (key === 'username' && value === '@system') return { username: '@system', fullname: 'System' };
   const userInfo = store.state.org.users.find((user) => user[key] === value);
   return userInfo || null;
 };

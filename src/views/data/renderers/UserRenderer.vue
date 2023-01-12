@@ -29,8 +29,6 @@ export default defineComponent({
   setup(props) {
     const user = ref(null);
     if (!['acl_view', 'acl_edit'].includes(props.params._column.field) && props.params.value) {
-      // created_by && updated_by
-      // @system, @pub..., username
       if (props.params.value === '@system') user.value = { username: '@system', fullname: 'System' };
       else if (props.params.value.includes('@pub')) user.value = { username: props.params.value, fullname: props.params.value.replace('@pub_', '') };
       else user.value = store.state.org.users.find((user) => user.username === props.params.value);
