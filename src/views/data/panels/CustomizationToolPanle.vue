@@ -137,7 +137,7 @@
 <script>
 import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import { deepCompare, getUserInfo } from '@utils';
-import { getFilters, createFilter, updateFilter } from '@api/custom';
+import { getCustomFilters, createCustomFilter, updateCustomFilter } from '@api/custom';
 import MonacoEditor from '@components/MonacoEditor';
 import store from '@store';
 import i18n from '@utils/i18n';
@@ -505,7 +505,7 @@ export default defineComponent({
     });
 
     const fetchFormFilters = () => {
-      getFilters({ tid: props.params.context.tid }).then(({ code, data, msg }) => {
+      getCustomFilters({ tid: props.params.context.tid }).then(({ code, data, msg }) => {
         if (code === 200) {
           data = [...system, ...data];
           _filters.value = JSON.parse(JSON.stringify(data));
@@ -595,7 +595,7 @@ export default defineComponent({
           },
         });
       } else {
-        createFilter({
+        createCustomFilter({
           tid: props.params.context.tid,
           name: create_filter.value.name,
           data: JSON.parse(create_filter.value.data),
@@ -622,7 +622,7 @@ export default defineComponent({
 
     const handleDeleteFilter = () => {
       delete_filter.value.data_state = 'deleted';
-      updateFilter(delete_filter.value).then(({ code, msg }) => {
+      updateCustomFilter(delete_filter.value).then(({ code, msg }) => {
         if (code === 200) {
           delete_filter.value = {};
           handleSetCurrentFilter();

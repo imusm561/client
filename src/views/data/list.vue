@@ -276,6 +276,7 @@ import store from '@store';
 import i18n from '@utils/i18n';
 import { useRouter, decryptData, replaceHtml, getUserInfo, copyToClipboard, replaceVariables, getRulesByFormula, getDataByFormula, generateFlowByCurrentUser } from '@utils';
 import { getDataForm, getDataList, getDataSets, getDataTemplate, importData, checkData, updateData } from '@api/data';
+import { getCustomColumns, createCustomColumns, updateCustomColumns } from '@api/custom';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Breadcrumb from '@/layouts/breadcrumb';
@@ -389,6 +390,7 @@ export default {
     const form = ref({});
     const alias = ref({});
     const columns = ref([]);
+    const customs = ref(null);
     const records = ref({});
     const resolveDataStateVariant = computed(() => {
       return (state) => {
@@ -495,6 +497,16 @@ export default {
         alias.value = data.alias;
         columns.value = data.columns.filter((column) => !column.tags.includes('hideInDataList'));
         records.value = data.records;
+        const res = await getCustomColumns({ tid: Number(route.value.params.tid) });
+        customs.value = res.data;
+        if (customs.value)
+          columns.value.sort((a, b) => {
+            return customs.value.data.findIndex((column) => column.field === a.field) < customs.value.data.findIndex((column) => column.field === b.field)
+              ? -1
+              : customs.value.data.findIndex((column) => column.field === a.field) > customs.value.data.findIndex((column) => column.field === b.field)
+              ? 1
+              : 0;
+          });
         await setFormConfiguration();
         await setFormColumnDefs();
         gridApi.setFilterModel({
@@ -528,12 +540,74 @@ export default {
       // gridColumnApi = params.columnApi;
     };
 
-    const handleColumnChange = (e) => {
-      console.log(e);
+    let timer = null;
+    const handleColumnChange = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        const hasTab = columns.value.some((column) => column.component === 'LayoutTab');
+        const columnDefs = hasTab
+          ? gridApi
+              .getColumnDefs()
+              .map((item) => {
+                return item.children;
+              })
+              .flat()
+          : gridApi.getColumnDefs();
+        if (customs.value) {
+          updateCustomColumns({
+            id: customs.value.id,
+            data: columnDefs.map((column) => {
+              return {
+                field: column.field,
+                hide: column.hide,
+                width: column.width,
+                pinned: column.pinned,
+              };
+            }),
+          }).then(({ code, msg }) => {
+            if (code != 200) {
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: msg,
+                },
+              });
+            }
+          });
+        } else {
+          createCustomColumns({
+            tid: Number(route.value.params.tid),
+            data: columnDefs.map((column) => {
+              return {
+                field: column.field,
+                hide: column.hide,
+                width: column.width,
+                pinned: column.pinned,
+              };
+            }),
+          }).then(({ code, data, msg }) => {
+            if (code === 200) {
+              customs.value = data;
+            } else {
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: msg,
+                },
+              });
+            }
+          });
+        }
+      }, 500);
     };
 
     const generateColumnDef = (column) => {
       const columnDef = {};
+      const custom = customs.value ? customs.value.data.find((item) => item.field === column.field) || null : null;
 
       // ============================================================================
       columnDef.field = column.field;
@@ -550,7 +624,7 @@ export default {
       // ============================================================================
 
       // ============================================================================
-      columnDef.hide = ['uuid', 'data_state', 'created_by', 'created_at', 'updated_by', 'updated_at', 'acl_view', 'acl_edit'].includes(column.field);
+      columnDef.hide = custom ? custom.hide : ['uuid', 'data_state', 'created_by', 'created_at', 'updated_by', 'updated_at', 'acl_view', 'acl_edit'].includes(column.field);
       // ============================================================================
 
       // ============================================================================
@@ -826,6 +900,10 @@ export default {
       // ============================================================================
 
       // ============================================================================
+      columnDef.pinned = custom ? custom.pinned : null;
+      // ============================================================================
+
+      // ============================================================================
       // columnDef.cellStyle = {color: 'red'};
       // columnDef.cellClass = 'fs-12';
 
@@ -894,7 +972,9 @@ export default {
       // ============================================================================
       // ============================================================================
 
-      columnDef.width = ['id'].includes(column.field)
+      columnDef.width = custom
+        ? custom.width
+        : ['id'].includes(column.field)
         ? 120
         : ['uuid'].includes(column.field)
         ? 350
@@ -1072,7 +1152,7 @@ export default {
               params.successCallback(res.data.rows, res.data.count);
             })
             .catch((error) => {
-              console.log(error);
+              console.error(error);
               params.failCallback();
             });
         }
