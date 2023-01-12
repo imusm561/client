@@ -33,15 +33,15 @@ if [ $? -eq 0 ]; then
                 if [ $? -eq 0 ]; then
 
                     echo -e "\033[$info Which hostname do you want to deploy to ? \033[0m" 
-                    select selection in "www.imusm.cn" "192.168.0.3:6610" "Input"
+                    select selection in "www.imusm.cn" "192.168.1.2:6610" "Input"
                     do
                         case $selection in 
                             "www.imusm.cn")
                                 deploy_url="https://www.imusm.cn/cor/sys/deploy"
                                 break
                                 ;;
-                            "192.168.0.3:6610")
-                                deploy_url="https://192.168.0.3:6610/cor/sys/deploy"
+                            "192.168.1.2:6610")
+                                deploy_url="https://192.168.1.2:6610/cor/sys/deploy"
                                 break
                                 ;;
                             "Input")
