@@ -285,7 +285,7 @@ import AG_GRID_LOCALE_EN from '@utils/i18n/ag-gird/en.json';
 import AG_GRID_LOCALE_ZH_CN from '@utils/i18n/ag-gird/zh-cn.json';
 import Empty from '@components/Empty';
 import Log from '@components/Log';
-import CustomFiltersToolPanle from './panels/CustomFiltersToolPanle.vue';
+import CustomizationToolPanle from './panels/CustomizationToolPanle.vue';
 import IdRenderer from './renderers/IdRenderer.vue';
 import DataStateRenderer from './renderers/DataStateRenderer.vue';
 import UserRenderer from './renderers/UserRenderer.vue';
@@ -340,7 +340,7 @@ export default {
     AgGridVue,
     Empty,
     Log,
-    CustomFiltersToolPanle,
+    CustomizationToolPanle,
     agDateInput: DateTimeFilter,
 
     BasicDataStateEditor,
@@ -441,11 +441,11 @@ export default {
           width: 250,
         },
         {
-          id: 'custom_filters',
-          labelDefault: i18n.global.t('data.list.sideBar.toolPanels.customFilters'),
-          labelKey: 'custom_filters',
-          iconKey: 'filter',
-          toolPanel: 'CustomFiltersToolPanle',
+          id: 'customization',
+          labelDefault: i18n.global.t('data.list.sideBar.toolPanels.customization'),
+          labelKey: 'customization',
+          iconKey: 'menu',
+          toolPanel: 'CustomizationToolPanle',
           toolPanelParams: {
             context: {
               tid: Number(route.value.params.tid),

@@ -6,7 +6,7 @@
         type="text"
         v-model="keyword"
         class="ag-filter-toolpanel-search-input ag-labeled ag-label-align-left ag-text-field ag-input-field"
-        :placeholder="$t('data.list.sideBar.toolPanels.customFilters.search')"
+        :placeholder="$t('data.list.sideBar.toolPanels.customization.search')"
       />
       <i v-if="!current_filter.id && Object.keys(params.api.getFilterModel()).length != 0" class="cursor-pointer fs-16 me-2 text-dark mdi mdi-plus" @click="handleCreateFilter"></i>
     </div>
@@ -66,7 +66,7 @@
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header p-2 bg-light">
-            <h5 class="modal-title">{{ $t('data.list.sideBar.toolPanels.customFilters.createFilterModal.title') }}</h5>
+            <h5 class="modal-title">{{ $t('data.list.sideBar.toolPanels.customization.createFilterModal.title') }}</h5>
             <button type="button" class="btn-close" id="hideCreateFilterModalBtn" data-bs-dismiss="modal"></button>
           </div>
           <Form v-slot="{ errors }" @submit="handleSubmitFilter">
@@ -74,19 +74,19 @@
               <div data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
                 <div class="row g-3">
                   <div class="col-12">
-                    <label class="form-label">{{ $t('data.list.sideBar.toolPanels.customFilters.createFilterModal.form.name') }}</label>
+                    <label class="form-label">{{ $t('data.list.sideBar.toolPanels.customization.createFilterModal.form.name') }}</label>
                     <Field
                       name="name"
                       v-model="create_filter.name"
                       type="text"
-                      :placeholder="$t('data.list.sideBar.toolPanels.customFilters.createFilterModal.form.name')"
+                      :placeholder="$t('data.list.sideBar.toolPanels.customization.createFilterModal.form.name')"
                       :class="['form-control', errors.name && 'is-invalid']"
                       rules="required"
                     />
                     <span class="invalid-feedback">{{ errors.name }}</span>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('data.list.sideBar.toolPanels.customFilters.createFilterModal.form.model') }}</label>
+                    <label class="form-label">{{ $t('data.list.sideBar.toolPanels.customization.createFilterModal.form.model') }}</label>
                     <MonacoEditor
                       v-model="create_filter.model"
                       language="json"
@@ -102,7 +102,7 @@
             <div class="modal-footer p-3 pt-1 pb-1">
               <button type="submit" class="btn btn-sm btn-success" :disabled="Object.keys(errors).length">
                 <i class="mdi mdi-content-save-outline"></i>
-                {{ $t('data.list.sideBar.toolPanels.customFilters.createFilterModal.form.footer.create') }}
+                {{ $t('data.list.sideBar.toolPanels.customization.createFilterModal.form.footer.create') }}
               </button>
             </div>
           </Form>
@@ -119,13 +119,13 @@
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
-                <h4>{{ $t('data.list.sideBar.toolPanels.customFilters.deleteFilterConfirmModal.title') }}</h4>
-                <p class="text-muted mx-4 mb-0">{{ $t('data.list.sideBar.toolPanels.customFilters.deleteFilterConfirmModal.confirm') }}</p>
+                <h4>{{ $t('data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.title') }}</h4>
+                <p class="text-muted mx-4 mb-0">{{ $t('data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.confirm') }}</p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{ $t('data.list.sideBar.toolPanels.customFilters.deleteFilterConfirmModal.cancel') }}</button>
-              <button type="button" class="btn w-sm btn-danger" @click="handleDeleteFilter">{{ $t('data.list.sideBar.toolPanels.customFilters.deleteFilterConfirmModal.confirmed') }}</button>
+              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{ $t('data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.cancel') }}</button>
+              <button type="button" class="btn w-sm btn-danger" @click="handleDeleteFilter">{{ $t('data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.confirmed') }}</button>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ export default defineComponent({
       {
         id: 'created_by_me',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdByMe'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdByMe'),
         model: {
           data_state: {
             filterType: 'set',
@@ -170,7 +170,7 @@ export default defineComponent({
       {
         id: 'updated_by_me',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedByMe'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedByMe'),
         model: {
           data_state: {
             filterType: 'set',
@@ -185,7 +185,7 @@ export default defineComponent({
       {
         id: 'created_before_yesterday',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdBeforeYesterday'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdBeforeYesterday'),
         model: {
           data_state: {
             filterType: 'set',
@@ -202,7 +202,7 @@ export default defineComponent({
       {
         id: 'created_yesterday',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdYesterday'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdYesterday'),
         model: {
           data_state: {
             filterType: 'set',
@@ -219,7 +219,7 @@ export default defineComponent({
       {
         id: 'created_today',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdToday'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdToday'),
         model: {
           data_state: {
             filterType: 'set',
@@ -236,7 +236,7 @@ export default defineComponent({
       {
         id: 'created_last_week',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdLastWeek'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdLastWeek'),
         model: {
           data_state: {
             filterType: 'set',
@@ -253,7 +253,7 @@ export default defineComponent({
       {
         id: 'created_this_week',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdThisWeek'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdThisWeek'),
         model: {
           data_state: {
             filterType: 'set',
@@ -270,7 +270,7 @@ export default defineComponent({
       {
         id: 'created_last_month',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdLastMonth'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdLastMonth'),
         model: {
           data_state: {
             filterType: 'set',
@@ -287,7 +287,7 @@ export default defineComponent({
       {
         id: 'created_this_month',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdThisMonth'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdThisMonth'),
         model: {
           data_state: {
             filterType: 'set',
@@ -304,7 +304,7 @@ export default defineComponent({
       {
         id: 'created_last_year',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdLastYear'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdLastYear'),
         model: {
           data_state: {
             filterType: 'set',
@@ -321,7 +321,7 @@ export default defineComponent({
       {
         id: 'created_this_year',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.createdThisYear'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdThisYear'),
         model: {
           data_state: {
             filterType: 'set',
@@ -338,7 +338,7 @@ export default defineComponent({
       {
         id: 'updated_before_yesterday',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedBeforeYesterday'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedBeforeYesterday'),
         model: {
           data_state: {
             filterType: 'set',
@@ -355,7 +355,7 @@ export default defineComponent({
       {
         id: 'updated_yesterday',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedYesterday'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedYesterday'),
         model: {
           data_state: {
             filterType: 'set',
@@ -372,7 +372,7 @@ export default defineComponent({
       {
         id: 'updated_today',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedToday'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedToday'),
         model: {
           data_state: {
             filterType: 'set',
@@ -389,7 +389,7 @@ export default defineComponent({
       {
         id: 'updated_last_week',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedLastWeek'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedLastWeek'),
         model: {
           data_state: {
             filterType: 'set',
@@ -406,7 +406,7 @@ export default defineComponent({
       {
         id: 'updated_this_week',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedThisWeek'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedThisWeek'),
         model: {
           data_state: {
             filterType: 'set',
@@ -423,7 +423,7 @@ export default defineComponent({
       {
         id: 'updated_last_month',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedLastMonth'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedLastMonth'),
         model: {
           data_state: {
             filterType: 'set',
@@ -440,7 +440,7 @@ export default defineComponent({
       {
         id: 'updated_this_month',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedThisMonth'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedThisMonth'),
         model: {
           data_state: {
             filterType: 'set',
@@ -457,7 +457,7 @@ export default defineComponent({
       {
         id: 'updated_last_year',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedLastYear'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedLastYear'),
         model: {
           data_state: {
             filterType: 'set',
@@ -474,7 +474,7 @@ export default defineComponent({
       {
         id: 'updated_this_year',
         created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customFilters.system.updatedThisYear'),
+        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedThisYear'),
         model: {
           data_state: {
             filterType: 'set',
@@ -591,7 +591,7 @@ export default defineComponent({
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: i18n.global.t('data.list.sideBar.toolPanels.customFilters.createFilterModal.form.name.duplicate', { name: create_filter.value.name }),
+            text: i18n.global.t('data.list.sideBar.toolPanels.customization.createFilterModal.form.name.duplicate', { name: create_filter.value.name }),
           },
         });
       } else {
