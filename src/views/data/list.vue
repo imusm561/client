@@ -556,6 +556,7 @@ export default {
         if (customs.value) {
           updateCustomColumns({
             id: customs.value.id,
+            tid: Number(route.value.params.tid),
             data: columnDefs.map((column) => {
               return {
                 field: column.field,
