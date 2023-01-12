@@ -40,7 +40,7 @@
                   <span
                     class="ag-header-cell-text ms-3"
                     style="cursor: pointer"
-                    :title="`${filter.name}\r\n--------------------------------\r\n${JSON.stringify(filter.model, null, 2)}`"
+                    :title="`${filter.name}\r\n--------------------------------\r\n${JSON.stringify(filter.data, null, 2)}`"
                     @click="handleSetFilterModel(filter)"
                   >
                     {{ filter.name }}
@@ -86,9 +86,9 @@
                     <span class="invalid-feedback">{{ errors.name }}</span>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('data.list.sideBar.toolPanels.customization.createFilterModal.form.model') }}</label>
+                    <label class="form-label">{{ $t('data.list.sideBar.toolPanels.customization.createFilterModal.form.data') }}</label>
                     <MonacoEditor
-                      v-model="create_filter.model"
+                      v-model="create_filter.data"
                       language="json"
                       :options="{
                         readOnly: true,
@@ -137,7 +137,7 @@
 <script>
 import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import { deepCompare, getUserInfo } from '@utils';
-import { getFilters, createFilter, updateFilter } from '@api/filter';
+import { getFilters, createFilter, updateFilter } from '@api/custom';
 import MonacoEditor from '@components/MonacoEditor';
 import store from '@store';
 import i18n from '@utils/i18n';
@@ -156,7 +156,7 @@ export default defineComponent({
         id: 'created_by_me',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdByMe'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -171,7 +171,7 @@ export default defineComponent({
         id: 'updated_by_me',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedByMe'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -186,7 +186,7 @@ export default defineComponent({
         id: 'created_before_yesterday',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdBeforeYesterday'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -203,7 +203,7 @@ export default defineComponent({
         id: 'created_yesterday',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdYesterday'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -220,7 +220,7 @@ export default defineComponent({
         id: 'created_today',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdToday'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -237,7 +237,7 @@ export default defineComponent({
         id: 'created_last_week',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdLastWeek'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -254,7 +254,7 @@ export default defineComponent({
         id: 'created_this_week',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdThisWeek'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -271,7 +271,7 @@ export default defineComponent({
         id: 'created_last_month',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdLastMonth'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -288,7 +288,7 @@ export default defineComponent({
         id: 'created_this_month',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdThisMonth'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -305,7 +305,7 @@ export default defineComponent({
         id: 'created_last_year',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdLastYear'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -322,7 +322,7 @@ export default defineComponent({
         id: 'created_this_year',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdThisYear'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -339,7 +339,7 @@ export default defineComponent({
         id: 'updated_before_yesterday',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedBeforeYesterday'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -356,7 +356,7 @@ export default defineComponent({
         id: 'updated_yesterday',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedYesterday'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -373,7 +373,7 @@ export default defineComponent({
         id: 'updated_today',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedToday'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -390,7 +390,7 @@ export default defineComponent({
         id: 'updated_last_week',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedLastWeek'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -407,7 +407,7 @@ export default defineComponent({
         id: 'updated_this_week',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedThisWeek'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -424,7 +424,7 @@ export default defineComponent({
         id: 'updated_last_month',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedLastMonth'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -441,7 +441,7 @@ export default defineComponent({
         id: 'updated_this_month',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedThisMonth'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -458,7 +458,7 @@ export default defineComponent({
         id: 'updated_last_year',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedLastYear'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -475,7 +475,7 @@ export default defineComponent({
         id: 'updated_this_year',
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedThisYear'),
-        model: {
+        data: {
           data_state: {
             filterType: 'set',
             values: ['published'],
@@ -515,9 +515,9 @@ export default defineComponent({
             if (item) {
               item.children.push({
                 id: ei.id,
-                tid: ei.tid,
+                tid: ei.tid || props.params.context.tid,
                 name: ei.name,
-                model: ei.model,
+                data: ei.data,
               });
             } else {
               temp.push({
@@ -526,9 +526,9 @@ export default defineComponent({
                 children: [
                   {
                     id: ei.id,
-                    tid: ei.tid,
+                    tid: ei.tid || props.params.context.tid,
                     name: ei.name,
-                    model: ei.model,
+                    data: ei.data,
                   },
                 ],
               });
@@ -555,7 +555,7 @@ export default defineComponent({
       const filterModel = props.params.api.getFilterModel();
       if (Object.keys(filterModel).length === 0) current_filter.value = {};
       else {
-        const filter = _filters.value.find((filter) => Object.keys(deepCompare(filterModel, filter.model)).length === 0 && Object.keys(deepCompare(filter.model, filterModel)).length === 0);
+        const filter = _filters.value.find((filter) => Object.keys(deepCompare(filterModel, filter.data)).length === 0 && Object.keys(deepCompare(filter.data, filterModel)).length === 0);
         current_filter.value = filter || {};
       }
     };
@@ -569,17 +569,17 @@ export default defineComponent({
           },
         });
       } else {
-        props.params.api.setFilterModel(item.model);
+        props.params.api.setFilterModel(item.data);
       }
     };
 
     const create_filter = ref({});
 
     const handleCreateFilter = () => {
-      const new_model = JSON.stringify(props.params.api.getFilterModel(), null, 2);
+      const stringifyFilterModel = JSON.stringify(props.params.api.getFilterModel(), null, 2);
       create_filter.value = {
-        name: create_filter.value.model === new_model ? create_filter.value.name : '',
-        model: new_model,
+        name: create_filter.value.data === stringifyFilterModel ? create_filter.value.name : '',
+        data: stringifyFilterModel,
       };
       document.getElementById('showCreateFilterModalBtn').click();
     };
@@ -598,7 +598,7 @@ export default defineComponent({
         createFilter({
           tid: props.params.context.tid,
           name: create_filter.value.name,
-          model: JSON.parse(create_filter.value.model),
+          data: JSON.parse(create_filter.value.data),
         }).then(({ code, msg }) => {
           if (code === 200) {
             create_filter.value = {};

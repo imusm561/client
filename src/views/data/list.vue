@@ -119,6 +119,10 @@
           :defaultColDef="defaultColDef"
           @grid-ready="onGridReady"
           :getRowId="getRowId"
+          @columnVisible="handleColumnChange"
+          @columnPinned="handleColumnChange"
+          @columnResized="handleColumnChange"
+          @columnMoved="handleColumnChange"
         ></AgGridVue>
       </div>
 
@@ -522,6 +526,10 @@ export default {
     const onGridReady = (params) => {
       gridApi = params.api;
       // gridColumnApi = params.columnApi;
+    };
+
+    const handleColumnChange = (e) => {
+      console.log(e);
     };
 
     const generateColumnDef = (column) => {
@@ -1248,6 +1256,7 @@ export default {
       getRowClass,
 
       onGridReady,
+      handleColumnChange,
       getRowId,
       serverSideDatasource,
       handleRefetchDataList,

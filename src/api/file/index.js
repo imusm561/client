@@ -13,7 +13,7 @@ export const addUpload = (data) => {
 };
 
 export const initUploader = (data) => {
-  return axios.post('/cor/file/init-uploader', data);
+  return axios.post('/cor/file/uploader/init', data);
 };
 
 export const change = (data) => {

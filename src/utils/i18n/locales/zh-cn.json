@@ -763,7 +763,7 @@
   "data.list.sideBar.toolPanels.customization.createFilterModal.title": "创建定制过滤",
   "data.list.sideBar.toolPanels.customization.createFilterModal.form.name": "名称",
   "data.list.sideBar.toolPanels.customization.createFilterModal.form.name.duplicate": "名称【{name}】已存在!",
-  "data.list.sideBar.toolPanels.customization.createFilterModal.form.model": "模型",
+  "data.list.sideBar.toolPanels.customization.createFilterModal.form.data": "数据",
   "data.list.sideBar.toolPanels.customization.createFilterModal.form.footer.create": "创建",
   "data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.title": "删除定制过滤确认",
   "data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.confirm": "确定要删除此过滤吗？",

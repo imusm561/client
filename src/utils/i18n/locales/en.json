@@ -763,7 +763,7 @@
   "data.list.sideBar.toolPanels.customization.createFilterModal.title": "Create Custom Filter",
   "data.list.sideBar.toolPanels.customization.createFilterModal.form.name": "Name",
   "data.list.sideBar.toolPanels.customization.createFilterModal.form.name.duplicate": "Name [{name}] is exists!",
-  "data.list.sideBar.toolPanels.customization.createFilterModal.form.model": "Model",
+  "data.list.sideBar.toolPanels.customization.createFilterModal.form.data": "Data",
   "data.list.sideBar.toolPanels.customization.createFilterModal.form.footer.create": "Create",
   "data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.title": "Delete Filter Confirm",
   "data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.confirm": "Are you sure to delete this filter ?",

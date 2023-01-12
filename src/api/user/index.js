@@ -35,7 +35,7 @@ export const getUserFiles = (params) => {
 };
 
 export const resetPassword = (data) => {
-  return axios.post('/cor/user/reset-password', data);
+  return axios.post('/cor/user/password/reset', data);
 };
 
 export const getUserList = (params) => {
@@ -43,11 +43,11 @@ export const getUserList = (params) => {
 };
 
 export const uploadAvatar = (data) => {
-  return axios.post('/cor/user/upload-avatar', data);
+  return axios.post('/cor/user/avatar/upload', data);
 };
 
 export const changePassword = (data) => {
-  return axios.post('/cor/user/change-password', data);
+  return axios.post('/cor/user/password/change', data);
 };
 
 export const updateUser = (data) => {
