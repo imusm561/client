@@ -4,7 +4,7 @@
     <div class="card adaptive">
       <div class="card-body">
         <div class="row h-100">
-          <div class="col-xl-5 col-md-5">
+          <div class="col-5">
             <div class="d-flex">
               <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.redis.keys') }}</h4>
               <i class="mdi mdi-refresh text-primary float-end fs-16 cursor-pointer" @click.stop="handleGetKeys"></i>
@@ -23,7 +23,7 @@
             </el-tree>
           </div>
 
-          <div class="col-xl-7 col-md-7 d-none d-md-block">
+          <div class="col-7 d-none d-md-block">
             <div class="d-flex flex-column" style="height: 100%">
               <span class="fs-16">{{ current.key || '*' }}</span>
               <MonacoEditor
