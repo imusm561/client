@@ -166,13 +166,14 @@ export default {
           expression.value = { interval: [], error: null };
           try {
             let interval = parser.parseExpression(val.rule, {
-              currentDate: new Date(val.start).getTime() > new Date().getTime() ? new Date(val.start) : new Date(),
-              endDate: new Date(val.end),
+              currentDate: moment(val.start).valueOf() > moment.valueOf() ? moment(val.start).toDate() : moment().toDate(),
+              endDate: moment(val.end).toDate(),
               tz: 'Asia/Shanghai',
             });
             for (let i = 0; i < 10; i++) {
               expression.value.interval.push(moment(new Date(interval.next().toString())).format('YYYY-MM-DD HH:mm:ss'));
             }
+            expression.value.error = null;
           } catch (error) {
             expression.value.error = error.message;
           }
