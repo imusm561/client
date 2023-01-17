@@ -12,7 +12,7 @@
           <i class="mdi mdi-motion-play-outline fs-16 cursor-pointer text-muted pe-2" @click="handleQuery"></i>
         </span>
       </div>
-      <div class="card-body d-flex flex-column pt-0">
+      <div class="card-body d-flex flex-column pt-0 h-100">
         <MonacoEditor v-model="sql" language="mysql" height="100%" />
       </div>
 
