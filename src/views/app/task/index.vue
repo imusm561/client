@@ -164,7 +164,7 @@
                       :selectable="
                         (option) =>
                           current_task.progress <= 0
-                            ? ['todo'].includes(option.value)
+                            ? ['todo', 'urgent'].includes(option.value)
                             : current_task.progress >= 100
                             ? ['review', 'completed'].includes(option.value)
                             : ['urgent', 'inprogress'].includes(option.value)
@@ -326,9 +326,11 @@ export default {
           put: (to, from, dragEl, evt) => {
             return ['todo'].includes(to.el.id)
               ? Number(dragEl.getAttribute('data-progress')) <= 0
-              : ['review', 'completed'].includes(to.el.id)
-              ? Number(dragEl.getAttribute('data-progress')) >= 100
-              : true;
+              : ['urgent'].includes(to.el.id)
+              ? Number(dragEl.getAttribute('data-progress')) < 100
+              : ['inprogress'].includes(to.el.id)
+              ? Number(dragEl.getAttribute('data-progress')) > 0 && Number(dragEl.getAttribute('data-progress')) < 100
+              : Number(dragEl.getAttribute('data-progress')) >= 100;
           },
           pull: true,
         };
