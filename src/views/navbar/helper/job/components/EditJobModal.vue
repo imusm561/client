@@ -46,7 +46,9 @@
                     </VueSelect>
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label cursor-pointer" :title="expression.interval.join('\n')">{{ $t('layout.navbar.helper.job.EditJobModal.form.rule') }}</label>
+                    <label class="form-label cursor-pointer text-primary text-decoration-underline" :title="expression.interval.join('\n')">
+                      {{ $t('layout.navbar.helper.job.EditJobModal.form.rule') }}
+                    </label>
                     <Field
                       name="rule"
                       :class="['form-control', (errors.rule || expression.error) && 'is-invalid']"
