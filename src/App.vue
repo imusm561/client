@@ -103,7 +103,7 @@ export default {
       document.addEventListener('visibilitychange', async () => {
         if (document.visibilityState === 'visible') {
           const token = jwt.decode(localStorage.getItem('accessToken'));
-          if (token && token.exp > Math.round(new Date() / 1000)) {
+          if (token && token.exp > Math.round(new Date().getTime() / 1000)) {
             if (!store.state.user.data.username || token.username === store.state.user.data.username) {
               if (route.value.name === 'login') {
                 await getUserData();

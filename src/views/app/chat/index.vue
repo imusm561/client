@@ -167,7 +167,7 @@
                               <i :class="`mdi mdi-${data.id === 0 ? 'spin mdi-loading' : data.receiver_read ? 'check-all' : 'check'} align-bottom`"></i>
                             </span>
                             <span
-                              v-if="(new Date().getTime() - new Date(data.created_at).getTime()) / 1000 < 120 && data.sender === $store.state.user.data.username && !data.receiver_read"
+                              v-if="($moment().valueOf() - $moment(data.created_at).valueOf()) / 1000 < 120 && data.sender === $store.state.user.data.username && !data.receiver_read"
                               class="text-primary check-message-icon cursor-pointer"
                               @click="handleWithdrawMsg(data)"
                             >

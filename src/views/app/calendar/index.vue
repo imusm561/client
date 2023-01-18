@@ -375,7 +375,7 @@ export default {
               event.users = event.users.filter((username) => getUserInfo(username));
               return event;
             })
-            .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+            .sort((a, b) => moment(a.start).valueOf() - moment(b.start).valueOf());
         } else {
           toast({
             component: ToastificationContent,

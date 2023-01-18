@@ -63,7 +63,7 @@ router.beforeEach((to, from, next) => {
         }
       }
       const token = jwt.decode(localStorage.getItem('accessToken'));
-      if (token && token.exp > Math.round(new Date() / 1000)) {
+      if (token && token.exp > Math.round(new Date().getTime() / 1000)) {
         await checkUserData();
         if (['login'].includes(to.name)) {
           next({ name: 'home' });

@@ -303,8 +303,8 @@ export default {
 
     const resolveTaskVariant = (task) => {
       if (task.progress === 100) return 'bg-soft-success';
-      if (new Date(task.due_date).getTime() < new Date().getTime()) return 'bg-soft-danger';
-      else if (new Date(task.due_date).getTime() - new Date().getTime() < 24 * 60 * 60 * 1000) return 'bg-soft-primary';
+      if (moment(task.due_date).valueOf() < moment().valueOf()) return 'bg-soft-danger';
+      else if (moment(task.due_date).valueOf() - moment().valueOf() < 24 * 60 * 60 * 1000) return 'bg-soft-primary';
       else return null;
     };
 
