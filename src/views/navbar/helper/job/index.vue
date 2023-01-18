@@ -53,31 +53,37 @@
           <div class="card-body" :class="resolveJobStatus(job).card">
             <div class="d-flex flex-column h-100">
               <div class="d-flex mb-2">
-                <h6 class="fs-15 mb-0 flex-grow-1 text-truncate cursor-pointer" @click="$router.push({ name: 'jobDetail', params: { id: job.id } })">#{{ job.id }} {{ job.title }}</h6>
+                <h6 class="fs-15 mb-0 flex-grow-1 text-truncate cursor-pointer" :title="`#${job.id}`" @click="$router.push({ name: 'jobDetail', params: { id: job.id } })">{{ job.title }}</h6>
                 <a class="text-muted cursor-pointer ms-2" @click="handleEditJob(job)"><i class="mdi mdi-square-edit-outline text-info"></i></a>
                 <a class="text-muted cursor-pointer ms-2" @click="handleDelJob(job)"><i class="mdi mdi-delete-outline text-danger"></i></a>
               </div>
               <p class="text-muted text-truncate-five-lines">{{ replaceHtml(job.description) }}</p>
               <div class="mb-3">
-                <div class="d-flex justify-content-between mb-1">
-                  <div class="text-primary" :title="job.start">{{ $moment(job.start).fromNow() }}</div>
-                  <div class="text-primary" :title="job.end">{{ $moment(job.end).fromNow() }}</div>
+                <div class="d-flex mb-1">
+                  <div class="flex-grow-1">
+                    <h6 class="text-muted mb-0">
+                      <span class="text-secondary" :title="job.start">{{ $moment(job.start).fromNow() }}</span>
+                    </h6>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <span class="text-secondary" :title="job.end">{{ $moment(job.end).fromNow() }}</span>
+                  </div>
                 </div>
                 <div class="progress rounded-3 progress-sm">
                   <div
-                    class="progress-bar bg-primary"
+                    class="progress-bar bg-secondary"
                     :style="{ width: `${(($moment().valueOf() - $moment(job.start).valueOf()) / ($moment(job.end).valueOf() - $moment(job.start).valueOf())) * 100}%` }"
                     aria-valuemax="100"
                   ></div>
                 </div>
               </div>
-              <div>
+              <div v-if="job.tags?.length">
                 <span class="badge badge-soft-primary me-1" v-for="(tag, index) in job.tags" :key="`${tag}_${index}`">{{ tag }}</span>
               </div>
             </div>
           </div>
-          <div class="card-footer border-top-dashed py-2" :class="resolveJobStatus(job).card">
-            <div class="d-flex align-items-center">
+          <div class="card-footer border-top-dashed" :class="resolveJobStatus(job).card">
+            <div class="d-flex">
               <div class="flex-grow-1">
                 <span class="badge text-uppercase" :class="resolveJobStatus(job).badge">
                   {{ resolveJobStatus(job).text }}
