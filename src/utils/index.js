@@ -241,6 +241,7 @@ export const arrayBufferToBase64 = (buffer) => {
 
 export const isLngLat = (lnglat) => {
   if (!lnglat) return false;
+  lnglat = lnglat.toString();
   const lngExp =
     /* eslint-disable-next-line no-useless-escape */
     /^(\-|\+)?(((\d|[1-9]\d|1[0-7]\d|0{1,3})\.\d{0,6})|(\d|[1-9]\d|1[0-7]\d|0{1,3})|180\.0{0,6}|180)$/;
