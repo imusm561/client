@@ -57,7 +57,7 @@
     </div>
 
     <button id="showViewAndEditEventModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#viewAndEditEventModal" />
-    <div class="modal fade" id="viewAndEditEventModal">
+    <div class="modal fade" id="viewAndEditEventModal" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header p-2 bg-soft-info">

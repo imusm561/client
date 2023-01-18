@@ -122,7 +122,7 @@
       </div>
     </div>
 
-    <div class="modal fade" id="editTaskModal" data-bs-focus="false">
+    <div class="modal fade" id="editTaskModal" data-bs-focus="false" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header p-2 bg-light">

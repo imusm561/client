@@ -128,7 +128,7 @@
 
       <input id="importData" class="d-none" type="file" @input="handleFileInput" />
 
-      <div class="modal fade" id="batchUpdateModal">
+      <div class="modal fade" id="batchUpdateModal" data-bs-focus="false" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg modal-dialog-centered">
           <div class="modal-content" v-if="batch.column">
             <div class="modal-header p-2 bg-light">
