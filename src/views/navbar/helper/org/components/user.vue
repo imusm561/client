@@ -50,8 +50,8 @@
           </thead>
           <tbody>
             <tr v-for="user in users" :key="user.id">
-              <td class="fs-16 text-secondary text-decoration-underline">
-                <a class="fw-medium cursor-pointer" @click="handleClickUserId(user)">#{{ user.id }}</a>
+              <td class="text-primary text-decoration-underline cursor-pointer fw-medium">
+                <span @click="handleClickUserId(user)">#{{ user.id }}</span>
               </td>
               <td>
                 <div class="d-flex gap-2 align-items-center">
