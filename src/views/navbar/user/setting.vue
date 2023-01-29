@@ -201,7 +201,10 @@
                           </span>
                         </label>
                         <label v-else class="form-label">
-                          <span class="cursor-pointer text-primary text-decoration-underline" data-bs-toggle="dropdown" id="bindDropdownBtn">
+                          <span v-if="qr_available" class="cursor-pointer text-primary text-decoration-underline" data-bs-toggle="dropdown" id="bindDropdownBtn">
+                            {{ $t('layout.navbar.user.dropdown.setting.personalDetails.openid') }}
+                          </span>
+                          <span v-else>
                             {{ $t('layout.navbar.user.dropdown.setting.personalDetails.openid') }}
                           </span>
                           <ul class="dropdown-menu p-1">
@@ -445,6 +448,7 @@ export default {
 
     const login_history = ref([]);
 
+    const qr_available = ref(true);
     const qr_key = ref(null);
     const qr_src = ref(null);
 
@@ -455,9 +459,21 @@ export default {
       getAuthQr({
         key: qr_key.value,
         id: user.value.id,
-      }).then(({ code, data: { data: arrayBuffer } }) => {
+      }).then(({ code, data }) => {
         if (code === 200) {
-          qr_src.value = `data:image/jpeg;base64,${arrayBufferToBase64(arrayBuffer)}`;
+          if (data?.data) qr_src.value = `data:image/jpeg;base64,${arrayBufferToBase64(data.data)}`;
+          else {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: i18n.global.t('layout.navbar.user.dropdown.setting.personalDetails.openid.unavailable'),
+              },
+            });
+            document.getElementById('bindDropdownBtn')?.click();
+            qr_available.value = false;
+          }
         }
       });
     };
@@ -603,6 +619,7 @@ export default {
       uaParser,
       login_history,
 
+      qr_available,
       qr_key,
       qr_src,
 

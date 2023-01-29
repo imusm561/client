@@ -457,6 +457,7 @@
   "layout.navbar.user.dropdown.setting.personalDetails.skills": "Skills",
   "layout.navbar.user.dropdown.setting.personalDetails.address": "Address",
   "layout.navbar.user.dropdown.setting.personalDetails.openid": "OpenID",
+  "layout.navbar.user.dropdown.setting.personalDetails.openid.unavailable": "This feature is not available yet.",
   "layout.navbar.user.dropdown.setting.personalDetails.unbind": "Unbind",
   "layout.navbar.user.dropdown.setting.personalDetails.about": "About",
   "layout.navbar.user.dropdown.setting.changePassword": "Change Password",
