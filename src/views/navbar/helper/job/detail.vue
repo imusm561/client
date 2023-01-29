@@ -5,21 +5,21 @@
       <div class="col-xl-7">
         <div class="card card-height-100">
           <div class="card-body">
-            <div class="d-flex justify-content-between">
+            <div class="align-items-center d-flex justify-content-between">
               <h5>{{ $t('layout.navbar.helper.jobDetail.header') }}</h5>
               <div>
-                <a class="ms-2 cursor-pointer" @click="$router.push({ name: 'job' })">
+                <button class="btn btn-sm" @click="$router.push({ name: 'job' })">
                   <i class="fs-16 mdi mdi-view-grid-outline text-primary"></i>
-                </a>
-                <a class="ms-2 cursor-pointer" @click="handleExecuteJob">
-                  <i class="fs-16 mdi mdi-motion-play-outline text-warning"></i>
-                </a>
-                <a class="ms-2 cursor-pointer" @click="handleEditJob">
+                </button>
+                <button class="btn btn-sm" :disabled="isJobExecuting" @click="handleExecuteJob">
+                  <i class="fs-16 mdi text-warning" :class="isJobExecuting ? 'mdi-spin mdi-loading' : 'mdi-motion-play-outline'"></i>
+                </button>
+                <button class="btn btn-sm" @click="handleEditJob">
                   <i class="fs-16 mdi mdi-square-edit-outline text-info"></i>
-                </a>
-                <a class="ms-2 cursor-pointer" @click="handleDelJob">
+                </button>
+                <button class="btn btn-sm" @click="handleDelJob">
                   <i class="fs-16 mdi mdi-trash-can-outline text-danger"></i>
-                </a>
+                </button>
               </div>
             </div>
             <div class="row">
@@ -210,7 +210,9 @@ export default {
       });
     };
 
+    const isJobExecuting = ref(false);
     const handleExecuteJob = () => {
+      isJobExecuting.value = true;
       executeJob({ id: job.value.id }).then(({ code, msg }) => {
         if (code === 200) {
           pagination.value.pageNum = 1;
@@ -232,6 +234,9 @@ export default {
             },
           });
         }
+        setTimeout(() => {
+          isJobExecuting.value = false;
+        }, 500);
       });
     };
     const { resolveJobStatus } = useJob();
@@ -400,6 +405,7 @@ export default {
       job,
       fetchJobInfo,
 
+      isJobExecuting,
       handleExecuteJob,
       resolveJobStatus,
 
