@@ -190,6 +190,7 @@ export default {
     const qr_key = ref(null);
     const qr_src = ref(null);
     const qr_scaned = ref(false);
+    const qr_val = ref(null);
 
     watch(
       () => logintype.value,
@@ -227,15 +228,11 @@ export default {
           qr_scaned.value = true;
         }
       });
-      socket.on('QRCodeLogin', ({ key, token }) => {
+      socket.on('QRCodeLogin', ({ key, val }) => {
         if (logintype.value === 'scan_qrcode' && qr_scaned.value === true && key === qr_key.value) {
-          // Set access token in localStorage so axios interceptor can use it
-          localStorage.setItem('accessToken', token);
-          // Getting user information
-          getUserData().then(() => {
-            // Redirect to home or query.redirect
-            router.replace(route.value.query.redirect ? { path: route.value.query.redirect } : '/');
-          });
+          qr_val.value = val;
+          canSubmit.value = true;
+          handleFormSubmit();
         }
       });
       generateQRCode();
@@ -303,6 +300,9 @@ export default {
         } else if (params.logintype == 'sms_verification') {
           params.phone = phone.value;
           params.code = code.value;
+        } else if (params.logintype == 'scan_qrcode') {
+          params.key = qr_key.value;
+          params.val = qr_val.value;
         }
         userLogin(params).then(({ code, data }) => {
           if (code === 200) {
