@@ -542,6 +542,7 @@ export default {
 
     let timer = null;
     const handleColumnChange = () => {
+      const tid = Number(route.value.params.tid);
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
         const hasTab = columns.value.some((column) => column.component === 'LayoutTab');
@@ -556,7 +557,7 @@ export default {
         if (customs.value) {
           updateCustomColumns({
             id: customs.value.id,
-            tid: Number(route.value.params.tid),
+            tid,
             data: columnDefs.map((column) => {
               return {
                 field: column.field,
@@ -579,7 +580,7 @@ export default {
           });
         } else {
           createCustomColumns({
-            tid: Number(route.value.params.tid),
+            tid,
             data: columnDefs.map((column) => {
               return {
                 field: column.field,
