@@ -5,7 +5,7 @@
 .task-wrapper {
   position: relative;
   overflow-x: hidden;
-  height: calc(100vh - #{$header-height} - #{$footer-height} - 5px);
+  height: calc(100vh - #{$header-height} - #{$footer-height});
 }
 
 .tasks-board {
