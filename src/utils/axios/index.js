@@ -29,7 +29,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     config.params = config.params || {};
-    if (store.state.sys.var.cdn && config.method.toLowerCase() === 'get') {
+    if (store.state.sys.var.socket_uri !== '/' && config.method.toLowerCase() === 'get') {
       config.params.t = new Date().getTime();
     }
     config.headers = config.headers || {};

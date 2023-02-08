@@ -26,7 +26,7 @@ watch(
   () => store.state.sys.var.socket_uri,
   (val) => {
     if (val) {
-      const socket = io(val == '/' ? '/' : `${location.protocol == 'https:' ? 'wss' : 'ws'}://${val}`, {
+      const socket = io(val === '/' ? '/' : `${location.protocol == 'https:' ? 'wss' : 'ws'}://${val}`, {
         path: '/socket.io',
         transports: ['websocket'],
         secure: true,
