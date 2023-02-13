@@ -6,7 +6,7 @@
         <div class="row h-100">
           <div class="col-3">
             <div class="d-flex">
-              <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.code.tree') }}</h4>
+              <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.code.files') }}</h4>
               <i class="mdi mdi-refresh text-secondary float-end fs-16 cursor-pointer ms-1" @click.stop="handleGetCodeDirs"></i>
             </div>
             <el-tree
@@ -14,6 +14,7 @@
               data-simplebar
               class="scroll"
               :data="tree"
+              :empty-text="$t('layout.navbar.helper.code.files.empty')"
               :default-expanded-keys="default_expanded_keys"
               node-key="path"
               :draggable="false"

@@ -4,7 +4,7 @@
       <h4 class="card-title mb-0 flex-grow-1">{{ $t('layout.navbar.helper.org.dept.departments') }}</h4>
     </div>
     <div class="card-body">
-      <el-tree :data="tree" node-key="id" default-expand-all :expand-on-click-node="false" @node-click="handleSelectDept">
+      <el-tree :data="tree" node-key="id" :empty-text="$t('layout.navbar.helper.org.dept.departments.empty')" default-expand-all :expand-on-click-node="false" @node-click="handleSelectDept">
         <template #default="{ node }">
           <span class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2">
             <span class="tree-node-label">

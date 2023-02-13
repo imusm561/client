@@ -9,7 +9,16 @@
               <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.redis.keys') }}</h4>
               <i class="mdi mdi-refresh text-primary float-end fs-16 cursor-pointer" @click.stop="handleGetKeys"></i>
             </div>
-            <el-tree data-simplebar class="scroll" :data="tree" node-key="key" :draggable="false" :expand-on-click-node="false" @node-click="handleClickKey">
+            <el-tree
+              data-simplebar
+              class="scroll"
+              :data="tree"
+              node-key="key"
+              :empty-text="$t('layout.navbar.helper.redis.keys.empty')"
+              :draggable="false"
+              :expand-on-click-node="false"
+              @node-click="handleClickKey"
+            >
               <template #default="{ node }">
                 <span class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2 text-truncate" :title="node.data.key">
                   <span class="tree-node-label text-truncate">
