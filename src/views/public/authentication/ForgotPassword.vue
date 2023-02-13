@@ -6,7 +6,7 @@
           <div class="col-lg-12">
             <div class="text-center mb-3">
               <router-link to="/" class="d-inline-block auth-logo">
-                <img :src="`/static/img/logo/${logo}.png`" alt="" height="55" />
+                <img :src="`${BASE_URL}static/img/logo/${logo}.png`" alt="" height="55" />
               </router-link>
             </div>
           </div>
@@ -54,6 +54,7 @@
                           :placeholder="$t('public.authentication.forgotPassword.form.code')"
                           :class="['form-control', (errors.code || res.code) && 'is-invalid']"
                           rules="required"
+                          autocomplete="off"
                         />
                         <span class="invalid-feedback">{{ errors.code || res.code }}</span>
                       </div>
@@ -76,6 +77,7 @@
                             :placeholder="$('public.authentication.forgotPassword.form.newPassword')"
                             :class="['form-control', errors.newpassword && 'is-invalid']"
                             rules="required|password"
+                            autocomplete="off"
                           />
                           <span class="invalid-feedback">{{ errors.newpassword }}</span>
                           <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
@@ -94,6 +96,7 @@
                             :placeholder="$t('public.authentication.forgotPassword.form.confirmPassword')"
                             :class="['form-control', errors.confirmpassword && 'is-invalid']"
                             rules="required|confirmed:@newpassword"
+                            autocomplete="off"
                           />
                           <span class="invalid-feedback">{{ errors.confirmpassword }}</span>
                           <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">

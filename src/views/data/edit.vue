@@ -245,7 +245,7 @@
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-body">
-              <p v-html="result.msg"></p>
+              <p class="ck ck-content" v-html="result.msg"></p>
               <hr />
               <div class="d-flex justify-content-end gap-2">
                 <button class="btn btn-sm btn-info" data-bs-dismiss="modal" @click="$router.replace({ name: 'list', params: { tid: form.id } })">{{ $t('data.edit.result.listData') }}</button>

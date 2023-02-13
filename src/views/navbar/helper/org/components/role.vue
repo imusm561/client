@@ -150,6 +150,7 @@
                       :data="tree"
                       node-key="id"
                       show-checkbox
+                      :empty-text="$t('layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.empty')"
                       @check="handleNodeChecked"
                       :expand-on-click-node="false"
                       :default-expanded-keys="generateDefaultCheckedKeys()"

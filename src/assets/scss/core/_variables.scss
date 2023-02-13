@@ -1,15 +1,5 @@
 // Variables
 
-// Prefix for :root CSS variables
-//
-// @vue.config.js
-// loaderOptions: {
-//   scss: {
-//     additionalData: `$variable-prefix:${process.env.VUE_APP_VARIABLE_PREFIX}-;`
-//   },
-// },
-// $variable-prefix:             vz-;
-
 // Font Family
 $font-family-primary: 'Poppins', sans-serif;
 $font-family-secondary: 'hkgrotesk', sans-serif;

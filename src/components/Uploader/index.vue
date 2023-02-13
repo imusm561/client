@@ -8,7 +8,7 @@
         <div class="flex-shrink-0 me-2 mt-1">
           <img
             v-if="file.category == 'image'"
-            :src="`/cor/file/load/${file.uuid}`"
+            :src="`${BASE_URL}cor/file/load/${file.uuid}`"
             class="rounded avatar-xs cursor-pointer"
             @click="
               () => {
@@ -20,7 +20,7 @@
                     initialViewIndex: images.findIndex((image) => image.uuid == file.uuid),
                   },
                   images: images.map((image) => {
-                    return `/cor/file/load/${image.uuid}`;
+                    return `${BASE_URL}cor/file/load/${image.uuid}`;
                   }),
                 });
               }
@@ -225,7 +225,7 @@ export default defineComponent({
     };
 
     const options = ref({
-      target: '/cor/file/upload',
+      target: `${process.env.BASE_URL}cor/file/upload`,
       chunkSize: chunkSize,
       testChunks: true,
       singleFile: !props.multiple,
@@ -428,7 +428,7 @@ export default defineComponent({
 
     const handleDownloadFile = (file) => {
       let downloadElement = document.createElement('a');
-      downloadElement.href = `/cor/file/load/${file.uuid}`;
+      downloadElement.href = `${process.env.BASE_URL}cor/file/load/${file.uuid}`;
       downloadElement.download = file.name;
       document.body.appendChild(downloadElement);
       downloadElement.click();
@@ -475,7 +475,7 @@ export default defineComponent({
       options.multiple = props.multiple;
       options.username = public_username || store.state.user.data.username;
       qrcode.value = options.code = Math.random().toString(36).slice(-6);
-      let url = `${location.origin}/uploader/${encodeURIComponent(encryptData(JSON.stringify(options)))}`;
+      let url = `${location.origin}${process.env.BASE_URL}uploader/${encodeURIComponent(encryptData(JSON.stringify(options)))}`;
       copyToClipboard(url);
       nextTick(() => {
         new QRCode(document.getElementById('qrcode'), {

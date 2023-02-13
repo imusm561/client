@@ -180,7 +180,7 @@ ClassicEditor.defaultConfig = {
     options: [10, 'default', 14, 16, 18, 24, 36, 48],
   },
   simpleUpload: {
-    uploadUrl: '/cor/file/ckeditor',
+    uploadUrl: `${process.env.BASE_URL}cor/file/ckeditor`,
   },
   link: {
     addTargetToExternalLinks: true,

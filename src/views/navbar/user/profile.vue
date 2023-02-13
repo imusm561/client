@@ -251,7 +251,7 @@
                       <td style="width: 40px">
                         <img
                           v-if="file.category == 'image'"
-                          :src="`/cor/file/load/${file.uuid}`"
+                          :src="`${BASE_URL}cor/file/load/${file.uuid}`"
                           class="rounded avatar-xs cursor-pointer"
                           @click="
                             () => {
@@ -263,7 +263,7 @@
                                   initialViewIndex: images.findIndex((image) => image.uuid == file.uuid),
                                 },
                                 images: images.map((image) => {
-                                  return `/cor/file/load/${image.uuid}`;
+                                  return `${process.env.BASE_URL}cor/file/load/${image.uuid}`;
                                 }),
                               });
                             }
@@ -428,7 +428,7 @@ export default {
 
     const handleDownloadFile = (file) => {
       let downloadElement = document.createElement('a');
-      downloadElement.href = `/cor/file/load/${file.uuid}`;
+      downloadElement.href = `${process.env.BASE_URL}cor/file/load/${file.uuid}`;
       downloadElement.download = file.name;
       document.body.appendChild(downloadElement);
       downloadElement.click();

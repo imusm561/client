@@ -94,6 +94,7 @@
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.tags": "Tags",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.description": "Description",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions": "Permissions",
+  "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.empty": "Empty",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.copy": "Copy",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.copy.success": "Copied!",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.paste": "Paste",
@@ -184,6 +185,7 @@
 
   "layout.navbar.helper.form": "Form",
   "layout.navbar.helper.forms": "Forms",
+  "layout.navbar.helper.forms.empty": "Empty",
   "layout.navbar.helper.form.create": "Created by {user} At {time}",
   "layout.navbar.helper.form.update": "Updated by {user} At {time}",
   "layout.navbar.helper.form.modified": "Save Form First!",

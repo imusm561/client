@@ -94,6 +94,7 @@
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.tags": "标签",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.description": "描述",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions": "权限",
+  "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.empty": "暂无表单",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.copy": "复制",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.copy.success": "复制成功",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.paste": "粘贴",
@@ -184,6 +185,7 @@
 
   "layout.navbar.helper.form": "表单设计",
   "layout.navbar.helper.forms": "表单",
+  "layout.navbar.helper.forms.empty": "暂无表单",
   "layout.navbar.helper.form.create": "由{user}创建于{time}",
   "layout.navbar.helper.form.update": "由{user}更新于{time}",
   "layout.navbar.helper.form.modified": "请先保存表单设计！",

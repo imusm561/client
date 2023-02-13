@@ -23,15 +23,13 @@ export default {
       getFileInfo(route.value.params).then(({ code, data }) => {
         if (code === 200) {
           document.title = data?.name ? data.name + ' - ' + store.state.sys.name : store.state.sys.name;
-          file.value.url = `/cor/file/load/${route.value.params.uuid}`;
+          file.value.url = `${process.env.BASE_URL}cor/file/load/${route.value.params.uuid}`;
           if (data.token) {
             file.value.url += `?token=${data.token}`;
             delete data.token;
           }
           file.value = { ...file.value, ...data };
           if (file.value.category === 'office') {
-            // let url = `${store.state.sys.cfg.office_viewer || '//view.officeapps.live.com/op/view.aspx?src='}${encodeURIComponent(`${location.origin}${file.value.url}`)}`;
-            // location.replace(url);
             file.value.url = `${store.state.sys.cfg.office_viewer || '//view.officeapps.live.com/op/view.aspx?src='}${encodeURIComponent(`${location.origin}${file.value.url}`)}`;
           }
           if (file.value.category === 'unknown') {

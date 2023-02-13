@@ -6,7 +6,7 @@
           <div :title="file.name">
             <img
               v-if="file.category == 'image'"
-              :src="`/cor/file/load/${file.uuid}`"
+              :src="`${BASE_URL}cor/file/load/${file.uuid}`"
               class="avatar-xs cursor-pointer mb-3"
               @click="
                 handleClickImage(() => {
@@ -18,7 +18,7 @@
                       initialViewIndex: images.findIndex((image) => image.uuid == file.uuid),
                     },
                     images: images.map((image) => {
-                      return `/cor/file/load/${image.uuid}`;
+                      return `${BASE_URL}cor/file/load/${image.uuid}`;
                     }),
                   });
                 })

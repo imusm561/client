@@ -11,6 +11,7 @@
             <el-tree
               :data="tree"
               node-key="id"
+              :empty-text="$t('layout.navbar.helper.forms.empty')"
               :default-expanded-keys="default_expanded_keys"
               :draggable="!isModified(['form', 'columns'])"
               :expand-on-click-node="false"
@@ -1349,7 +1350,7 @@ export default {
       qrCodeKey.value = Math.random().toString(36).slice(-6);
       nextTick(() => {
         new QRCode(document.getElementById('qrcode'), {
-          text: `${location.origin}/form/${current_pub.value.uuid}`,
+          text: `${location.origin}${process.env.BASE_URL}form/${current_pub.value.uuid}`,
           width: 100,
           height: 100,
           colorDark: '#000000',

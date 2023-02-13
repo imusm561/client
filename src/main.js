@@ -2,6 +2,8 @@ import { createApp, watch } from 'vue';
 import App from '@/App.vue';
 const app = createApp(App);
 
+app.config.globalProperties.BASE_URL = process.env.BASE_URL;
+
 import router from '@/router';
 import store from '@store';
 
@@ -23,11 +25,11 @@ window.moment = moment;
 import io from 'socket.io-client';
 import initSocket from '@utils/socket';
 watch(
-  () => store.state.sys.var.socket_uri,
+  () => store.state.sys.var.origin,
   (val) => {
     if (val) {
-      const socket = io(val === '/' ? '/' : `${location.protocol == 'https:' ? 'wss' : 'ws'}://${val}`, {
-        path: '/socket.io',
+      const socket = io(val, {
+        path: `${process.env.BASE_URL}socket.io`,
         transports: ['websocket'],
         secure: true,
       });

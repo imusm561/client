@@ -90,7 +90,7 @@
       </div>
       <div class="dropdown-item notify-item cursor-pointer d-flex" v-for="file in result.file" :key="file.id" @click.stop="handlePreviewFile(file)">
         <div class="flex-shrink-0 me-2 mt-1">
-          <img v-if="file.category == 'image'" :src="`/cor/file/load/${file.uuid}`" class="rounded avatar-xs cursor-pointer" />
+          <img v-if="file.category == 'image'" :src="`${BASE_URL}cor/file/load/${file.uuid}`" class="rounded avatar-xs cursor-pointer" />
           <i v-else class="file-icon" :class="$fileIcons.getClassWithColor(file.name)" />
         </div>
         <div class="flex-grow-1 w-75">
@@ -146,7 +146,7 @@ export default defineComponent({
 
     const handleDownloadFile = (file) => {
       let downloadElement = document.createElement('a');
-      downloadElement.href = `/cor/file/load/${file.uuid}`;
+      downloadElement.href = `${process.env.BASE_URL}cor/file/load/${file.uuid}`;
       downloadElement.download = file.name;
       document.body.appendChild(downloadElement);
       downloadElement.click();

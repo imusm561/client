@@ -6,7 +6,7 @@
       <div class="app-menu navbar-menu">
         <div class="navbar-brand-box">
           <router-link to="/" :class="['logo', logo]">
-            <img :src="`/static/img/logo/${logo}.png`" alt="logo" height="45" />
+            <img :src="`${BASE_URL}static/img/logo/${logo}.png`" alt="logo" height="45" />
           </router-link>
         </div>
         <div data-simplebar class="h-100">

@@ -6,7 +6,7 @@
           <div class="col-lg-12">
             <div class="text-center mb-3">
               <router-link to="/" class="d-inline-block auth-logo">
-                <img :src="`/static/img/logo/${logo}.png`" alt="" height="55" />
+                <img :src="`${BASE_URL}static/img/logo/${logo}.png`" alt="" height="55" />
               </router-link>
             </div>
           </div>
@@ -50,6 +50,7 @@
                             :placeholder="$t('public.authentication.login.form.password')"
                             :class="['form-control', 'pe-5', (errors.password || res.password) && 'is-invalid']"
                             rules="required"
+                            autocomplete="off"
                           />
                           <span class="invalid-feedback">{{ errors.password || res.password }}</span>
                           <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">

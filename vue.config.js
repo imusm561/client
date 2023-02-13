@@ -6,7 +6,7 @@ const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const { styles } = require('@ckeditor/ckeditor5-dev-utils');
 
 module.exports = {
-  publicPath: '/',
+  publicPath: process.env.VUE_APP_BASE_URL,
   outputDir: 'dist',
   assetsDir: 'static',
   productionSourceMap: false,

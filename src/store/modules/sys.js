@@ -37,7 +37,7 @@ export default {
         const script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = `//webapi.amap.com/maps?v=2.0&key=${value.sys.cfg.amap.map_key}&plugin=AMap.AutoComplete,AMap.PlaceSearch,AMap.Geocoder,AMap.CitySearch`;
-        document.querySelector('head').appendChild(script);
+        document.head.appendChild(script);
       }
     },
   },

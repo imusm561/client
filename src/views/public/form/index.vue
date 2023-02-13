@@ -86,12 +86,12 @@
         </div>
       </Form>
     </div>
-    <button id="showResultModalBtn" type="button" class="d-none" data-bs-toggle="modal" data-bs-target="#result"></button>
-    <div class="modal fade" id="result" data-bs-backdrop="static" data-bs-keyboard="false">
+    <button id="showResultModalBtn" type="button" class="d-none" data-bs-toggle="modal" data-bs-target="#resultModal"></button>
+    <div class="modal fade" id="resultModal" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body">
-            <p v-html="pub.message"></p>
+            <p class="ck ck-content" v-html="pub.message"></p>
             <button v-if="pub.tags?.includes('allowContinuousSubmission')" class="btn btn-sm btn-primary float-end" data-bs-dismiss="modal">
               {{ $t('public.form.result.submitAgain') }}
             </button>

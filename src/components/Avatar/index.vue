@@ -2,7 +2,7 @@
   <div v-if="isGroup" class="avatar-group">
     <span v-for="(user, index) in users" :key="index" class="avatar-group-item cursor-pointer">
       <div :title="user[keyFullname]">
-        <img v-if="user[keyAvatar]" :src="user[keyAvatar]" :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail && 'img-thumbnail'}`" />
+        <img v-if="user[keyAvatar]" :src="`${BASE_URL}${user[keyAvatar]}`" :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail && 'img-thumbnail'}`" />
         <img
           v-else-if="$store.state.sys.cfg.use_default_avatar"
           :src="
@@ -31,7 +31,7 @@
     </span>
   </div>
   <div v-else :title="user[keyFullname]">
-    <img v-if="user[keyAvatar]" :src="user[keyAvatar]" :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail && 'img-thumbnail'}`" />
+    <img v-if="user[keyAvatar]" :src="`${BASE_URL}${user[keyAvatar]}`" :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail && 'img-thumbnail'}`" />
     <img
       v-else-if="$store.state.sys.cfg.use_default_avatar"
       :src="

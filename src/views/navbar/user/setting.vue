@@ -258,6 +258,7 @@
                             :placeholder="$t('layout.navbar.user.dropdown.setting.changePassword.currentPassoprd')"
                             :class="['form-control', errors.currentpassword && 'is-invalid']"
                             rules="required"
+                            autocomplete="off"
                           />
                           <span class="invalid-feedback">{{ errors.currentpassword }}</span>
                           <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
@@ -277,6 +278,7 @@
                             :placeholder="$t('layout.navbar.user.dropdown.setting.changePassword.newPassoprd')"
                             :class="['form-control', errors.newpassword && 'is-invalid']"
                             rules="required|password"
+                            autocomplete="off"
                           />
                           <span class="invalid-feedback">{{ errors.newpassword }}</span>
                           <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
@@ -296,6 +298,7 @@
                             :placeholder="$t('layout.navbar.user.dropdown.setting.changePassword.confirmPassoprd')"
                             :class="['form-control', errors.confirmpassword && 'is-invalid']"
                             rules="required|confirmed:@newpassword"
+                            autocomplete="off"
                           />
                           <span class="invalid-feedback">{{ errors.confirmpassword }}</span>
                           <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
