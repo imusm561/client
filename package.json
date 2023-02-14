@@ -86,7 +86,6 @@
     "compression-webpack-plugin": "6.1.1",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0",
-    "image-webpack-loader": "^8.1.0",
     "moment-locales-webpack-plugin": "^1.2.0",
     "monaco-editor-esm-webpack-plugin": "^2.0.0",
     "monaco-editor-webpack-plugin": "6.0.0",

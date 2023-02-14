@@ -69,36 +69,36 @@ module.exports = {
     );
 
     if (process.env.NODE_ENV === 'production') {
-      config.module.rules.push({
-        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-        use: [
-          'image-webpack-loader',
-          {
-            loader: 'image-webpack-loader',
-            options: {
-              bypassOnDebug: false,
-              disable: false,
-              mozjpeg: {
-                progressive: true,
-                quality: 75,
-              },
-              optipng: {
-                enabled: true,
-              },
-              pngquant: {
-                quality: [0.5, 0.8],
-                speed: 4,
-              },
-              gifsicle: {
-                interlaced: false,
-              },
-              webp: {
-                quality: 75,
-              },
-            },
-          },
-        ],
-      });
+      // config.module.rules.push({
+      //   test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+      //   use: [
+      //     'image-webpack-loader',
+      //     {
+      //       loader: 'image-webpack-loader',
+      //       options: {
+      //         bypassOnDebug: false,
+      //         disable: false,
+      //         mozjpeg: {
+      //           progressive: true,
+      //           quality: 75,
+      //         },
+      //         optipng: {
+      //           enabled: true,
+      //         },
+      //         pngquant: {
+      //           quality: [0.5, 0.8],
+      //           speed: 4,
+      //         },
+      //         gifsicle: {
+      //           interlaced: false,
+      //         },
+      //         webp: {
+      //           quality: 75,
+      //         },
+      //       },
+      //     },
+      //   ],
+      // });
 
       config.plugins.push(
         new TerserPlugin({
