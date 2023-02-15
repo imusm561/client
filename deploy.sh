@@ -5,12 +5,12 @@ success="42;30m"
 error="41;37m"
 default="47;34m"
 
-fn="$(date +%Y%m%d%H%M%S)_$(openssl rand -hex 4)"
+# fn="$(date +%Y%m%d%H%M%S)_$(openssl rand -hex 4)"
 
 trap 'onCtrlC' INT
 function onCtrlC () {
     if [ -f dist ]; then rm -rf dist; fi
-    if [ -f $fn.tar.gz ]; then rm $fn.tar.gz; fi
+    if [ -f client.tgz ]; then rm client.tgz; fi
     echo -e "\033[$default Cancelled. \033[0m" 
     exit
 }
@@ -26,7 +26,8 @@ if [ $? -eq 0 ]; then
 
             if [ $? -eq 0 ]; then
 
-                echo $(tar -czf $fn.tar.gz dist)
+                echo $(tar  -zcvf client.tgz -C dist/ .)
+                echo $(rm -rf dist/)
                 echo $(rm -rf dist)
                 echo ""
 
@@ -51,10 +52,10 @@ if [ $? -eq 0 ]; then
                     done
 
                     echo -e "\033[$info The project will deploy to [$deploy_url] \033[0m"
-                    echo $(curl -F "file=@$fn.tar.gz" -F "type=client" "$deploy_url" )
+                    echo $(curl -F "file=@client.tgz" "$deploy_url" )
                     sleep 1
 
-                    echo $(rm $fn.tar.gz)
+                    echo $(rm client.tgz)
                     exit
 
                 else
@@ -68,7 +69,7 @@ if [ $? -eq 0 ]; then
             exit
         fi
         ((Second=$i%60))
-        echo -ne "\033[$success The project will be compressed to $fn.tar.gz in $Second seconds. \033[0m\r"
+        echo -ne "\033[$success The project will be compressed to client.tgz in $Second seconds. \033[0m\r"
         sleep 1
     done
 
