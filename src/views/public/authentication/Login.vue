@@ -18,28 +18,42 @@
               <div class="card-body p-4">
                 <div class="text-center mt-2">
                   <h5 class="text-primary">{{ $t('public.authentication.login.title') }}</h5>
-                  <p class="text-muted">{{ $t('public.authentication.login.tip', { sys: $store.state.sys.name }) }}</p>
+                  <p class="text-muted">
+                    {{ $t('public.authentication.login.tip', { sys: $store.state.sys.name }) }}
+                  </p>
                 </div>
                 <div class="p-2 mt-4">
                   <Form v-slot="{ errors }" @submit="handleFormSubmit">
                     <div v-if="logintype === 'account_password'">
                       <div class="mb-3">
-                        <label for="username" class="form-label">{{ $t('public.authentication.login.form.username') }}</label>
+                        <label for="username" class="form-label">
+                          {{ $t('public.authentication.login.form.username') }}
+                        </label>
                         <Field
                           name="username"
                           v-model="username"
                           @input="res = {}"
                           :placeholder="$t('public.authentication.login.form.username')"
-                          :class="['form-control', (errors.username || res.username) && 'is-invalid']"
+                          :class="[
+                            'form-control',
+                            (errors.username || res.username) && 'is-invalid',
+                          ]"
                           rules="required"
                         />
                         <span class="invalid-feedback">{{ errors.username || res.username }}</span>
                       </div>
 
                       <div class="mb-3">
-                        <label class="form-label" for="password">{{ $t('public.authentication.login.form.password') }}</label>
+                        <label class="form-label" for="password">
+                          {{ $t('public.authentication.login.form.password') }}
+                        </label>
                         <div class="float-end">
-                          <router-link :to="{ name: 'forgotPassword', query: $route.query }" class="text-muted">{{ $t('public.authentication.login.form.forgotPassword') }}</router-link>
+                          <router-link
+                            :to="{ name: 'forgotPassword', query: $route.query }"
+                            class="text-muted"
+                          >
+                            {{ $t('public.authentication.login.form.forgotPassword') }}
+                          </router-link>
                         </div>
                         <div class="position-relative">
                           <Field
@@ -48,32 +62,69 @@
                             @input="res = {}"
                             :type="isPasswordVisible ? 'text' : 'password'"
                             :placeholder="$t('public.authentication.login.form.password')"
-                            :class="['form-control', 'pe-5', (errors.password || res.password) && 'is-invalid']"
+                            :class="[
+                              'form-control',
+                              'pe-5',
+                              (errors.password || res.password) && 'is-invalid',
+                            ]"
                             rules="required"
                             autocomplete="off"
                           />
-                          <span class="invalid-feedback">{{ errors.password || res.password }}</span>
-                          <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
-                            <i :class="['align-middle mdi', isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye']" @click="isPasswordVisible = !isPasswordVisible"></i>
+                          <span class="invalid-feedback">
+                            {{ errors.password || res.password }}
+                          </span>
+                          <button
+                            type="button"
+                            class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
+                          >
+                            <i
+                              :class="[
+                                'align-middle mdi',
+                                isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye',
+                              ]"
+                              @click="isPasswordVisible = !isPasswordVisible"
+                            ></i>
                           </button>
                         </div>
                       </div>
 
                       <div class="form-check">
-                        <input v-model="remember" id="remember-check-for-account-password" type="checkbox" class="form-check-input" />
-                        <label class="form-check-label" for="remember-check-for-account-password">{{ $t('public.authentication.login.form.remember') }}</label>
+                        <input
+                          v-model="remember"
+                          id="remember-check-for-account-password"
+                          type="checkbox"
+                          class="form-check-input"
+                        />
+                        <label class="form-check-label" for="remember-check-for-account-password">
+                          {{ $t('public.authentication.login.form.remember') }}
+                        </label>
                       </div>
 
                       <div class="mt-4">
-                        <button class="btn btn-primary w-100" type="submit" :disabled="Object.keys(errors).length">{{ $t('public.authentication.login.form.signIn') }}</button>
+                        <button
+                          class="btn btn-primary w-100"
+                          type="submit"
+                          :disabled="Object.keys(errors).length"
+                        >
+                          {{ $t('public.authentication.login.form.signIn') }}
+                        </button>
                       </div>
                     </div>
 
                     <div v-else-if="logintype === 'sms_verification'">
                       <div class="mb-3">
-                        <label for="phone" class="form-label">{{ $t('public.authentication.login.form.phone') }}</label>
+                        <label for="phone" class="form-label">
+                          {{ $t('public.authentication.login.form.phone') }}
+                        </label>
                         <div class="float-end" v-if="!canSendVerificationCode">
-                          <span class="text-muted">{{ $tc('public.authentication.login.form.resendVerificationCodeCountDown', { count: resendVerificationCodeCountDown }) }}</span>
+                          <span class="text-muted">
+                            {{
+                              $tc(
+                                'public.authentication.login.form.resendVerificationCodeCountDown',
+                                { count: resendVerificationCodeCountDown },
+                              )
+                            }}
+                          </span>
                         </div>
                         <div class="position-relative">
                           <Field
@@ -85,14 +136,26 @@
                             rules="required|phone"
                           />
                           <span class="invalid-feedback">{{ errors.phone || res.phone }}</span>
-                          <button v-if="phone && !errors.phone" type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
-                            <i :class="['align-middle mdi', canSendVerificationCode ? 'mdi-send' : 'mdi-send-clock-outline']" @click="handleSendVerificationCode"></i>
+                          <button
+                            v-if="phone && !errors.phone"
+                            type="button"
+                            class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
+                          >
+                            <i
+                              :class="[
+                                'align-middle mdi',
+                                canSendVerificationCode ? 'mdi-send' : 'mdi-send-clock-outline',
+                              ]"
+                              @click="handleSendVerificationCode"
+                            ></i>
                           </button>
                         </div>
                       </div>
 
                       <div class="mb-3">
-                        <label for="code" class="form-label">{{ $t('public.authentication.login.form.code') }}</label>
+                        <label for="code" class="form-label">
+                          {{ $t('public.authentication.login.form.code') }}
+                        </label>
                         <Field
                           name="code"
                           v-model="code"
@@ -105,25 +168,49 @@
                       </div>
 
                       <div class="form-check">
-                        <input v-model="remember" id="remember-check-for-sms-verification" type="checkbox" class="form-check-input" />
-                        <label class="form-check-label" for="remember-check-for-sms-verification">{{ $t('public.authentication.login.form.remember') }}</label>
+                        <input
+                          v-model="remember"
+                          id="remember-check-for-sms-verification"
+                          type="checkbox"
+                          class="form-check-input"
+                        />
+                        <label class="form-check-label" for="remember-check-for-sms-verification">
+                          {{ $t('public.authentication.login.form.remember') }}
+                        </label>
                       </div>
 
                       <div class="mt-4">
-                        <button class="btn btn-primary w-100" type="submit" :disabled="Object.keys(errors).length">{{ $t('public.authentication.login.form.signIn') }}</button>
+                        <button
+                          class="btn btn-primary w-100"
+                          type="submit"
+                          :disabled="Object.keys(errors).length"
+                        >
+                          {{ $t('public.authentication.login.form.signIn') }}
+                        </button>
                       </div>
                     </div>
 
                     <div v-show="logintype === 'scan_qrcode'">
                       <div class="text-center">
-                        <div v-if="qr_scaned" class="fs-22" style="margin: 117px 0">{{ $t('public.authentication.login.qrScaned.authorization') }}</div>
-                        <img v-else :key="qr_key" :src="qr_src || require('@/assets/images/gif/loading.gif')" width="243" height="243" :style="{ padding: qr_src ? '5%' : '25%' }" />
+                        <div v-if="qr_scaned" class="fs-22" style="margin: 117px 0">
+                          {{ $t('public.authentication.login.qrScaned.authorization') }}
+                        </div>
+                        <img
+                          v-else
+                          :key="qr_key"
+                          :src="qr_src || require('@/assets/images/gif/loading.gif')"
+                          width="243"
+                          height="243"
+                          :style="{ padding: qr_src ? '5%' : '25%' }"
+                        />
                       </div>
                     </div>
                   </Form>
                   <div class="mt-4 text-center">
                     <div class="signin-other-title">
-                      <h5 class="fs-13 mb-4 title">{{ $t('public.authentication.login.form.signInWith') }}</h5>
+                      <h5 class="fs-13 mb-4 title">
+                        {{ $t('public.authentication.login.form.signInWith') }}
+                      </h5>
                     </div>
 
                     <div>
@@ -131,7 +218,14 @@
                         v-for="(item, index) in types"
                         :key="item.name"
                         type="button"
-                        :class="['btn', item.class, 'btn-icon', 'waves-effect', 'waves-light', index != 0 && 'ms-1']"
+                        :class="[
+                          'btn',
+                          item.class,
+                          'btn-icon',
+                          'waves-effect',
+                          'waves-light',
+                          index != 0 && 'ms-1',
+                        ]"
                         @click="logintype = item.name"
                       >
                         <i :class="['fs-20 mdi', item.icon]"></i>
@@ -150,7 +244,9 @@
       <div class="row">
         <div class="col-lg-12">
           <div class="text-center">
-            <p class="mb-0 text-muted">&copy; {{ new Date().getFullYear() }} {{ $store.state.sys.company }}</p>
+            <p class="mb-0 text-muted">
+              &copy; {{ new Date().getFullYear() }} {{ $store.state.sys.company }}
+            </p>
           </div>
         </div>
       </div>
@@ -314,7 +410,9 @@ export default {
             // Getting user information
             getUserData().then(() => {
               // Redirect to home or query.redirect
-              router.replace(route.value.query.redirect ? { path: route.value.query.redirect } : '/');
+              router.replace(
+                route.value.query.redirect ? { path: route.value.query.redirect } : '/',
+              );
             });
           } else {
             canSubmit.value = true;

@@ -8,7 +8,14 @@
     label="label"
     :options="options"
     :disabled="disabled"
-    :selectable="(option) => (show_users.includes(0) ? option.value === 0 : option.users ? true : !(!show_users.includes(option.value) && real_users.includes(option.value)))"
+    :selectable="
+      (option) =>
+        show_users.includes(0)
+          ? option.value === 0
+          : option.users
+          ? true
+          : !(!show_users.includes(option.value) && real_users.includes(option.value))
+    "
   >
     <template #option="data">
       <div class="d-flex align-items-center">
@@ -69,7 +76,13 @@ export default defineComponent({
       },
     });
 
-    const all = [{ value: 0, label: i18n.global.t('components.userSelector.userAll'), title: i18n.global.t('components.userSelector.userAll') }];
+    const all = [
+      {
+        value: 0,
+        label: i18n.global.t('components.userSelector.userAll'),
+        title: i18n.global.t('components.userSelector.userAll'),
+      },
+    ];
     const users = JSON.parse(JSON.stringify(store.state.org.users)).map((user) => {
       return {
         value: user.username,
@@ -102,14 +115,22 @@ export default defineComponent({
       watch(
         real_users,
         (newVal = [], oldVal = []) => {
-          if (newVal.filter((item) => !oldVal.includes(item)).length || oldVal.filter((item) => !newVal.includes(item)).length) randerShowUsers();
+          if (
+            newVal.filter((item) => !oldVal.includes(item)).length ||
+            oldVal.filter((item) => !newVal.includes(item)).length
+          )
+            randerShowUsers();
         },
         { immediate: true },
       );
       watch(
         show_users,
         (newVal = [], oldVal = []) => {
-          if (newVal.filter((item) => !oldVal.includes(item)).length || oldVal.filter((item) => !newVal.includes(item)).length) generateRealUsers();
+          if (
+            newVal.filter((item) => !oldVal.includes(item)).length ||
+            oldVal.filter((item) => !newVal.includes(item)).length
+          )
+            generateRealUsers();
         },
         { immediate: true },
       );
@@ -148,7 +169,10 @@ export default defineComponent({
     const generateRealUsers = () => {
       let temp_show_users = JSON.parse(JSON.stringify(show_users.value));
       let temp_real_users = [];
-      if (temp_show_users.includes(0) || depts.every((dept) => temp_show_users.includes(dept.value))) {
+      if (
+        temp_show_users.includes(0) ||
+        depts.every((dept) => temp_show_users.includes(dept.value))
+      ) {
         temp_show_users = [0];
         temp_real_users = users.map((user) => {
           return user.value;

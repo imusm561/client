@@ -1,19 +1,43 @@
 <template>
   <div>
-    <button id="showEditJobModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#editJobModal" />
-    <div class="modal fade" id="editJobModal" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
+    <button
+      id="showEditJobModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#editJobModal"
+    />
+    <div
+      class="modal fade"
+      id="editJobModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      data-bs-focus="false"
+    >
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header p-2 bg-light">
-            <h5 class="modal-title">{{ job.id ? $t('layout.navbar.helper.job.EditJobModal.title.update') : $t('layout.navbar.helper.job.EditJobModal.title.create') }}</h5>
-            <button type="button" class="btn-close" id="hideEditJobModalBtn" data-bs-dismiss="modal"></button>
+            <h5 class="modal-title">
+              {{
+                job.id
+                  ? $t('layout.navbar.helper.job.EditJobModal.title.update')
+                  : $t('layout.navbar.helper.job.EditJobModal.title.create')
+              }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              id="hideEditJobModalBtn"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <Form v-slot="{ errors }" @submit="handleSubmitJob">
             <div class="modal-body p-0">
               <div data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
                 <div class="row g-3">
                   <div class="col-md-4">
-                    <label class="form-label">{{ $t('layout.navbar.helper.job.EditJobModal.form.title') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.job.EditJobModal.form.title') }}
+                    </label>
                     <Field
                       name="title"
                       v-model="job.title"
@@ -25,15 +49,23 @@
                     <span class="invalid-feedback">{{ errors.title }}</span>
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label">{{ $t('layout.navbar.helper.job.EditJobModal.form.status') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.job.EditJobModal.form.status') }}
+                    </label>
                     <VueSelect
                       v-model="job.status"
                       :placeholder="$t('layout.navbar.helper.job.EditJobModal.form.status')"
                       :reduce="(item) => item.value"
                       label="text"
                       :options="[
-                        { text: $t('layout.navbar.helper.job.EditJobModal.form.status.enable'), value: 1 },
-                        { text: $t('layout.navbar.helper.job.EditJobModal.form.status.disabled'), value: 0 },
+                        {
+                          text: $t('layout.navbar.helper.job.EditJobModal.form.status.enable'),
+                          value: 1,
+                        },
+                        {
+                          text: $t('layout.navbar.helper.job.EditJobModal.form.status.disabled'),
+                          value: 0,
+                        },
                       ]"
                       :clearable="false"
                     >
@@ -46,7 +78,10 @@
                     </VueSelect>
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label cursor-pointer text-primary text-decoration-underline" :title="expression.interval.join('\n')">
+                    <label
+                      class="form-label cursor-pointer text-primary text-decoration-underline"
+                      :title="expression.interval.join('\n')"
+                    >
                       {{ $t('layout.navbar.helper.job.EditJobModal.form.rule') }}
                     </label>
                     <Field
@@ -59,13 +94,27 @@
                     <span class="invalid-feedback">{{ errors.rule || expression.error }}</span>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('layout.navbar.helper.job.EditJobModal.form.description') }}</label>
-                    <CKEditor v-model="job.description" id="ck_job_description" :error="{ id: 'ck_job_description', error: errors.description }" :class="errors.description && 'is-invalid'" />
-                    <Field name="description" v-model="job.description" rules="required" class="d-none" />
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.job.EditJobModal.form.description') }}
+                    </label>
+                    <CKEditor
+                      v-model="job.description"
+                      id="ck_job_description"
+                      :error="{ id: 'ck_job_description', error: errors.description }"
+                      :class="errors.description && 'is-invalid'"
+                    />
+                    <Field
+                      name="description"
+                      v-model="job.description"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.description }}</span>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('layout.navbar.helper.job.EditJobModal.form.duration') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.job.EditJobModal.form.duration') }}
+                    </label>
                     <FlatPickr
                       v-model="job.duration"
                       @change="handleChangeDuration"
@@ -77,7 +126,9 @@
                     <span class="invalid-feedback">{{ errors.duration }}</span>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('layout.navbar.helper.job.EditJobModal.form.tags') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.job.EditJobModal.form.tags') }}
+                    </label>
                     <VueSelect
                       v-model="job.tags"
                       multiple
@@ -98,18 +149,39 @@
                     <span class="invalid-feedback">{{ errors.tags }}</span>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('layout.navbar.helper.job.EditJobModal.form.config') }}</label>
-                    <MonacoEditor v-model="job.config" :class="{ 'is-invalid': errors.config || syntax_error }" @error="($event) => (syntax_error = $event)" language="json" />
-                    <Field name="config" v-model="job.config" rules="required" class="d-none" :class="{ 'is-invalid': errors.config || syntax_error }" />
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.job.EditJobModal.form.config') }}
+                    </label>
+                    <MonacoEditor
+                      v-model="job.config"
+                      :class="{ 'is-invalid': errors.config || syntax_error }"
+                      @error="($event) => (syntax_error = $event)"
+                      language="json"
+                    />
+                    <Field
+                      name="config"
+                      v-model="job.config"
+                      rules="required"
+                      class="d-none"
+                      :class="{ 'is-invalid': errors.config || syntax_error }"
+                    />
                     <span class="invalid-feedback">{{ errors.config || syntax_error }}</span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="modal-footer p-3 pt-1 pb-1">
-              <button type="submit" class="btn btn-sm btn-success" :disabled="Object.keys(errors).length || syntax_error || expression.error">
+              <button
+                type="submit"
+                class="btn btn-sm btn-success"
+                :disabled="Object.keys(errors).length || syntax_error || expression.error"
+              >
                 <i class="mdi mdi-content-save-outline"></i>
-                {{ job.id ? $t('layout.navbar.helper.job.EditJobModal.form.footer.save') : $t('layout.navbar.helper.job.EditJobModal.form.footer.create') }}
+                {{
+                  job.id
+                    ? $t('layout.navbar.helper.job.EditJobModal.form.footer.save')
+                    : $t('layout.navbar.helper.job.EditJobModal.form.footer.create')
+                }}
               </button>
             </div>
           </Form>
@@ -168,12 +240,17 @@ export default {
           expression.value = { interval: [], error: null };
           try {
             let interval = parser.parseExpression(val.rule, {
-              currentDate: moment(val.start).valueOf() > moment.valueOf() ? moment(val.start).toDate() : moment().toDate(),
+              currentDate:
+                moment(val.start).valueOf() > moment.valueOf()
+                  ? moment(val.start).toDate()
+                  : moment().toDate(),
               endDate: moment(val.end).toDate(),
               tz: 'Asia/Shanghai',
             });
             for (let i = 0; i < 10; i++) {
-              expression.value.interval.push(moment(new Date(interval.next().toString())).format('YYYY-MM-DD HH:mm:ss'));
+              expression.value.interval.push(
+                moment(new Date(interval.next().toString())).format('YYYY-MM-DD HH:mm:ss'),
+              );
             }
             expression.value.error = null;
           } catch (error) {

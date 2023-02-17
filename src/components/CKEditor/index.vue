@@ -50,8 +50,11 @@ export default defineComponent({
             const ck_editor = document.getElementById(id)?.nextSibling;
             if (ck_editor) {
               ck_editor.style.setProperty('border', '1px solid #f06548', error && 'important');
-              const toolbar = ck_editor?.getElementsByClassName('ck-editor__top')?.[0]?.getElementsByClassName('ck-toolbar')?.[0];
-              if (toolbar) toolbar.style.setProperty('border-color', '#f06548', error && 'important');
+              const toolbar = ck_editor
+                ?.getElementsByClassName('ck-editor__top')?.[0]
+                ?.getElementsByClassName('ck-toolbar')?.[0];
+              if (toolbar)
+                toolbar.style.setProperty('border-color', '#f06548', error && 'important');
             }
           }
         },

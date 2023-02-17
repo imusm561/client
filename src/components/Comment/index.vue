@@ -20,11 +20,20 @@
     <Empty :text="$t('component.comment.empty')" v-else />
     <Form class="mt-1" v-slot="{ errors }" @submit="handleCreateComment">
       <label v-if="comment.reply">
-        {{ $t('component.comment.replyTo', { user: getUserInfo(comment.reply.created_by)?.fullname || comment.reply.created_by }) }}
+        {{
+          $t('component.comment.replyTo', {
+            user: getUserInfo(comment.reply.created_by)?.fullname || comment.reply.created_by,
+          })
+        }}
         <i class="mdi mdi-close-circle text-danger cursor-pointer" @click="comment.reply = null" />
       </label>
       <label v-else>{{ $t('layout.navbar.helper.jobDetail.comments') }}:</label>
-      <CKEditor v-model="comment.content" id="ck_comment" :error="{ id: 'ck_comment', error: errors.comment }" :class="errors.comment && 'is-invalid'" />
+      <CKEditor
+        v-model="comment.content"
+        id="ck_comment"
+        :error="{ id: 'ck_comment', error: errors.comment }"
+        :class="errors.comment && 'is-invalid'"
+      />
       <Field name="comment" v-model="comment.content" rules="required" class="d-none" />
       <span class="invalid-feedback">{{ errors.comment }}</span>
       <div class="mt-2 mb-2 float-end">
@@ -34,25 +43,52 @@
       </div>
     </Form>
 
-    <button id="showDeleteCommentModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#deleteCommentModal" />
-    <div class="modal fade" id="deleteCommentModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <button
+      id="showDeleteCommentModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#deleteCommentModal"
+    />
+    <div
+      class="modal fade"
+      id="deleteCommentModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              id="btn-close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
-                <h4>{{ $t('component.comment.deleteCommentModal.title', { id: current_comment.id }) }}</h4>
-                <p class="text-muted mx-4 mb-0">{{ $t('component.comment.deleteCommentModal.confirm') }}</p>
+                <h4>
+                  {{ $t('component.comment.deleteCommentModal.title', { id: current_comment.id }) }}
+                </h4>
+                <p class="text-muted mx-4 mb-0">
+                  {{ $t('component.comment.deleteCommentModal.confirm') }}
+                </p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" id="hideDeleteCommentModalBtn" data-bs-dismiss="modal">
+              <button
+                type="button"
+                class="btn w-sm btn-light"
+                id="hideDeleteCommentModalBtn"
+                data-bs-dismiss="modal"
+              >
                 {{ $t('component.comment.deleteCommentModal.cancel') }}
               </button>
-              <button type="button" class="btn w-sm btn-danger" @click="handleUpdateComment">{{ $t('component.comment.deleteCommentModal.confirmed') }}</button>
+              <button type="button" class="btn w-sm btn-danger" @click="handleUpdateComment">
+                {{ $t('component.comment.deleteCommentModal.confirmed') }}
+              </button>
             </div>
           </div>
         </div>
@@ -95,7 +131,9 @@ export default defineComponent({
         getComments({ source: props.source }).then(({ code, data, msg }) => {
           if (code === 200) {
             data.forEach((comment) => {
-              if (store.state.user.notices?.comment?.findIndex((item) => item.id == comment.id) !== -1) {
+              if (
+                store.state.user.notices?.comment?.findIndex((item) => item.id == comment.id) !== -1
+              ) {
                 store.commit('user/DEL_NOTICE', {
                   app: 'comment',
                   data: comment,
@@ -139,7 +177,9 @@ export default defineComponent({
         document.documentElement.scrollTop = document.documentElement.offsetHeight;
         const el = document.getElementById(`comment_${id}`);
         if (el && document.getElementById('comment')) {
-          const commentList = document.getElementById('comment')?.querySelector('.simplebar-content-wrapper');
+          const commentList = document
+            .getElementById('comment')
+            ?.querySelector('.simplebar-content-wrapper');
           commentList.scrollTo({
             top: el.offsetTop,
             behavior: 'smooth',

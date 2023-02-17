@@ -19,10 +19,17 @@
                 </span>
                 <span class="d-block fs-12 text-muted">
                   {{ $moment(log.created_at).format('llll') }}
-                  <span class="badge bg-soft-info text-info align-middle ms-2">{{ $moment(log.created_at).fromNow() }}</span>
+                  <span class="badge bg-soft-info text-info align-middle ms-2">
+                    {{ $moment(log.created_at).fromNow() }}
+                  </span>
                 </span>
               </span>
-              <code class="text-decoration-underline text-primary cursor-pointer" @click="handleViewLogData(log)">{{ log_types[log.type] }}</code>
+              <code
+                class="text-decoration-underline text-primary cursor-pointer"
+                @click="handleViewLogData(log)"
+              >
+                {{ log_types[log.type] }}
+              </code>
             </div>
           </div>
           <div class="text-center" v-if="loading.enable && loading.show">
@@ -35,10 +42,19 @@
       </div>
     </div>
     <Empty text="No Logs" v-else />
-    <button id="showLogDataOffcanvasBtn" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#logDataOffcanvas" />
+    <button
+      id="showLogDataOffcanvasBtn"
+      class="d-none"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#logDataOffcanvas"
+    />
     <div class="offcanvas form offcanvas-end w-50" id="logDataOffcanvas">
       <div class="offcanvas-body p-0 overflow-hidden">
-        <i class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute" style="z-index: 1; right: 10px; bottom: 0" data-bs-dismiss="offcanvas" />
+        <i
+          class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute"
+          style="z-index: 1; right: 10px; bottom: 0"
+          data-bs-dismiss="offcanvas"
+        />
         <MonacoEditor
           v-model="current_log.data"
           language="json"
@@ -119,10 +135,16 @@ export default defineComponent({
     onMounted(() => {
       fetchLogs().then(() => {
         setTimeout(() => {
-          const logsList = document.getElementById('logs')?.querySelector('.simplebar-content-wrapper');
+          const logsList = document
+            .getElementById('logs')
+            ?.querySelector('.simplebar-content-wrapper');
           if (logsList) {
             logsList.addEventListener('scroll', () => {
-              if (logsList.scrollHeight - (logsList.scrollTop + logsList.offsetHeight) < 2 && loading.value.enable && !loading.value.show) {
+              if (
+                logsList.scrollHeight - (logsList.scrollTop + logsList.offsetHeight) < 2 &&
+                loading.value.enable &&
+                !loading.value.show
+              ) {
                 fetchLogs();
               }
             });

@@ -68,13 +68,34 @@ router.beforeEach((to, from, next) => {
         if (['login'].includes(to.name)) {
           next({ name: 'home' });
         } else {
-          if (['list', 'view', 'edit'].includes(to.name) && store.state.user.forms.some((form) => Number(form.pid) === Number(to.params?.tid))) {
+          if (
+            ['list', 'view', 'edit'].includes(to.name) &&
+            store.state.user.forms.some((form) => Number(form.pid) === Number(to.params?.tid))
+          ) {
             next({ name: 'notFound' });
           } else if (
-            (['list', 'view', 'edit'].includes(to.name) && !(store.state.user.data.tags.includes('ALL') || store.state.user.data.permissions?.[Number(to.params?.tid)]?.checked)) ||
-            (['edit'].includes(to.name) && Number(to.params?.rid) === 0 && !(store.state.user.data.tags.includes('ALL') || store.state.user.data.permissions?.[Number(to.params?.tid)]?.create)) ||
-            (['edit'].includes(to.name) && Number(to.params?.rid) !== 0 && !(store.state.user.data.tags.includes('ALL') || store.state.user.data.permissions?.[Number(to.params?.tid)]?.modify)) ||
-            (to?.meta?.auth && !(store.state.user.data.tags.includes('ALL') || to?.meta?.auth.every((tag) => store.state.user.data.tags.includes(tag))))
+            (['list', 'view', 'edit'].includes(to.name) &&
+              !(
+                store.state.user.data.tags.includes('ALL') ||
+                store.state.user.data.permissions?.[Number(to.params?.tid)]?.checked
+              )) ||
+            (['edit'].includes(to.name) &&
+              Number(to.params?.rid) === 0 &&
+              !(
+                store.state.user.data.tags.includes('ALL') ||
+                store.state.user.data.permissions?.[Number(to.params?.tid)]?.create
+              )) ||
+            (['edit'].includes(to.name) &&
+              Number(to.params?.rid) !== 0 &&
+              !(
+                store.state.user.data.tags.includes('ALL') ||
+                store.state.user.data.permissions?.[Number(to.params?.tid)]?.modify
+              )) ||
+            (to?.meta?.auth &&
+              !(
+                store.state.user.data.tags.includes('ALL') ||
+                to?.meta?.auth.every((tag) => store.state.user.data.tags.includes(tag))
+              ))
           ) {
             next({ name: 'permissionDenied' });
           }
@@ -101,7 +122,9 @@ router.afterEach((to) => {
       if (page) {
         document.title = i18n.global.t(page.title) + ' - ' + store.state.sys.name;
       } else {
-        document.title = to?.meta?.title ? i18n.global.t(to.meta.title) + ' - ' + store.state.sys.name : store.state.sys.name;
+        document.title = to?.meta?.title
+          ? i18n.global.t(to.meta.title) + ' - ' + store.state.sys.name
+          : store.state.sys.name;
       }
       NProgress.done();
     }

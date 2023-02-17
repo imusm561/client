@@ -16,7 +16,8 @@ export const isEmpty = (value) => {
 };
 
 export const isMobile = () => {
-  const regExp = /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i;
+  const regExp =
+    /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i;
   return regExp.test(navigator.userAgent);
 };
 
@@ -137,7 +138,16 @@ export const getListPath = (path) => {
 };
 
 export const randomVariant = () => {
-  const variants = ['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark'];
+  const variants = [
+    'primary',
+    'secondary',
+    'success',
+    'info',
+    'warning',
+    'danger',
+    'light',
+    'dark',
+  ];
   return variants[Math.floor(Math.random() * (variants.length - 1))];
 };
 
@@ -312,7 +322,10 @@ export const parseExpr2Params = (data, expr) => {
   if (Number(TIDORSCRIPT)) {
     // 7 | 7.{ID} | 7:AA_AB | 7.{ID}:AA_AB
     params.tid = TIDORSCRIPT;
-    if (RIDORFUNCTION) params.rid = RIDORFUNCTION.includes('data.') ? data?.[RIDORFUNCTION.replace('data.', '')] : RIDORFUNCTION;
+    if (RIDORFUNCTION)
+      params.rid = RIDORFUNCTION.includes('data.')
+        ? data?.[RIDORFUNCTION.replace('data.', '')]
+        : RIDORFUNCTION;
     if (COLORQUERY) params.col = COLORQUERY;
   } else {
     // script.function | script.function:{AA},{AB},data.id,foo,bar
@@ -320,7 +333,8 @@ export const parseExpr2Params = (data, expr) => {
     params.function = RIDORFUNCTION;
     if (COLORQUERY) {
       COLORQUERY.split(',').forEach((param, index) => {
-        if (param.includes('data.')) params[`val_${index + 1}`] = data?.[param.replace('data.', '')];
+        if (param.includes('data.'))
+          params[`val_${index + 1}`] = data?.[param.replace('data.', '')];
         else params[`val_${index + 1}`] = param;
       });
     }
@@ -328,7 +342,11 @@ export const parseExpr2Params = (data, expr) => {
   return params;
 };
 
-export const getDataByFormula = (data, expr, options = { view: false, value: undefined, search: undefined }) => {
+export const getDataByFormula = (
+  data,
+  expr,
+  options = { view: false, value: undefined, search: undefined },
+) => {
   return new Promise((resolve) => {
     const type = Array.isArray(options.value) ? 'Multiple' : 'Single';
     if (options.view) {
@@ -408,7 +426,12 @@ export const getDataByFormula = (data, expr, options = { view: false, value: und
               }),
             );
           } else if (sessionStorage.getItem('publicUsername')) {
-            resolve([{ text: sessionStorage.getItem('publicUsername'), value: sessionStorage.getItem('publicUsername') }]);
+            resolve([
+              {
+                text: sessionStorage.getItem('publicUsername'),
+                value: sessionStorage.getItem('publicUsername'),
+              },
+            ]);
           } else {
             resolve([]);
           }
@@ -432,7 +455,8 @@ export const getDataByFormula = (data, expr, options = { view: false, value: und
             if (options.value) {
               if (params.tid) {
                 const _params = JSON.parse(JSON.stringify(params));
-                _params.value = type === 'Single' ? (options.value ? [options.value] : []) : options.value;
+                _params.value =
+                  type === 'Single' ? (options.value ? [options.value] : []) : options.value;
                 if (_params.value.length) {
                   const { data } = await getDataValue(_params);
                   existed_options = data;
@@ -448,8 +472,12 @@ export const getDataByFormula = (data, expr, options = { view: false, value: und
             }
             getDataSource(params).then(({ code, msg, data }) => {
               if (code === 200) {
-                if (typeof data === 'object' && Array.isArray(data)) resolve([...data, ...existed_options]);
-                else resolve([{ text: `Error: expected array, got ${typeof data}.`, value: 'Error: ' }]);
+                if (typeof data === 'object' && Array.isArray(data))
+                  resolve([...data, ...existed_options]);
+                else
+                  resolve([
+                    { text: `Error: expected array, got ${typeof data}.`, value: 'Error: ' },
+                  ]);
               } else resolve([{ text: msg, value: 'Error: ' }]);
             });
           })();
@@ -508,16 +536,24 @@ export const generateFlowByCurrentUser = (flow) => {
         }
       }
       // skip current user
-      if ((temp_flow[index].logic === 0 || (temp_flow[index].logic === 1 && temp_flow[index].users.length === 1)) && temp_flow[index].users.includes(store.state.user.data.username))
+      if (
+        (temp_flow[index].logic === 0 ||
+          (temp_flow[index].logic === 1 && temp_flow[index].users.length === 1)) &&
+        temp_flow[index].users.includes(store.state.user.data.username)
+      )
         temp_flow[index].skip = true;
-      const current_user_index = temp_flow[index].users.findIndex((username) => username === store.state.user.data.username);
+      const current_user_index = temp_flow[index].users.findIndex(
+        (username) => username === store.state.user.data.username,
+      );
       if (current_user_index != -1) temp_flow[index].users.splice(current_user_index, 1);
     }
 
     // delete duplicate flow
     for (let index = 0; index < temp_flow.length; index++) {
       for (let idx = 0; idx < temp_flow[index].users.length; idx++) {
-        const count = temp_flow.filter((item) => item.users.includes(temp_flow[index].users[idx])).length;
+        const count = temp_flow.filter((item) =>
+          item.users.includes(temp_flow[index].users[idx]),
+        ).length;
         if (count > 1) temp_flow[index].users.splice(idx, 1);
       }
     }
@@ -525,7 +561,11 @@ export const generateFlowByCurrentUser = (flow) => {
     // generate form
     for (let index = 0; index < temp_flow.length; index++) {
       for (let idx = 0; idx < temp_flow[index].users.length; idx++) {
-        temp_flow[index].users[idx] = { username: temp_flow[index].users[idx], pass: undefined, comment: undefined };
+        temp_flow[index].users[idx] = {
+          username: temp_flow[index].users[idx],
+          pass: undefined,
+          comment: undefined,
+        };
       }
     }
 

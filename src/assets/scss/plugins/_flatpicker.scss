@@ -20,7 +20,8 @@
   box-sizing: border-box;
   touch-action: manipulation;
   background: $dropdown-bg;
-  box-shadow: 1px 0 0 $border-color, -1px 0 0 $border-color, 0 1px 0 $border-color, 0 -1px 0 $border-color, 0 3px 13px rgba(0, 0, 0, 0.08);
+  box-shadow: 1px 0 0 $border-color, -1px 0 0 $border-color, 0 1px 0 $border-color,
+    0 -1px 0 $border-color, 0 3px 13px rgba(0, 0, 0, 0.08);
 
   &.open,
   &.inline {
@@ -84,11 +85,17 @@
     }
   }
 
-  &.multiMonth .flatpickr-days .dayContainer:nth-child(n + 1) .flatpickr-day.inRange:nth-child(7n + 7) {
+  &.multiMonth
+    .flatpickr-days
+    .dayContainer:nth-child(n + 1)
+    .flatpickr-day.inRange:nth-child(7n + 7) {
     box-shadow: none !important;
   }
 
-  &.multiMonth .flatpickr-days .dayContainer:nth-child(n + 2) .flatpickr-day.inRange:nth-child(7n + 1) {
+  &.multiMonth
+    .flatpickr-days
+    .dayContainer:nth-child(n + 2)
+    .flatpickr-day.inRange:nth-child(7n + 1) {
     box-shadow: -2px 0 0 #e6e6e6, 5px 0 0 #e6e6e6;
   }
 
@@ -872,7 +879,8 @@ span.flatpickr-weekday {
 
 .flatpickr-calendar {
   background-color: $dropdown-bg !important;
-  box-shadow: 1px 0 0 $border-color, -1px 0 0 $border-color, 0 1px 0 $border-color, 0 -1px 0 $border-color, 0 3px 13px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 1px 0 0 $border-color, -1px 0 0 $border-color, 0 1px 0 $border-color,
+    0 -1px 0 $border-color, 0 3px 13px rgba(0, 0, 0, 0.08) !important;
 
   &.hasTime .flatpickr-time {
     height: 40px;

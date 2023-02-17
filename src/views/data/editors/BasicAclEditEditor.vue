@@ -1,5 +1,9 @@
 <template>
-  <UsersSelector v-model="value" :disabled="params._form.flow.length > 0" :placeholder="$t(data.column.BasicAclView)" />
+  <UsersSelector
+    v-model="value"
+    :disabled="params._form.flow.length > 0"
+    :placeholder="$t(data.column.BasicAclView)"
+  />
 </template>
 
 <script>

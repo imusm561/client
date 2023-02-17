@@ -41,7 +41,8 @@ export default {
   mutations: {
     SET_USER(state, value) {
       const moment = window.moment;
-      if (store.state.sys.cfg.water_mark && value.id) setWatermark(`${value.username} - ${value.fullname}`, moment().format('ll'));
+      if (store.state.sys.cfg.water_mark && value.id)
+        setWatermark(`${value.username} - ${value.fullname}`, moment().format('ll'));
       else removeWatermark();
       state.data = value;
       window.user = value;
@@ -76,10 +77,14 @@ export default {
     },
     DEL_NOTICE(state, value) {
       if (value.app == 'chat') {
-        const idx = state.notices.chat.findIndex((chat) => chat.username == value.data.user.username);
+        const idx = state.notices.chat.findIndex(
+          (chat) => chat.username == value.data.user.username,
+        );
         if (idx !== -1) {
           if (value.data.id) {
-            const index = state.notices.chat[idx].chat_data.findIndex((item) => item.id === value.data.id);
+            const index = state.notices.chat[idx].chat_data.findIndex(
+              (item) => item.id === value.data.id,
+            );
             if (index !== -1) state.notices.chat[idx].chat_data.splice(index, 1);
           } else state.notices.chat.splice(idx, 1);
         }

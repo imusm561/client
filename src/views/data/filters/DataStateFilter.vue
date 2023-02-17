@@ -1,6 +1,10 @@
 <template>
-  <span v-if="params.value === $t('data.list.filter.selectAll')">{{ $t('data.list.filter.selectAll') }}</span>
-  <span v-else class="badge text-uppercase" :class="resolveBadgeBg(params.value)">{{ $t(`data.column.BasicDataState.${params.value}`) }}</span>
+  <span v-if="params.value === $t('data.list.filter.selectAll')">
+    {{ $t('data.list.filter.selectAll') }}
+  </span>
+  <span v-else class="badge text-uppercase" :class="resolveBadgeBg(params.value)">
+    {{ $t(`data.column.BasicDataState.${params.value}`) }}
+  </span>
 </template>
 
 <script>

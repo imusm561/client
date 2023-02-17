@@ -17,7 +17,12 @@
           <i class="mdi mdi-close text-danger cursor-pointer" @click="roleQuery = null"></i>
         </span>
         <div class="search-box">
-          <input type="text" class="form-control search border-0 py-3" :placeholder="$t('layout.navbar.helper.org.user.filter.search')" v-model="userQuery" />
+          <input
+            type="text"
+            class="form-control search border-0 py-3"
+            :placeholder="$t('layout.navbar.helper.org.user.filter.search')"
+            v-model="userQuery"
+          />
           <i class="mdi mdi-magnify ms-2 fs-16 search-icon"></i>
         </div>
       </div>
@@ -81,7 +86,11 @@
                       'mdi-alert-decagram': user.status === 0,
                     }"
                   ></i>
-                  {{ user.status === 1 ? $t('layout.navbar.helper.org.user.table.status.enable') : $t('layout.navbar.helper.org.user.table.status.disabled') }}
+                  {{
+                    user.status === 1
+                      ? $t('layout.navbar.helper.org.user.table.status.enable')
+                      : $t('layout.navbar.helper.org.user.table.status.disabled')
+                  }}
                 </span>
               </td>
               <td>{{ $store.state.org.depts.find((dept) => dept.id === user.dept)?.name }}</td>
@@ -129,30 +138,65 @@
         </table>
       </div>
       <div class="pb-2 pt-4">
-        <Pagination :total="pagination.totalCount" :page-num="pagination.pageNum" :page-size="pagination.pageSize" @changed="handlePaginationChange" />
+        <Pagination
+          :total="pagination.totalCount"
+          :page-num="pagination.pageNum"
+          :page-size="pagination.pageSize"
+          @changed="handlePaginationChange"
+        />
       </div>
     </div>
     <Empty :text="$t('layout.navbar.helper.org.user.table.empty')" v-else />
 
-    <button id="showViewAndEditUserModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#viewAndEditUserModal" />
-    <div class="modal fade" id="viewAndEditUserModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <button
+      id="showViewAndEditUserModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#viewAndEditUserModal"
+    />
+    <div
+      class="modal fade"
+      id="viewAndEditUserModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+    >
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header p-2 bg-soft-info">
-            <h5 class="modal-title">{{ current_user.id ? current_user.fullname : $t('layout.navbar.helper.org.user.viewAndEditUserModal.newUser') }}</h5>
-            <button type="button" id="hideViewAndEditUserModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
+            <h5 class="modal-title">
+              {{
+                current_user.id
+                  ? current_user.fullname
+                  : $t('layout.navbar.helper.org.user.viewAndEditUserModal.newUser')
+              }}
+            </h5>
+            <button
+              type="button"
+              id="hideViewAndEditUserModalBtn"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <Form v-slot="{ errors }" @submit="handleSubmitUser" :key="viewAndEditUserModalKey">
             <div class="modal-body p-0">
-              <div v-if="is_editing" data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
+              <div
+                v-if="is_editing"
+                data-simplebar
+                class="p-3"
+                style="max-height: 80vh; overflow-x: hidden"
+              >
                 <div class="row g-3">
                   <div class="col-lg-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.username') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.username') }}
+                    </label>
                     <Field
                       name="username"
                       v-model="current_user.username"
                       type="text"
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.username')"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.username')
+                      "
                       :class="['form-control', errors.username && 'is-invalid']"
                       :disabled="current_user.id"
                       rules="required|username"
@@ -160,61 +204,101 @@
                     <span class="invalid-feedback">{{ errors.username }}</span>
                   </div>
                   <div class="col-lg-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.fullname') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.fullname') }}
+                    </label>
                     <Field
                       name="fullname"
                       v-model="current_user.fullname"
                       type="text"
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.fullname')"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.fullname')
+                      "
                       :class="['form-control', errors.fullname && 'is-invalid']"
                       rules="required|fullname"
                     />
                     <span class="invalid-feedback">{{ errors.fullname }}</span>
                   </div>
                   <div class="col-lg-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.phone') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.phone') }}
+                    </label>
                     <Field
                       name="phone"
                       v-model="current_user.phone"
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.username')"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.username')
+                      "
                       :class="['form-control', errors.phone && 'is-invalid']"
                       rules="required|phone"
                     />
                     <span class="invalid-feedback">{{ errors.phone }}</span>
                   </div>
                   <div class="col-lg-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.email') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.email') }}
+                    </label>
                     <Field
                       name="email"
                       v-model="current_user.email"
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.email')"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.email')
+                      "
                       :class="['form-control', errors.email && 'is-invalid']"
                       rules="required|email"
                     />
                     <span class="invalid-feedback">{{ errors.email }}</span>
                   </div>
                   <div class="col-lg-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.birthday') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.birthday') }}
+                    </label>
                     <FlatPickr
                       v-model="current_user.birthday"
                       :class="['form-control', errors.birthday && 'is-invalid']"
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.birthday')"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.birthday')
+                      "
                     ></FlatPickr>
-                    <Field name="birthday" v-model="current_user.birthday" rules="required" class="d-none" />
+                    <Field
+                      name="birthday"
+                      v-model="current_user.birthday"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.birthday }}</span>
                   </div>
                   <div class="col-lg-3">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.gender') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.gender') }}
+                    </label>
                     <VueSelect
                       v-model="current_user.gender"
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.gender')"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.gender')
+                      "
                       :class="{ 'is-invalid': errors.gender }"
                       :reduce="(item) => item.value"
                       label="text"
                       :options="[
-                        { text: $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.gender.male'), value: 1 },
-                        { text: $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.gender.female'), value: 0 },
-                        { text: $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.gender.secrecy'), value: -1 },
+                        {
+                          text: $t(
+                            'layout.navbar.helper.org.user.viewAndEditUserModal.form.gender.male',
+                          ),
+                          value: 1,
+                        },
+                        {
+                          text: $t(
+                            'layout.navbar.helper.org.user.viewAndEditUserModal.form.gender.female',
+                          ),
+                          value: 0,
+                        },
+                        {
+                          text: $t(
+                            'layout.navbar.helper.org.user.viewAndEditUserModal.form.gender.secrecy',
+                          ),
+                          value: -1,
+                        },
                       ]"
                       :clearable="false"
                     >
@@ -225,21 +309,40 @@
                         <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
                       </template>
                     </VueSelect>
-                    <Field name="gender" v-model="current_user.gender" rules="required" class="d-none" />
+                    <Field
+                      name="gender"
+                      v-model="current_user.gender"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.gender }}</span>
                   </div>
                   <div class="col-lg-3">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.status') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.status') }}
+                    </label>
                     <VueSelect
                       v-model="current_user.status"
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.status')"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.status')
+                      "
                       :class="{ 'is-invalid': errors.status }"
                       :reduce="(item) => item.value"
                       :disabled="current_user.id === 1"
                       label="text"
                       :options="[
-                        { text: $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.status.enable'), value: 1 },
-                        { text: $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.status.disabled'), value: 0 },
+                        {
+                          text: $t(
+                            'layout.navbar.helper.org.user.viewAndEditUserModal.form.status.enable',
+                          ),
+                          value: 1,
+                        },
+                        {
+                          text: $t(
+                            'layout.navbar.helper.org.user.viewAndEditUserModal.form.status.disabled',
+                          ),
+                          value: 0,
+                        },
                       ]"
                       :clearable="false"
                     >
@@ -250,14 +353,23 @@
                         <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
                       </template>
                     </VueSelect>
-                    <Field name="status" v-model="current_user.status" rules="required" class="d-none" />
+                    <Field
+                      name="status"
+                      v-model="current_user.status"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.status }}</span>
                   </div>
                   <div class="col-lg-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.dept') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.dept') }}
+                    </label>
                     <VueSelect
                       v-model="current_user.dept"
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.dept')"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.dept')
+                      "
                       :class="{ 'is-invalid': errors.dept }"
                       :reduce="(item) => item.id"
                       label="name"
@@ -269,20 +381,31 @@
                         <template v-if="searching">
                           <span v-html="$t('components.vs.search', { search })"></span>
                         </template>
-                        <em v-else style="opacity: 0.5">{{ $t('components.vs.searchDepartment') }}</em>
+                        <em v-else style="opacity: 0.5">
+                          {{ $t('components.vs.searchDepartment') }}
+                        </em>
                       </template>
                     </VueSelect>
-                    <Field name="dept" v-model="current_user.dept" rules="required" class="d-none" />
+                    <Field
+                      name="dept"
+                      v-model="current_user.dept"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.dept }}</span>
                   </div>
 
                   <div class="col-lg-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.role') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.role') }}
+                    </label>
                     <VueSelect
                       v-model="current_user.role"
                       multiple
                       :close-on-select="false"
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.role')"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.role')
+                      "
                       :class="{ 'is-invalid': errors.role }"
                       :reduce="(item) => item.id"
                       label="name"
@@ -296,15 +419,24 @@
                         <em v-else style="opacity: 0.5">{{ $t('components.vs.searchRole') }}</em>
                       </template>
                     </VueSelect>
-                    <Field name="role" v-model="current_user.role" rules="required" class="d-none" />
+                    <Field
+                      name="role"
+                      v-model="current_user.role"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.role }}</span>
                   </div>
 
                   <div class="col-lg-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.leader') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.leader') }}
+                    </label>
                     <VueSelect
                       v-model="current_user.leader"
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.leader')"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.leader')
+                      "
                       :class="{ 'is-invalid': errors.leader }"
                       :reduce="(item) => item.id"
                       label="fullname"
@@ -331,17 +463,26 @@
                         <em v-else style="opacity: 0.5">{{ $t('components.vs.searchUser') }}</em>
                       </template>
                     </VueSelect>
-                    <Field name="leader" v-model="current_user.leader" rules="required" class="d-none" />
+                    <Field
+                      name="leader"
+                      v-model="current_user.leader"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.leader }}</span>
                   </div>
 
                   <div class="col-lg-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.post') }}</label>
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.post') }}
+                    </label>
                     <Field
                       name="post"
                       v-model="current_user.post"
                       type="text"
-                      :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.post')"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.post')
+                      "
                       :class="['form-control', errors.post && 'is-invalid']"
                       rules="required"
                     />
@@ -349,8 +490,19 @@
                   </div>
 
                   <div class="col-lg-12">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.skills') }}</label>
-                    <VueSelect v-model="current_user.skills" multiple :close-on-select="false" taggable push-tags :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.skills')">
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.skills') }}
+                    </label>
+                    <VueSelect
+                      v-model="current_user.skills"
+                      multiple
+                      :close-on-select="false"
+                      taggable
+                      push-tags
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.skills')
+                      "
+                    >
                       <template v-slot:no-options="{ search, searching }">
                         <template v-if="searching">
                           <span v-html="$t('components.vs.search', { search })"></span>
@@ -361,42 +513,109 @@
                   </div>
 
                   <div class="col-lg-3">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.wechat') }}</label>
-                    <Field name="wechat" v-model="current_user.wechat" type="text" :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.wechat')" class="form-control" />
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.wechat') }}
+                    </label>
+                    <Field
+                      name="wechat"
+                      v-model="current_user.wechat"
+                      type="text"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.wechat')
+                      "
+                      class="form-control"
+                    />
                     <span class="invalid-feedback">{{ errors.wechat }}</span>
                   </div>
                   <div class="col-lg-3">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.qq') }}</label>
-                    <Field name="qq" v-model="current_user.qq" type="text" :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.qq')" class="form-control" />
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.qq') }}
+                    </label>
+                    <Field
+                      name="qq"
+                      v-model="current_user.qq"
+                      type="text"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.qq')
+                      "
+                      class="form-control"
+                    />
                     <span class="invalid-feedback">{{ errors.qq }}</span>
                   </div>
                   <div class="col-lg-3">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.github') }}</label>
-                    <Field name="github" v-model="current_user.github" type="text" :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.github')" class="form-control" />
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.github') }}
+                    </label>
+                    <Field
+                      name="github"
+                      v-model="current_user.github"
+                      type="text"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.github')
+                      "
+                      class="form-control"
+                    />
                     <span class="invalid-feedback">{{ errors.github }}</span>
                   </div>
                   <div class="col-lg-3">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.website') }}</label>
-                    <Field name="website" v-model="current_user.website" type="text" :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.website')" class="form-control" />
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.website') }}
+                    </label>
+                    <Field
+                      name="website"
+                      v-model="current_user.website"
+                      type="text"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.website')
+                      "
+                      class="form-control"
+                    />
                     <span class="invalid-feedback">{{ errors.website }}</span>
                   </div>
 
                   <div class="col-lg-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.address') }}</label>
-                    <input type="text" class="form-control" :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.address')" v-model="current_user.address" />
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.address') }}
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.address')
+                      "
+                      v-model="current_user.address"
+                    />
                   </div>
 
                   <div class="col-lg-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.about') }}</label>
-                    <textarea class="form-control" v-model="current_user.about" :placeholder="$t('layout.navbar.helper.org.user.viewAndEditUserModal.form.about')" rows="3" />
+                    <label class="form-label">
+                      {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.about') }}
+                    </label>
+                    <textarea
+                      class="form-control"
+                      v-model="current_user.about"
+                      :placeholder="
+                        $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.about')
+                      "
+                      rows="3"
+                    />
                   </div>
                 </div>
               </div>
               <div v-else class="user-details">
                 <div class="card-body text-center">
                   <a class="d-flex justify-content-center align-items-center cursor-pointer">
-                    <div :class="`flex-shrink-0 chat-user-img ${$store.state.org.onlines.includes(current_user.username) ? 'online' : 'offline'} user-own-img align-self-center`">
-                      <span class="user-status" style="width: 15px; height: 15px; right: 5px"></span>
+                    <div
+                      :class="`flex-shrink-0 chat-user-img ${
+                        $store.state.org.onlines.includes(current_user.username)
+                          ? 'online'
+                          : 'offline'
+                      } user-own-img align-self-center`"
+                    >
+                      <span
+                        class="user-status"
+                        style="width: 15px; height: 15px; right: 5px"
+                      ></span>
                       <Avatar :data="current_user" size="md" thumbnail />
                     </div>
                   </a>
@@ -404,7 +623,11 @@
                   <p class="text-muted">
                     <span class="text-capitalize">{{ current_user.post }}</span>
                     @
-                    <span class="text-capitalize">{{ $store.state.org.depts.find((dept) => dept.id === current_user.dept)?.name }}</span>
+                    <span class="text-capitalize">
+                      {{
+                        $store.state.org.depts.find((dept) => dept.id === current_user.dept)?.name
+                      }}
+                    </span>
                   </p>
                 </div>
                 <div class="card-body">
@@ -414,28 +637,36 @@
                         <tr>
                           <td class="fw-medium">
                             <i class="mdi mdi-cellphone text-muted me-2"></i>
-                            {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.phone') }}
+                            {{
+                              $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.phone')
+                            }}
                           </td>
                           <td>{{ current_user.phone }}</td>
                         </tr>
                         <tr>
                           <td class="fw-medium">
                             <i class="mdi mdi-email text-muted me-2"></i>
-                            {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.email') }}
+                            {{
+                              $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.email')
+                            }}
                           </td>
                           <td>{{ current_user.email }}</td>
                         </tr>
                         <tr>
                           <td class="fw-medium">
                             <i class="mdi mdi-github text-muted me-2"></i>
-                            {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.github') }}
+                            {{
+                              $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.github')
+                            }}
                           </td>
                           <td>{{ current_user.github }}</td>
                         </tr>
                         <tr>
                           <td class="fw-medium">
                             <i class="mdi mdi-wechat text-muted me-2"></i>
-                            {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.wechat') }}
+                            {{
+                              $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.wechat')
+                            }}
                           </td>
                           <td>{{ current_user.wechat }}</td>
                         </tr>
@@ -449,21 +680,27 @@
                         <tr>
                           <td class="fw-medium">
                             <i class="mdi mdi-web text-muted me-2"></i>
-                            {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.website') }}
+                            {{
+                              $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.website')
+                            }}
                           </td>
                           <td>{{ current_user.website }}</td>
                         </tr>
                         <tr>
                           <td class="fw-medium">
                             <i class="mdi mdi-calendar text-muted me-2"></i>
-                            {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.birthday') }}
+                            {{
+                              $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.birthday')
+                            }}
                           </td>
                           <td>{{ current_user.birthday }}</td>
                         </tr>
                         <tr>
                           <td class="fw-medium">
                             <i class="mdi mdi-google-maps text-muted me-2"></i>
-                            {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.address') }}
+                            {{
+                              $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.address')
+                            }}
                           </td>
                           <td>{{ current_user.address }}</td>
                         </tr>
@@ -474,17 +711,47 @@
               </div>
             </div>
             <div class="modal-footer p-3 pt-1 pb-1">
-              <a v-if="current_user.id && (current_user.id != 1 || $store.state.user.data.id === 1)" class="btn btn-sm btn-primary" @click="is_editing = !is_editing">
-                <i class="mdi" :class="is_editing ? 'mdi-content-save-off-outline' : 'mdi-account-edit-outline'"></i>
-                {{ is_editing ? $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.footer.cancel') : $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.footer.edit') }}
+              <a
+                v-if="current_user.id && (current_user.id != 1 || $store.state.user.data.id === 1)"
+                class="btn btn-sm btn-primary"
+                @click="is_editing = !is_editing"
+              >
+                <i
+                  class="mdi"
+                  :class="is_editing ? 'mdi-content-save-off-outline' : 'mdi-account-edit-outline'"
+                ></i>
+                {{
+                  is_editing
+                    ? $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.footer.cancel')
+                    : $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.footer.edit')
+                }}
               </a>
-              <button v-if="!is_editing && current_user.id && current_user.id != 1" type="button" class="btn btn-sm btn-danger" @click="handleDelUser(false)">
+              <button
+                v-if="!is_editing && current_user.id && current_user.id != 1"
+                type="button"
+                class="btn btn-sm btn-danger"
+                @click="handleDelUser(false)"
+              >
                 <i class="mdi mdi-account-remove-outline"></i>
                 {{ $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.footer.delete') }}
               </button>
-              <button v-if="is_editing" type="submit" class="btn btn-sm btn-success" :disabled="Object.keys(errors).length">
-                <i class="mdi" :class="current_user.id ? 'mdi-account-check-outline' : 'mdi-account-plus-outline'"></i>
-                {{ current_user.id ? $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.footer.save') : $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.footer.create') }}
+              <button
+                v-if="is_editing"
+                type="submit"
+                class="btn btn-sm btn-success"
+                :disabled="Object.keys(errors).length"
+              >
+                <i
+                  class="mdi"
+                  :class="
+                    current_user.id ? 'mdi-account-check-outline' : 'mdi-account-plus-outline'
+                  "
+                ></i>
+                {{
+                  current_user.id
+                    ? $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.footer.save')
+                    : $t('layout.navbar.helper.org.user.viewAndEditUserModal.form.footer.create')
+                }}
               </button>
             </div>
           </Form>
@@ -492,24 +759,57 @@
       </div>
     </div>
 
-    <button type="button" class="d-none" id="showDeleteUserModalBth" data-bs-toggle="modal" href="#deleteUserModal"></button>
+    <button
+      type="button"
+      class="d-none"
+      id="showDeleteUserModalBth"
+      data-bs-toggle="modal"
+      href="#deleteUserModal"
+    ></button>
     <div class="modal fade" id="deleteUserModal" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="btn-close d-none" id="hideDeleteUserModalBtn" data-bs-dismiss="modal"></button>
-            <button type="button" class="btn-close" data-bs-toggle="modal" href="#viewAndEditUserModal"></button>
+            <button
+              type="button"
+              class="btn-close d-none"
+              id="hideDeleteUserModalBtn"
+              data-bs-dismiss="modal"
+            ></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-toggle="modal"
+              href="#viewAndEditUserModal"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
-                <h4>{{ $t('layout.navbar.helper.org.user.deleteUserModal.title', { name: current_user.fullname }) }}</h4>
-                <p class="text-muted mx-4 mb-0">{{ $t('layout.navbar.helper.org.user.deleteUserModal.confirm') }}</p>
+                <h4>
+                  {{
+                    $t('layout.navbar.helper.org.user.deleteUserModal.title', {
+                      name: current_user.fullname,
+                    })
+                  }}
+                </h4>
+                <p class="text-muted mx-4 mb-0">
+                  {{ $t('layout.navbar.helper.org.user.deleteUserModal.confirm') }}
+                </p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" data-bs-toggle="modal" href="#viewAndEditUserModal">{{ $t('layout.navbar.helper.org.user.deleteUserModal.cancel') }}</button>
-              <button type="button" class="btn w-sm btn-danger" @click="handleDelUser(true)">{{ $t('layout.navbar.helper.org.user.deleteUserModal.confirmed') }}</button>
+              <button
+                type="button"
+                class="btn w-sm btn-light"
+                data-bs-toggle="modal"
+                href="#viewAndEditUserModal"
+              >
+                {{ $t('layout.navbar.helper.org.user.deleteUserModal.cancel') }}
+              </button>
+              <button type="button" class="btn w-sm btn-danger" @click="handleDelUser(true)">
+                {{ $t('layout.navbar.helper.org.user.deleteUserModal.confirmed') }}
+              </button>
             </div>
           </div>
         </div>
@@ -573,21 +873,23 @@ export default {
     };
 
     const getData = () => {
-      getUserList({ pageNum: pagination.value.pageNum, pageSize: pagination.value.pageSize }).then(({ code, msg, data }) => {
-        if (code === 200) {
-          _users.value = data.rows;
-          pagination.value.totalCount = data.count;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
+      getUserList({ pageNum: pagination.value.pageNum, pageSize: pagination.value.pageSize }).then(
+        ({ code, msg, data }) => {
+          if (code === 200) {
+            _users.value = data.rows;
+            pagination.value.totalCount = data.count;
+          } else {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: msg,
+              },
+            });
+          }
+        },
+      );
     };
 
     const deptQuery = computed({
@@ -630,7 +932,13 @@ export default {
       return _users.value
         .filter((user) => (deptQuery.value ? deptQuery.value.value.includes(user.dept) : true))
         .filter((user) => (roleQuery.value ? user.role.includes(roleQuery.value.value) : true))
-        .filter((user) => (userQuery.value ? `${user.username}|${user.fullname}|${user.phone}|${user.email}`.includes(userQuery.value) : true));
+        .filter((user) =>
+          userQuery.value
+            ? `${user.username}|${user.fullname}|${user.phone}|${user.email}`.includes(
+                userQuery.value,
+              )
+            : true,
+        );
     });
 
     const current_user = ref({});
@@ -646,7 +954,8 @@ export default {
 
     onUnmounted(() => {
       const viewAndEditUserModal = document.getElementById('viewAndEditUserModal');
-      if (viewAndEditUserModal) viewAndEditUserModal.removeEventListener('hidden.bs.modal', () => {});
+      if (viewAndEditUserModal)
+        viewAndEditUserModal.removeEventListener('hidden.bs.modal', () => {});
     });
 
     const viewAndEditUserModalKey = ref(null);
@@ -674,7 +983,11 @@ export default {
           document.getElementById('hideDeleteUserModalBtn').click();
         });
       } else {
-        if (store.state.org.users.filter((user) => user.id != current_user.value.id && user.leader === current_user.value.id).length) {
+        if (
+          store.state.org.users.filter(
+            (user) => user.id != current_user.value.id && user.leader === current_user.value.id,
+          ).length
+        ) {
           toast({
             component: ToastificationContent,
             props: {
@@ -692,44 +1005,65 @@ export default {
     const options4leader = ref([]);
     const handleSelectDept = (autoSelect = false) => {
       options4leader.value = store.state.org.users.filter(
-        (user) => user.dept === current_user.value.dept || user.dept === store.state.org.depts.find((dept) => dept.id === current_user.value.dept).pid,
+        (user) =>
+          user.dept === current_user.value.dept ||
+          user.dept ===
+            store.state.org.depts.find((dept) => dept.id === current_user.value.dept).pid,
       );
       if (autoSelect) {
-        if (options4leader.value.length === 1) current_user.value.leader = options4leader.value[0].id;
+        if (options4leader.value.length === 1)
+          current_user.value.leader = options4leader.value[0].id;
         else current_user.value.leader = null;
       }
     };
 
     const handleSubmitUser = () => {
-      if (!current_user.value.id && store.state.org.users.filter((user) => user.username === current_user.value.username).length) {
+      if (
+        !current_user.value.id &&
+        store.state.org.users.filter((user) => user.username === current_user.value.username).length
+      ) {
         toast({
           component: ToastificationContent,
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.org.user.create.username.error', { username: current_user.value.username }),
+            text: i18n.global.t('layout.navbar.helper.org.user.create.username.error', {
+              username: current_user.value.username,
+            }),
           },
         });
         return;
       }
-      if (store.state.org.users.filter((user) => user.id != current_user.value.id && user.phone === current_user.value.phone).length) {
+      if (
+        store.state.org.users.filter(
+          (user) => user.id != current_user.value.id && user.phone === current_user.value.phone,
+        ).length
+      ) {
         toast({
           component: ToastificationContent,
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.org.user.create.phone.error', { phone: current_user.value.phone }),
+            text: i18n.global.t('layout.navbar.helper.org.user.create.phone.error', {
+              phone: current_user.value.phone,
+            }),
           },
         });
         return;
       }
-      if (store.state.org.users.filter((user) => user.id != current_user.value.id && user.email === current_user.value.email).length) {
+      if (
+        store.state.org.users.filter(
+          (user) => user.id != current_user.value.id && user.email === current_user.value.email,
+        ).length
+      ) {
         toast({
           component: ToastificationContent,
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.org.user.create.email.error', { email: current_user.value.email }),
+            text: i18n.global.t('layout.navbar.helper.org.user.create.email.error', {
+              email: current_user.value.email,
+            }),
           },
         });
         return;

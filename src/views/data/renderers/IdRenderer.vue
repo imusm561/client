@@ -1,5 +1,12 @@
 <template>
-  <span v-if="params.value" class="text-primary text-decoration-underline cursor-pointer fw-medium" @click="handleViewData" @dblclick="handleEditData">#{{ params.value }}</span>
+  <span
+    v-if="params.value"
+    class="text-primary text-decoration-underline cursor-pointer fw-medium"
+    @click="handleViewData"
+    @dblclick="handleEditData"
+  >
+    #{{ params.value }}
+  </span>
   <span v-else></span>
 </template>
 
@@ -12,12 +19,18 @@ export default defineComponent({
     const handleViewData = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        router.push({ name: 'view', params: { tid: props.params._form.id, rid: props.params.value } });
+        router.push({
+          name: 'view',
+          params: { tid: props.params._form.id, rid: props.params.value },
+        });
       }, 200);
     };
     const handleEditData = () => {
       clearTimeout(timer);
-      router.push({ name: 'edit', params: { tid: props.params._form.id, rid: props.params.value } });
+      router.push({
+        name: 'edit',
+        params: { tid: props.params._form.id, rid: props.params.value },
+      });
     };
     return {
       handleViewData,

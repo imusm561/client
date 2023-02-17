@@ -6,7 +6,10 @@
           <div class="sticky-side-div">
             <div class="align-items-center d-flex">
               <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.forms') }}</h4>
-              <i class="mdi mdi-plus-box-outline text-primary float-end fs-16 cursor-pointer" @click.stop="handleAddForm()"></i>
+              <i
+                class="mdi mdi-plus-box-outline text-primary float-end fs-16 cursor-pointer"
+                @click.stop="handleAddForm()"
+              ></i>
             </div>
             <el-tree
               :data="tree"
@@ -19,7 +22,9 @@
               @node-drop="handleDropForm"
             >
               <template #default="{ node }">
-                <span class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2 text-truncate">
+                <span
+                  class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2 text-truncate"
+                >
                   <span class="tree-node-label text-truncate">
                     <input
                       id="node_edit"
@@ -36,7 +41,10 @@
                     </span>
                   </span>
                   <span v-if="!node.data.edit" class="tree-node-actions ms-3">
-                    <i class="cursor-pointer fs-16 text-primary mdi mdi-plus-box-outline" @click.stop="handleAddForm(node)"></i>
+                    <i
+                      class="cursor-pointer fs-16 text-primary mdi mdi-plus-box-outline"
+                      @click.stop="handleAddForm(node)"
+                    ></i>
                     <i
                       v-if="!node.data.children"
                       class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline"
@@ -61,23 +69,41 @@
               <div class="hstack gap-3 flex-wrap">
                 <div class="text-muted">
                   {{
-                    $t('layout.navbar.helper.form.create', { user: getUserInfo(current_form.created_by)?.fullname || current_form.created_by, time: $moment(current_form.created_at).format('llll') })
+                    $t('layout.navbar.helper.form.create', {
+                      user:
+                        getUserInfo(current_form.created_by)?.fullname || current_form.created_by,
+                      time: $moment(current_form.created_at).format('llll'),
+                    })
                   }}
                 </div>
                 <div v-if="current_form.updated_at" class="vr"></div>
                 <div v-if="current_form.updated_at" class="text-muted">
                   {{
-                    $t('layout.navbar.helper.form.update', { user: getUserInfo(current_form.updated_by)?.fullname || current_form.updated_by, time: $moment(current_form.updated_at).format('llll') })
+                    $t('layout.navbar.helper.form.update', {
+                      user:
+                        getUserInfo(current_form.updated_by)?.fullname || current_form.updated_by,
+                      time: $moment(current_form.updated_at).format('llll'),
+                    })
                   }}
                 </div>
               </div>
             </div>
             <div class="flex-shrink-0">
               <div>
-                <button v-if="isModified(['form'])" type="button" class="btn btn-sm btn-soft-secondary btn-icon waves-effect waves-light ms-1" @click="handleSaveFormInfo">
+                <button
+                  v-if="isModified(['form'])"
+                  type="button"
+                  class="btn btn-sm btn-soft-secondary btn-icon waves-effect waves-light ms-1"
+                  @click="handleSaveFormInfo"
+                >
                   <i class="fs-20 mdi mdi-content-save"></i>
                 </button>
-                <button v-if="isModified(['form'])" type="button" class="btn btn-sm btn-soft-success btn-icon waves-effect waves-light ms-1" @click="handleRestoreFormInfo">
+                <button
+                  v-if="isModified(['form'])"
+                  type="button"
+                  class="btn btn-sm btn-soft-success btn-icon waves-effect waves-light ms-1"
+                  @click="handleRestoreFormInfo"
+                >
                   <i class="fs-20 mdi mdi-restore"></i>
                 </button>
                 <button
@@ -103,33 +129,66 @@
           </div>
 
           <div class="mt-2">
-            <ul class="nav nav-tabs nav-tabs-custom nav-secondary nav-justified mb-3" v-if="!isParentOrHasRedirect(current_form)">
+            <ul
+              class="nav nav-tabs nav-tabs-custom nav-secondary nav-justified mb-3"
+              v-if="!isParentOrHasRedirect(current_form)"
+            >
               <li class="nav-item">
-                <a class="nav-link" :class="{ active: current_tab === 'basic_info' }" data-bs-toggle="tab" href="#basic_info" @click="current_tab = 'basic_info'">
+                <a
+                  class="nav-link"
+                  :class="{ active: current_tab === 'basic_info' }"
+                  data-bs-toggle="tab"
+                  href="#basic_info"
+                  @click="current_tab = 'basic_info'"
+                >
                   <i class="mdi mdi-cog"></i>
                   {{ $t('layout.navbar.helper.form.tab.basicInfo') }}
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" :class="{ active: current_tab === 'presave_script' }" data-bs-toggle="tab" href="#presave_script" @click="current_tab = 'presave_script'">
+                <a
+                  class="nav-link"
+                  :class="{ active: current_tab === 'presave_script' }"
+                  data-bs-toggle="tab"
+                  href="#presave_script"
+                  @click="current_tab = 'presave_script'"
+                >
                   <i class="mdi mdi-language-javascript"></i>
                   {{ $t('layout.navbar.helper.form.tab.presaveScript') }}
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" :class="{ active: current_tab === 'form_style' }" data-bs-toggle="tab" href="#form_style" @click="current_tab = 'form_style'">
+                <a
+                  class="nav-link"
+                  :class="{ active: current_tab === 'form_style' }"
+                  data-bs-toggle="tab"
+                  href="#form_style"
+                  @click="current_tab = 'form_style'"
+                >
                   <i class="mdi mdi-language-css3"></i>
                   {{ $t('layout.navbar.helper.form.tab.formStyle') }}
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" :class="{ active: current_tab === 'pub_from' }" data-bs-toggle="tab" href="#pub_from" @click="current_tab = 'pub_from'">
+                <a
+                  class="nav-link"
+                  :class="{ active: current_tab === 'pub_from' }"
+                  data-bs-toggle="tab"
+                  href="#pub_from"
+                  @click="current_tab = 'pub_from'"
+                >
                   <i class="mdi mdi-web"></i>
                   {{ $t('layout.navbar.helper.form.tab.pubForm') }}
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" :class="{ active: current_tab === 'approval_flow' }" data-bs-toggle="tab" href="#approval_flow" @click="current_tab = 'approval_flow'">
+                <a
+                  class="nav-link"
+                  :class="{ active: current_tab === 'approval_flow' }"
+                  data-bs-toggle="tab"
+                  href="#approval_flow"
+                  @click="current_tab = 'approval_flow'"
+                >
                   <i class="mdi mdi-account-multiple-check"></i>
                   {{ $t('layout.navbar.helper.form.tab.approvalFlow') }}
                 </a>
@@ -137,11 +196,17 @@
             </ul>
 
             <div class="tab-content text-muted">
-              <div class="tab-pane" :class="{ active: current_tab === 'basic_info' }" id="basic_info">
+              <div
+                class="tab-pane"
+                :class="{ active: current_tab === 'basic_info' }"
+                id="basic_info"
+              >
                 <div class="row">
                   <div class="col-lg-3">
                     <div class="mb-3">
-                      <label class="form-label">{{ $t('layout.navbar.helper.form.tab.basicInfo.icon') }}</label>
+                      <label class="form-label">
+                        {{ $t('layout.navbar.helper.form.tab.basicInfo.icon') }}
+                      </label>
                       <VueSelect
                         v-model="current_form.icon"
                         :placeholder="$t('layout.navbar.helper.form.tab.basicInfo.icon')"
@@ -170,14 +235,18 @@
                             </span>
                             <span v-else v-html="$t('components.vs.searchRule')"></span>
                           </template>
-                          <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+                          <em v-else style="opacity: 0.5">
+                            {{ $t('components.vs.searchOption') }}
+                          </em>
                         </template>
                       </VueSelect>
                     </div>
                   </div>
                   <div class="col-lg-3">
                     <div class="mb-3">
-                      <label class="form-label">{{ $t('layout.navbar.helper.form.tab.basicInfo.status') }}</label>
+                      <label class="form-label">
+                        {{ $t('layout.navbar.helper.form.tab.basicInfo.status') }}
+                      </label>
                       <VueSelect
                         v-model="current_form.status"
                         :disabled="!!current_form.is_parent"
@@ -185,8 +254,14 @@
                         :reduce="(item) => item.value"
                         label="text"
                         :options="[
-                          { text: $t('layout.navbar.helper.form.tab.basicInfo.status.enable'), value: 1 },
-                          { text: $t('layout.navbar.helper.form.tab.basicInfo.status.disabled'), value: 0 },
+                          {
+                            text: $t('layout.navbar.helper.form.tab.basicInfo.status.enable'),
+                            value: 1,
+                          },
+                          {
+                            text: $t('layout.navbar.helper.form.tab.basicInfo.status.disabled'),
+                            value: 0,
+                          },
                         ]"
                         :clearable="false"
                       >
@@ -194,14 +269,18 @@
                           <template v-if="searching">
                             <span v-html="$t('components.vs.search', { search })"></span>
                           </template>
-                          <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+                          <em v-else style="opacity: 0.5">
+                            {{ $t('components.vs.searchOption') }}
+                          </em>
                         </template>
                       </VueSelect>
                     </div>
                   </div>
                   <div class="col-lg-6">
                     <div class="mb-3">
-                      <label class="form-label">{{ $t('layout.navbar.helper.form.tab.basicInfo.redirect') }}</label>
+                      <label class="form-label">
+                        {{ $t('layout.navbar.helper.form.tab.basicInfo.redirect') }}
+                      </label>
                       <input
                         type="text"
                         class="form-control"
@@ -213,7 +292,9 @@
                   </div>
                   <div class="col-12">
                     <div class="mb-3">
-                      <label class="form-label">{{ $t('layout.navbar.helper.form.tab.basicInfo.tags') }}</label>
+                      <label class="form-label">
+                        {{ $t('layout.navbar.helper.form.tab.basicInfo.tags') }}
+                      </label>
                       <VueSelect
                         v-model="current_form.tags"
                         :disabled="isParentOrHasRedirect(current_form)"
@@ -235,44 +316,93 @@
                   </div>
                   <div class="col-12">
                     <div class="mb-3">
-                      <label class="form-label">{{ $t('layout.navbar.helper.form.tab.basicInfo.aclView') }}</label>
-                      <UsersSelector v-model="current_form.acl_view" :disabled="isParentOrHasRedirect(current_form)" :placeholder="$t('layout.navbar.helper.form.tab.basicInfo.aclView.placeholder')" />
+                      <label class="form-label">
+                        {{ $t('layout.navbar.helper.form.tab.basicInfo.aclView') }}
+                      </label>
+                      <UsersSelector
+                        v-model="current_form.acl_view"
+                        :disabled="isParentOrHasRedirect(current_form)"
+                        :placeholder="
+                          $t('layout.navbar.helper.form.tab.basicInfo.aclView.placeholder')
+                        "
+                      />
                     </div>
                   </div>
                   <div class="col-12">
                     <div class="mb-3">
-                      <label class="form-label">{{ $t('layout.navbar.helper.form.tab.basicInfo.aclEdit') }}</label>
-                      <UsersSelector v-model="current_form.acl_edit" :disabled="isParentOrHasRedirect(current_form)" :placeholder="$t('layout.navbar.helper.form.tab.basicInfo.aclEdit.placeholder')" />
+                      <label class="form-label">
+                        {{ $t('layout.navbar.helper.form.tab.basicInfo.aclEdit') }}
+                      </label>
+                      <UsersSelector
+                        v-model="current_form.acl_edit"
+                        :disabled="isParentOrHasRedirect(current_form)"
+                        :placeholder="
+                          $t('layout.navbar.helper.form.tab.basicInfo.aclEdit.placeholder')
+                        "
+                      />
                     </div>
                   </div>
                   <div class="col-12">
                     <div class="mb-3">
-                      <label class="form-label">{{ $t('layout.navbar.helper.form.tab.basicInfo.description') }}</label>
-                      <CKEditor v-model="current_form.description" :disabled="isParentOrHasRedirect(current_form)" />
+                      <label class="form-label">
+                        {{ $t('layout.navbar.helper.form.tab.basicInfo.description') }}
+                      </label>
+                      <CKEditor
+                        v-model="current_form.description"
+                        :disabled="isParentOrHasRedirect(current_form)"
+                      />
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="tab-pane" :class="{ active: current_tab === 'presave_script' }" id="presave_script">
+              <div
+                class="tab-pane"
+                :class="{ active: current_tab === 'presave_script' }"
+                id="presave_script"
+              >
                 <div class="col-12">
-                  <MonacoEditor :key="current_form.id" v-model="current_form.script" language="javascript" />
+                  <MonacoEditor
+                    :key="current_form.id"
+                    v-model="current_form.script"
+                    language="javascript"
+                  />
                 </div>
               </div>
-              <div class="tab-pane" :class="{ active: current_tab === 'form_style' }" id="form_style">
+              <div
+                class="tab-pane"
+                :class="{ active: current_tab === 'form_style' }"
+                id="form_style"
+              >
                 <div class="col-12">
-                  <MonacoEditor :key="current_form.id" v-model="current_form.style" language="css" />
+                  <MonacoEditor
+                    :key="current_form.id"
+                    v-model="current_form.style"
+                    language="css"
+                  />
                 </div>
               </div>
               <div class="tab-pane" :class="{ active: current_tab === 'pub_from' }" id="pub_from">
                 <div data-simplebar style="max-height: 30vh">
                   <ul class="list-group">
-                    <li class="list-group-item border-1 mb-2" style="border-radius: 5px !important" v-for="item in pubs" :key="item.id">
+                    <li
+                      class="list-group-item border-1 mb-2"
+                      style="border-radius: 5px !important"
+                      v-for="item in pubs"
+                      :key="item.id"
+                    >
                       <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
                           <div class="flex-shrink-0 ms-2">
-                            <h6 class="fs-14 mb-0 cursor-pointer" @click="handleEditPubForm(item)">#{{ item.id }} {{ item.title }}</h6>
-                            <small class="text-muted" v-if="item.start == item.end">{{ $moment(item.start).format('ll') }}</small>
-                            <small class="text-muted" v-else>{{ $moment(item.start).format('ll') }} - {{ $moment(item.end).format('ll') }}</small>
+                            <h6 class="fs-14 mb-0 cursor-pointer" @click="handleEditPubForm(item)">
+                              #{{ item.id }} {{ item.title }}
+                            </h6>
+                            <small class="text-muted" v-if="item.start == item.end">
+                              {{ $moment(item.start).format('ll') }}
+                            </small>
+                            <small class="text-muted" v-else>
+                              {{ $moment(item.start).format('ll') }} -
+                              {{ $moment(item.end).format('ll') }}
+                            </small>
                           </div>
                         </div>
                         <div class="flex-shrink-0">
@@ -290,7 +420,11 @@
                         </div>
                       </div>
                     </li>
-                    <li class="list-group-item cursor-pointer border" style="border-radius: 5px !important" @click="handleCreatePubForm">
+                    <li
+                      class="list-group-item cursor-pointer border"
+                      style="border-radius: 5px !important"
+                      @click="handleCreatePubForm"
+                    >
                       <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
                           <div class="flex-shrink-0 ms-2">
@@ -305,12 +439,32 @@
                   </ul>
                 </div>
               </div>
-              <div class="tab-pane" :class="{ active: current_tab === 'approval_flow' }" id="approval_flow">
+              <div
+                class="tab-pane"
+                :class="{ active: current_tab === 'approval_flow' }"
+                id="approval_flow"
+              >
                 <ul class="list-group">
-                  <draggable class="accordion accordion-flush" id="accordionFlushFlow" :list="current_form.flow" group="flow" handle=".mover" :sort="true">
-                    <li class="list-group-item border-1 mb-2" style="border-radius: 5px !important" v-for="(item, index) in current_form.flow" :key="index">
+                  <draggable
+                    class="accordion accordion-flush"
+                    id="accordionFlushFlow"
+                    :list="current_form.flow"
+                    group="flow"
+                    handle=".mover"
+                    :sort="true"
+                  >
+                    <li
+                      class="list-group-item border-1 mb-2"
+                      style="border-radius: 5px !important"
+                      v-for="(item, index) in current_form.flow"
+                      :key="index"
+                    >
                       <div class="d-flex align-items-center">
-                        <div class="flex-grow-1 cursor-pointer" data-bs-toggle="collapse" :data-bs-target="`#flow_${index}`">
+                        <div
+                          class="flex-grow-1 cursor-pointer"
+                          data-bs-toggle="collapse"
+                          :data-bs-target="`#flow_${index}`"
+                        >
                           <div class="d-flex">
                             <div class="flex-shrink-0 ms-2">
                               <h6 class="fs-14 mb-0">
@@ -321,43 +475,92 @@
                                 {{
                                   $t('layout.navbar.helper.form.tab.approvalFlow.desc', {
                                     count: item.users.length,
-                                    logic: item.logic === 1 ? $t('layout.navbar.helper.form.tab.approvalFlow.form.logic.and') : $t('layout.navbar.helper.form.tab.approvalFlow.form.logic.or'),
+                                    logic:
+                                      item.logic === 1
+                                        ? $t(
+                                            'layout.navbar.helper.form.tab.approvalFlow.form.logic.and',
+                                          )
+                                        : $t(
+                                            'layout.navbar.helper.form.tab.approvalFlow.form.logic.or',
+                                          ),
                                   })
                                 }}
                               </small>
                             </div>
-                            <Avatar v-if="item.users.length" :key="resolveFlowUsers(item)" class="ms-2" :data="resolveFlowUsers(item)" size="xs" />
+                            <Avatar
+                              v-if="item.users.length"
+                              :key="resolveFlowUsers(item)"
+                              class="ms-2"
+                              :data="resolveFlowUsers(item)"
+                              size="xs"
+                            />
                           </div>
                         </div>
                         <div class="flex-shrink-0">
                           <span>
                             <i
                               class="mdi mdi-plus cursor-pointer pe-2"
-                              @click="current_form.flow.splice(index + 1, 0, { title: $t('layout.navbar.helper.form.tab.approvalFlow.nodeTitle'), logic: 1, users: [] })"
+                              @click="
+                                current_form.flow.splice(index + 1, 0, {
+                                  title: $t('layout.navbar.helper.form.tab.approvalFlow.nodeTitle'),
+                                  logic: 1,
+                                  users: [],
+                                })
+                              "
                             />
-                            <i class="mdi mdi-minus cursor-pointer" @click="current_form.flow.splice(index, 1)" />
+                            <i
+                              class="mdi mdi-minus cursor-pointer"
+                              @click="current_form.flow.splice(index, 1)"
+                            />
                           </span>
                         </div>
                       </div>
-                      <div :id="`flow_${index}`" class="accordion-collapse collapse" data-bs-parent="#accordionFlushFlow">
+                      <div
+                        :id="`flow_${index}`"
+                        class="accordion-collapse collapse"
+                        data-bs-parent="#accordionFlushFlow"
+                      >
                         <div class="row p-2">
                           <div class="col-md-6">
                             <div class="mb-2">
-                              <label class="form-label">{{ $t('layout.navbar.helper.form.tab.approvalFlow.form.title') }}</label>
-                              <input type="text" class="form-control" v-model="item.title" :placeholder="$t('layout.navbar.helper.form.tab.approvalFlow.form.title')" />
+                              <label class="form-label">
+                                {{ $t('layout.navbar.helper.form.tab.approvalFlow.form.title') }}
+                              </label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                v-model="item.title"
+                                :placeholder="
+                                  $t('layout.navbar.helper.form.tab.approvalFlow.form.title')
+                                "
+                              />
                             </div>
                           </div>
                           <div class="col-md-6">
                             <div class="mb-2">
-                              <label class="form-label">{{ $t('layout.navbar.helper.form.tab.approvalFlow.form.logic') }}</label>
+                              <label class="form-label">
+                                {{ $t('layout.navbar.helper.form.tab.approvalFlow.form.logic') }}
+                              </label>
                               <VueSelect
                                 v-model="item.logic"
-                                :placeholder="$t('layout.navbar.helper.form.tab.approvalFlow.form.logic')"
+                                :placeholder="
+                                  $t('layout.navbar.helper.form.tab.approvalFlow.form.logic')
+                                "
                                 :reduce="(item) => item.value"
                                 label="text"
                                 :options="[
-                                  { text: $t('layout.navbar.helper.form.tab.approvalFlow.form.logic.and'), value: 1 },
-                                  { text: $t('layout.navbar.helper.form.tab.approvalFlow.form.logic.or'), value: 0 },
+                                  {
+                                    text: $t(
+                                      'layout.navbar.helper.form.tab.approvalFlow.form.logic.and',
+                                    ),
+                                    value: 1,
+                                  },
+                                  {
+                                    text: $t(
+                                      'layout.navbar.helper.form.tab.approvalFlow.form.logic.or',
+                                    ),
+                                    value: 0,
+                                  },
                                 ]"
                                 :clearable="false"
                               >
@@ -365,19 +568,25 @@
                                   <template v-if="searching">
                                     <span v-html="$t('components.vs.search', { search })"></span>
                                   </template>
-                                  <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+                                  <em v-else style="opacity: 0.5">
+                                    {{ $t('components.vs.searchOption') }}
+                                  </em>
                                 </template>
                               </VueSelect>
                             </div>
                           </div>
                           <div class="col-12">
                             <div class="mb-2">
-                              <label class="form-label">{{ $t('layout.navbar.helper.form.tab.approvalFlow.form.users') }}</label>
+                              <label class="form-label">
+                                {{ $t('layout.navbar.helper.form.tab.approvalFlow.form.users') }}
+                              </label>
                               <VueSelect
                                 v-model="item.users"
                                 multiple
                                 :close-on-select="false"
-                                :placeholder="$t('layout.navbar.helper.form.tab.approvalFlow.form.users')"
+                                :placeholder="
+                                  $t('layout.navbar.helper.form.tab.approvalFlow.form.users')
+                                "
                                 :reduce="(item) => item.username"
                                 label="fullname"
                                 :options="[...[$store.state.org.leader], ...$store.state.org.users]"
@@ -390,7 +599,10 @@
                                         return item.users;
                                       })
                                       .flat();
-                                    return option.username === '@leader' || !selected.includes(option.username);
+                                    return (
+                                      option.username === '@leader' ||
+                                      !selected.includes(option.username)
+                                    );
                                   }
                                 "
                               >
@@ -412,7 +624,9 @@
                                   <template v-if="searching">
                                     <span v-html="$t('components.vs.search', { search })"></span>
                                   </template>
-                                  <em v-else style="opacity: 0.5">{{ $t('components.vs.searchUser') }}</em>
+                                  <em v-else style="opacity: 0.5">
+                                    {{ $t('components.vs.searchUser') }}
+                                  </em>
                                 </template>
                               </VueSelect>
                             </div>
@@ -424,7 +638,13 @@
                       v-if="current_form.flow.length === 0"
                       class="list-group-item cursor-pointer"
                       style="border-radius: 5px !important"
-                      @click="current_form.flow.splice(0, 0, { title: $t('layout.navbar.helper.form.tab.approvalFlow.nodeTitle'), logic: 1, users: [] })"
+                      @click="
+                        current_form.flow.splice(0, 0, {
+                          title: $t('layout.navbar.helper.form.tab.approvalFlow.nodeTitle'),
+                          logic: 1,
+                          users: [],
+                        })
+                      "
                     >
                       <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
@@ -446,40 +666,84 @@
       </div>
     </div>
 
-    <button id="showViewAndEditPubModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#viewAndEditPubModal" />
-    <div class="modal fade" id="viewAndEditPubModal" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
+    <button
+      id="showViewAndEditPubModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#viewAndEditPubModal"
+    />
+    <div
+      class="modal fade"
+      id="viewAndEditPubModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      data-bs-focus="false"
+    >
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0">
           <div class="modal-header p-2 bg-light">
-            <h5 class="modal-title">{{ current_pub.id ? current_pub.title : $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.newPubForm') }}</h5>
-            <button type="button" id="hideViewAndEditPubModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
+            <h5 class="modal-title">
+              {{
+                current_pub.id
+                  ? current_pub.title
+                  : $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.newPubForm')
+              }}
+            </h5>
+            <button
+              type="button"
+              id="hideViewAndEditPubModalBtn"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <Form v-slot="{ errors }" @submit="handleSubmitPubForm">
             <div class="modal-body p-0">
               <div data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
                 <div class="row g-3">
                   <div class="col-md-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.title') }}</label>
+                    <label class="form-label">
+                      {{
+                        $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.title')
+                      }}
+                    </label>
                     <Field
                       name="title"
                       v-model="current_pub.title"
                       type="text"
-                      :placeholder="$t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.title')"
+                      :placeholder="
+                        $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.title')
+                      "
                       :class="['form-control', errors.title && 'is-invalid']"
                       rules="required"
                     />
                     <span class="invalid-feedback">{{ errors.title }}</span>
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">{{ $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.status') }}</label>
+                    <label class="form-label">
+                      {{
+                        $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.status')
+                      }}
+                    </label>
                     <VueSelect
                       v-model="current_pub.status"
-                      :placeholder="$t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.status')"
+                      :placeholder="
+                        $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.status')
+                      "
                       :reduce="(item) => item.value"
                       label="text"
                       :options="[
-                        { text: $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.status.enable'), value: 1 },
-                        { text: $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.status.disabled'), value: 0 },
+                        {
+                          text: $t(
+                            'layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.status.enable',
+                          ),
+                          value: 1,
+                        },
+                        {
+                          text: $t(
+                            'layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.status.disabled',
+                          ),
+                          value: 0,
+                        },
                       ]"
                       :clearable="false"
                     >
@@ -492,27 +756,48 @@
                     </VueSelect>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.duration') }}</label>
+                    <label class="form-label">
+                      {{
+                        $t(
+                          'layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.duration',
+                        )
+                      }}
+                    </label>
                     <FlatPickr
                       v-model="current_pub.duration"
                       @change="handleChangeDuration"
                       :class="['form-control', errors.duration && 'is-invalid']"
-                      :placeholder="$t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.duration')"
+                      :placeholder="
+                        $t(
+                          'layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.duration',
+                        )
+                      "
                       :config="{ mode: 'range' }"
                     ></FlatPickr>
-                    <Field name="duration" v-model="current_pub.duration" rules="required" class="d-none" />
+                    <Field
+                      name="duration"
+                      v-model="current_pub.duration"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.duration }}</span>
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">{{ $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.tags') }}</label>
+                    <label class="form-label">
+                      {{
+                        $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.tags')
+                      }}
+                    </label>
                     <VueSelect
                       v-model="current_pub.tags"
                       multiple
                       :close-on-select="false"
                       taggable
                       push-tags
-                      :placeholder="$t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.tags')"
+                      :placeholder="
+                        $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.tags')
+                      "
                       :options="['allowContinuousSubmission']"
                     >
                       <template v-slot:no-options="{ search, searching }">
@@ -525,25 +810,51 @@
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">{{ $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.message') }}</label>
+                    <label class="form-label">
+                      {{
+                        $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.message')
+                      }}
+                    </label>
                     <CKEditor v-model="current_pub.message" />
                   </div>
                 </div>
               </div>
             </div>
             <div class="modal-footer p-3 pt-1 pb-1 pt-0 justify-content-between">
-              <div id="qrcode" :key="qrCodeKey" @dblclick="handleDbclickQrcode(current_pub.uuid)"></div>
+              <div
+                id="qrcode"
+                :key="qrCodeKey"
+                @dblclick="handleDbclickQrcode(current_pub.uuid)"
+              ></div>
               <div class="hstack gap-2 align-items-end">
-                <button v-if="current_pub.id" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#deletePubModal">
+                <button
+                  v-if="current_pub.id"
+                  type="button"
+                  class="btn btn-sm btn-danger"
+                  data-bs-toggle="modal"
+                  href="#deletePubModal"
+                >
                   <i class="mdi mdi-delete-outline align-bottom"></i>
-                  {{ $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.footer.delete') }}
+                  {{
+                    $t(
+                      'layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.footer.delete',
+                    )
+                  }}
                 </button>
-                <button type="submit" class="btn btn-sm btn-success" :disabled="Object.keys(errors).length">
+                <button
+                  type="submit"
+                  class="btn btn-sm btn-success"
+                  :disabled="Object.keys(errors).length"
+                >
                   <i class="mdi mdi-content-save-outline"></i>
                   {{
                     current_pub.id
-                      ? $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.footer.save')
-                      : $t('layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.footer.create')
+                      ? $t(
+                          'layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.footer.save',
+                        )
+                      : $t(
+                          'layout.navbar.helper.form.tab.pubForm.viewAndEditPubModal.form.footer.create',
+                        )
                   }}
                 </button>
               </div>
@@ -553,7 +864,13 @@
       </div>
     </div>
 
-    <div class="modal fade" id="confirmDeleteFormDataModal" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
+    <div
+      class="modal fade"
+      id="confirmDeleteFormDataModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      data-bs-focus="false"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body">
@@ -603,7 +920,13 @@
       </div>
     </div>
 
-    <div class="modal fade" id="confirmBackupFormDataModal" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
+    <div
+      class="modal fade"
+      id="confirmBackupFormDataModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      data-bs-focus="false"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body">
@@ -652,7 +975,13 @@
       </div>
     </div>
 
-    <div class="modal fade" id="confirmTruncateFormDataModal" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
+    <div
+      class="modal fade"
+      id="confirmTruncateFormDataModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      data-bs-focus="false"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body">
@@ -705,20 +1034,43 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" id="hideDeletePubModalBtn" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" href="#viewAndEditPubModal"></button>
+            <button
+              type="button"
+              id="hideDeletePubModalBtn"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              data-bs-toggle="modal"
+              href="#viewAndEditPubModal"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
-                <h4>{{ $t('layout.navbar.helper.form.tab.pubForm.deletePubModal.title', { name: current_pub.title }) }}</h4>
-                <p class="text-muted mx-4 mb-0">{{ $t('layout.navbar.helper.form.tab.pubForm.deletePubModal.confirm') }}</p>
+                <h4>
+                  {{
+                    $t('layout.navbar.helper.form.tab.pubForm.deletePubModal.title', {
+                      name: current_pub.title,
+                    })
+                  }}
+                </h4>
+                <p class="text-muted mx-4 mb-0">
+                  {{ $t('layout.navbar.helper.form.tab.pubForm.deletePubModal.confirm') }}
+                </p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal" data-bs-toggle="modal" href="#viewAndEditPubModal">
+              <button
+                type="button"
+                class="btn w-sm btn-light"
+                data-bs-dismiss="modal"
+                data-bs-toggle="modal"
+                href="#viewAndEditPubModal"
+              >
                 {{ $t('layout.navbar.helper.form.tab.pubForm.deletePubModal.cancel') }}
               </button>
-              <button type="button" class="btn w-sm btn-danger" @click="handleDelPubForm">{{ $t('layout.navbar.helper.form.tab.pubForm.deletePubModal.confirmed') }}</button>
+              <button type="button" class="btn w-sm btn-danger" @click="handleDelPubForm">
+                {{ $t('layout.navbar.helper.form.tab.pubForm.deletePubModal.confirmed') }}
+              </button>
             </div>
           </div>
         </div>
@@ -800,8 +1152,16 @@ export default {
           forms.value = data;
           if (id || current_form.value.id) {
             current_form.value = {
-              ...JSON.parse(JSON.stringify(forms.value.find((form) => form.id === (id || current_form.value.id)))),
-              ...{ is_parent: forms.value.filter((form) => form.pid === (id || current_form.value.id)).length != 0 },
+              ...JSON.parse(
+                JSON.stringify(
+                  forms.value.find((form) => form.id === (id || current_form.value.id)),
+                ),
+              ),
+              ...{
+                is_parent:
+                  forms.value.filter((form) => form.pid === (id || current_form.value.id)).length !=
+                  0,
+              },
             };
             randerVsUsers();
           }
@@ -1145,8 +1505,10 @@ export default {
     const randerVsUsers = () => {
       ['acl_view', 'acl_edit'].forEach((field) => {
         vs.value[field] = JSON.parse(JSON.stringify(current_form.value[field] || []));
-        if (current_form.value[field] && current_form.value[field].length === 0) vs.value[field] = [];
-        else if (current_form.value[field] && current_form.value[field].length === users.length) vs.value[field] = [0];
+        if (current_form.value[field] && current_form.value[field].length === 0)
+          vs.value[field] = [];
+        else if (current_form.value[field] && current_form.value[field].length === users.length)
+          vs.value[field] = [0];
         else {
           JSON.parse(JSON.stringify(depts))
             .reverse()
@@ -1177,14 +1539,20 @@ export default {
       return ({ users }) => {
         let _users = [];
         users.forEach((user) => {
-          _users.push([...[store.state.org.leader], ...store.state.org.users].find((item) => item.username === user));
+          _users.push(
+            [...[store.state.org.leader], ...store.state.org.users].find(
+              (item) => item.username === user,
+            ),
+          );
         });
         return _users.length === 1 ? _users[0] : _users;
       };
     });
 
     const handleSaveFormInfo = () => {
-      const flow_error = changes.value.flow ? changes.value.flow.find((item) => !item.title || item.users.length === 0) : null;
+      const flow_error = changes.value.flow
+        ? changes.value.flow.find((item) => !item.title || item.users.length === 0)
+        : null;
       if (flow_error) {
         toast({
           component: ToastificationContent,
@@ -1224,8 +1592,12 @@ export default {
 
     const handleRestoreFormInfo = () => {
       current_form.value = {
-        ...JSON.parse(JSON.stringify(forms.value.find((form) => form.id === current_form.value.id))),
-        ...{ is_parent: forms.value.filter((form) => form.pid === current_form.value.id).length != 0 },
+        ...JSON.parse(
+          JSON.stringify(forms.value.find((form) => form.id === current_form.value.id)),
+        ),
+        ...{
+          is_parent: forms.value.filter((form) => form.pid === current_form.value.id).length != 0,
+        },
       };
     };
 
@@ -1345,7 +1717,10 @@ export default {
 
     const handleEditPubForm = (item) => {
       current_pub.value = JSON.parse(JSON.stringify(item));
-      current_pub.value.duration = [moment(item.start).format('YYYY-MM-DD'), moment(item.end).format('YYYY-MM-DD')];
+      current_pub.value.duration = [
+        moment(item.start).format('YYYY-MM-DD'),
+        moment(item.end).format('YYYY-MM-DD'),
+      ];
       document.getElementById('showViewAndEditPubModalBtn').click();
       qrCodeKey.value = Math.random().toString(36).slice(-6);
       nextTick(() => {

@@ -1,5 +1,11 @@
 <template>
-  <flat-pickr :class="['flatpickr-input', disabled && 'disabled']" :placeholder="placeholder" v-model="date" :config="configuration" :disabled="disabled"></flat-pickr>
+  <flat-pickr
+    :class="['flatpickr-input', disabled && 'disabled']"
+    :placeholder="placeholder"
+    v-model="date"
+    :config="configuration"
+    :disabled="disabled"
+  ></flat-pickr>
 </template>
 
 <script>
@@ -57,7 +63,12 @@ export default defineComponent({
       ...props.config,
     });
 
-    if (!['Y-m-d H:i:S', 'Y-m-d H:i', 'Y-m-d', 'H:i:S', 'H:i'].includes(configuration.value.dateFormat)) configuration.value.dateFormat = 'Y-m-d';
+    if (
+      !['Y-m-d H:i:S', 'Y-m-d H:i', 'Y-m-d', 'H:i:S', 'H:i'].includes(
+        configuration.value.dateFormat,
+      )
+    )
+      configuration.value.dateFormat = 'Y-m-d';
 
     switch (configuration.value.dateFormat) {
       case 'Y-m-d H:i:S':

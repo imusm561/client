@@ -2,21 +2,53 @@
   <div>
     <Breadcrumb :key="$route" />
     <div class="card ribbon-box">
-      <span v-if="flow" class="ribbon-two ribbon-two-primary" :class="flow.status === 1 ? 'ribbon-two-success' : flow.status === -1 ? 'ribbon-two-danger' : 'ribbon-two-secondary'">
-        <span id="showFlowDataOffcanvasBtn" class="cursor-pointer" data-bs-toggle="offcanvas" data-bs-target="#flowDataOffcanvas">
-          {{ flow.status === 1 ? $t('data.view.flow.status.approved') : flow.status === -1 ? $t('data.view.flow.status.rejected') : $t('data.view.flow.status.approving') }}
+      <span
+        v-if="flow"
+        class="ribbon-two ribbon-two-primary"
+        :class="
+          flow.status === 1
+            ? 'ribbon-two-success'
+            : flow.status === -1
+            ? 'ribbon-two-danger'
+            : 'ribbon-two-secondary'
+        "
+      >
+        <span
+          id="showFlowDataOffcanvasBtn"
+          class="cursor-pointer"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#flowDataOffcanvas"
+        >
+          {{
+            flow.status === 1
+              ? $t('data.view.flow.status.approved')
+              : flow.status === -1
+              ? $t('data.view.flow.status.rejected')
+              : $t('data.view.flow.status.approving')
+          }}
         </span>
       </span>
       <div class="card-header border-0 p-2 pb-0">
         <span class="float-end">
-          <i class="mdi mdi-format-list-numbered fs-16 cursor-pointer text-muted pe-2" @click="$router.push({ name: 'list', params: { tid: $route.params.tid } })"></i>
-          <i v-if="tabs.length > 1" class="mdi fs-16 cursor-pointer text-muted pe-2" :class="no_tabs ? 'mdi-tab' : 'mdi-view-dashboard-outline'" @click="no_tabs = !no_tabs"></i>
+          <i
+            class="mdi mdi-format-list-numbered fs-16 cursor-pointer text-muted pe-2"
+            @click="$router.push({ name: 'list', params: { tid: $route.params.tid } })"
+          ></i>
+          <i
+            v-if="tabs.length > 1"
+            class="mdi fs-16 cursor-pointer text-muted pe-2"
+            :class="no_tabs ? 'mdi-tab' : 'mdi-view-dashboard-outline'"
+            @click="no_tabs = !no_tabs"
+          ></i>
           <i
             class="mdi fs-16 cursor-pointer text-muted pe-2"
             :class="show_empty_value_columns ? 'mdi-chevron-double-up' : 'mdi-chevron-double-down'"
             @click="show_empty_value_columns = !show_empty_value_columns"
           ></i>
-          <i class="mdi mdi-refresh fs-16 cursor-pointer text-muted pe-2" @click="handleRefetchDataView"></i>
+          <i
+            class="mdi mdi-refresh fs-16 cursor-pointer text-muted pe-2"
+            @click="handleRefetchDataView"
+          ></i>
         </span>
       </div>
       <div class="card-body pt-0 pb-0">
@@ -28,7 +60,13 @@
           @search="fetchDataTitle"
           :options="titles"
           :clearable="false"
-          @option:selected="($event) => $router.replace({ name: $event.id === 0 ? 'edit' : 'view', params: { tid: $route.params.tid, rid: $event.id } })"
+          @option:selected="
+            ($event) =>
+              $router.replace({
+                name: $event.id === 0 ? 'edit' : 'view',
+                params: { tid: $route.params.tid, rid: $event.id },
+              })
+          "
         >
           <template v-slot:no-options="{ search, searching }">
             <template v-if="searching">
@@ -83,15 +121,26 @@
                 </h6>
                 <h6 class="pb-1">
                   <span class="text-muted">{{ $t('data.column.BasicDataState') }}:&nbsp;</span>
-                  <span class="text-uppercase badge" :class="data.data_state === 'approving' ? 'bg-secondary' : 'bg-primary'">{{ $t(`data.column.BasicDataState.${data.data_state}`) }}</span>
+                  <span
+                    class="text-uppercase badge"
+                    :class="data.data_state === 'approving' ? 'bg-secondary' : 'bg-primary'"
+                  >
+                    {{ $t(`data.column.BasicDataState.${data.data_state}`) }}
+                  </span>
                 </h6>
                 <h6 class="pb-1">
                   <span class="text-muted">{{ $t('data.column.BasicCreatedAt') }}:&nbsp;</span>
-                  <span>{{ getUserInfo(data.created_by)?.fullname || data.created_by }} @ {{ $moment(data.created_at).format('llll') }}</span>
+                  <span>
+                    {{ getUserInfo(data.created_by)?.fullname || data.created_by }} @
+                    {{ $moment(data.created_at).format('llll') }}
+                  </span>
                 </h6>
                 <h6 class="pb-1" v-if="data.updated_at && data.updated_by">
                   <span class="text-muted">{{ $t('data.column.BasicUpdatedAt') }}:&nbsp;</span>
-                  <span>{{ getUserInfo(data.updated_by)?.fullname || data.updated_by }} @ {{ $moment(data.updated_at).format('llll') }}</span>
+                  <span>
+                    {{ getUserInfo(data.updated_by)?.fullname || data.updated_by }} @
+                    {{ $moment(data.updated_at).format('llll') }}
+                  </span>
                 </h6>
               </div>
             </div>
@@ -101,7 +150,12 @@
             <div
               :id="tab.field"
               class="p-3 mt-2 border-top border-top-dashed ribbon-box right"
-              v-for="tab in tabs.filter((tab) => show_empty_value_columns || tab.columns.filter((column) => !(column.type && isEmpty(data[column.field]))).length)"
+              v-for="tab in tabs.filter(
+                (tab) =>
+                  show_empty_value_columns ||
+                  tab.columns.filter((column) => !(column.type && isEmpty(data[column.field])))
+                    .length,
+              )"
               :key="tab.id"
             >
               <div v-if="tab.name" class="ribbon ribbon-info round-shape">
@@ -110,12 +164,29 @@
               </div>
               <div class="row">
                 <template v-for="column in tab.columns" :class="`col-sm-${column.col} mb-2 mt-2`">
-                  <div :id="column.field" :key="column.id" v-if="show_empty_value_columns || !(column.type && isEmpty(data[column.field]))" :class="`col-sm-${column.col} mb-2 mt-2`">
-                    <p class="mb-2 fw-semibold" :class="!(column.type && isEmpty(data[column.field])) ? 'text-muted' : 'text-danger'" v-if="column.type" :title="resolveColumnTitle(column)">
+                  <div
+                    :id="column.field"
+                    :key="column.id"
+                    v-if="show_empty_value_columns || !(column.type && isEmpty(data[column.field]))"
+                    :class="`col-sm-${column.col} mb-2 mt-2`"
+                  >
+                    <p
+                      class="mb-2 fw-semibold"
+                      :class="
+                        !(column.type && isEmpty(data[column.field])) ? 'text-muted' : 'text-danger'
+                      "
+                      v-if="column.type"
+                      :title="resolveColumnTitle(column)"
+                    >
                       {{ column.name }}
                     </p>
                     <h5 class="fs-14 mb-0">
-                      <component :is="column.component" v-model="data[column.field]" :column="column" type="VIEW"></component>
+                      <component
+                        :is="column.component"
+                        v-model="data[column.field]"
+                        :column="column"
+                        type="VIEW"
+                      ></component>
                     </h5>
                   </div>
                 </template>
@@ -128,10 +199,21 @@
                 <ul class="nav nav-tabs nav-tabs-custom nav-primary">
                   <li
                     class="nav-item"
-                    v-for="(tab, index) in tabs.filter((tab) => show_empty_value_columns || tab.columns.filter((column) => !(column.type && isEmpty(data[column.field]))).length)"
+                    v-for="(tab, index) in tabs.filter(
+                      (tab) =>
+                        show_empty_value_columns ||
+                        tab.columns.filter(
+                          (column) => !(column.type && isEmpty(data[column.field])),
+                        ).length,
+                    )"
                     :key="tab.id"
                   >
-                    <a :class="`nav-link text-${tab.cfg.style} ${index === current_tab && 'active'}`" data-bs-toggle="tab" :href="`#${tab.field}`" @click="current_tab = index">
+                    <a
+                      :class="`nav-link text-${tab.cfg.style} ${index === current_tab && 'active'}`"
+                      data-bs-toggle="tab"
+                      :href="`#${tab.field}`"
+                      @click="current_tab = index"
+                    >
                       <i v-if="tab.cfg.icon" :class="`mdi ${tab.cfg.icon}`"></i>
                       {{ tab.name }}
                     </a>
@@ -144,17 +226,43 @@
                 class="tab-pane"
                 :class="{ active: index === current_tab }"
                 :id="tab.field"
-                v-for="(tab, index) in tabs.filter((tab) => show_empty_value_columns || tab.columns.filter((column) => !(column.type && isEmpty(data[column.field]))).length)"
+                v-for="(tab, index) in tabs.filter(
+                  (tab) =>
+                    show_empty_value_columns ||
+                    tab.columns.filter((column) => !(column.type && isEmpty(data[column.field])))
+                      .length,
+                )"
                 :key="tab.id"
               >
                 <div class="row p-3">
                   <template v-for="column in tab.columns" :class="`col-sm-${column.col} mb-2 mt-2`">
-                    <div :id="column.field" :key="column.id" v-if="show_empty_value_columns || !(column.type && isEmpty(data[column.field]))" :class="`col-sm-${column.col} mb-2 mt-2`">
-                      <p class="mb-2 fw-semibold" :class="!(column.type && isEmpty(data[column.field])) ? 'text-muted' : 'text-danger'" v-if="column.type" :title="resolveColumnTitle(column)">
+                    <div
+                      :id="column.field"
+                      :key="column.id"
+                      v-if="
+                        show_empty_value_columns || !(column.type && isEmpty(data[column.field]))
+                      "
+                      :class="`col-sm-${column.col} mb-2 mt-2`"
+                    >
+                      <p
+                        class="mb-2 fw-semibold"
+                        :class="
+                          !(column.type && isEmpty(data[column.field]))
+                            ? 'text-muted'
+                            : 'text-danger'
+                        "
+                        v-if="column.type"
+                        :title="resolveColumnTitle(column)"
+                      >
                         {{ column.name }}
                       </p>
                       <h5 class="fs-14 mb-0">
-                        <component :is="column.component" v-model="data[column.field]" :column="column" type="VIEW"></component>
+                        <component
+                          :is="column.component"
+                          v-model="data[column.field]"
+                          :column="column"
+                          type="VIEW"
+                        ></component>
                       </h5>
                     </div>
                   </template>
@@ -163,7 +271,12 @@
             </div>
           </div>
         </div>
-        <div class="p-3 pt-0 border-0 d-flex justify-content-end gap-2" v-if="data.id && ((!flow && !form.flow?.length) || (flow && data.data_state === 'drafted'))">
+        <div
+          class="p-3 pt-0 border-0 d-flex justify-content-end gap-2"
+          v-if="
+            data.id && ((!flow && !form.flow?.length) || (flow && data.data_state === 'drafted'))
+          "
+        >
           <a
             v-if="
               $store.state.user.data?.tags?.includes('ALL') ||
@@ -171,11 +284,14 @@
               data.created_by === $store.state.user.data.username ||
               data.updated_by === $store.state.user.data.username ||
               data.acl_edit.includes($store.state.user.data.username) ||
-              (data.acl_edit.length === 0 && data.acl_view.includes($store.state.user.data.username)) ||
+              (data.acl_edit.length === 0 &&
+                data.acl_view.includes($store.state.user.data.username)) ||
               (data.acl_view.length === 0 && data.acl_edit.length === 0)
             "
             class="btn btn-sm btn-primary"
-            @click="$router.push({ name: 'edit', params: { tid: $route.params.tid, rid: data.id } })"
+            @click="
+              $router.push({ name: 'edit', params: { tid: $route.params.tid, rid: data.id } })
+            "
           >
             <i class="mdi mdi-square-edit-outline align-bottom me-1"></i>
             {{ $t('data.view.edit') }}
@@ -187,19 +303,45 @@
       <div class="card-header">
         <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0">
           <li class="nav-item">
-            <a class="nav-link" :class="{ active: !$route.query.tab || $route.query.tab === 'log' }" data-bs-toggle="tab" href="#tab_logs">{{ $t('data.view.logs') }}</a>
+            <a
+              class="nav-link"
+              :class="{ active: !$route.query.tab || $route.query.tab === 'log' }"
+              data-bs-toggle="tab"
+              href="#tab_logs"
+            >
+              {{ $t('data.view.logs') }}
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" :class="{ active: $route.query.tab === 'comment' }" data-bs-toggle="tab" href="#tab_comments">{{ $t('data.view.comments') }}</a>
+            <a
+              class="nav-link"
+              :class="{ active: $route.query.tab === 'comment' }"
+              data-bs-toggle="tab"
+              href="#tab_comments"
+            >
+              {{ $t('data.view.comments') }}
+            </a>
           </li>
         </ul>
       </div>
       <div class="card-body p-0">
         <div class="tab-content">
-          <div class="tab-pane" :class="{ active: !$route.query.tab || $route.query.tab === 'log' }" id="tab_logs">
-            <Log :key="$route.path" :tid="Number($route.params.tid)" :rid="Number($route.params.rid)" />
+          <div
+            class="tab-pane"
+            :class="{ active: !$route.query.tab || $route.query.tab === 'log' }"
+            id="tab_logs"
+          >
+            <Log
+              :key="$route.path"
+              :tid="Number($route.params.tid)"
+              :rid="Number($route.params.rid)"
+            />
           </div>
-          <div class="tab-pane" :class="{ active: $route.query.tab === 'comment' }" id="tab_comments">
+          <div
+            class="tab-pane"
+            :class="{ active: $route.query.tab === 'comment' }"
+            id="tab_comments"
+          >
             <Comment :key="$route.path" :source="$route.path" />
           </div>
         </div>
@@ -207,7 +349,12 @@
     </div>
 
     <div v-if="flow" id="flowDataOffcanvas" class="offcanvas offcanvas-start">
-      <button id="hideFlowDataOffcanvasBtn" type="button" class="d-none" data-bs-dismiss="offcanvas"></button>
+      <button
+        id="hideFlowDataOffcanvasBtn"
+        type="button"
+        class="d-none"
+        data-bs-dismiss="offcanvas"
+      ></button>
       <div class="offcanvas-body p-0 overflow-hidden">
         <div data-simplebar style="height: 100vh">
           <div class="timeline p-3">
@@ -227,14 +374,18 @@
                   </div>
                   <small class="text-muted">
                     {{ $moment(flow.created_at).format('llll') }}
-                    <span class="badge bg-soft-info text-info align-middle ms-2">{{ $moment(flow.created_at).fromNow() }}</span>
+                    <span class="badge bg-soft-info text-info align-middle ms-2">
+                      {{ $moment(flow.created_at).fromNow() }}
+                    </span>
                   </small>
                 </span>
                 <div class="mt-2">
                   <blockquote class="blockquote mb-0 pb-1 ps-2 pt-1">
                     {{ $t('data.view.flow.creation') }}
                     <small
-                      v-if="flow.status === 0 && flow.created_by === $store.state.user.data.username"
+                      v-if="
+                        flow.status === 0 && flow.created_by === $store.state.user.data.username
+                      "
                       class="ms-2 badge bg-soft-danger text-danger cursor-pointer"
                       data-bs-toggle="modal"
                       href="#confirmRevokeFlowModal"
@@ -258,7 +409,9 @@
                         .some((u) => flow.handler.includes(u)),
                     ) === nidx
                       ? 'bg-secondary'
-                      : (node.logic === 1 && node.users.every((item) => item.comment && item.pass)) || (node.logic === 0 && node.users.some((item) => item.comment && item.pass))
+                      : (node.logic === 1 &&
+                          node.users.every((item) => item.comment && item.pass)) ||
+                        (node.logic === 0 && node.users.some((item) => item.comment && item.pass))
                       ? 'bg-success'
                       : node.users.find((item) => item.comment && !item.pass)
                       ? 'bg-danger'
@@ -272,7 +425,11 @@
                 <span>
                   <div class="fw-medium fs-10">{{ node.title }}</div>
                   <small class="text-muted">
-                    {{ node.logic === 1 ? $t('data.view.flow.logic.and') : $t('data.view.flow.logic.or') }}
+                    {{
+                      node.logic === 1
+                        ? $t('data.view.flow.logic.and')
+                        : $t('data.view.flow.logic.or')
+                    }}
                   </small>
                 </span>
                 <div class="mt-2" v-for="(item, uidx) in node.users" :key="uidx">
@@ -281,7 +438,9 @@
                     :class="{
                       'border-dashed': !item.comment,
                       'border-secondary': flow.handler.includes(item.username),
-                      'border-primary': flow.handler.includes(item.username) && item.username === $store.state.user.data.username,
+                      'border-primary':
+                        flow.handler.includes(item.username) &&
+                        item.username === $store.state.user.data.username,
                       'border-success': item.comment && item.pass,
                       'border-danger': item.comment && !item.pass,
                     }"
@@ -294,30 +453,54 @@
                           <i
                             v-if="item.username != $store.state.user.data.username"
                             class="mdi mdi-chat-processing-outline text-muted cursor-pointer"
-                            @click="$router.push({ name: 'chat', query: { contact: item.username } })"
+                            @click="
+                              $router.push({ name: 'chat', query: { contact: item.username } })
+                            "
                           />
                         </div>
                         <div class="fs-12 text-muted">{{ getUserInfo(item.username)?.post }}</div>
                       </div>
                     </div>
-                    <div v-if="item.username === $store.state.user.data.username && flow.handler.includes(item.username)">
+                    <div
+                      v-if="
+                        item.username === $store.state.user.data.username &&
+                        flow.handler.includes(item.username)
+                      "
+                    >
                       <div>
                         <label class="mt-2">{{ $t('data.view.flow.comment') }}</label>
-                        <textarea class="form-control" v-model="item.comment" :placeholder="$t('data.view.flow.comment')" rows="2"></textarea>
+                        <textarea
+                          class="form-control"
+                          v-model="item.comment"
+                          :placeholder="$t('data.view.flow.comment')"
+                          rows="2"
+                        ></textarea>
                       </div>
                       <div class="d-flex justify-content-between align-items-center mt-2">
                         <div>
                           <input class="form-check-input" type="checkbox" v-model="item.pass" />
-                          <label class="form-check-label ms-2" @click="item.pass = !item.pass">{{ $t('data.view.flow.pass') }}</label>
+                          <label class="form-check-label ms-2" @click="item.pass = !item.pass">
+                            {{ $t('data.view.flow.pass') }}
+                          </label>
                         </div>
                         <button
                           type="button"
                           class="btn btn-sm"
                           :disabled="!item.comment"
                           :class="item.pass ? 'btn-secondary' : 'btn-danger'"
-                          @click="handleSubmitFlow({ id: flow.id, node: nidx, user: uidx, pass: item.pass, comment: item.comment })"
+                          @click="
+                            handleSubmitFlow({
+                              id: flow.id,
+                              node: nidx,
+                              user: uidx,
+                              pass: item.pass,
+                              comment: item.comment,
+                            })
+                          "
                         >
-                          {{ item.pass ? $t('data.view.flow.approve') : $t('data.view.flow.reject') }}
+                          {{
+                            item.pass ? $t('data.view.flow.approve') : $t('data.view.flow.reject')
+                          }}
                         </button>
                       </div>
                     </div>
@@ -334,20 +517,35 @@
         </div>
       </div>
     </div>
-    <div class="modal fade" id="confirmRevokeFlowModal" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
+    <div
+      class="modal fade"
+      id="confirmRevokeFlowModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      data-bs-focus="false"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
                 <h4>{{ $t('data.view.flow.confirmRevokeFlowModal.confirm') }}</h4>
-                <p class="text-muted mx-4 mb-0 mb-2">{{ $t('data.view.flow.confirmRevokeFlowModal.tips') }}</p>
+                <p class="text-muted mx-4 mb-0 mb-2">
+                  {{ $t('data.view.flow.confirmRevokeFlowModal.tips') }}
+                </p>
               </div>
             </div>
 
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{ $t('data.view.flow.confirmRevokeFlowModal.cancel') }}</button>
-              <button type="button" class="btn w-sm btn-danger" data-bs-dismiss="modal" @click="handleSubmitFlow({ id: flow.id, revoke: true, t: new Date().getTime() })">
+              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">
+                {{ $t('data.view.flow.confirmRevokeFlowModal.cancel') }}
+              </button>
+              <button
+                type="button"
+                class="btn w-sm btn-danger"
+                data-bs-dismiss="modal"
+                @click="handleSubmitFlow({ id: flow.id, revoke: true, t: new Date().getTime() })"
+              >
                 {{ $t('data.view.flow.confirmRevokeFlowModal.confirmed') }}
               </button>
             </div>
@@ -362,7 +560,16 @@
 import Breadcrumb from '@/layouts/breadcrumb';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import store from '@store';
-import { useRouter, getUserInfo, resolveColumnTitle, replaceVariables, generateFlowByCurrentUser, getDataByFormula, isEmpty, hashData } from '@utils';
+import {
+  useRouter,
+  getUserInfo,
+  resolveColumnTitle,
+  replaceVariables,
+  generateFlowByCurrentUser,
+  getDataByFormula,
+  isEmpty,
+  hashData,
+} from '@utils';
 import { getDataView, getDataTitle, updateFlow } from '@api/data';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -445,7 +652,8 @@ export default {
       );
 
       socket.on('refetchDataView', (res) => {
-        if (res.tid == route.value.params.tid && res.rid == route.value.params.rid) handleRefetchDataView();
+        if (res.tid == route.value.params.tid && res.rid == route.value.params.rid)
+          handleRefetchDataView();
       });
     });
 
@@ -502,7 +710,10 @@ export default {
       getDataTitle(params).then(({ code, data, msg }) => {
         if (code === 200) {
           titles.value = [
-            ...(store.state.user.data.tags.includes('ALL') || store.state.user.data.permissions?.[form.value.id]?.create ? [{ id: 0, title: i18n.global.t('data.view.create') }] : []),
+            ...(store.state.user.data.tags.includes('ALL') ||
+            store.state.user.data.permissions?.[form.value.id]?.create
+              ? [{ id: 0, title: i18n.global.t('data.view.create') }]
+              : []),
             ...data,
           ];
           if (loading) loading(false);
@@ -521,7 +732,8 @@ export default {
 
     const setFormColumns = () => {
       tabs.value = [];
-      if (columns.value.filter((column) => column.component === 'LayoutTab').length === 0) tabs.value.push({ columns: [] });
+      if (columns.value.filter((column) => column.component === 'LayoutTab').length === 0)
+        tabs.value.push({ columns: [] });
       columns.value.forEach((column) => {
         if (column.component.includes('Basic')) {
           // Basic Columns: id, uuid, data_state, created_by, created_at, updated_by, updated_at, acl_view, acl_edit
@@ -537,7 +749,10 @@ export default {
     const setColumnValue = async (column) => {
       if (column.cfg?.source) {
         column.cfg.source = replaceVariables(column.cfg.source, alias.value);
-        data.value[column.field] = await getDataByFormula(data.value, column.cfg.source, { view: true, value: data.value[column.field] });
+        data.value[column.field] = await getDataByFormula(data.value, column.cfg.source, {
+          view: true,
+          value: data.value[column.field],
+        });
       }
 
       if (column.cfg?.href) {
@@ -548,7 +763,9 @@ export default {
 
     const resolveUsers = computed(() => {
       return (users) => {
-        return users && users.length ? store.state.org.users.filter((user) => users.includes(user.username)) : [{ username: 0, fullname: i18n.global.t('data.view.userAll') }];
+        return users && users.length
+          ? store.state.org.users.filter((user) => users.includes(user.username))
+          : [{ username: 0, fullname: i18n.global.t('data.view.userAll') }];
       };
     });
 

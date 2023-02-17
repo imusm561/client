@@ -167,7 +167,12 @@ const initSocket = (socket) => {
 
   socket.on('refetchUserData', (data = {}) => {
     if (data.dept || data.role || data.id) {
-      if (store.state.user.data.id === data.id || store.state.user.data.dept === data.dept || store.state.user.data.role.includes(data.role)) getUserData();
+      if (
+        store.state.user.data.id === data.id ||
+        store.state.user.data.dept === data.dept ||
+        store.state.user.data.role.includes(data.role)
+      )
+        getUserData();
     } else {
       getUserData();
     }

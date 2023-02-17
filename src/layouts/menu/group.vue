@@ -1,12 +1,21 @@
 <template>
   <li class="nav-item">
-    <span class="cursor-pointer nav-link menu-link" data-bs-toggle="collapse" :data-bs-target="`#c${item.id}`">
+    <span
+      class="cursor-pointer nav-link menu-link"
+      data-bs-toggle="collapse"
+      :data-bs-target="`#c${item.id}`"
+    >
       <i :class="['fs-16 mdi', item.icon || 'mdi-circle-medium']"></i>
       <span>{{ $t(item.title) }}</span>
     </span>
     <div class="collapse menu-dropdown" :id="`c${item.id}`">
       <ul class="nav nav-sm flex-column">
-        <component :is="resolveNavItemComponent(child)" v-for="child in item.children" :key="`${child.id}-${child.title}`" :item="child" />
+        <component
+          :is="resolveNavItemComponent(child)"
+          v-for="child in item.children"
+          :key="`${child.id}-${child.title}`"
+          :item="child"
+        />
       </ul>
     </div>
   </li>

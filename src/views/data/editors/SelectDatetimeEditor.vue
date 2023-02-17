@@ -1,5 +1,10 @@
 <template>
-  <FlatPickr class="form-control h-100" :placeholder="params._column.cfg.placeholder" :config="params._column.cfg" v-model="value"></FlatPickr>
+  <FlatPickr
+    class="form-control h-100"
+    :placeholder="params._column.cfg.placeholder"
+    :config="params._column.cfg"
+    v-model="value"
+  ></FlatPickr>
 </template>
 
 <script>

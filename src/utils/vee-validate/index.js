@@ -12,7 +12,8 @@ import { isEmpty } from '@utils/index';
 
 defineRule('required', (value) => {
   if (isEmpty(value)) return i18n.global.t('vee.validate.required');
-  else if (Array.isArray(value)) return value.length !== 0 || i18n.global.t('vee.validate.required');
+  else if (Array.isArray(value))
+    return value.length !== 0 || i18n.global.t('vee.validate.required');
   else if (typeof value === 'boolean') return value || i18n.global.t('vee.validate.required');
   else return value.toString().length ? true : i18n.global.t('vee.validate.required');
 });
@@ -21,7 +22,10 @@ defineRule('between', (value, [min, max]) => {
   if (isEmpty(value)) {
     return true;
   }
-  return (Number(min) <= Number(value) && Number(max) >= Number(value)) || i18n.global.t('vee.validate.between', { max, min });
+  return (
+    (Number(min) <= Number(value) && Number(max) >= Number(value)) ||
+    i18n.global.t('vee.validate.between', { max, min })
+  );
 });
 
 defineRule('confirmed', (value, [target]) => {

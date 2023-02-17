@@ -2,7 +2,9 @@
   <input
     class="form-control h-100"
     type="text"
-    v-maska="params._column.cfg.maska.length === 1 ? params._column.cfg.maska[0] : params._column.cfg.maska"
+    v-maska="
+      params._column.cfg.maska.length === 1 ? params._column.cfg.maska[0] : params._column.cfg.maska
+    "
     :placeholder="params._column.cfg.placeholder"
     v-model="value"
   />

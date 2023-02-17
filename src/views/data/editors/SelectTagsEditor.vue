@@ -1,5 +1,12 @@
 <template>
-  <VueSelect :placeholder="params._column.cfg.placeholder" v-model="value" multiple :close-on-select="false" taggable :options="options">
+  <VueSelect
+    :placeholder="params._column.cfg.placeholder"
+    v-model="value"
+    multiple
+    :close-on-select="false"
+    taggable
+    :options="options"
+  >
     <template v-slot:no-options="{ search, searching }">
       <template v-if="searching">
         <span v-html="$t('components.vs.search', { search })"></span>
@@ -16,7 +23,9 @@ export default defineComponent({
     const value = ref(props.params.value);
 
     const options = computed(() => {
-      return Array.from(new Set([...(props.params._column.cfg.options || []), ...(value.value || [])]));
+      return Array.from(
+        new Set([...(props.params._column.cfg.options || []), ...(value.value || [])]),
+      );
     });
 
     const getValue = () => {

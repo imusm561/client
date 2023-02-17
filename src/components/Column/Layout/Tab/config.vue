@@ -2,8 +2,19 @@
   <div class="row g-3">
     <div class="col-md-12">
       <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.tabName') }}</label>
-      <input v-model="column.name" type="text" :placeholder="$t('layout.navbar.helper.form.column.config.tabName')" :class="['form-control', errors.name && 'is-invalid']" />
-      <Field name="name" v-model="column.name" class="d-none" :class="{ 'is-invalid': errors.name }" rules="required|exclude: @" />
+      <input
+        v-model="column.name"
+        type="text"
+        :placeholder="$t('layout.navbar.helper.form.column.config.tabName')"
+        :class="['form-control', errors.name && 'is-invalid']"
+      />
+      <Field
+        name="name"
+        v-model="column.name"
+        class="d-none"
+        :class="{ 'is-invalid': errors.name }"
+        rules="required|exclude: @"
+      />
       <span class="invalid-feedback">{{ errors.name }}</span>
     </div>
 

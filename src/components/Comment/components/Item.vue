@@ -12,14 +12,24 @@
       </div>
       <small class="text-muted">
         {{ $moment(comment.created_at).format('llll') }}
-        <span class="badge bg-soft-info text-info align-middle ms-2">{{ $moment(comment.created_at).fromNow() }}</span>
+        <span class="badge bg-soft-info text-info align-middle ms-2">
+          {{ $moment(comment.created_at).fromNow() }}
+        </span>
       </small>
       <div class="ck ck-content mt-2 mb-2" v-html="comment.content"></div>
-      <a v-if="$store.state.user.data.username != comment.created_by" class="me-2 badge badge-soft-primary cursor-pointer" @click="handleReplyComment(comment)">
+      <a
+        v-if="$store.state.user.data.username != comment.created_by"
+        class="me-2 badge badge-soft-primary cursor-pointer"
+        @click="handleReplyComment(comment)"
+      >
         <i class="mdi mdi-reply"></i>
         {{ $t('component.comment.reply') }}
       </a>
-      <a v-if="!comment.children && $store.state.user.data.username === comment.created_by" class="me-2 badge badge-soft-danger cursor-pointer" @click="handleDeleteComment(comment)">
+      <a
+        v-if="!comment.children && $store.state.user.data.username === comment.created_by"
+        class="me-2 badge badge-soft-danger cursor-pointer"
+        @click="handleDeleteComment(comment)"
+      >
         <i class="mdi mdi-delete"></i>
         {{ $t('component.comment.delete') }}
       </a>

@@ -1,10 +1,19 @@
 <template>
   <div class="card card-height-100">
     <div class="card-header border-0 align-items-center d-flex pb-0">
-      <h4 class="card-title mb-0 flex-grow-1">{{ $t('layout.navbar.helper.org.dept.departments') }}</h4>
+      <h4 class="card-title mb-0 flex-grow-1">
+        {{ $t('layout.navbar.helper.org.dept.departments') }}
+      </h4>
     </div>
     <div class="card-body">
-      <el-tree :data="tree" node-key="id" :empty-text="$t('layout.navbar.helper.org.dept.departments.empty')" default-expand-all :expand-on-click-node="false" @node-click="handleSelectDept">
+      <el-tree
+        :data="tree"
+        node-key="id"
+        :empty-text="$t('layout.navbar.helper.org.dept.departments.empty')"
+        default-expand-all
+        :expand-on-click-node="false"
+        @node-click="handleSelectDept"
+      >
         <template #default="{ node }">
           <span class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2">
             <span class="tree-node-label">
@@ -20,31 +29,60 @@
               <span v-else @dblclick="handleEditDept(node)">{{ node.data.name }}</span>
             </span>
             <span v-if="!node.data.edit" class="tree-node-actions ms-3">
-              <i class="cursor-pointer fs-16 text-primary mdi mdi-plus-box-outline" @click.stop="handleAddDept(node)"></i>
-              <i v-if="!node.data.children && node.data.pid !== 0" class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline" @click.stop="handlePreDelDept(node)"></i>
+              <i
+                class="cursor-pointer fs-16 text-primary mdi mdi-plus-box-outline"
+                @click.stop="handleAddDept(node)"
+              ></i>
+              <i
+                v-if="!node.data.children && node.data.pid !== 0"
+                class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline"
+                @click.stop="handlePreDelDept(node)"
+              ></i>
             </span>
           </span>
         </template>
       </el-tree>
     </div>
 
-    <button id="showDeleteDeptModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#deleteDeptModal" />
+    <button
+      id="showDeleteDeptModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#deleteDeptModal"
+    />
     <div class="modal fade" id="deleteDeptModal" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" id="hideDeleteDeptModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              id="hideDeleteDeptModalBtn"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
-                <h4>{{ $t('layout.navbar.helper.org.dept.deleteDeptModal.title', { name: current_dept.name }) }}</h4>
-                <p class="text-muted mx-4 mb-0">{{ $t('layout.navbar.helper.org.dept.deleteDeptModal.confirm') }}</p>
+                <h4>
+                  {{
+                    $t('layout.navbar.helper.org.dept.deleteDeptModal.title', {
+                      name: current_dept.name,
+                    })
+                  }}
+                </h4>
+                <p class="text-muted mx-4 mb-0">
+                  {{ $t('layout.navbar.helper.org.dept.deleteDeptModal.confirm') }}
+                </p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{ $t('layout.navbar.helper.org.dept.deleteDeptModal.cancel') }}</button>
-              <button type="button" class="btn w-sm btn-danger" @click="handleDelDept">{{ $t('layout.navbar.helper.org.dept.deleteDeptModal.confirmed') }}</button>
+              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">
+                {{ $t('layout.navbar.helper.org.dept.deleteDeptModal.cancel') }}
+              </button>
+              <button type="button" class="btn w-sm btn-danger" @click="handleDelDept">
+                {{ $t('layout.navbar.helper.org.dept.deleteDeptModal.confirmed') }}
+              </button>
             </div>
           </div>
         </div>
@@ -117,7 +155,9 @@ export default {
               props: {
                 variant: 'danger',
                 icon: 'mdi-alert',
-                text: i18n.global.t('layout.navbar.helper.org.dept.create.error', { name: node.data.name }),
+                text: i18n.global.t('layout.navbar.helper.org.dept.create.error', {
+                  name: node.data.name,
+                }),
               },
             });
           } else {
@@ -134,7 +174,9 @@ export default {
             props: {
               variant: 'danger',
               icon: 'mdi-alert',
-              text: i18n.globa.t('layout.navbar.helper.org.dept.create.error', { name: node.data.name }),
+              text: i18n.globa.t('layout.navbar.helper.org.dept.create.error', {
+                name: node.data.name,
+              }),
             },
           });
         } else {
@@ -152,7 +194,9 @@ export default {
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: i18n.globa.t('layout.navbar.helper.org.dept.delete.error', { name: node.data.name }),
+            text: i18n.globa.t('layout.navbar.helper.org.dept.delete.error', {
+              name: node.data.name,
+            }),
           },
         });
       } else {

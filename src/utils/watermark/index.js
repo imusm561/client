@@ -2,8 +2,10 @@ export const setWatermark = (userinfo, dateinfo) => {
   removeWatermark();
 
   const canvas = document.createElement('canvas');
-  canvas.width = document.documentElement.clientWidth / Math.ceil(document.documentElement.clientWidth / 400);
-  canvas.height = document.documentElement.clientHeight / Math.ceil(document.documentElement.clientHeight / 200);
+  canvas.width =
+    document.documentElement.clientWidth / Math.ceil(document.documentElement.clientWidth / 400);
+  canvas.height =
+    document.documentElement.clientHeight / Math.ceil(document.documentElement.clientHeight / 200);
 
   const ctx = canvas.getContext('2d');
   ctx.rotate((-25 * Math.PI) / 180);

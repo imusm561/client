@@ -4,7 +4,13 @@
 
     <div class="card">
       <div class="card-body d-block d-md-none">
-        <VueSelect v-model="search_user" :placeholder="$t('layout.navbar.helper.log.filter.user')" :reduce="(item) => item.username" label="fullname" :options="$store.state.org.users">
+        <VueSelect
+          v-model="search_user"
+          :placeholder="$t('layout.navbar.helper.log.filter.user')"
+          :reduce="(item) => item.username"
+          label="fullname"
+          :options="$store.state.org.users"
+        >
           <template #option="data">
             <div class="d-flex align-items-center">
               <Avatar class="me-2" :data="data" size="xxs" />
@@ -29,7 +35,13 @@
       </div>
       <div class="card-body justify-content-between d-none d-md-flex">
         <div class="w-25">
-          <VueSelect v-model="search_user" :placeholder="$t('layout.navbar.helper.log.filter.user')" :reduce="(item) => item.username" label="fullname" :options="$store.state.org.users">
+          <VueSelect
+            v-model="search_user"
+            :placeholder="$t('layout.navbar.helper.log.filter.user')"
+            :reduce="(item) => item.username"
+            label="fullname"
+            :options="$store.state.org.users"
+          >
             <template #option="data">
               <div class="d-flex align-items-center">
                 <Avatar class="me-2" :data="data" size="xxs" />
@@ -53,7 +65,13 @@
           </VueSelect>
         </div>
         <div class="w-25">
-          <VueSelect v-model="search_url" :placeholder="$t('layout.navbar.helper.log.filter.url')" :reduce="(item) => item.url" label="url" :options="urls">
+          <VueSelect
+            v-model="search_url"
+            :placeholder="$t('layout.navbar.helper.log.filter.url')"
+            :reduce="(item) => item.url"
+            label="url"
+            :options="urls"
+          >
             <template v-slot:no-options="{ search, searching }">
               <template v-if="searching">
                 <span v-html="$t('components.vs.search', { search })"></span>
@@ -72,12 +90,24 @@
             <thead class="table-light">
               <tr>
                 <th class="text-capitalize" style="white-space: nowrap">id</th>
-                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.user') }}</th>
-                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.createdAt') }}</th>
-                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.device') }}</th>
-                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.os') }}</th>
-                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.browser') }}</th>
-                <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.log.data') }}</th>
+                <th class="text-capitalize" style="white-space: nowrap">
+                  {{ $t('layout.navbar.helper.log.user') }}
+                </th>
+                <th class="text-capitalize" style="white-space: nowrap">
+                  {{ $t('layout.navbar.helper.log.createdAt') }}
+                </th>
+                <th class="text-capitalize" style="white-space: nowrap">
+                  {{ $t('layout.navbar.helper.log.device') }}
+                </th>
+                <th class="text-capitalize" style="white-space: nowrap">
+                  {{ $t('layout.navbar.helper.log.os') }}
+                </th>
+                <th class="text-capitalize" style="white-space: nowrap">
+                  {{ $t('layout.navbar.helper.log.browser') }}
+                </th>
+                <th class="text-capitalize" style="white-space: nowrap">
+                  {{ $t('layout.navbar.helper.log.data') }}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -105,16 +135,28 @@
                 </td>
                 <td style="white-space: nowrap">
                   <div class="d-flex gap-2 align-items-center">
-                    <i class="fs-32 mb-n2 mt-n2 mdi" :class="resolveDeviceIcon(uaParser(log.agent).device.type || 'desktop')" />
+                    <i
+                      class="fs-32 mb-n2 mt-n2 mdi"
+                      :class="resolveDeviceIcon(uaParser(log.agent).device.type || 'desktop')"
+                    />
                     <div>
-                      <div class="text-capitalize">{{ uaParser(log.agent).device.type || 'desktop' }}</div>
-                      <small>{{ uaParser(log.agent).device.vendor }} {{ uaParser(log.agent).device.model }} {{ uaParser(log.agent).cpu.architecture }}</small>
+                      <div class="text-capitalize">
+                        {{ uaParser(log.agent).device.type || 'desktop' }}
+                      </div>
+                      <small>
+                        {{ uaParser(log.agent).device.vendor }}
+                        {{ uaParser(log.agent).device.model }}
+                        {{ uaParser(log.agent).cpu.architecture }}
+                      </small>
                     </div>
                   </div>
                 </td>
                 <td style="white-space: nowrap">
                   <div class="d-flex gap-2 align-items-center">
-                    <i class="fs-32 mb-n2 mt-n2 mdi" :class="reslovOsIcon(uaParser(log.agent).os.name)" />
+                    <i
+                      class="fs-32 mb-n2 mt-n2 mdi"
+                      :class="reslovOsIcon(uaParser(log.agent).os.name)"
+                    />
                     <div>
                       <div class="text-capitalize">{{ uaParser(log.agent).os.name }}</div>
                       <small>{{ uaParser(log.agent).os.version }}</small>
@@ -123,7 +165,10 @@
                 </td>
                 <td style="white-space: nowrap">
                   <div class="d-flex gap-2 align-items-center">
-                    <i class="fs-32 mb-n2 mt-n2 mdi" :class="resolveBrowserIcon(uaParser(log.agent).browser.name)" />
+                    <i
+                      class="fs-32 mb-n2 mt-n2 mdi"
+                      :class="resolveBrowserIcon(uaParser(log.agent).browser.name)"
+                    />
                     <div>
                       <div>{{ uaParser(log.agent).browser.name }}</div>
                       <small>v{{ uaParser(log.agent).browser.version }}</small>
@@ -132,9 +177,21 @@
                 </td>
                 <td style="white-space: nowrap">
                   <div class="d-flex gap-2 align-items-center">
-                    <i class="fs-32 mb-n2 mt-n2 mdi" :class="log.method === 'POST' ? 'text-warning mdi-file-upload' : 'text-info mdi-file-download'" />
+                    <i
+                      class="fs-32 mb-n2 mt-n2 mdi"
+                      :class="
+                        log.method === 'POST'
+                          ? 'text-warning mdi-file-upload'
+                          : 'text-info mdi-file-download'
+                      "
+                    />
                     <div>
-                      <div class="cursor-pointer text-secondary text-decoration-underline" @click="handleViewLogData(log)">{{ log.url }}</div>
+                      <div
+                        class="cursor-pointer text-secondary text-decoration-underline"
+                        @click="handleViewLogData(log)"
+                      >
+                        {{ log.url }}
+                      </div>
                       <small>
                         <span
                           class="badge text-uppercase"
@@ -155,16 +212,30 @@
           </table>
         </div>
         <div class="pb-2 pt-4">
-          <Pagination :total="pagination.totalCount" :page-num="pagination.pageNum" :page-size="pagination.pageSize" @changed="handlePaginationChange" />
+          <Pagination
+            :total="pagination.totalCount"
+            :page-num="pagination.pageNum"
+            :page-size="pagination.pageSize"
+            @changed="handlePaginationChange"
+          />
         </div>
       </div>
       <Empty :text="$t('components.log.empty')" v-else />
     </div>
 
-    <button id="showLogDataOffcanvasBtn" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#logDataOffcanvas" />
+    <button
+      id="showLogDataOffcanvasBtn"
+      class="d-none"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#logDataOffcanvas"
+    />
     <div class="offcanvas form offcanvas-end w-50" id="logDataOffcanvas">
       <div class="offcanvas-body p-0 overflow-hidden">
-        <i class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute" style="z-index: 1; right: 10px; bottom: 0" data-bs-dismiss="offcanvas" />
+        <i
+          class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute"
+          style="z-index: 1; right: 10px; bottom: 0"
+          data-bs-dismiss="offcanvas"
+        />
         <MonacoEditor
           v-model="current_log.data"
           language="json"
@@ -270,7 +341,12 @@ export default {
           });
         }
       });
-      getSysLog({ pageNum: pagination.value.pageNum, pageSize: pagination.value.pageSize, user: search_user.value || '', url: search_url.value || '' }).then(({ code, data, msg }) => {
+      getSysLog({
+        pageNum: pagination.value.pageNum,
+        pageSize: pagination.value.pageSize,
+        user: search_user.value || '',
+        url: search_url.value || '',
+      }).then(({ code, data, msg }) => {
         if (code === 200) {
           logs.value = data.rows;
           pagination.value.totalCount = data.count;

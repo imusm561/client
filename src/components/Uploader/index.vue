@@ -1,5 +1,11 @@
 <template>
-  <uploader ref="uploaderRef" :options="options" :autoStart="false" @file-added="onFileAdded" @file-success="onFileSuccess">
+  <uploader
+    ref="uploaderRef"
+    :options="options"
+    :autoStart="false"
+    @file-added="onFileAdded"
+    @file-success="onFileSuccess"
+  >
     <uploader-btn ref="fileUploadRef" class="d-none" :attrs="{ accept }"></uploader-btn>
     <uploader-btn ref="folderUploadRef" class="d-none" :directory="true"></uploader-btn>
 
@@ -30,16 +36,26 @@
         </div>
         <div class="flex-grow-1 w-75">
           <div class="d-flex">
-            <div class="flex-grow-1 mt-1 cursor-pointer text-truncate" @dblclick="handlePreviewFile(file)">
+            <div
+              class="flex-grow-1 mt-1 cursor-pointer text-truncate"
+              @dblclick="handlePreviewFile(file)"
+            >
               <b>{{ file.name }}</b>
             </div>
             <div class="flex-shrink-0 mb-1">
-              <i v-if="!readonly && !disabled" class="mdi mdi-close cursor-pointer text-danger me-2" @click="handleRemoveUpload(file)" />
+              <i
+                v-if="!readonly && !disabled"
+                class="mdi mdi-close cursor-pointer text-danger me-2"
+                @click="handleRemoveUpload(file)"
+              />
             </div>
           </div>
           <small class="text-muted">
             {{ size2Str(file.size) }}
-            <i class="mdi mdi-download cursor-pointer text-primary" @click="handleDownloadFile(file)" />
+            <i
+              class="mdi mdi-download cursor-pointer text-primary"
+              @click="handleDownloadFile(file)"
+            />
           </small>
         </div>
       </div>
@@ -59,7 +75,9 @@
                         <small class="text-muted text-capitalize ms-2">
                           {{
                             file._status.value == 'computing'
-                              ? `${$t('components.uploader.status.computing')} [${file._status.text}%]`
+                              ? `${$t('components.uploader.status.computing')} [${
+                                  file._status.text
+                                }%]`
                               : file._status.value == 'uploading'
                               ? `${file._status.text} [${size2Str(props.currentSpeed)}/S]`
                               : `${file._status.text}`
@@ -69,7 +87,9 @@
                       <div class="flex-shrink-0 mb-1">
                         <i
                           v-if="['waiting', 'uploading', 'paused'].includes(file._status.value)"
-                          :class="`mdi mdi-${file._status.value == 'paused' ? 'play' : 'pause'} cursor-pointer text-primary me-2`"
+                          :class="`mdi mdi-${
+                            file._status.value == 'paused' ? 'play' : 'pause'
+                          } cursor-pointer text-primary me-2`"
                           @click="
                             () => {
                               if (file._status.value == 'paused') {
@@ -80,20 +100,37 @@
                             }
                           "
                         />
-                        <i class="mdi mdi-close cursor-pointer text-danger me-2" @click.stop="handleCancelUpload(file)" />
+                        <i
+                          class="mdi mdi-close cursor-pointer text-danger me-2"
+                          @click.stop="handleCancelUpload(file)"
+                        />
                       </div>
                     </div>
                     <div class="mt-1 mb-1">
                       <div class="progress" v-if="['computing'].includes(file._status.value)">
-                        <div class="progress-bar bg-info" :style="{ width: `${file._status.text}%` }"></div>
+                        <div
+                          class="progress-bar bg-info"
+                          :style="{ width: `${file._status.text}%` }"
+                        ></div>
                       </div>
-                      <div class="progress" v-else-if="['waiting', 'uploading', 'paused'].includes(file._status.value)">
-                        <div class="progress-bar bg-primary" :style="{ width: `${props.progress}%` }">
+                      <div
+                        class="progress"
+                        v-else-if="['waiting', 'uploading', 'paused'].includes(file._status.value)"
+                      >
+                        <div
+                          class="progress-bar bg-primary"
+                          :style="{ width: `${props.progress}%` }"
+                        >
                           <div class="label">{{ props.progress }}%</div>
                         </div>
                       </div>
                       <div class="progress" v-else>
-                        <div :class="`progress-bar bg-${file._status.value == 'merging' ? 'warning' : 'success'}`" style="width: 100%">
+                        <div
+                          :class="`progress-bar bg-${
+                            file._status.value == 'merging' ? 'warning' : 'success'
+                          }`"
+                          style="width: 100%"
+                        >
                           <div class="label">100%</div>
                         </div>
                       </div>
@@ -109,7 +146,13 @@
 
     <div class="mt-1 d-flex">
       <div class="btn-group float-start" v-if="!readonly && (multiple || files.length === 0)">
-        <button type="button" :disabled="disabled" class="btn btn-sm" :class="fieldClass" @click="$refs.fileUploadRef.$el.click()">
+        <button
+          type="button"
+          :disabled="disabled"
+          class="btn btn-sm"
+          :class="fieldClass"
+          @click="$refs.fileUploadRef.$el.click()"
+        >
           {{ placeholder }}
         </button>
         <button
@@ -124,13 +167,21 @@
         ></button>
         <ul class="dropdown-menu">
           <li>
-            <a class="dropdown-item cursor-pointer" :class="{ disabled }" @click="$refs.fileUploadRef.$el.click()">
+            <a
+              class="dropdown-item cursor-pointer"
+              :class="{ disabled }"
+              @click="$refs.fileUploadRef.$el.click()"
+            >
               <i class="mdi mdi-file-upload" />
               <span class="ms-1">Select File{{ accept == '*' && multiple ? 's' : '' }}</span>
             </a>
           </li>
           <li v-if="accept == '*' && multiple">
-            <a class="dropdown-item cursor-pointer" :class="{ disabled }" @click="$refs.folderUploadRef.$el.click()">
+            <a
+              class="dropdown-item cursor-pointer"
+              :class="{ disabled }"
+              @click="$refs.folderUploadRef.$el.click()"
+            >
               <i class="mdi mdi-folder-upload" />
               <span class="ms-1">Select Folder</span>
             </a>
@@ -221,7 +272,20 @@ export default defineComponent({
       video: ['mp4', 'mov', 'rmvb', 'webm', 'avi', 'swf', '3gp', 'mkv', 'flv'],
       audio: ['mp3', 'wav', 'wma', 'ogg', 'aac', 'flac'],
       office: ['doc', 'docx', 'csv', 'xls', 'xlsx', 'ppt', 'pptx'],
-      document: ['txt', 'log', 'json', 'cnf', 'conf', 'ini', 'js', 'html', 'css', 'pdf', 'md', 'xml'],
+      document: [
+        'txt',
+        'log',
+        'json',
+        'cnf',
+        'conf',
+        'ini',
+        'js',
+        'html',
+        'css',
+        'pdf',
+        'md',
+        'xml',
+      ],
     };
 
     const options = ref({
@@ -237,7 +301,8 @@ export default defineComponent({
           return true;
         } else {
           let chunkNumber = chunk.offset + 1;
-          if (chunkNumber == chunk.file.chunks.length && (res.chunks || []).includes(chunkNumber)) mergingFile(chunk.file);
+          if (chunkNumber == chunk.file.chunks.length && (res.chunks || []).includes(chunkNumber))
+            mergingFile(chunk.file);
           return (res.chunks || []).includes(chunkNumber);
         }
       },
@@ -266,7 +331,9 @@ export default defineComponent({
       computeFile(file);
       nextTick(() => {
         setTimeout(() => {
-          const fileList = document.getElementById('file-list').querySelector('.simplebar-content-wrapper');
+          const fileList = document
+            .getElementById('file-list')
+            .querySelector('.simplebar-content-wrapper');
           if (fileList)
             fileList.scrollTo({
               top: fileList.scrollHeight,
@@ -287,15 +354,24 @@ export default defineComponent({
         spark.append(e.target.result);
         currentChunk++;
         if (currentChunk < chunks) {
-          file['_status'] = { value: 'computing', text: ((currentChunk / chunks) * 100).toFixed(0) };
+          file['_status'] = {
+            value: 'computing',
+            text: ((currentChunk / chunks) * 100).toFixed(0),
+          };
           loadNext();
         } else {
           let md5 = spark.end();
           spark.destroy();
           if (files.value.find((file) => file.identifier === md5)) {
-            handleCancelUpload(file, i18n.global.t('components.uploader.cancel.duplicate', { name: file.name }));
+            handleCancelUpload(
+              file,
+              i18n.global.t('components.uploader.cancel.duplicate', { name: file.name }),
+            );
           } else if (file.size === 0) {
-            handleCancelUpload(file, i18n.global.t('components.uploader.cancel.empty', { name: file.name }));
+            handleCancelUpload(
+              file,
+              i18n.global.t('components.uploader.cancel.empty', { name: file.name }),
+            );
           } else {
             file.uniqueIdentifier = md5;
             file['_status'] = {
@@ -475,7 +551,9 @@ export default defineComponent({
       options.multiple = props.multiple;
       options.username = public_username || store.state.user.data.username;
       qrcode.value = options.code = Math.random().toString(36).slice(-6);
-      let url = `${location.origin}${process.env.BASE_URL}uploader/${encodeURIComponent(encryptData(JSON.stringify(options)))}`;
+      let url = `${location.origin}${process.env.BASE_URL}uploader/${encodeURIComponent(
+        encryptData(JSON.stringify(options)),
+      )}`;
       copyToClipboard(url);
       nextTick(() => {
         new QRCode(document.getElementById('qrcode'), {

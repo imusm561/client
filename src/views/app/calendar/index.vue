@@ -10,8 +10,15 @@
         </div>
 
         <div id="external-events" class="mt-3 pb-3 border-bottom border-bottom-dashed">
-          <p class="text-muted text-truncate" :title="$t('app.calendar.dragTip')">{{ $t('app.calendar.dragTip') }}</p>
-          <div v-for="category in categories" :key="category.value" :class="`external-event fc-event bg-soft-${category.variant} text-${category.variant}`" :data-category="category.value">
+          <p class="text-muted text-truncate" :title="$t('app.calendar.dragTip')">
+            {{ $t('app.calendar.dragTip') }}
+          </p>
+          <div
+            v-for="category in categories"
+            :key="category.value"
+            :class="`external-event fc-event bg-soft-${category.variant} text-${category.variant}`"
+            :data-category="category.value"
+          >
             <i class="mdi mdi-checkbox-blank-circle font-size-11 me-2"></i>
             {{ category.title }}
           </div>
@@ -33,7 +40,9 @@
                 <div class="d-flex mb-2">
                   <div :class="`flex-grow-1 text-${resolveEventVariant(event)}`">
                     <i class="mdi mdi-circle me-2"></i>
-                    <span class="fw-medium">{{ $moment(event.start).format(event.all_day ? 'll' : 'llll') }}</span>
+                    <span class="fw-medium">
+                      {{ $moment(event.start).format(event.all_day ? 'll' : 'llll') }}
+                    </span>
                   </div>
                   <div class="flex-shrink-0">
                     <small class="badge badge-soft-primary ms-auto"></small>
@@ -56,20 +65,48 @@
       </div>
     </div>
 
-    <button id="showViewAndEditEventModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#viewAndEditEventModal" />
-    <div class="modal fade" id="viewAndEditEventModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <button
+      id="showViewAndEditEventModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#viewAndEditEventModal"
+    />
+    <div
+      class="modal fade"
+      id="viewAndEditEventModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header p-2 bg-soft-info">
-            <h5 class="modal-title">{{ current_event.id ? current_event.title : $t('app.calendar.viewAndEditEventModal.newEvent') }}</h5>
-            <button type="button" id="hideViewAndEditEventModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
+            <h5 class="modal-title">
+              {{
+                current_event.id
+                  ? current_event.title
+                  : $t('app.calendar.viewAndEditEventModal.newEvent')
+              }}
+            </h5>
+            <button
+              type="button"
+              id="hideViewAndEditEventModalBtn"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <Form v-slot="{ errors }" @submit="handleSubmitEvent" :key="viewAndEditEventModalKey">
             <div class="modal-body p-0">
-              <div v-if="is_editing" data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
+              <div
+                v-if="is_editing"
+                data-simplebar
+                class="p-3"
+                style="max-height: 80vh; overflow-x: hidden"
+              >
                 <div class="row g-3">
                   <div class="col-12">
-                    <label class="form-label">{{ $t('app.calendar.viewAndEditEventModal.form.title') }}</label>
+                    <label class="form-label">
+                      {{ $t('app.calendar.viewAndEditEventModal.form.title') }}
+                    </label>
                     <Field
                       name="title"
                       v-model="current_event.title"
@@ -81,7 +118,9 @@
                     <span class="invalid-feedback">{{ errors.title }}</span>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('app.calendar.viewAndEditEventModal.form.category') }}</label>
+                    <label class="form-label">
+                      {{ $t('app.calendar.viewAndEditEventModal.form.category') }}
+                    </label>
                     <VueSelect
                       v-model="current_event.category"
                       :placeholder="$t('app.calendar.viewAndEditEventModal.form.category')"
@@ -95,20 +134,40 @@
                         <template v-if="searching">
                           <span v-html="$t('components.vs.search', { search })"></span>
                         </template>
-                        <em v-else style="opacity: 0.5">{{ $t('components.vs.searchCategory') }}</em>
+                        <em v-else style="opacity: 0.5">
+                          {{ $t('components.vs.searchCategory') }}
+                        </em>
                       </template>
                     </VueSelect>
-                    <Field name="category" v-model="current_event.category" rules="required" class="d-none" />
+                    <Field
+                      name="category"
+                      v-model="current_event.category"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.category }}</span>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('app.calendar.viewAndEditEventModal.form.users') }}</label>
-                    <UsersSelector v-model="current_event.users" :placeholder="$t('app.calendar.viewAndEditEventModal.form.users')" :class="[errors.users && 'is-invalid']" />
-                    <Field name="users" v-model="current_event.users" :rules="`required|include:${$store.state.user.data.username}`" class="d-none" />
+                    <label class="form-label">
+                      {{ $t('app.calendar.viewAndEditEventModal.form.users') }}
+                    </label>
+                    <UsersSelector
+                      v-model="current_event.users"
+                      :placeholder="$t('app.calendar.viewAndEditEventModal.form.users')"
+                      :class="[errors.users && 'is-invalid']"
+                    />
+                    <Field
+                      name="users"
+                      v-model="current_event.users"
+                      :rules="`required|include:${$store.state.user.data.username}`"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.users }}</span>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('app.calendar.viewAndEditEventModal.form.description') }}</label>
+                    <label class="form-label">
+                      {{ $t('app.calendar.viewAndEditEventModal.form.description') }}
+                    </label>
                     <Field
                       as="textarea"
                       name="description"
@@ -121,7 +180,9 @@
                     <span class="invalid-feedback">{{ errors.description }}</span>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('app.calendar.viewAndEditEventModal.form.date') }}</label>
+                    <label class="form-label">
+                      {{ $t('app.calendar.viewAndEditEventModal.form.date') }}
+                    </label>
                     <FlatPickr
                       v-model="current_event.date"
                       @change="handleChangeDate"
@@ -129,16 +190,26 @@
                       :placeholder="$t('app.calendar.viewAndEditEventModal.form.date')"
                       :config="{ mode: 'range' }"
                     ></FlatPickr>
-                    <Field name="date" v-model="current_event.date" rules="required" class="d-none" />
+                    <Field
+                      name="date"
+                      v-model="current_event.date"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.date }}</span>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('app.calendar.viewAndEditEventModal.form.allDay') }}</label>
+                    <label class="form-label">
+                      {{ $t('app.calendar.viewAndEditEventModal.form.allDay') }}
+                    </label>
                     <div class="form-check form-switch form-switch-md">
                       <input
                         type="checkbox"
                         class="form-check-input"
-                        :disabled="$moment(current_event.start).format('YYYY-MM-DD') != $moment(current_event.end).format('YYYY-MM-DD')"
+                        :disabled="
+                          $moment(current_event.start).format('YYYY-MM-DD') !=
+                          $moment(current_event.end).format('YYYY-MM-DD')
+                        "
                         v-model="current_event.all_day"
                       />
                     </div>
@@ -146,32 +217,52 @@
                   <div class="col-12" id="event-time" v-if="!current_event.all_day">
                     <div class="row">
                       <div class="col-6">
-                        <label class="form-label">{{ $t('app.calendar.viewAndEditEventModal.form.startTime') }}</label>
+                        <label class="form-label">
+                          {{ $t('app.calendar.viewAndEditEventModal.form.startTime') }}
+                        </label>
                         <FlatPickr
                           v-model="current_event.start_time"
                           :class="['form-control', errors.start_time && 'is-invalid']"
                           :placeholder="$t('app.calendar.viewAndEditEventModal.form.startTime')"
                           :config="{ dateFormat: 'H:i:S' }"
                         ></FlatPickr>
-                        <Field name="start_time" v-model="current_event.start_time" rules="required" class="d-none" />
+                        <Field
+                          name="start_time"
+                          v-model="current_event.start_time"
+                          rules="required"
+                          class="d-none"
+                        />
                         <span class="invalid-feedback">{{ errors.start_time }}</span>
                       </div>
                       <div class="col-6">
-                        <label class="form-label">{{ $t('app.calendar.viewAndEditEventModal.form.endTime') }}</label>
+                        <label class="form-label">
+                          {{ $t('app.calendar.viewAndEditEventModal.form.endTime') }}
+                        </label>
                         <FlatPickr
                           v-model="current_event.end_time"
                           :class="['form-control', errors.end_time && 'is-invalid']"
                           :placeholder="$t('app.calendar.viewAndEditEventModal.form.endTime')"
                           :config="{ dateFormat: 'H:i:S' }"
                         ></FlatPickr>
-                        <Field name="end_time" v-model="current_event.end_time" rules="required|gt:@start_time" class="d-none" />
+                        <Field
+                          name="end_time"
+                          v-model="current_event.end_time"
+                          rules="required|gt:@start_time"
+                          class="d-none"
+                        />
                         <span class="invalid-feedback">{{ errors.end_time }}</span>
                       </div>
                     </div>
                   </div>
                   <div class="col-12">
-                    <label class="form-label">{{ $t('app.calendar.viewAndEditEventModal.form.location') }}</label>
-                    <Amap id="event-location" v-model="current_event.location" :placeholder="$t('app.calendar.viewAndEditEventModal.form.location')" />
+                    <label class="form-label">
+                      {{ $t('app.calendar.viewAndEditEventModal.form.location') }}
+                    </label>
+                    <Amap
+                      id="event-location"
+                      v-model="current_event.location"
+                      :placeholder="$t('app.calendar.viewAndEditEventModal.form.location')"
+                    />
                   </div>
                 </div>
               </div>
@@ -182,10 +273,19 @@
                       <i class="mdi mdi-calendar text-muted fs-16"></i>
                     </div>
                     <div class="flex-grow-1">
-                      <h6 v-if="$moment(current_event.start).format('YYYY-MM-DD') == $moment(current_event.end).format('YYYY-MM-DD')" class="d-block fw-semibold mb-0">
+                      <h6
+                        v-if="
+                          $moment(current_event.start).format('YYYY-MM-DD') ==
+                          $moment(current_event.end).format('YYYY-MM-DD')
+                        "
+                        class="d-block fw-semibold mb-0"
+                      >
                         {{ $moment(current_event.start).format('YYYY-MM-DD') }}
                       </h6>
-                      <h6 v-else class="d-block fw-semibold mb-0">{{ $moment(current_event.start).format('YYYY-MM-DD') }} ~ {{ $moment(current_event.end).format('YYYY-MM-DD') }}</h6>
+                      <h6 v-else class="d-block fw-semibold mb-0">
+                        {{ $moment(current_event.start).format('YYYY-MM-DD') }} ~
+                        {{ $moment(current_event.end).format('YYYY-MM-DD') }}
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -207,7 +307,11 @@
                   </div>
                   <div class="flex-grow-1">
                     <img
-                      v-if="$store.state.sys.cfg.amap && $store.state.sys.cfg.amap.api_key && isLngLat(current_event.location)"
+                      v-if="
+                        $store.state.sys.cfg.amap &&
+                        $store.state.sys.cfg.amap.api_key &&
+                        isLngLat(current_event.location)
+                      "
                       :src="`//restapi.amap.com/v3/staticmap?location=${current_event.location}&zoom=12&size=700*300&markers=,,:${current_event.location}&key=${$store.state.sys.cfg.amap.api_key}`"
                       @dblclick="handleDblClickMap(current_event.location)"
                       class="img-fluid"
@@ -229,18 +333,42 @@
               </div>
             </div>
             <div class="modal-footer p-3 pt-1 pb-1">
-              <span v-if="current_event.id" class="btn btn-sm btn-primary" @click="is_editing = !is_editing">
-                <i class="mdi" :class="is_editing ? 'mdi-content-save-off-outline' : 'mdi-square-edit-outline '"></i>
-                {{ is_editing ? $t('app.calendar.viewAndEditEventModal.form.footer.cancel') : $t('app.calendar.viewAndEditEventModal.form.footer.edit') }}
+              <span
+                v-if="current_event.id"
+                class="btn btn-sm btn-primary"
+                @click="is_editing = !is_editing"
+              >
+                <i
+                  class="mdi"
+                  :class="is_editing ? 'mdi-content-save-off-outline' : 'mdi-square-edit-outline '"
+                ></i>
+                {{
+                  is_editing
+                    ? $t('app.calendar.viewAndEditEventModal.form.footer.cancel')
+                    : $t('app.calendar.viewAndEditEventModal.form.footer.edit')
+                }}
               </span>
-              <span v-if="!is_editing && current_event.id" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#deleteEventModal">
+              <span
+                v-if="!is_editing && current_event.id"
+                class="btn btn-sm btn-danger"
+                data-bs-toggle="modal"
+                href="#deleteEventModal"
+              >
                 <i class="mdi mdi-delete-outline"></i>
                 {{ $t('app.calendar.viewAndEditEventModal.form.footer.delete') }}
               </span>
               <button type="submit" class="d-none" ref="submitEventBtn"></button>
-              <span v-if="is_editing" class="btn btn-sm btn-success" @click="Object.keys(errors).length === 0 && $refs.submitEventBtn.click()">
+              <span
+                v-if="is_editing"
+                class="btn btn-sm btn-success"
+                @click="Object.keys(errors).length === 0 && $refs.submitEventBtn.click()"
+              >
                 <i class="mdi mdi-content-save-outline"></i>
-                {{ current_event.id ? $t('app.calendar.viewAndEditEventModal.form.footer.save') : $t('app.calendar.viewAndEditEventModal.form.footer.create') }}
+                {{
+                  current_event.id
+                    ? $t('app.calendar.viewAndEditEventModal.form.footer.save')
+                    : $t('app.calendar.viewAndEditEventModal.form.footer.create')
+                }}
               </span>
             </div>
           </Form>
@@ -248,23 +376,51 @@
       </div>
     </div>
 
-    <div class="modal fade" id="deleteEventModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div
+      class="modal fade"
+      id="deleteEventModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="btn-close d-none" id="hideDeleteEventModalBtn" data-bs-dismiss="modal"></button>
-            <button type="button" class="btn-close" data-bs-toggle="modal" href="#viewAndEditEventModal"></button>
+            <button
+              type="button"
+              class="btn-close d-none"
+              id="hideDeleteEventModalBtn"
+              data-bs-dismiss="modal"
+            ></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-toggle="modal"
+              href="#viewAndEditEventModal"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
-                <h4>{{ $t('app.calendar.deleteEventModal.title', { name: current_event.title }) }}</h4>
-                <p class="text-muted mx-4 mb-0">{{ $t('app.calendar.deleteEventModal.confirm') }}</p>
+                <h4>
+                  {{ $t('app.calendar.deleteEventModal.title', { name: current_event.title }) }}
+                </h4>
+                <p class="text-muted mx-4 mb-0">
+                  {{ $t('app.calendar.deleteEventModal.confirm') }}
+                </p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" data-bs-toggle="modal" href="#viewAndEditEventModal">{{ $t('app.calendar.deleteEventModal.cancel') }}</button>
-              <button type="button" class="btn w-sm btn-danger" @click="handleDelEvent">{{ $t('app.calendar.deleteEventModal.confirmed') }}</button>
+              <button
+                type="button"
+                class="btn w-sm btn-light"
+                data-bs-toggle="modal"
+                href="#viewAndEditEventModal"
+              >
+                {{ $t('app.calendar.deleteEventModal.cancel') }}
+              </button>
+              <button type="button" class="btn w-sm btn-danger" @click="handleDelEvent">
+                {{ $t('app.calendar.deleteEventModal.confirmed') }}
+              </button>
             </div>
           </div>
         </div>
@@ -369,7 +525,9 @@ export default {
         if (code === 200) {
           upcoming_events.value = data
             .map((event) => {
-              const category = categories.value.find((category) => category.value === event.category);
+              const category = categories.value.find(
+                (category) => category.value === event.category,
+              );
               event.className = category ? `bg-soft-${category.variant}` : 'bg-soft-info';
               event.allDay = event.all_day;
               event.users = event.users.filter((username) => getUserInfo(username));
@@ -450,11 +608,16 @@ export default {
 
         date: [
           moment(event.start).format('YYYY-MM-DD'),
-          event.allDay && event.end && event.endStr != event.startStr ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD') : moment(event.end || event.start).format('YYYY-MM-DD'),
+          event.allDay && event.end && event.endStr != event.startStr
+            ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD')
+            : moment(event.end || event.start).format('YYYY-MM-DD'),
         ],
 
         start: event.start,
-        end: event.allDay && event.end && event.endStr != event.startStr ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD') : event.end || event.start,
+        end:
+          event.allDay && event.end && event.endStr != event.startStr
+            ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD')
+            : event.end || event.start,
         all_day: event.allDay,
 
         start_time: moment(event.start).format('HH:mm:ss'),
@@ -647,7 +810,10 @@ export default {
       };
 
       if (current_event.value.all_day) {
-        data.end = data.end === data.start ? moment(data.end).format('YYYY-MM-DD 00:00:00') : moment(data.end).add(1, 'd').format('YYYY-MM-DD 00:00:00');
+        data.end =
+          data.end === data.start
+            ? moment(data.end).format('YYYY-MM-DD 00:00:00')
+            : moment(data.end).add(1, 'd').format('YYYY-MM-DD 00:00:00');
         data.start = moment(data.start).format('YYYY-MM-DD 00:00:00');
       } else {
         if (current_event.value.start_time.split(':').length !== 3) {
@@ -698,7 +864,10 @@ export default {
     };
 
     const handleDblClickMap = (lnglat) => {
-      window.open(`//www.amap.com/regeo?lng=${lnglat.split(',')[0]}&lat=${lnglat.split(',')[1]}`, '_blank');
+      window.open(
+        `//www.amap.com/regeo?lng=${lnglat.split(',')[0]}&lat=${lnglat.split(',')[1]}`,
+        '_blank',
+      );
     };
 
     return {

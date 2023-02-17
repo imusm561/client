@@ -7,7 +7,10 @@
           <div class="col-5">
             <div class="d-flex">
               <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.redis.keys') }}</h4>
-              <i class="mdi mdi-refresh text-primary float-end fs-16 cursor-pointer" @click.stop="handleGetKeys"></i>
+              <i
+                class="mdi mdi-refresh text-primary float-end fs-16 cursor-pointer"
+                @click.stop="handleGetKeys"
+              ></i>
             </div>
             <el-tree
               data-simplebar
@@ -20,12 +23,19 @@
               @node-click="handleClickKey"
             >
               <template #default="{ node }">
-                <span class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2 text-truncate" :title="node.data.key">
+                <span
+                  class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2 text-truncate"
+                  :title="node.data.key"
+                >
                   <span class="tree-node-label text-truncate">
                     {{ node.data.name }}
                   </span>
                   <span class="tree-node-actions ms-3">
-                    <i class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline" data-bs-toggle="modal" data-bs-target="#confirmDeleteKeyModal"></i>
+                    <i
+                      class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline"
+                      data-bs-toggle="modal"
+                      data-bs-target="#confirmDeleteKeyModal"
+                    ></i>
                   </span>
                 </span>
               </template>
@@ -49,10 +59,23 @@
       </div>
     </div>
 
-    <button id="showKeyDataOffcanvasBtn" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#keyDataOffcanvas" />
-    <div class="offcanvas form offcanvas-end w-50 d-md-none" :data-bs-backdrop="false" id="keyDataOffcanvas">
+    <button
+      id="showKeyDataOffcanvasBtn"
+      class="d-none"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#keyDataOffcanvas"
+    />
+    <div
+      class="offcanvas form offcanvas-end w-50 d-md-none"
+      :data-bs-backdrop="false"
+      id="keyDataOffcanvas"
+    >
       <div class="offcanvas-body p-0 overflow-hidden">
-        <i class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute" style="z-index: 1; right: 10px; bottom: 0" data-bs-dismiss="offcanvas" />
+        <i
+          class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute"
+          style="z-index: 1; right: 10px; bottom: 0"
+          data-bs-dismiss="offcanvas"
+        />
         <MonacoEditor
           v-model="current.detail"
           language="json"
@@ -64,21 +87,50 @@
       </div>
     </div>
 
-    <div class="modal fade" id="confirmDeleteKeyModal" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
+    <div
+      class="modal fade"
+      id="confirmDeleteKeyModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      data-bs-focus="false"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
-                <h4>{{ $tc('layout.navbar.helper.redis.confirmDeleteKeyModal.title', current.children?.length || 1) }}</h4>
-                <p class="text-muted mx-4 mb-0">{{ $tc('layout.navbar.helper.redis.confirmDeleteKeyModal.confirm', current.children?.length || 1) }}</p>
+                <h4>
+                  {{
+                    $tc(
+                      'layout.navbar.helper.redis.confirmDeleteKeyModal.title',
+                      current.children?.length || 1,
+                    )
+                  }}
+                </h4>
+                <p class="text-muted mx-4 mb-0">
+                  {{
+                    $tc(
+                      'layout.navbar.helper.redis.confirmDeleteKeyModal.confirm',
+                      current.children?.length || 1,
+                    )
+                  }}
+                </p>
                 <code>{{ current.key }}</code>
               </div>
             </div>
 
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{ $t('layout.navbar.helper.redis.confirmDeleteKeyModal.cancel') }}</button>
-              <button type="button" class="btn w-sm btn-danger" data-bs-dismiss="modal" @click="handleDelKey">{{ $t('layout.navbar.helper.redis.confirmDeleteKeyModal.confirmed') }}</button>
+              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">
+                {{ $t('layout.navbar.helper.redis.confirmDeleteKeyModal.cancel') }}
+              </button>
+              <button
+                type="button"
+                class="btn w-sm btn-danger"
+                data-bs-dismiss="modal"
+                @click="handleDelKey"
+              >
+                {{ $t('layout.navbar.helper.redis.confirmDeleteKeyModal.confirmed') }}
+              </button>
             </div>
           </div>
         </div>

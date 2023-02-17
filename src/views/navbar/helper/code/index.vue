@@ -7,7 +7,10 @@
           <div class="col-3">
             <div class="d-flex">
               <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.code.files') }}</h4>
-              <i class="mdi mdi-refresh text-secondary float-end fs-16 cursor-pointer ms-1" @click.stop="handleGetCodeDirs"></i>
+              <i
+                class="mdi mdi-refresh text-secondary float-end fs-16 cursor-pointer ms-1"
+                @click.stop="handleGetCodeDirs"
+              ></i>
             </div>
             <el-tree
               ref="reftree"
@@ -22,7 +25,9 @@
               @node-click="handleClickPath"
             >
               <template #default="{ node }">
-                <span class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2 text-truncate">
+                <span
+                  class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2 text-truncate"
+                >
                   <span class="tree-node-label text-truncate" :title="node.data.path">
                     <input
                       id="node_edit"
@@ -33,16 +38,42 @@
                       @keyup.enter="$event.target.blur()"
                       @blur="handleSaveFileName(node)"
                     />
-                    <span v-else @dblclick="dirs.some((dir) => node.data.path.includes(dir)) && !dirs.includes(node.data.path) && handleEditFileName(node)">
-                      <i v-if="node.data.type === 'file'" class="file-icon file-icon-sm" :class="$fileIcons.getClassWithColor(node.data.name)" />
+                    <span
+                      v-else
+                      @dblclick="
+                        dirs.some((dir) => node.data.path.includes(dir)) &&
+                          !dirs.includes(node.data.path) &&
+                          handleEditFileName(node)
+                      "
+                    >
+                      <i
+                        v-if="node.data.type === 'file'"
+                        class="file-icon file-icon-sm"
+                        :class="$fileIcons.getClassWithColor(node.data.name)"
+                      />
                       <i v-else class="mdi mdi-folder-outline" />
                       {{ node.data.name }} {{ node.data.rename }}
                     </span>
                   </span>
-                  <span v-if="!node.data.edit && dirs.some((dir) => node.data.path.includes(dir))" class="tree-node-actions ms-3">
-                    <i v-if="node.data.type === 'directory'" class="cursor-pointer fs-16 text-primary mdi mdi-folder-plus-outline ms-1" @click.stop="handleCreate('directory', node)"></i>
-                    <i v-if="node.data.type === 'directory'" class="cursor-pointer fs-16 text-primary mdi mdi-file-plus-outline ms-1" @click.stop="handleCreate('file', node)"></i>
-                    <i v-if="!dirs.includes(node.data.path)" class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline ms-1" @click.stop="handleDeleteConfirm(node)"></i>
+                  <span
+                    v-if="!node.data.edit && dirs.some((dir) => node.data.path.includes(dir))"
+                    class="tree-node-actions ms-3"
+                  >
+                    <i
+                      v-if="node.data.type === 'directory'"
+                      class="cursor-pointer fs-16 text-primary mdi mdi-folder-plus-outline ms-1"
+                      @click.stop="handleCreate('directory', node)"
+                    ></i>
+                    <i
+                      v-if="node.data.type === 'directory'"
+                      class="cursor-pointer fs-16 text-primary mdi mdi-file-plus-outline ms-1"
+                      @click.stop="handleCreate('file', node)"
+                    ></i>
+                    <i
+                      v-if="!dirs.includes(node.data.path)"
+                      class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline ms-1"
+                      @click.stop="handleDeleteConfirm(node)"
+                    ></i>
                   </span>
                 </span>
               </template>
@@ -56,17 +87,28 @@
                     class="text-truncate"
                     :title="
                       $t('layout.navbar.helper.code.file.info', {
-                        created_by: current.created_by ? getUserInfo(current.created_by)?.fullname || current.created_by : $t('layout.navbar.helper.code.file.info.system'),
+                        created_by: current.created_by
+                          ? getUserInfo(current.created_by)?.fullname || current.created_by
+                          : $t('layout.navbar.helper.code.file.info.system'),
                         created_at: $moment(current.created_at || current.birthtime).format('llll'),
-                        updated_by: current.updated_by ? getUserInfo(current.updated_by)?.fullname || current.updated_by : $t('layout.navbar.helper.code.file.info.system'),
+                        updated_by: current.updated_by
+                          ? getUserInfo(current.updated_by)?.fullname || current.updated_by
+                          : $t('layout.navbar.helper.code.file.info.system'),
                         updated_at: $moment(current.updated_at || current.mtime).format('llll'),
                       })
                     "
                   >
                     <code>{{ current.path }}</code>
                   </h5>
-                  <div class="d-none d-md-inline" v-if="current.type === 'file' && current.data != current._data">
-                    <button class="btn btn-sm btn-primary btn-icon waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#codeDiffModal">
+                  <div
+                    class="d-none d-md-inline"
+                    v-if="current.type === 'file' && current.data != current._data"
+                  >
+                    <button
+                      class="btn btn-sm btn-primary btn-icon waves-effect waves-light"
+                      data-bs-toggle="modal"
+                      data-bs-target="#codeDiffModal"
+                    >
                       <i class="fs-20 mdi mdi-ab-testing"></i>
                     </button>
                   </div>
@@ -92,7 +134,12 @@
         <div class="modal-content">
           <div class="modal-header p-2">
             <h5 class="modal-title">{{ $t('layout.navbar.helper.code.codeDiffModal.title') }}</h5>
-            <button type="button" id="hideCodeDiffModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              id="hideCodeDiffModalBtn"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body p-0" style="height: 80vh">
             <MonacoEditor
@@ -108,7 +155,11 @@
             />
           </div>
           <div class="modal-footer p-1">
-            <button class="btn btn-sm btn-danger" data-bs-dismiss="modal" @click="current.data = current._data">
+            <button
+              class="btn btn-sm btn-danger"
+              data-bs-dismiss="modal"
+              @click="current.data = current._data"
+            >
               <i class="mdi mdi-restore"></i>
               {{ $t('layout.navbar.helper.code.codeDiffModal.footer.restore') }}
             </button>
@@ -121,10 +172,23 @@
       </div>
     </div>
 
-    <button id="showCodeDataOffcanvasBtn" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#codeDataOffcanvas" />
-    <div class="offcanvas form offcanvas-end w-50 d-md-none" :data-bs-backdrop="false" id="codeDataOffcanvas">
+    <button
+      id="showCodeDataOffcanvasBtn"
+      class="d-none"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#codeDataOffcanvas"
+    />
+    <div
+      class="offcanvas form offcanvas-end w-50 d-md-none"
+      :data-bs-backdrop="false"
+      id="codeDataOffcanvas"
+    >
       <div class="offcanvas-body p-0 overflow-hidden">
-        <i class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute" style="z-index: 1; right: 10px; bottom: 0" data-bs-dismiss="offcanvas" />
+        <i
+          class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute"
+          style="z-index: 1; right: 10px; bottom: 0"
+          data-bs-dismiss="offcanvas"
+        />
         <MonacoEditor
           :key="current.path"
           v-model="current.data"
@@ -137,8 +201,19 @@
       </div>
     </div>
 
-    <button id="showConfirmDeleteFileOrDirectoryModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#confirmDeleteFileOrDirectoryModal"></button>
-    <div class="modal fade" id="confirmDeleteFileOrDirectoryModal" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
+    <button
+      id="showConfirmDeleteFileOrDirectoryModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#confirmDeleteFileOrDirectoryModal"
+    ></button>
+    <div
+      class="modal fade"
+      id="confirmDeleteFileOrDirectoryModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      data-bs-focus="false"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body">
@@ -148,22 +223,38 @@
                   {{
                     confirm.type === 'file'
                       ? $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.title.file')
-                      : $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.title.directory')
+                      : $t(
+                          'layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.title.directory',
+                        )
                   }}
                 </h4>
                 <p class="text-muted mx-4 mb-0 mb-2" style="white-space: nowrap">
-                  {{ $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm.before') }}
+                  {{
+                    $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm.before')
+                  }}
                   <code class="text-primary fw-bold d-block">{{ confirm.path }}</code>
-                  {{ $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm.after') }}
+                  {{
+                    $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm.after')
+                  }}
                 </p>
-                <h5 class="text-warning" v-if="confirm.children?.length">{{ $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.warning') }}</h5>
+                <h5 class="text-warning" v-if="confirm.children?.length">
+                  {{ $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.warning') }}
+                </h5>
                 <input class="form-control" v-model="confirm.confirm" :placeholder="confirm.path" />
               </div>
             </div>
 
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{ $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.cancel') }}</button>
-              <button type="button" :disabled="confirm.confirm !== confirm.path" class="btn w-sm btn-danger" data-bs-dismiss="modal" @click="handleDelete">
+              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">
+                {{ $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.cancel') }}
+              </button>
+              <button
+                type="button"
+                :disabled="confirm.confirm !== confirm.path"
+                class="btn w-sm btn-danger"
+                data-bs-dismiss="modal"
+                @click="handleDelete"
+              >
                 {{ $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm') }}
               </button>
             </div>
@@ -219,7 +310,8 @@ export default {
       handleGetCodeDirs();
       document.onkeydown = (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-          if (current.value.type === 'file' && current.value.data != current.value._data) handleSaveCode();
+          if (current.value.type === 'file' && current.value.data != current.value._data)
+            handleSaveCode();
           e.preventDefault();
         }
       };
@@ -409,7 +501,14 @@ export default {
     const handleSaveFileName = (node) => {
       node.data.name = node.data.name.trim();
       if (!node.data.name) node.data.name = node.data.name_old;
-      if (node.parent.childNodes?.some((item) => !item.data.edit && item.data.name === node.data.name && item.data.type === node.data.type)) {
+      if (
+        node.parent.childNodes?.some(
+          (item) =>
+            !item.data.edit &&
+            item.data.name === node.data.name &&
+            item.data.type === node.data.type,
+        )
+      ) {
         toast({
           component: ToastificationContent,
           props: {
@@ -421,7 +520,10 @@ export default {
       } else {
         if (node.data.rename) {
           if (node.data.name != node.data.name_old) {
-            renameCode({ old: node.data.path, new: node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name }).then(({ code, msg }) => {
+            renameCode({
+              old: node.data.path,
+              new: node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name,
+            }).then(({ code, msg }) => {
               if (code === 200) {
                 delete node.data.rename;
                 node.data.edit = false;
@@ -443,31 +545,33 @@ export default {
             node.data.edit = false;
           }
         } else {
-          createCode({ type: node.data.type, name: node.data.name, path: node.data.path }).then(({ code, data, msg }) => {
-            if (code === 200) {
-              node.data.edit = false;
-              handleGetCodeDirs();
-              default_expanded_keys.value = [node.parent.key, node.key];
-              if (node.data.type === 'file') {
-                const interval = setInterval(() => {
-                  const node = reftree.value.getNode(data.path);
-                  if (node) {
-                    clearInterval(interval);
-                    handleClickPath(node.data);
-                  }
-                }, 100);
+          createCode({ type: node.data.type, name: node.data.name, path: node.data.path }).then(
+            ({ code, data, msg }) => {
+              if (code === 200) {
+                node.data.edit = false;
+                handleGetCodeDirs();
+                default_expanded_keys.value = [node.parent.key, node.key];
+                if (node.data.type === 'file') {
+                  const interval = setInterval(() => {
+                    const node = reftree.value.getNode(data.path);
+                    if (node) {
+                      clearInterval(interval);
+                      handleClickPath(node.data);
+                    }
+                  }, 100);
+                }
+              } else {
+                toast({
+                  component: ToastificationContent,
+                  props: {
+                    variant: 'danger',
+                    icon: 'mdi-alert',
+                    text: msg,
+                  },
+                });
               }
-            } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-            }
-          });
+            },
+          );
         }
       }
     };

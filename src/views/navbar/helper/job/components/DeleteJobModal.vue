@@ -1,22 +1,46 @@
 <template>
   <div>
-    <button id="showDeleteJobModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#deleteJobModal" />
+    <button
+      id="showDeleteJobModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#deleteJobModal"
+    />
     <div class="modal fade" id="deleteJobModal" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              id="btn-close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
-                <h4>{{ $t('layout.navbar.helper.job.DeleteJobModal.title', { name: job.title }) }}</h4>
-                <p class="text-muted mx-4 mb-0">{{ $t('layout.navbar.helper.job.DeleteJobModal.confirm') }}</p>
+                <h4>
+                  {{ $t('layout.navbar.helper.job.DeleteJobModal.title', { name: job.title }) }}
+                </h4>
+                <p class="text-muted mx-4 mb-0">
+                  {{ $t('layout.navbar.helper.job.DeleteJobModal.confirm') }}
+                </p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" id="hideDeleteJobModalBtn" data-bs-dismiss="modal">{{ $t('layout.navbar.helper.job.DeleteJobModal.cancel') }}</button>
-              <button type="button" class="btn w-sm btn-danger" @click="handleDelJob">{{ $t('layout.navbar.helper.job.DeleteJobModal.confirmed') }}</button>
+              <button
+                type="button"
+                class="btn w-sm btn-light"
+                id="hideDeleteJobModalBtn"
+                data-bs-dismiss="modal"
+              >
+                {{ $t('layout.navbar.helper.job.DeleteJobModal.cancel') }}
+              </button>
+              <button type="button" class="btn w-sm btn-danger" @click="handleDelJob">
+                {{ $t('layout.navbar.helper.job.DeleteJobModal.confirmed') }}
+              </button>
             </div>
           </div>
         </div>

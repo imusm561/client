@@ -3,14 +3,34 @@
     <div class="card mb-2" style="border-radius: 0px">
       <div class="card-body d-md-none d-flex justify-content-between">
         <div class="search-box w-75">
-          <input v-model="search_keyword" type="text" class="form-control" :placeholder="$t('app.task.search')" />
+          <input
+            v-model="search_keyword"
+            type="text"
+            class="form-control"
+            :placeholder="$t('app.task.search')"
+          />
           <i class="mdi mdi-magnify fs-16 search-icon"></i>
         </div>
-        <button class="btn btn-primary ms-3 text-nowrap" data-bs-toggle="modal" data-bs-target="#editTaskModal" @click="handleCreateTask">{{ $t('app.task.create') }}</button>
+        <button
+          class="btn btn-primary ms-3 text-nowrap"
+          data-bs-toggle="modal"
+          data-bs-target="#editTaskModal"
+          @click="handleCreateTask"
+        >
+          {{ $t('app.task.create') }}
+        </button>
       </div>
       <div class="card-body d-none d-md-flex justify-content-between">
         <div class="w-25 d-none d-md-block">
-          <VueSelect v-model="search_users" multiple :close-on-select="false" :placeholder="$t('app.task.filter')" :reduce="(item) => item.username" label="fullname" :options="$store.state.org.users">
+          <VueSelect
+            v-model="search_users"
+            multiple
+            :close-on-select="false"
+            :placeholder="$t('app.task.filter')"
+            :reduce="(item) => item.username"
+            label="fullname"
+            :options="$store.state.org.users"
+          >
             <template #option="data">
               <div class="d-flex align-items-center">
                 <Avatar class="me-2" :data="data" size="xxs" />
@@ -35,10 +55,22 @@
         </div>
         <div class="d-flex">
           <div class="search-box w-100">
-            <input v-model="search_keyword" type="text" class="form-control" :placeholder="$t('app.task.search')" />
+            <input
+              v-model="search_keyword"
+              type="text"
+              class="form-control"
+              :placeholder="$t('app.task.search')"
+            />
             <i class="mdi mdi-magnify fs-16 search-icon"></i>
           </div>
-          <button class="btn btn-primary ms-3 text-nowrap" data-bs-toggle="modal" data-bs-target="#editTaskModal" @click="handleCreateTask">{{ $t('app.task.create') }}</button>
+          <button
+            class="btn btn-primary ms-3 text-nowrap"
+            data-bs-toggle="modal"
+            data-bs-target="#editTaskModal"
+            @click="handleCreateTask"
+          >
+            {{ $t('app.task.create') }}
+          </button>
         </div>
       </div>
     </div>
@@ -53,13 +85,32 @@
         </div>
         <div data-simplebar class="tasks-wrapper mb-1 px-3 mx-n3">
           <div class="tasks">
-            <draggable :list="item.tasks" :id="item.value" class="dragArea" handle=".mover" :group="item.group" @end="handleSortTask">
-              <div class="card tasks-box" v-for="task in item.tasks" :key="task.id" :data-progress="task.progress">
+            <draggable
+              :list="item.tasks"
+              :id="item.value"
+              class="dragArea"
+              handle=".mover"
+              :group="item.group"
+              @end="handleSortTask"
+            >
+              <div
+                class="card tasks-box"
+                v-for="task in item.tasks"
+                :key="task.id"
+                :data-progress="task.progress"
+              >
                 <div :class="`card-body ${resolveTaskVariant(task)}`">
                   <div class="d-flex mb-2">
                     <h6 class="fs-15 mb-0 flex-grow-1 text-truncate">
                       <i class="mdi mdi-drag mover cursor-move"></i>
-                      <span class="cursor-pointer" data-bs-toggle="modal" data-bs-target="#editTaskModal" @click="handleEditTask(task)">&nbsp;{{ task.title }}</span>
+                      <span
+                        class="cursor-pointer"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editTaskModal"
+                        @click="handleEditTask(task)"
+                      >
+                        &nbsp;{{ task.title }}
+                      </span>
                     </h6>
                     <i
                       v-if="task.created_by === $store.state.user.data.username"
@@ -69,7 +120,9 @@
                       @click="current_task = JSON.parse(JSON.stringify(task))"
                     ></i>
                   </div>
-                  <p class="text-muted text-truncate-five-lines">{{ replaceHtml(task.description) }}</p>
+                  <p class="text-muted text-truncate-five-lines">
+                    {{ replaceHtml(task.description) }}
+                  </p>
                   <div class="mb-3">
                     <div class="d-flex mb-1">
                       <div class="flex-grow-1">
@@ -78,20 +131,37 @@
                         </h6>
                       </div>
                       <div class="flex-shrink-0">
-                        <span class="text-muted" :title="task.due_date">{{ $moment(task.due_date).add(1, 'd').fromNow() }}</span>
+                        <span class="text-muted" :title="task.due_date">
+                          {{ $moment(task.due_date).add(1, 'd').fromNow() }}
+                        </span>
                       </div>
                     </div>
                     <div class="progress rounded-3 progress-sm">
-                      <div class="progress-bar bg-success" :style="{ width: `${task.progress}%` }" aria-valuemax="100"></div>
+                      <div
+                        class="progress-bar bg-success"
+                        :style="{ width: `${task.progress}%` }"
+                        aria-valuemax="100"
+                      ></div>
                     </div>
                   </div>
                   <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
-                      <span class="badge badge-soft-primary me-1 mb-1" v-for="(tag, index) in task.tags" :key="`${tag}_${index}`">{{ tag }}</span>
+                      <span
+                        class="badge badge-soft-primary me-1 mb-1"
+                        v-for="(tag, index) in task.tags"
+                        :key="`${tag}_${index}`"
+                      >
+                        {{ tag }}
+                      </span>
                     </div>
                     <div class="flex-shrink-0">
                       <div class="avatar-group">
-                        <span v-for="(user, index) in task._users" :key="index" class="avatar-group-item cursor-pointer" :title="user.title || user.fullname">
+                        <span
+                          v-for="(user, index) in task._users"
+                          :key="index"
+                          class="avatar-group-item cursor-pointer"
+                          :title="user.title || user.fullname"
+                        >
                           <Avatar :data="user" size="xxs" />
                         </span>
                       </div>
@@ -122,12 +192,29 @@
       </div>
     </div>
 
-    <div class="modal fade" id="editTaskModal" data-bs-focus="false" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div
+      class="modal fade"
+      id="editTaskModal"
+      data-bs-focus="false"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+    >
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header p-2 bg-light">
-            <h5 class="modal-title">{{ current_task.id ? $t('app.task.editTaskModal.editTask') : $t('app.task.editTaskModal.createTask') }}</h5>
-            <button type="button" class="btn-close" id="hideEditTaskModalBtn" data-bs-dismiss="modal"></button>
+            <h5 class="modal-title">
+              {{
+                current_task.id
+                  ? $t('app.task.editTaskModal.editTask')
+                  : $t('app.task.editTaskModal.createTask')
+              }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              id="hideEditTaskModalBtn"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <Form v-slot="{ errors }" @submit="handleSubmitTask">
             <div class="modal-body p-0">
@@ -147,9 +234,20 @@
                   </div>
 
                   <div class="col-md-4">
-                    <label class="form-label">{{ $t('app.task.editTaskModal.form.dueDate') }}</label>
-                    <FlatPickr v-model="current_task.due_date" :class="['form-control', errors.due_date && 'is-invalid']" :placeholder="$t('app.task.editTaskModal.form.dueDate')"></FlatPickr>
-                    <Field name="due_date" v-model="current_task.due_date" rules="required" class="d-none" />
+                    <label class="form-label">
+                      {{ $t('app.task.editTaskModal.form.dueDate') }}
+                    </label>
+                    <FlatPickr
+                      v-model="current_task.due_date"
+                      :class="['form-control', errors.due_date && 'is-invalid']"
+                      :placeholder="$t('app.task.editTaskModal.form.dueDate')"
+                    ></FlatPickr>
+                    <Field
+                      name="due_date"
+                      v-model="current_task.due_date"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.due_date }}</span>
                   </div>
                   <div class="col-md-4">
@@ -177,11 +275,18 @@
                         <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
                       </template>
                     </VueSelect>
-                    <Field name="status" v-model="current_task.status" rules="required" class="d-none" />
+                    <Field
+                      name="status"
+                      v-model="current_task.status"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.status }}</span>
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label">{{ $t('app.task.editTaskModal.form.progress') }}</label>
+                    <label class="form-label">
+                      {{ $t('app.task.editTaskModal.form.progress') }}
+                    </label>
                     <Field
                       type="number"
                       name="progress"
@@ -189,15 +294,31 @@
                       :placeholder="$t('app.task.editTaskModal.form.progress')"
                       v-model="current_task.progress"
                       rules="required|between:0,100"
-                      @input="current_task.status = current_task.progress <= 0 ? 'todo' : current_task.progress >= 100 ? 'review' : 'inprogress'"
+                      @input="
+                        current_task.status =
+                          current_task.progress <= 0
+                            ? 'todo'
+                            : current_task.progress >= 100
+                            ? 'review'
+                            : 'inprogress'
+                      "
                     />
                     <span class="invalid-feedback">{{ errors.progress }}</span>
                   </div>
 
                   <div class="col-12">
                     <label class="form-label">{{ $t('app.task.editTaskModal.form.users') }}</label>
-                    <UsersSelector v-model="current_task.users" :placeholder="$t('app.task.editTaskModal.form.users')" :class="[errors.users && 'is-invalid']" />
-                    <Field name="users" v-model="current_task.users" :rules="`required|include:${$store.state.user.data.username}`" class="d-none" />
+                    <UsersSelector
+                      v-model="current_task.users"
+                      :placeholder="$t('app.task.editTaskModal.form.users')"
+                      :class="[errors.users && 'is-invalid']"
+                    />
+                    <Field
+                      name="users"
+                      v-model="current_task.users"
+                      :rules="`required|include:${$store.state.user.data.username}`"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.users }}</span>
                   </div>
 
@@ -224,23 +345,38 @@
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">{{ $t('app.task.editTaskModal.form.description') }}</label>
+                    <label class="form-label">
+                      {{ $t('app.task.editTaskModal.form.description') }}
+                    </label>
                     <CKEditor
                       v-model="current_task.description"
                       id="ck_task_description"
                       :error="{ id: 'ck_task_description', error: errors.description }"
                       :class="errors.description && 'is-invalid'"
                     />
-                    <Field name="description" v-model="current_task.description" rules="required" class="d-none" />
+                    <Field
+                      name="description"
+                      v-model="current_task.description"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.description }}</span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="modal-footer p-3 pt-1 pb-1">
-              <button type="submit" class="btn btn-sm btn-success" :disabled="Object.keys(errors).length">
+              <button
+                type="submit"
+                class="btn btn-sm btn-success"
+                :disabled="Object.keys(errors).length"
+              >
                 <i class="mdi mdi-content-save-outline"></i>
-                {{ current_task.id ? $t('app.task.editTaskModal.form.footer.save') : $t('app.task.editTaskModal.form.footer.create') }}
+                {{
+                  current_task.id
+                    ? $t('app.task.editTaskModal.form.footer.save')
+                    : $t('app.task.editTaskModal.form.footer.create')
+                }}
               </button>
             </div>
           </Form>
@@ -252,7 +388,13 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              id="btn-close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
@@ -262,8 +404,17 @@
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" id="hideDelTaskModalBtn" data-bs-dismiss="modal">{{ $t('app.task.deleteTaskModal.cancel') }}</button>
-              <button type="button" class="btn w-sm btn-danger" @click="handleDelTask">{{ $t('app.task.deleteTaskModal.confirmed') }}</button>
+              <button
+                type="button"
+                class="btn w-sm btn-light"
+                id="hideDelTaskModalBtn"
+                data-bs-dismiss="modal"
+              >
+                {{ $t('app.task.deleteTaskModal.cancel') }}
+              </button>
+              <button type="button" class="btn w-sm btn-danger" @click="handleDelTask">
+                {{ $t('app.task.deleteTaskModal.confirmed') }}
+              </button>
             </div>
           </div>
         </div>
@@ -304,7 +455,8 @@ export default {
     const resolveTaskVariant = (task) => {
       if (task.progress === 100) return 'bg-soft-success';
       if (moment(task.due_date).valueOf() < moment().valueOf()) return 'bg-soft-danger';
-      else if (moment(task.due_date).valueOf() - moment().valueOf() < 24 * 60 * 60 * 1000) return 'bg-soft-primary';
+      else if (moment(task.due_date).valueOf() - moment().valueOf() < 24 * 60 * 60 * 1000)
+        return 'bg-soft-primary';
       else return null;
     };
 
@@ -329,12 +481,18 @@ export default {
               : ['urgent'].includes(to.el.id)
               ? Number(dragEl.getAttribute('data-progress')) < 100
               : ['inprogress'].includes(to.el.id)
-              ? Number(dragEl.getAttribute('data-progress')) > 0 && Number(dragEl.getAttribute('data-progress')) < 100
+              ? Number(dragEl.getAttribute('data-progress')) > 0 &&
+                Number(dragEl.getAttribute('data-progress')) < 100
               : Number(dragEl.getAttribute('data-progress')) >= 100;
           },
           pull: true,
         };
-        item.tasks = _tasks.value.filter((task) => task.status === item.value && (filterKeyword(task.title) || filterKeyword(replaceHtml(task.description))) && filterUsers(task.users));
+        item.tasks = _tasks.value.filter(
+          (task) =>
+            task.status === item.value &&
+            (filterKeyword(task.title) || filterKeyword(replaceHtml(task.description))) &&
+            filterUsers(task.users),
+        );
         return item;
       });
     };

@@ -3,7 +3,14 @@
     <div class="email-menu-sidebar" id="menusidebar">
       <div class="p-4 d-flex flex-column h-100">
         <div class="pb-3 border-bottom border-bottom-dashed">
-          <button type="button" class="btn btn-danger w-100" id="showComposeModalBtn" data-bs-toggle="modal" data-bs-target="#composeModal" @click="handleComposeMail">
+          <button
+            type="button"
+            class="btn btn-danger w-100"
+            id="showComposeModalBtn"
+            data-bs-toggle="modal"
+            data-bs-target="#composeModal"
+            @click="handleComposeMail"
+          >
             <i class="mdi mdi-email-plus-outline me-1"></i>
             {{ $t('app.mail.compose') }}
           </button>
@@ -11,20 +18,35 @@
 
         <div class="mx-n4 px-4 email-menu-sidebar-scroll">
           <div class="mail-list mt-3">
-            <a v-for="(menu, index) in menus" :key="index" class="cursor-pointer" :class="{ active: current_menu === menu.value }" @click="changemenu(menu.value)">
+            <a
+              v-for="(menu, index) in menus"
+              :key="index"
+              class="cursor-pointer"
+              :class="{ active: current_menu === menu.value }"
+              @click="changemenu(menu.value)"
+            >
               <i :class="`mdi ${menu.icon} me-3 align-middle fw-medium`"></i>
               <span class="mail-list-link">{{ menu.title }}</span>
-              <span v-if="menu.count !== 0" class="badge badge-soft-success ms-auto">{{ menu.count }}</span>
+              <span v-if="menu.count !== 0" class="badge badge-soft-success ms-auto">
+                {{ menu.count }}
+              </span>
             </a>
           </div>
 
           <div>
             <h5 class="fs-12 text-uppercase text-muted mt-4">{{ $t('app.mail.label') }}</h5>
             <div class="mail-list mt-1">
-              <a v-for="label in labels" :key="label.value" class="cursor-pointer" @click="changelabel(label.value)">
+              <a
+                v-for="label in labels"
+                :key="label.value"
+                class="cursor-pointer"
+                @click="changelabel(label.value)"
+              >
                 <span class="mdi mdi-circle-outline me-2 text-info"></span>
                 {{ label.title }}
-                <span v-if="label.count !== 0" class="badge badge-soft-success ms-auto">{{ label.count }}</span>
+                <span v-if="label.count !== 0" class="badge badge-soft-success ms-auto">
+                  {{ label.count }}
+                </span>
               </a>
             </div>
           </div>
@@ -37,24 +59,49 @@
         <div class="border-bottom border-bottom-dashed">
           <div class="row mt-n2 mb-3 mb-sm-0">
             <div class="col col-sm-auto order-1 d-block d-lg-none">
-              <button type="button" class="btn btn-soft-success btn-icon btn-sm fs-16" @click.stop="handleClickMenuBtn">
+              <button
+                type="button"
+                class="btn btn-soft-success btn-icon btn-sm fs-16"
+                @click.stop="handleClickMenuBtn"
+              >
                 <i class="mdi mdi-menu align-bottom"></i>
               </button>
             </div>
             <div class="col-sm order-3 order-sm-2">
               <div class="hstack gap-sm-1 align-items-center flex-wrap email-topbar-link">
                 <div class="form-check fs-14 m-0">
-                  <input class="form-check-input" type="checkbox" id="checkall" :disabled="mails.length === 0" @change="handleCheckAllMail" />
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="checkall"
+                    :disabled="mails.length === 0"
+                    @change="handleCheckAllMail"
+                  />
                   <label class="form-check-label" for="flexCheck18"></label>
                 </div>
-                <button type="button" class="btn btn-ghost-secondary btn-icon btn-sm fs-16" @click="fetchMails()">
+                <button
+                  type="button"
+                  class="btn btn-ghost-secondary btn-icon btn-sm fs-16"
+                  @click="fetchMails()"
+                >
                   <i class="mdi mdi-refresh align-bottom"></i>
                 </button>
                 <div v-if="checkedMailIds.length">
-                  <button type="button" class="btn btn-ghost-secondary btn-icon btn-sm fs-16 trash-btn" :class="{ active: current_menu === 'trash' }" @click="handleTrashMails()">
+                  <button
+                    type="button"
+                    class="btn btn-ghost-secondary btn-icon btn-sm fs-16 trash-btn"
+                    :class="{ active: current_menu === 'trash' }"
+                    @click="handleTrashMails()"
+                  >
                     <i class="mdi mdi-trash-can align-bottom"></i>
                   </button>
-                  <button v-if="current_menu === 'trash'" type="button" class="btn btn-ghost-secondary btn-icon btn-sm fs-16" data-bs-toggle="modal" data-bs-target="#deleteMailConfirmModal">
+                  <button
+                    v-if="current_menu === 'trash'"
+                    type="button"
+                    class="btn btn-ghost-secondary btn-icon btn-sm fs-16"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteMailConfirmModal"
+                  >
                     <i class="mdi mdi-delete-forever text-danger align-bottom"></i>
                   </button>
                 </div>
@@ -63,12 +110,22 @@
             <div class="col-auto order-2 order-sm-3" v-if="checkedMailIds.length">
               <div class="d-flex gap-sm-1 email-topbar-link">
                 <div class="dropdown">
-                  <button class="btn btn-ghost-secondary btn-icon btn-sm fs-16" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button
+                    class="btn btn-ghost-secondary btn-icon btn-sm fs-16"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
                     <i class="mdi mdi-dots-vertical align-bottom"></i>
                   </button>
                   <div class="dropdown-menu dropdown-menu-end">
-                    <a class="dropdown-item cursor-pointer" @click="handleMarkMails('important')">{{ $t('app.mail.detail.markAsImportant') }}</a>
-                    <a class="dropdown-item cursor-pointer" @click="handleMarkMails('star')">{{ $t('app.mail.detail.addStar') }}</a>
+                    <a class="dropdown-item cursor-pointer" @click="handleMarkMails('important')">
+                      {{ $t('app.mail.detail.markAsImportant') }}
+                    </a>
+                    <a class="dropdown-item cursor-pointer" @click="handleMarkMails('star')">
+                      {{ $t('app.mail.detail.addStar') }}
+                    </a>
                   </div>
                 </div>
               </div>
@@ -77,15 +134,30 @@
 
           <div class="row align-items-center mt-3">
             <div class="col">
-              <ul class="nav nav-tabs nav-tabs-custom nav-success gap-1 text-center border-bottom-0" style="width: 100vw">
+              <ul
+                class="nav nav-tabs nav-tabs-custom nav-success gap-1 text-center border-bottom-0"
+                style="width: 100vw"
+              >
                 <li class="nav-item tabtype">
-                  <a class="nav-link fw-semibold cursor-pointer" :class="{ active: current_label == 'all' }" id="all_tab" @click="changetab('all')">
+                  <a
+                    class="nav-link fw-semibold cursor-pointer"
+                    :class="{ active: current_label == 'all' }"
+                    id="all_tab"
+                    @click="changetab('all')"
+                  >
                     <i class="mdi mdi-format-list-bulleted align-bottom d-inline-block"></i>
-                    <span class="ms-1 d-none d-sm-inline-block">{{ $t('app.mail.label.all') }}</span>
+                    <span class="ms-1 d-none d-sm-inline-block">
+                      {{ $t('app.mail.label.all') }}
+                    </span>
                   </a>
                 </li>
                 <li v-for="label in labels" :key="label.value" class="nav-item tabtype">
-                  <a class="nav-link fw-semibold cursor-pointer" :class="{ active: current_label == label.value }" :id="`${label.value}_tab`" @click="changetab(label.value)">
+                  <a
+                    class="nav-link fw-semibold cursor-pointer"
+                    :class="{ active: current_label == label.value }"
+                    :id="`${label.value}_tab`"
+                    @click="changetab(label.value)"
+                  >
                     <i :class="`mdi ${label.icon} align-bottom d-inline-block`"></i>
                     <span class="ms-1 d-none d-sm-inline-block">{{ label.title }}</span>
                   </a>
@@ -97,11 +169,23 @@
         <div class="message-list-content mx-n4 px-4 message-list-scroll p-2" data-simplebar>
           <ul id="messageList" class="message-list mb-0">
             <div v-for="mail in mails" :key="mail.id">
-              <li :class="{ unread: !mail.read.includes($store.state.user.data.username) && mail.created_by != $store.state.user.data.username, active: checkedMailIds.includes(mail.id) }">
+              <li
+                :class="{
+                  unread:
+                    !mail.read.includes($store.state.user.data.username) &&
+                    mail.created_by != $store.state.user.data.username,
+                  active: checkedMailIds.includes(mail.id),
+                }"
+              >
                 <div>
                   <div class="col-mail col-mail-1">
                     <div class="form-check checkbox-wrapper-mail fs-14">
-                      <input class="form-check-input" type="checkbox" :checked="checkedMailIds.includes(mail.id)" @change="handleCheckMail(mail)" />
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        :checked="checkedMailIds.includes(mail.id)"
+                        @change="handleCheckMail(mail)"
+                      />
                       <label class="form-check-label"></label>
                     </div>
 
@@ -113,8 +197,13 @@
                     >
                       <i class="mdi mdi-star"></i>
                     </button>
-                    <i v-if="mail.attachments.length" class="mdi mdi-attachment text-primary fs-15 me-2"></i>
-                    <a class="cursor-pointer title-name" @click="handleOpenMail(mail)">{{ mail.sender.fullname }}</a>
+                    <i
+                      v-if="mail.attachments.length"
+                      class="mdi mdi-attachment text-primary fs-15 me-2"
+                    ></i>
+                    <a class="cursor-pointer title-name" @click="handleOpenMail(mail)">
+                      {{ mail.sender.fullname }}
+                    </a>
                   </div>
                   <div class="col-mail col-mail-2" @click="handleOpenMail(mail)">
                     <a class="cursor-pointer subject">
@@ -143,19 +232,34 @@
         <div class="pb-4 border-bottom border-bottom-dashed">
           <div class="row">
             <div class="col">
-              <button type="button" class="btn btn-soft-danger btn-icon btn-sm fs-16" @click="handleCloseMail">
+              <button
+                type="button"
+                class="btn btn-soft-danger btn-icon btn-sm fs-16"
+                @click="handleCloseMail"
+              >
                 <i class="mdi mdi-close align-bottom"></i>
               </button>
             </div>
             <div class="col-auto">
               <div class="hstack gap-sm-1 align-items-center flex-wrap email-topbar-link">
-                <button v-if="current_mail.created_by != $store.state.user.data.username" class="btn btn-ghost-primary btn-icon btn-sm fs-16" @click="handleReply(current_mail)">
+                <button
+                  v-if="current_mail.created_by != $store.state.user.data.username"
+                  class="btn btn-ghost-primary btn-icon btn-sm fs-16"
+                  @click="handleReply(current_mail)"
+                >
                   <i class="mdi mdi-reply align-bottom"></i>
                 </button>
-                <button v-if="current_mail.created_by != $store.state.user.data.username" class="btn btn-ghost-danger btn-icon btn-sm fs-16" @click="handleReply2All(current_mail)">
+                <button
+                  v-if="current_mail.created_by != $store.state.user.data.username"
+                  class="btn btn-ghost-danger btn-icon btn-sm fs-16"
+                  @click="handleReply2All(current_mail)"
+                >
                   <i class="mdi mdi-reply-all align-bottom"></i>
                 </button>
-                <i v-if="current_mail.attachments.length.length" class="mdi mdi-attachment text-primary fs-15 me-2"></i>
+                <i
+                  v-if="current_mail.attachments.length.length"
+                  class="mdi mdi-attachment text-primary fs-15 me-2"
+                ></i>
                 <button
                   type="button"
                   class="btn btn-ghost-secondary btn-icon btn-sm fs-16 favourite-btn"
@@ -171,16 +275,33 @@
                 >
                   <i class="mdi mdi-trash-can align-bottom"></i>
                 </button>
-                <button class="btn btn-ghost-secondary btn-icon btn-sm fs-16 trash-btn" data-bs-toggle="modal" data-bs-target="#fullscreenMailContentModal">
+                <button
+                  class="btn btn-ghost-secondary btn-icon btn-sm fs-16 trash-btn"
+                  data-bs-toggle="modal"
+                  data-bs-target="#fullscreenMailContentModal"
+                >
                   <i class="mdi mdi-fullscreen align-bottom"></i>
                 </button>
                 <div class="dropdown">
-                  <button class="btn btn-ghost-secondary btn-icon btn-sm fs-16" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button
+                    class="btn btn-ghost-secondary btn-icon btn-sm fs-16"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
                     <i class="mdi mdi-dots-vertical align-bottom"></i>
                   </button>
                   <div class="dropdown-menu dropdown-menu-end">
-                    <a class="dropdown-item cursor-pointer" @click="handleMarkOrUnmarkMail(current_mail, 'important')">
-                      {{ current_mail.important.includes($store.state.user.data.username) ? $t('app.mail.detail.unmarkImportant') : $t('app.mail.detail.markAsImportant') }}
+                    <a
+                      class="dropdown-item cursor-pointer"
+                      @click="handleMarkOrUnmarkMail(current_mail, 'important')"
+                    >
+                      {{
+                        current_mail.important.includes($store.state.user.data.username)
+                          ? $t('app.mail.detail.unmarkImportant')
+                          : $t('app.mail.detail.markAsImportant')
+                      }}
                     </a>
                   </div>
                 </div>
@@ -210,7 +331,12 @@
                 "
               >
                 {{ $t('app.mail.detail.to') }}:
-                <span style="word-break: break-all" v-for="(item, index) in resolveUsers(vs.to)" :key="index" :title="item.title">
+                <span
+                  style="word-break: break-all"
+                  v-for="(item, index) in resolveUsers(vs.to)"
+                  :key="index"
+                  :title="item.title"
+                >
                   {{ item.label }}{{ index === resolveUsers(vs.to).length - 1 ? '' : ', ' }}
                 </span>
               </div>
@@ -227,7 +353,12 @@
               >
                 <span v-if="vs.cc.length">
                   {{ $t('app.mail.detail.cc') }}:
-                  <span style="word-break: break-all" v-for="(item, index) in resolveUsers(vs.cc)" :key="index" :title="item.title">
+                  <span
+                    style="word-break: break-all"
+                    v-for="(item, index) in resolveUsers(vs.cc)"
+                    :key="index"
+                    :title="item.title"
+                  >
                     {{ item.label }}{{ index === resolveUsers(vs.cc).length - 1 ? '' : ', ' }}
                   </span>
                 </span>
@@ -235,7 +366,12 @@
             </div>
             <div class="flex-shrink-0 align-self-start">
               <div class="text-muted fs-12">{{ $moment(current_mail.created_at).fromNow() }}</div>
-              <a role="button" class="w-100 text-primary float-end text-end collapsed" data-bs-toggle="collapse" href="#cc_list">
+              <a
+                role="button"
+                class="w-100 text-primary float-end text-end collapsed"
+                data-bs-toggle="collapse"
+                href="#cc_list"
+              >
                 <i :class="`mdi mdi-chevron-double-${showMoreUsers ? 'up' : 'down'}`" />
               </a>
             </div>
@@ -253,12 +389,23 @@
       </div>
     </div>
 
-    <div class="modal fade" id="composeModal" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
+    <div
+      class="modal fade"
+      id="composeModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      data-bs-focus="false"
+    >
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header p-2 bg-light">
             <h5 class="modal-title">{{ $t('app.mail.composeModal.newMail') }}</h5>
-            <button type="button" class="btn-close d-none" id="hideComposeModalBtn" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              class="btn-close d-none"
+              id="hideComposeModalBtn"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <Form v-slot="{ errors }" @submit="handleSubmitMail">
             <div class="modal-body p-0">
@@ -268,8 +415,20 @@
                     <label class="d-flex justify-content-between">
                       <span>{{ $t('app.mail.composeModal.form.to') }}:</span>
                       <div class="d-flex">
-                        <b class="cursor-pointer ms-2 text-decoration-underline" data-bs-toggle="collapse" data-bs-target="#CcRecipientsCollapse">{{ $t('app.mail.composeModal.form.cc') }}</b>
-                        <b class="cursor-pointer ms-2 text-decoration-underline" data-bs-toggle="collapse" data-bs-target="#BccRecipientsCollapse">{{ $t('app.mail.composeModal.form.bcc') }}</b>
+                        <b
+                          class="cursor-pointer ms-2 text-decoration-underline"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#CcRecipientsCollapse"
+                        >
+                          {{ $t('app.mail.composeModal.form.cc') }}
+                        </b>
+                        <b
+                          class="cursor-pointer ms-2 text-decoration-underline"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#BccRecipientsCollapse"
+                        >
+                          {{ $t('app.mail.composeModal.form.bcc') }}
+                        </b>
                       </div>
                     </label>
                     <VueSelect
@@ -290,9 +449,11 @@
                                 .map((user) => {
                                   return user.username;
                                 })
-                                .filter((v) => [...new_mail.cc, ...new_mail.bcc].includes(v)).length === 0
+                                .filter((v) => [...new_mail.cc, ...new_mail.bcc].includes(v))
+                                .length === 0
                             : !(
-                                (!vs.to.includes(option.value) && new_mail.to.includes(option.value)) ||
+                                (!vs.to.includes(option.value) &&
+                                  new_mail.to.includes(option.value)) ||
                                 vs.cc.includes(option.value) ||
                                 new_mail.cc.includes(option.value) ||
                                 vs.bcc.includes(option.value) ||
@@ -304,14 +465,26 @@
                     >
                       <template #option="data">
                         <div class="d-flex align-items-center">
-                          <Avatar class="me-2" :data="data" size="xxs" key-username="value" key-fullname="label" />
+                          <Avatar
+                            class="me-2"
+                            :data="data"
+                            size="xxs"
+                            key-username="value"
+                            key-fullname="label"
+                          />
                           <span class="ml-50 align-middle">{{ data.label }}</span>
                         </div>
                       </template>
 
                       <template #selected-option="data">
                         <div class="d-flex align-items-center">
-                          <Avatar class="me-2" :data="data" size="xxs" key-username="value" key-fullname="label" />
+                          <Avatar
+                            class="me-2"
+                            :data="data"
+                            size="xxs"
+                            key-username="value"
+                            key-fullname="label"
+                          />
                           <span class="ml-50 align-middle">{{ data.label }}</span>
                         </div>
                       </template>
@@ -345,9 +518,11 @@
                                   .map((user) => {
                                     return user.username;
                                   })
-                                  .filter((v) => [...new_mail.to, ...new_mail.bcc].includes(v)).length === 0
+                                  .filter((v) => [...new_mail.to, ...new_mail.bcc].includes(v))
+                                  .length === 0
                               : !(
-                                  (!vs.cc.includes(option.value) && new_mail.cc.includes(option.value)) ||
+                                  (!vs.cc.includes(option.value) &&
+                                    new_mail.cc.includes(option.value)) ||
                                   vs.to.includes(option.value) ||
                                   new_mail.to.includes(option.value) ||
                                   vs.bcc.includes(option.value) ||
@@ -359,14 +534,26 @@
                       >
                         <template #option="data">
                           <div class="d-flex align-items-center">
-                            <Avatar class="me-2" :data="data" size="xxs" key-username="value" key-fullname="label" />
+                            <Avatar
+                              class="me-2"
+                              :data="data"
+                              size="xxs"
+                              key-username="value"
+                              key-fullname="label"
+                            />
                             <span class="ml-50 align-middle">{{ data.label }}</span>
                           </div>
                         </template>
 
                         <template #selected-option="data">
                           <div class="d-flex align-items-center">
-                            <Avatar class="me-2" :data="data" size="xxs" key-username="value" key-fullname="label" />
+                            <Avatar
+                              class="me-2"
+                              :data="data"
+                              size="xxs"
+                              key-username="value"
+                              key-fullname="label"
+                            />
                             <span class="ml-50 align-middle">{{ data.label }}</span>
                           </div>
                         </template>
@@ -399,9 +586,11 @@
                                   .map((user) => {
                                     return user.username;
                                   })
-                                  .filter((v) => [...new_mail.to, ...new_mail.cc].includes(v)).length === 0
+                                  .filter((v) => [...new_mail.to, ...new_mail.cc].includes(v))
+                                  .length === 0
                               : !(
-                                  (!vs.bcc.includes(option.value) && new_mail.bcc.includes(option.value)) ||
+                                  (!vs.bcc.includes(option.value) &&
+                                    new_mail.bcc.includes(option.value)) ||
                                   vs.to.includes(option.value) ||
                                   new_mail.to.includes(option.value) ||
                                   vs.cc.includes(option.value) ||
@@ -413,14 +602,26 @@
                       >
                         <template #option="data">
                           <div class="d-flex align-items-center">
-                            <Avatar class="me-2" :data="data" size="xxs" key-username="value" key-fullname="label" />
+                            <Avatar
+                              class="me-2"
+                              :data="data"
+                              size="xxs"
+                              key-username="value"
+                              key-fullname="label"
+                            />
                             <span class="ml-50 align-middle">{{ data.label }}</span>
                           </div>
                         </template>
 
                         <template #selected-option="data">
                           <div class="d-flex align-items-center">
-                            <Avatar class="me-2" :data="data" size="xxs" key-username="value" key-fullname="label" />
+                            <Avatar
+                              class="me-2"
+                              :data="data"
+                              size="xxs"
+                              key-username="value"
+                              key-fullname="label"
+                            />
                             <span class="ml-50 align-middle">{{ data.label }}</span>
                           </div>
                         </template>
@@ -470,12 +671,28 @@
                   </div>
                   <div class="col-12">
                     <label>{{ $t('app.mail.composeModal.form.content') }}:</label>
-                    <CKEditor v-model="new_mail.content" id="ck_mail_content" :error="{ id: 'ck_mail_content', error: errors.content }" :class="errors.content && 'is-invalid'" />
-                    <Field name="content" v-model="new_mail.content" rules="required" class="d-none" />
+                    <CKEditor
+                      v-model="new_mail.content"
+                      id="ck_mail_content"
+                      :error="{ id: 'ck_mail_content', error: errors.content }"
+                      :class="errors.content && 'is-invalid'"
+                    />
+                    <Field
+                      name="content"
+                      v-model="new_mail.content"
+                      rules="required"
+                      class="d-none"
+                    />
                     <span class="invalid-feedback">{{ errors.content }}</span>
                   </div>
                   <div class="col-12">
-                    <Uploader :key="new_mail.key" v-model="new_mail.attachments" accept="*" :multiple="true" :placeholder="$t('app.mail.composeModal.form.attachments')" />
+                    <Uploader
+                      :key="new_mail.key"
+                      v-model="new_mail.attachments"
+                      accept="*"
+                      :multiple="true"
+                      :placeholder="$t('app.mail.composeModal.form.attachments')"
+                    />
                   </div>
                 </div>
               </div>
@@ -485,7 +702,11 @@
                 <i class="mdi mdi-email-remove-outline"></i>
                 {{ $t('app.mail.composeModal.form.footer.cancel') }}
               </button>
-              <button type="submit" class="btn btn-sm btn-success" :disabled="Object.keys(errors).length">
+              <button
+                type="submit"
+                class="btn btn-sm btn-success"
+                :disabled="Object.keys(errors).length"
+              >
                 <i class="mdi mdi-email-send-outline"></i>
                 {{ $t('app.mail.composeModal.form.footer.send') }}
               </button>
@@ -494,34 +715,68 @@
         </div>
       </div>
     </div>
-    <button type="button" class="d-none" id="showReply2AllConfirmModalBtn" data-bs-toggle="modal" data-bs-target="#reply2AllConfirmModal"></button>
+    <button
+      type="button"
+      class="d-none"
+      id="showReply2AllConfirmModalBtn"
+      data-bs-toggle="modal"
+      data-bs-target="#reply2AllConfirmModal"
+    ></button>
     <div id="reply2AllConfirmModal" class="modal fade zoomIn">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
                 <h4>{{ $t('app.mail.reply2AllConfirmModal.title') }}</h4>
-                <p class="text-muted mx-4 mb-0">{{ $t('app.mail.reply2AllConfirmModal.confirm') }}</p>
+                <p class="text-muted mx-4 mb-0">
+                  {{ $t('app.mail.reply2AllConfirmModal.confirm') }}
+                </p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-primary" @click="handleReply(current_mail)">{{ $t('app.mail.reply2AllConfirmModal.replyToSender') }}</button>
-              <button type="button" class="btn w-sm btn-danger" @click="handleReply2All(current_mail, true)">{{ $t('app.mail.reply2AllConfirmModal.replyToAll') }}</button>
+              <button type="button" class="btn w-sm btn-primary" @click="handleReply(current_mail)">
+                {{ $t('app.mail.reply2AllConfirmModal.replyToSender') }}
+              </button>
+              <button
+                type="button"
+                class="btn w-sm btn-danger"
+                @click="handleReply2All(current_mail, true)"
+              >
+                {{ $t('app.mail.reply2AllConfirmModal.replyToAll') }}
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <button type="button" class="d-none" id="showCancelConfirmModalBtn" data-bs-toggle="modal" data-bs-target="#cancelConfirmModal"></button>
+    <button
+      type="button"
+      class="d-none"
+      id="showCancelConfirmModalBtn"
+      data-bs-toggle="modal"
+      data-bs-target="#cancelConfirmModal"
+    ></button>
     <div id="cancelConfirmModal" class="modal fade zoomIn">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="btn-close" data-bs-target="#composeModal" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-target="#composeModal"
+              data-bs-toggle="modal"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
@@ -531,30 +786,66 @@
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-primary" data-bs-dismiss="modal" @click="handleCancelCompose(false)">{{ $t('app.mail.cancelConfirmModal.staged') }}</button>
-              <button type="button" class="btn w-sm btn-danger" data-bs-dismiss="modal" @click="handleCancelCompose()">{{ $t('app.mail.cancelConfirmModal.discard') }}</button>
+              <button
+                type="button"
+                class="btn w-sm btn-primary"
+                data-bs-dismiss="modal"
+                @click="handleCancelCompose(false)"
+              >
+                {{ $t('app.mail.cancelConfirmModal.staged') }}
+              </button>
+              <button
+                type="button"
+                class="btn w-sm btn-danger"
+                data-bs-dismiss="modal"
+                @click="handleCancelCompose()"
+              >
+                {{ $t('app.mail.cancelConfirmModal.discard') }}
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <button type="button" class="d-none" id="showDeleteMailConfirmModalBtn" data-bs-toggle="modal" data-bs-target="#deleteMailConfirmModal"></button>
+    <button
+      type="button"
+      class="d-none"
+      id="showDeleteMailConfirmModalBtn"
+      data-bs-toggle="modal"
+      data-bs-target="#deleteMailConfirmModal"
+    ></button>
     <div id="deleteMailConfirmModal" class="modal fade zoomIn">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
                 <h4>{{ $tc('app.mail.deleteMailConfirmModal.title', checkedMailIds.length) }}</h4>
-                <p class="text-muted mx-4 mb-0">{{ $tc('app.mail.deleteMailConfirmModal.confirm', checkedMailIds.length) }}</p>
+                <p class="text-muted mx-4 mb-0">
+                  {{ $tc('app.mail.deleteMailConfirmModal.confirm', checkedMailIds.length) }}
+                </p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{ $t('app.mail.deleteMailConfirmModal.cancel') }}</button>
-              <button type="button" class="btn w-sm btn-danger" data-bs-dismiss="modal" @click="handleTrashMails(true)">{{ $t('app.mail.deleteMailConfirmModal.confirmed') }}</button>
+              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">
+                {{ $t('app.mail.deleteMailConfirmModal.cancel') }}
+              </button>
+              <button
+                type="button"
+                class="btn w-sm btn-danger"
+                data-bs-dismiss="modal"
+                @click="handleTrashMails(true)"
+              >
+                {{ $t('app.mail.deleteMailConfirmModal.confirmed') }}
+              </button>
             </div>
           </div>
         </div>
@@ -565,7 +856,12 @@
         <div class="modal-content">
           <div class="modal-header p-2 bg-light">
             <h5 class="modal-title text-truncate">{{ current_mail.subject }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body text-break" data-simplebar style="height: calc(100vh - 57px)">
             <div class="ck ck-content" v-html="current_mail.content"></div>
@@ -614,7 +910,13 @@ export default {
       read: [],
     });
 
-    const all = [{ value: 0, label: i18n.global.t('app.mail.composeModal.userAll'), title: i18n.global.t('app.mail.composeModal.userAll') }];
+    const all = [
+      {
+        value: 0,
+        label: i18n.global.t('app.mail.composeModal.userAll'),
+        title: i18n.global.t('app.mail.composeModal.userAll'),
+      },
+    ];
     const users = JSON.parse(JSON.stringify(store.state.org.users))
       .filter((user) => user.username != store.state.user.data.username)
       .map((user) => {
@@ -632,7 +934,9 @@ export default {
           value: dept.id,
           label: dept.name,
           users: users
-            .filter((user) => user.username != store.state.user.data.username && user.dept === dept.id)
+            .filter(
+              (user) => user.username != store.state.user.data.username && user.dept === dept.id,
+            )
             .map((user) => {
               return {
                 username: user.value,
@@ -707,7 +1011,8 @@ export default {
               );
             }
           });
-        if (field === 'to' && depts.every((dept) => vs.value[field].includes(dept.value))) vs.value.to = [0];
+        if (field === 'to' && depts.every((dept) => vs.value[field].includes(dept.value)))
+          vs.value.to = [0];
       }
     };
 
@@ -748,37 +1053,55 @@ export default {
           title: i18n.global.t('app.mail.menu.all'),
           value: 'all',
           icon: 'mdi-email-multiple',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username)).length,
+          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username))
+            .length,
         },
         {
           title: i18n.global.t('app.mail.menu.inbox'),
           value: 'inbox',
           icon: 'mdi-email-receive',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username) && mail.created_by != store.state.user.data.username).length,
+          count: _mails.value.filter(
+            (mail) =>
+              !mail.trash.includes(store.state.user.data.username) &&
+              mail.created_by != store.state.user.data.username,
+          ).length,
         },
         {
           title: i18n.global.t('app.mail.menu.sent'),
           value: 'sent',
           icon: 'mdi-email-send',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username) && mail.created_by === store.state.user.data.username).length,
+          count: _mails.value.filter(
+            (mail) =>
+              !mail.trash.includes(store.state.user.data.username) &&
+              mail.created_by === store.state.user.data.username,
+          ).length,
         },
         {
           title: i18n.global.t('app.mail.menu.trash'),
           value: 'trash',
           icon: 'mdi-trash-can',
-          count: _mails.value.filter((mail) => mail.trash.includes(store.state.user.data.username)).length,
+          count: _mails.value.filter((mail) => mail.trash.includes(store.state.user.data.username))
+            .length,
         },
         {
           title: i18n.global.t('app.mail.menu.star'),
           value: 'star',
           icon: 'mdi-star',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username) && mail.star.includes(store.state.user.data.username)).length,
+          count: _mails.value.filter(
+            (mail) =>
+              !mail.trash.includes(store.state.user.data.username) &&
+              mail.star.includes(store.state.user.data.username),
+          ).length,
         },
         {
           title: i18n.global.t('app.mail.menu.important'),
           value: 'important',
           icon: 'mdi-label',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username) && mail.important.includes(store.state.user.data.username)).length,
+          count: _mails.value.filter(
+            (mail) =>
+              !mail.trash.includes(store.state.user.data.username) &&
+              mail.important.includes(store.state.user.data.username),
+          ).length,
         },
       ];
     });
@@ -790,42 +1113,63 @@ export default {
           value: 'personal',
           variant: 'primary',
           icon: 'mdi-account',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username) && mail.label.includes('personal')).length,
+          count: _mails.value.filter(
+            (mail) =>
+              !mail.trash.includes(store.state.user.data.username) &&
+              mail.label.includes('personal'),
+          ).length,
         },
         {
           title: i18n.global.t('app.mail.label.metting'),
           value: 'metting',
           variant: 'secondary',
           icon: 'mdi-notebook-outline',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username) && mail.label.includes('metting')).length,
+          count: _mails.value.filter(
+            (mail) =>
+              !mail.trash.includes(store.state.user.data.username) &&
+              mail.label.includes('metting'),
+          ).length,
         },
         {
           title: i18n.global.t('app.mail.label.family'),
           value: 'family',
           variant: 'warning',
           icon: 'mdi-home-outline',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username) && mail.label.includes('family')).length,
+          count: _mails.value.filter(
+            (mail) =>
+              !mail.trash.includes(store.state.user.data.username) && mail.label.includes('family'),
+          ).length,
         },
         {
           title: i18n.global.t('app.mail.label.work'),
           value: 'work',
           variant: 'danger',
           icon: 'mdi-wallet-travel',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username) && mail.label.includes('work')).length,
+          count: _mails.value.filter(
+            (mail) =>
+              !mail.trash.includes(store.state.user.data.username) && mail.label.includes('work'),
+          ).length,
         },
         {
           title: i18n.global.t('app.mail.label.holiday'),
           value: 'holiday',
           variant: 'success',
           icon: 'mdi-weather-sunny',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username) && mail.label.includes('holiday')).length,
+          count: _mails.value.filter(
+            (mail) =>
+              !mail.trash.includes(store.state.user.data.username) &&
+              mail.label.includes('holiday'),
+          ).length,
         },
         {
           title: i18n.global.t('app.mail.label.other'),
           value: 'other',
           variant: 'info',
           icon: 'mdi-information-outline',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username) && mail.label.includes('other')).length,
+          count: _mails.value.filter(
+            (mail) =>
+              !mail.trash.includes(store.state.user.data.username) && mail.label.includes('other'),
+          ).length,
         },
       ];
     });
@@ -883,24 +1227,38 @@ export default {
 
     const mails = computed(() => {
       if (current_menu.value === 'all')
-        return _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username)).filter((mail) => (current_label.value === 'all' ? true : mail.label.includes(current_label.value)));
+        return _mails.value
+          .filter((mail) => !mail.trash.includes(store.state.user.data.username))
+          .filter((mail) =>
+            current_label.value === 'all' ? true : mail.label.includes(current_label.value),
+          );
       else if (current_menu.value === 'inbox')
         return _mails.value
           .filter((mail) => !mail.trash.includes(store.state.user.data.username))
           .filter((mail) => mail.created_by !== store.state.user.data.username)
-          .filter((mail) => (current_label.value === 'all' ? true : mail.label.includes(current_label.value)));
+          .filter((mail) =>
+            current_label.value === 'all' ? true : mail.label.includes(current_label.value),
+          );
       else if (current_menu.value === 'sent')
         return _mails.value
           .filter((mail) => !mail.trash.includes(store.state.user.data.username))
           .filter((mail) => mail.created_by === store.state.user.data.username)
-          .filter((mail) => (current_label.value === 'all' ? true : mail.label.includes(current_label.value)));
+          .filter((mail) =>
+            current_label.value === 'all' ? true : mail.label.includes(current_label.value),
+          );
       else if (current_menu.value === 'trash')
-        return _mails.value.filter((mail) => mail.trash.includes(store.state.user.data.username)).filter((mail) => (current_label.value === 'all' ? true : mail.label.includes(current_label.value)));
+        return _mails.value
+          .filter((mail) => mail.trash.includes(store.state.user.data.username))
+          .filter((mail) =>
+            current_label.value === 'all' ? true : mail.label.includes(current_label.value),
+          );
       else
         return _mails.value
           .filter((mail) => !mail.trash.includes(store.state.user.data.username))
           .filter((mail) => mail[current_menu.value].includes(store.state.user.data.username))
-          .filter((mail) => (current_label.value === 'all' ? true : mail.label.includes(current_label.value)));
+          .filter((mail) =>
+            current_label.value === 'all' ? true : mail.label.includes(current_label.value),
+          );
     });
 
     onMounted(() => {
@@ -913,8 +1271,10 @@ export default {
               if (mail) {
                 setTimeout(() => {
                   handleOpenMail(mail);
-                  if (mail.trash.includes(store.state.user.data.username)) current_menu.value = 'trash';
-                  else if (mail.created_by === store.state.user.data.username) current_menu.value = 'sent';
+                  if (mail.trash.includes(store.state.user.data.username))
+                    current_menu.value = 'trash';
+                  else if (mail.created_by === store.state.user.data.username)
+                    current_menu.value = 'sent';
                   else current_menu.value = 'inbox';
                 }, 100);
               }
@@ -942,8 +1302,10 @@ export default {
       const composeModal = document.getElementById('composeModal');
       if (composeModal)
         composeModal.addEventListener('hidden.bs.modal', () => {
-          if (CcRecipientsCollapse && new_mail.value.cc.length === 0) CcRecipientsCollapse.classList.remove('show');
-          if (BccRecipientsCollapse && new_mail.value.bcc.length === 0) BccRecipientsCollapse.classList.remove('show');
+          if (CcRecipientsCollapse && new_mail.value.cc.length === 0)
+            CcRecipientsCollapse.classList.remove('show');
+          if (BccRecipientsCollapse && new_mail.value.bcc.length === 0)
+            BccRecipientsCollapse.classList.remove('show');
         });
     });
 
@@ -955,9 +1317,11 @@ export default {
         mailCcListEl.removeEventListener('hide.bs.collapse', () => {});
       }
       const CcRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
-      if (CcRecipientsCollapse) CcRecipientsCollapse.removeEventListener('hidden.bs.collapse', () => {});
+      if (CcRecipientsCollapse)
+        CcRecipientsCollapse.removeEventListener('hidden.bs.collapse', () => {});
       const BccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
-      if (BccRecipientsCollapse) BccRecipientsCollapse.removeEventListener('hidden.bs.collapse', () => {});
+      if (BccRecipientsCollapse)
+        BccRecipientsCollapse.removeEventListener('hidden.bs.collapse', () => {});
       const composeModal = document.getElementById('composeModal');
       if (composeModal) composeModal.removeEventListener('hidden.bs.modal', () => {});
     });
@@ -967,7 +1331,8 @@ export default {
     };
 
     const handleClickMailWrapper = () => {
-      if (document.getElementById('menusidebar').classList.contains('menubar-show')) document.getElementById('menusidebar').classList.remove('menubar-show');
+      if (document.getElementById('menusidebar').classList.contains('menubar-show'))
+        document.getElementById('menusidebar').classList.remove('menubar-show');
     };
 
     const checkedMailIds = ref([]);
@@ -978,7 +1343,8 @@ export default {
       else checkedMailIds.value.splice(idx, 1);
       const checkall = document.getElementById('checkall');
       checkall.checked = checkedMailIds.value.length > 0;
-      checkall.indeterminate = checkedMailIds.value.length > 0 && checkedMailIds.value.length < mails.value.length;
+      checkall.indeterminate =
+        checkedMailIds.value.length > 0 && checkedMailIds.value.length < mails.value.length;
     };
     const handleCheckAllMail = (e) => {
       if (e.target.checked)
@@ -1021,8 +1387,12 @@ export default {
           } else if (!Number(item)) {
             const user = getUserInfo(item);
             return {
-              label: user ? user.fullname : i18n.global.t('app.mail.content.to.user', { user: item }),
-              title: user ? user.fullname : i18n.global.t('app.mail.content.to.user', { user: item }),
+              label: user
+                ? user.fullname
+                : i18n.global.t('app.mail.content.to.user', { user: item }),
+              title: user
+                ? user.fullname
+                : i18n.global.t('app.mail.content.to.user', { user: item }),
             };
           } else {
             item = Number(item);
@@ -1049,7 +1419,10 @@ export default {
         app: 'mail',
         data: mail,
       });
-      if (mail.created_by != store.state.user.data.username && mail.read.indexOf(store.state.user.data.username) === -1) {
+      if (
+        mail.created_by != store.state.user.data.username &&
+        mail.read.indexOf(store.state.user.data.username) === -1
+      ) {
         mail.read.push(store.state.user.data.username);
         updateMail({
           id: mail.id,
@@ -1136,7 +1509,9 @@ export default {
         cc: [],
         bcc: [],
         subject: `Re: ${mail.subject}`,
-        content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(mail.created_at).format('llll')}<br/><b>To:</b> ${resolveUsers
+        content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(
+          mail.created_at,
+        ).format('llll')}<br/><b>To:</b> ${resolveUsers
           .value(vs.value.to)
           .map((item) => {
             return item.label;
@@ -1168,11 +1543,16 @@ export default {
       }
       randerVsUsers(mail);
       new_mail.value = {
-        to: [...[mail.created_by], ...mail.to.filter((username) => username != store.state.user.data.username)],
+        to: [
+          ...[mail.created_by],
+          ...mail.to.filter((username) => username != store.state.user.data.username),
+        ],
         cc: mail.cc.filter((username) => username != store.state.user.data.username),
         bcc: [],
         subject: `Re: ${mail.subject}`,
-        content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(mail.created_at).format('llll')}<br/><b>To:</b> ${resolveUsers
+        content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(
+          mail.created_at,
+        ).format('llll')}<br/><b>To:</b> ${resolveUsers
           .value(vs.value.to)
           .map((item) => {
             return item.label;
@@ -1222,7 +1602,10 @@ export default {
         randerVsUsers(new_mail.value);
         localStorage.removeItem(`staged_app_mail_${store.state.user.data.id}`);
       } else {
-        localStorage.setItem(`staged_app_mail_${store.state.user.data.id}`, encryptData(JSON.stringify(new_mail.value)));
+        localStorage.setItem(
+          `staged_app_mail_${store.state.user.data.id}`,
+          encryptData(JSON.stringify(new_mail.value)),
+        );
       }
     };
 
@@ -1263,7 +1646,11 @@ export default {
     };
 
     const handleMarkMails = (field) => {
-      const mails = _mails.value.filter((mail) => checkedMailIds.value.includes(mail.id) && !mail[field].includes(store.state.user.data.username));
+      const mails = _mails.value.filter(
+        (mail) =>
+          checkedMailIds.value.includes(mail.id) &&
+          !mail[field].includes(store.state.user.data.username),
+      );
       mails.forEach((mail) => {
         handleMarkOrUnmarkMail(mail, field, () => {
           handleCheckMail(mail);

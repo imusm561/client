@@ -1,6 +1,8 @@
 <template>
   <div>
-    <label class="form-label" :title="resolveColumnTitle(column)">{{ $t('data.column.BasicDataState') }}</label>
+    <label class="form-label" :title="resolveColumnTitle(column)">
+      {{ $t('data.column.BasicDataState') }}
+    </label>
     <VueSelect
       :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
       :class="{ 'is-invalid': error }"
@@ -23,7 +25,13 @@
         <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
       </template>
     </VueSelect>
-    <Field :name="column.field" v-model="value" class="d-none" :class="{ 'is-invalid': error }" rules="required" />
+    <Field
+      :name="column.field"
+      v-model="value"
+      class="d-none"
+      :class="{ 'is-invalid': error }"
+      rules="required"
+    />
     <span class="invalid-feedback">{{ error }}</span>
   </div>
 </template>

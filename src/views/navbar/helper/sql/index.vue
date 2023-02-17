@@ -9,17 +9,29 @@
           {{ $t('layout.navbar.helper.sql.tip.after') }}
         </p>
         <span class="float-end">
-          <i class="mdi mdi-motion-play-outline fs-16 cursor-pointer text-muted pe-2" @click="handleQuery"></i>
+          <i
+            class="mdi mdi-motion-play-outline fs-16 cursor-pointer text-muted pe-2"
+            @click="handleQuery"
+          ></i>
         </span>
       </div>
       <div class="card-body d-flex flex-column pt-0 h-100">
         <MonacoEditor v-model="sql" language="mysql" height="100%" />
       </div>
 
-      <button id="showResultOffcanvasBtn" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#resultOffcanvas" />
+      <button
+        id="showResultOffcanvasBtn"
+        class="d-none"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#resultOffcanvas"
+      />
       <div class="offcanvas form offcanvas-end w-50" id="resultOffcanvas">
         <div class="offcanvas-body p-0 overflow-hidden">
-          <i class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute" style="z-index: 1; right: 10px; bottom: 0" data-bs-dismiss="offcanvas" />
+          <i
+            class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute"
+            style="z-index: 1; right: 10px; bottom: 0"
+            data-bs-dismiss="offcanvas"
+          />
           <MonacoEditor
             v-model="res"
             language="json"

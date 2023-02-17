@@ -26,7 +26,9 @@ export default defineComponent({
     const moment = window.moment;
 
     const onOpen = () => {
-      document.getElementsByClassName('flatpickr-calendar animate open')[0].classList.add('ag-custom-component-popup');
+      document
+        .getElementsByClassName('flatpickr-calendar animate open')[0]
+        .classList.add('ag-custom-component-popup');
     };
 
     const onChange = () => {

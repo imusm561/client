@@ -10,7 +10,14 @@
           <strong>{{ $t('public.uploader.tips') }}:</strong>
           {{ $t('public.uploader.tips.content') }}
         </div>
-        <Uploader v-model="files" :placeholder="options.placeholder" :prefix="options.prefix" :accept="options.accept" :multiple="options.multiple" :qrable="false" />
+        <Uploader
+          v-model="files"
+          :placeholder="options.placeholder"
+          :prefix="options.prefix"
+          :accept="options.accept"
+          :multiple="options.multiple"
+          :qrable="false"
+        />
       </div>
     </div>
   </div>
@@ -61,10 +68,14 @@ export default {
         const data = {};
         if (newList.length !== oldList.length) {
           if (newList.length > oldList.length) {
-            data.files = newList.filter((oldItem) => oldList.every((newItem) => newItem.id != oldItem.id));
+            data.files = newList.filter((oldItem) =>
+              oldList.every((newItem) => newItem.id != oldItem.id),
+            );
             data.type = 'add';
           } else {
-            data.files = oldList.filter((oldItem) => newList.every((newItem) => newItem.id != oldItem.id));
+            data.files = oldList.filter((oldItem) =>
+              newList.every((newItem) => newItem.id != oldItem.id),
+            );
             data.type = 'del';
           }
           data.files.forEach((file) => {

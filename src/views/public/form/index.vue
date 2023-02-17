@@ -1,20 +1,39 @@
 <template>
   <div class="card m-0">
     <div class="card-header border-0 p-2 pb-0">
-      <i class="mdi mdi-refresh fs-16 cursor-pointer text-muted float-end pe-2" @click="handleRefetchPubForm"></i>
-      <i v-if="tabs.length > 1" class="mdi fs-16 cursor-pointer text-muted float-end pe-2" :class="no_tabs ? 'mdi-tab' : 'mdi-view-dashboard-outline'" @click="no_tabs = !no_tabs"></i>
+      <i
+        class="mdi mdi-refresh fs-16 cursor-pointer text-muted float-end pe-2"
+        @click="handleRefetchPubForm"
+      ></i>
+      <i
+        v-if="tabs.length > 1"
+        class="mdi fs-16 cursor-pointer text-muted float-end pe-2"
+        :class="no_tabs ? 'mdi-tab' : 'mdi-view-dashboard-outline'"
+        @click="no_tabs = !no_tabs"
+      ></i>
     </div>
     <div class="card-body pt-0">
       <Form :id="`zz_${form.id}`" v-slot="{ errors }" @submit="handleSubmitFormData">
         <div v-if="tabs.length > 1 && no_tabs">
-          <div :id="tab.field" class="p-3 mt-2 border-bottom border-bottom-dashed ribbon-box right" v-for="(tab, index) in tabs" :key="index">
+          <div
+            :id="tab.field"
+            class="p-3 mt-2 border-bottom border-bottom-dashed ribbon-box right"
+            v-for="(tab, index) in tabs"
+            :key="index"
+          >
             <div v-if="tab.name" class="ribbon ribbon-primary round-shape">
               <i v-if="tab.cfg.icon" :class="`mdi ${tab.cfg.icon} me-2`"></i>
               {{ tab.name }}
             </div>
             <div class="row">
               <template v-for="column in tab.columns">
-                <h5 :id="column.field" :key="column.id" v-if="column._visible" class="fs-14 mb-2 mt-2" :class="`col-sm-${column.col}`">
+                <h5
+                  :id="column.field"
+                  :key="column.id"
+                  v-if="column._visible"
+                  class="fs-14 mb-2 mt-2"
+                  :class="`col-sm-${column.col}`"
+                >
                   <component
                     :is="column.component"
                     type="EDIT"
@@ -36,7 +55,13 @@
             </div>
           </div>
           <div class="p-3 border-0 d-flex justify-content-end gap-2">
-            <button type="submit" class="btn btn-sm btn-primary" :disabled="Object.keys(errors).length || syntax_error">{{ $t('public.form.submit') }}</button>
+            <button
+              type="submit"
+              class="btn btn-sm btn-primary"
+              :disabled="Object.keys(errors).length || syntax_error"
+            >
+              {{ $t('public.form.submit') }}
+            </button>
           </div>
         </div>
         <div v-else>
@@ -44,7 +69,12 @@
             <div class="col">
               <ul class="nav nav-tabs nav-tabs-custom nav-primary">
                 <li class="nav-item" v-for="(tab, index) in tabs" :key="tab.id">
-                  <a :class="`nav-link text-${tab.cfg.style} ${index === current_tab && 'active'}`" data-bs-toggle="tab" :href="`#${tab.field}`" @click="current_tab = index">
+                  <a
+                    :class="`nav-link text-${tab.cfg.style} ${index === current_tab && 'active'}`"
+                    data-bs-toggle="tab"
+                    :href="`#${tab.field}`"
+                    @click="current_tab = index"
+                  >
                     <i v-if="tab.cfg.icon" :class="`mdi ${tab.cfg.icon}`"></i>
                     {{ tab.name }}
                   </a>
@@ -53,10 +83,22 @@
             </div>
           </div>
           <div class="tab-content text-muted">
-            <div class="tab-pane" :class="{ active: index === current_tab }" :id="tab.field" v-for="(tab, index) in tabs" :key="tab.id">
+            <div
+              class="tab-pane"
+              :class="{ active: index === current_tab }"
+              :id="tab.field"
+              v-for="(tab, index) in tabs"
+              :key="tab.id"
+            >
               <div class="row p-3">
                 <template v-for="column in tab.columns">
-                  <h5 :id="column.field" :key="column.id" v-if="column._visible" class="fs-14 mb-2 mt-2" :class="`col-sm-${column.col}`">
+                  <h5
+                    :id="column.field"
+                    :key="column.id"
+                    v-if="column._visible"
+                    class="fs-14 mb-2 mt-2"
+                    :class="`col-sm-${column.col}`"
+                  >
                     <component
                       :is="column.component"
                       type="EDIT"
@@ -77,8 +119,16 @@
                 </template>
               </div>
               <div v-if="index === tabs.length - 1">
-                <div class="p-3 border-top border-top-dashed border-0 d-flex justify-content-end gap-2">
-                  <button type="submit" class="btn btn-sm btn-primary" :disabled="Object.keys(errors).length || syntax_error">{{ $t('public.form.submit') }}</button>
+                <div
+                  class="p-3 border-top border-top-dashed border-0 d-flex justify-content-end gap-2"
+                >
+                  <button
+                    type="submit"
+                    class="btn btn-sm btn-primary"
+                    :disabled="Object.keys(errors).length || syntax_error"
+                  >
+                    {{ $t('public.form.submit') }}
+                  </button>
                 </div>
               </div>
             </div>
@@ -86,13 +136,23 @@
         </div>
       </Form>
     </div>
-    <button id="showResultModalBtn" type="button" class="d-none" data-bs-toggle="modal" data-bs-target="#resultModal"></button>
+    <button
+      id="showResultModalBtn"
+      type="button"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#resultModal"
+    ></button>
     <div class="modal fade" id="resultModal" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body">
             <p class="ck ck-content" v-html="pub.message"></p>
-            <button v-if="pub.tags?.includes('allowContinuousSubmission')" class="btn btn-sm btn-primary float-end" data-bs-dismiss="modal">
+            <button
+              v-if="pub.tags?.includes('allowContinuousSubmission')"
+              class="btn btn-sm btn-primary float-end"
+              data-bs-dismiss="modal"
+            >
               {{ $t('public.form.result.submitAgain') }}
             </button>
           </div>
@@ -106,7 +166,13 @@
 import { onMounted, ref, computed, watch } from 'vue';
 import { createData } from '@api/data';
 import { getPubForm } from '@api/pub';
-import { useRouter, replaceVariables, getDataByFormula, getRulesByFormula, deepCompare } from '@utils';
+import {
+  useRouter,
+  replaceVariables,
+  getDataByFormula,
+  getRulesByFormula,
+  deepCompare,
+} from '@utils';
 
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -203,7 +269,12 @@ export default {
                 .forEach((column) => setColumnConfiguration(column));
 
               columns.value
-                .filter((column) => column.visible?.includes(`data.${field}`) || column.required?.includes(`data.${field}`) || column.editable?.includes(`data.${field}`))
+                .filter(
+                  (column) =>
+                    column.visible?.includes(`data.${field}`) ||
+                    column.required?.includes(`data.${field}`) ||
+                    column.editable?.includes(`data.${field}`),
+                )
                 .forEach((column) => setColumnRules(column));
             }
             // }, 300);
@@ -258,13 +329,20 @@ export default {
 
     const setFormColumns = async () => {
       tabs.value = [];
-      if (columns.value.filter((column) => column.component === 'LayoutTab').length === 0) tabs.value.push({ columns: [] });
+      if (columns.value.filter((column) => column.component === 'LayoutTab').length === 0)
+        tabs.value.push({ columns: [] });
       for (let column of columns.value) {
         if (column.component.includes('Basic')) {
           // Basic Columns: id, uuid, data_state, created_by, created_at, updated_by, updated_at, acl_view, acl_edit
           if (Number(data.value.id) === 0) {
-            if (column.field === 'acl_view' && form.value.acl_view.length) data.value.acl_view = Array.from(new Set([...form.value.acl_view, ...(data.value.acl_view || [])]));
-            if (column.field === 'acl_edit' && form.value.acl_edit.length) data.value.acl_edit = Array.from(new Set([...form.value.acl_edit, ...(data.value.acl_edit || [])]));
+            if (column.field === 'acl_view' && form.value.acl_view.length)
+              data.value.acl_view = Array.from(
+                new Set([...form.value.acl_view, ...(data.value.acl_view || [])]),
+              );
+            if (column.field === 'acl_edit' && form.value.acl_edit.length)
+              data.value.acl_edit = Array.from(
+                new Set([...form.value.acl_edit, ...(data.value.acl_edit || [])]),
+              );
           }
         } else if (column.component === 'LayoutTab') {
           tabs.value.push({ ...column, ...{ columns: [] } });
@@ -281,7 +359,8 @@ export default {
         column.default = replaceVariables(column.default, alias.value);
         if (Number(data.value.id) === 0 || initialized.value) {
           const val = await getDataByFormula(data.value, column.default);
-          if (val && typeof val === 'string' && val.includes('Error: ')) column.cfg.placeholder = val;
+          if (val && typeof val === 'string' && val.includes('Error: '))
+            column.cfg.placeholder = val;
           else data.value[column.field] = val;
         }
       }
@@ -289,7 +368,9 @@ export default {
       if (column.cfg?.source) {
         column.cfg.search = [];
         column.cfg.source = replaceVariables(column.cfg.source, alias.value);
-        column.cfg.options = await getDataByFormula(data.value, column.cfg.source, { value: !initialized.value ? data.value[column.field] : null });
+        column.cfg.options = await getDataByFormula(data.value, column.cfg.source, {
+          value: !initialized.value ? data.value[column.field] : null,
+        });
 
         if (column.cfg.options.length) {
           data.value[column.field] =
@@ -299,7 +380,8 @@ export default {
                   .map((option) => {
                     return option.value;
                   })
-              : column.cfg.options.find((option) => option.value == data.value[column.field])?.value || null;
+              : column.cfg.options.find((option) => option.value == data.value[column.field])
+                  ?.value || null;
         } else {
           data.value[column.field] = column.component == 'SelectMultiple' ? [] : null;
         }

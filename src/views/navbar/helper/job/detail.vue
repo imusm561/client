@@ -12,7 +12,10 @@
                   <i class="fs-16 mdi mdi-view-grid-outline text-primary"></i>
                 </button>
                 <button class="btn btn-sm" :disabled="isJobExecuting" @click="handleExecuteJob">
-                  <i class="fs-16 mdi text-warning" :class="isJobExecuting ? 'mdi-spin mdi-loading' : 'mdi-motion-play-outline'"></i>
+                  <i
+                    class="fs-16 mdi text-warning"
+                    :class="isJobExecuting ? 'mdi-spin mdi-loading' : 'mdi-motion-play-outline'"
+                  ></i>
                 </button>
                 <button class="btn btn-sm" @click="handleEditJob">
                   <i class="fs-16 mdi mdi-square-edit-outline text-info"></i>
@@ -27,15 +30,25 @@
                 <dl class="row mb-2">
                   <dt class="col-sm-4 text-uppercase mb-3">id</dt>
                   <dd class="col-sm-8">#{{ job.id }}</dd>
-                  <dt class="col-sm-4 text-uppercase mb-3">{{ $t('layout.navbar.helper.jobDetail.title') }}</dt>
+                  <dt class="col-sm-4 text-uppercase mb-3">
+                    {{ $t('layout.navbar.helper.jobDetail.title') }}
+                  </dt>
                   <dd class="col-sm-8">{{ job.title }}</dd>
-                  <dt class="col-sm-4 text-uppercase mb-3">{{ $t('layout.navbar.helper.jobDetail.rule') }}</dt>
+                  <dt class="col-sm-4 text-uppercase mb-3">
+                    {{ $t('layout.navbar.helper.jobDetail.rule') }}
+                  </dt>
                   <dd class="col-sm-8">{{ job.rule }}</dd>
-                  <dt class="col-sm-4 text-uppercase mb-3">{{ $t('layout.navbar.helper.jobDetail.start') }}</dt>
+                  <dt class="col-sm-4 text-uppercase mb-3">
+                    {{ $t('layout.navbar.helper.jobDetail.start') }}
+                  </dt>
                   <dd class="col-sm-8">{{ job.start }}</dd>
-                  <dt class="col-sm-4 text-uppercase mb-3">{{ $t('layout.navbar.helper.jobDetail.end') }}</dt>
+                  <dt class="col-sm-4 text-uppercase mb-3">
+                    {{ $t('layout.navbar.helper.jobDetail.end') }}
+                  </dt>
                   <dd class="col-sm-8">{{ job.end }}</dd>
-                  <dt class="col-sm-4 text-uppercase">{{ $t('layout.navbar.helper.jobDetail.status') }}</dt>
+                  <dt class="col-sm-4 text-uppercase">
+                    {{ $t('layout.navbar.helper.jobDetail.status') }}
+                  </dt>
                   <dd class="col-sm-8">
                     <span class="badge text-uppercase badge-soft-primary">
                       {{ resolveJobStatus(job).text }}
@@ -45,15 +58,21 @@
               </div>
               <div class="col-lg-7">
                 <div class="text-muted">
-                  <h6 class="mb-3 fw-semibold text-uppercase">{{ $t('layout.navbar.helper.jobDetail.description') }}</h6>
+                  <h6 class="mb-3 fw-semibold text-uppercase">
+                    {{ $t('layout.navbar.helper.jobDetail.description') }}
+                  </h6>
                   <div class="ck ck-content" v-html="job.description"></div>
                 </div>
               </div>
               <div class="col-12 mt-0" v-if="job.tags.length">
                 <div class="pt-3 border-top border-top-dashed">
-                  <h6 class="mb-3 fw-semibold text-uppercase">{{ $t('layout.navbar.helper.jobDetail.tags') }}</h6>
+                  <h6 class="mb-3 fw-semibold text-uppercase">
+                    {{ $t('layout.navbar.helper.jobDetail.tags') }}
+                  </h6>
                   <div class="hstack flex-wrap gap-2 fs-15">
-                    <div class="badge fw-medium badge-soft-info" v-for="tag in job.tags" :key="tag">{{ tag }}</div>
+                    <div class="badge fw-medium badge-soft-info" v-for="tag in job.tags" :key="tag">
+                      {{ tag }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -81,13 +100,23 @@
         <div>
           <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0">
             <li class="nav-item">
-              <a class="nav-link" :class="{ active: !$route.query.tab || $route.query.tab === 'log' }" data-bs-toggle="tab" href="#tab_log">
+              <a
+                class="nav-link"
+                :class="{ active: !$route.query.tab || $route.query.tab === 'log' }"
+                data-bs-toggle="tab"
+                href="#tab_log"
+              >
                 {{ $t('layout.navbar.helper.jobDetail.logs') }}
                 <small v-if="pagination.totalCount">({{ pagination.totalCount }})</small>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" :class="{ active: $route.query.tab === 'comment' }" data-bs-toggle="tab" href="#tab_comment">
+              <a
+                class="nav-link"
+                :class="{ active: $route.query.tab === 'comment' }"
+                data-bs-toggle="tab"
+                href="#tab_comment"
+              >
                 {{ $t('layout.navbar.helper.jobDetail.comments') }}
                 <small v-if="comments.length">({{ comments.length }})</small>
               </a>
@@ -97,27 +126,49 @@
       </div>
       <div class="card-body p-0">
         <div class="tab-content">
-          <div class="tab-pane p-3" :class="{ active: !$route.query.tab || $route.query.tab === 'log' }" id="tab_log">
+          <div
+            class="tab-pane p-3"
+            :class="{ active: !$route.query.tab || $route.query.tab === 'log' }"
+            id="tab_log"
+          >
             <div v-if="logs.length">
-              <apexchart :key="chart.key" class="mb-3" height="300" :series="chart.series" :options="chart.options"></apexchart>
+              <apexchart
+                :key="chart.key"
+                class="mb-3"
+                height="300"
+                :series="chart.series"
+                :options="chart.options"
+              ></apexchart>
               <div class="table-responsive table-card" data-simplebar style="max-height: 40vh">
                 <table class="table align-middle table-striped mb-0 table-hover">
                   <thead class="table-light">
                     <tr>
                       <th class="text-capitalize" style="white-space: nowrap">id</th>
                       <th class="text-capitalize" style="white-space: nowrap">UUID</th>
-                      <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.jobDetail.logs.executor') }}</th>
-                      <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.jobDetail.logs.executedAt') }}</th>
-                      <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.jobDetail.logs.timeConsuming') }}</th>
-                      <th class="text-capitalize" style="white-space: nowrap">{{ $t('layout.navbar.helper.jobDetail.logs.data') }}</th>
+                      <th class="text-capitalize" style="white-space: nowrap">
+                        {{ $t('layout.navbar.helper.jobDetail.logs.executor') }}
+                      </th>
+                      <th class="text-capitalize" style="white-space: nowrap">
+                        {{ $t('layout.navbar.helper.jobDetail.logs.executedAt') }}
+                      </th>
+                      <th class="text-capitalize" style="white-space: nowrap">
+                        {{ $t('layout.navbar.helper.jobDetail.logs.timeConsuming') }}
+                      </th>
+                      <th class="text-capitalize" style="white-space: nowrap">
+                        {{ $t('layout.navbar.helper.jobDetail.logs.data') }}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="log in logs" :key="log.id">
                       <td style="white-space: nowrap">#{{ log.id }}</td>
                       <td style="white-space: nowrap">{{ log.uuid }}</td>
-                      <td style="white-space: nowrap">{{ getUserInfo(log.created_by)?.fullname || log.created_by }}</td>
-                      <td style="white-space: nowrap">{{ $moment(log.created_at).format('llll') }}</td>
+                      <td style="white-space: nowrap">
+                        {{ getUserInfo(log.created_by)?.fullname || log.created_by }}
+                      </td>
+                      <td style="white-space: nowrap">
+                        {{ $moment(log.created_at).format('llll') }}
+                      </td>
                       <td style="white-space: nowrap">{{ log.cost }}</td>
                       <td style="white-space: nowrap">
                         <span class="cursor-pointer" @click="handleViewJobData(log)">
@@ -129,22 +180,44 @@
                 </table>
               </div>
               <div class="pb-2 pt-4">
-                <Pagination :total="pagination.totalCount" :page-num="pagination.pageNum" :page-size="pagination.pageSize" @changed="handlePaginationChange" />
+                <Pagination
+                  :total="pagination.totalCount"
+                  :page-num="pagination.pageNum"
+                  :page-size="pagination.pageSize"
+                  @changed="handlePaginationChange"
+                />
               </div>
             </div>
             <Empty :text="$t('layout.navbar.helper.jobDetail.logs.empty')" v-else />
           </div>
-          <div class="tab-pane" :class="{ active: $route.query.tab === 'comment' }" id="tab_comment">
-            <Comment :key="$route.path" :source="$route.path" @fetch="($event) => (comments = $event)" />
+          <div
+            class="tab-pane"
+            :class="{ active: $route.query.tab === 'comment' }"
+            id="tab_comment"
+          >
+            <Comment
+              :key="$route.path"
+              :source="$route.path"
+              @fetch="($event) => (comments = $event)"
+            />
           </div>
         </div>
       </div>
     </div>
 
-    <button id="showJobDataOffcanvasBtn" class="d-none" data-bs-toggle="offcanvas" data-bs-target="#jobDataOffcanvas" />
+    <button
+      id="showJobDataOffcanvasBtn"
+      class="d-none"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#jobDataOffcanvas"
+    />
     <div class="offcanvas form offcanvas-end w-50" id="jobDataOffcanvas">
       <div class="offcanvas-body p-0 overflow-hidden">
-        <i class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute" style="z-index: 1; right: 10px; bottom: 0" data-bs-dismiss="offcanvas" />
+        <i
+          class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute"
+          style="z-index: 1; right: 10px; bottom: 0"
+          data-bs-dismiss="offcanvas"
+        />
         <MonacoEditor
           v-model="current_log.data"
           language="json"
@@ -256,7 +329,11 @@ export default {
     const logs = ref([]);
 
     const fetchJobLog = () => {
-      getJobLog({ id: route.value.params.id, pageNum: pagination.value.pageNum, pageSize: pagination.value.pageSize }).then(({ code, data, msg }) => {
+      getJobLog({
+        id: route.value.params.id,
+        pageNum: pagination.value.pageNum,
+        pageSize: pagination.value.pageSize,
+      }).then(({ code, data, msg }) => {
         if (code === 200) {
           logs.value = data.rows;
           pagination.value.totalCount = data.count;
@@ -388,7 +465,10 @@ export default {
     const temp_job = ref({});
     const handleEditJob = () => {
       temp_job.value = JSON.parse(JSON.stringify(job.value));
-      temp_job.value.duration = [moment(job.value.start).format('YYYY-MM-DD HH:mm:ss'), moment(job.value.end).format('YYYY-MM-DD HH:mm:ss')];
+      temp_job.value.duration = [
+        moment(job.value.start).format('YYYY-MM-DD HH:mm:ss'),
+        moment(job.value.end).format('YYYY-MM-DD HH:mm:ss'),
+      ];
       document.getElementById('showEditJobModalBtn').click();
     };
 

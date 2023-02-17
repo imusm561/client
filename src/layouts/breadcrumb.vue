@@ -8,10 +8,17 @@
             <li class="breadcrumb-item text-truncate" style="max-width: 200px">
               <a class="cursor-pointer" @click="$router.push('/')">
                 <i class="mdi mdi-home me-1"></i>
-                <span :title="$t('layout.breadcrumb.home')">{{ $t('layout.breadcrumb.home') }}</span>
+                <span :title="$t('layout.breadcrumb.home')">
+                  {{ $t('layout.breadcrumb.home') }}
+                </span>
               </a>
             </li>
-            <li class="breadcrumb-item text-truncate" style="max-width: 200px" v-for="(item, index) in items" :key="index">
+            <li
+              class="breadcrumb-item text-truncate"
+              style="max-width: 200px"
+              v-for="(item, index) in items"
+              :key="index"
+            >
               <a :class="{ active: index === items.length - 1 }">
                 <i v-if="item.icon" :class="`mdi ${item.icon} me-1`"></i>
                 <span :title="$t(item.title)">{{ $t(item.title) }}</span>

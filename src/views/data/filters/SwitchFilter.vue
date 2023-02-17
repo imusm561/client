@@ -1,8 +1,14 @@
 <template>
-  <span v-if="params.value === $t('data.list.filter.selectAll')">{{ $t('data.list.filter.selectAll') }}</span>
+  <span v-if="params.value === $t('data.list.filter.selectAll')">
+    {{ $t('data.list.filter.selectAll') }}
+  </span>
   <span v-else>
     <i class="mdi" :class="resolveItemIconClass(Number(params.value))"></i>
-    {{ Number(params.value) === 1 ? $t('data.list.filter.switch.true') : $t('data.list.filter.switch.false') }}
+    {{
+      Number(params.value) === 1
+        ? $t('data.list.filter.switch.true')
+        : $t('data.list.filter.switch.false')
+    }}
   </span>
 </template>
 

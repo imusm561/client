@@ -11,8 +11,20 @@
   <div v-else-if="type === 'EDIT'">
     <label class="form-label" :title="resolveColumnTitle(column)">{{ column.name }}</label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
-    <Amap :id="`${column.field}${editable ? '_enable' : '_disabled'}`" :field-class="{ 'is-invalid': error }" :placeholder="column.cfg.placeholder" :disabled="!editable" v-model="value" />
-    <Field :name="column.field" v-model="value" class="d-none" :class="{ 'is-invalid': error }" :rules="`${required ? 'required' : ''}`" />
+    <Amap
+      :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
+      :field-class="{ 'is-invalid': error }"
+      :placeholder="column.cfg.placeholder"
+      :disabled="!editable"
+      v-model="value"
+    />
+    <Field
+      :name="column.field"
+      v-model="value"
+      class="d-none"
+      :class="{ 'is-invalid': error }"
+      :rules="`${required ? 'required' : ''}`"
+    />
     <span class="invalid-feedback">{{ error }}</span>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
@@ -69,7 +81,10 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const handleDblClickMap = (lnglat) => {
-      window.open(`//www.amap.com/regeo?lng=${lnglat.split(',')[0]}&lat=${lnglat.split(',')[1]}`, '_blank');
+      window.open(
+        `//www.amap.com/regeo?lng=${lnglat.split(',')[0]}&lat=${lnglat.split(',')[1]}`,
+        '_blank',
+      );
     };
 
     return {

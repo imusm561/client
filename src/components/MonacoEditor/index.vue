@@ -78,7 +78,9 @@ export default defineComponent({
       watch(
         () => props.modelValue,
         (value) => {
-          const editorValue = props.options?.diff ? monacoEditor?.getModel()?.modified?.getValue() : getEditor()?.getValue();
+          const editorValue = props.options?.diff
+            ? monacoEditor?.getModel()?.modified?.getValue()
+            : getEditor()?.getValue();
           if (value !== editorValue) {
             updateMonacoValue(monacoEditor, value);
             if (!props.options?.readOnly && props.language === 'json' && value) {

@@ -5,7 +5,11 @@
       <span v-if="column.alias" class="badge bg-primary ms-2">{{ column.alias }}</span>
     </label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
-    <FlatPickr class="form-control" :placeholder="column.cfg.placeholder" :config="column.cfg"></FlatPickr>
+    <FlatPickr
+      class="form-control"
+      :placeholder="column.cfg.placeholder"
+      :config="column.cfg"
+    ></FlatPickr>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
   <div v-else-if="type === 'EDIT'">
@@ -19,7 +23,13 @@
       :disabled="!editable"
       v-model="value"
     ></FlatPickr>
-    <Field :name="column.field" v-model="value" class="d-none" :class="{ 'is-invalid': error }" :rules="`${required ? 'required' : ''}`" />
+    <Field
+      :name="column.field"
+      v-model="value"
+      class="d-none"
+      :class="{ 'is-invalid': error }"
+      :rules="`${required ? 'required' : ''}`"
+    />
     <span class="invalid-feedback">{{ error }}</span>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>

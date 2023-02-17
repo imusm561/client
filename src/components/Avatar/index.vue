@@ -2,7 +2,11 @@
   <div v-if="isGroup" class="avatar-group">
     <span v-for="(user, index) in users" :key="index" class="avatar-group-item cursor-pointer">
       <div :title="user[keyFullname]">
-        <img v-if="user[keyAvatar]" :src="`${BASE_URL}${user[keyAvatar]}`" :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail && 'img-thumbnail'}`" />
+        <img
+          v-if="user[keyAvatar]"
+          :src="`${BASE_URL}${user[keyAvatar]}`"
+          :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail && 'img-thumbnail'}`"
+        />
         <img
           v-else-if="$store.state.sys.cfg.use_default_avatar"
           :src="
@@ -10,14 +14,26 @@
               ? require('@/assets/images/avatar/collapse.png')
               : typeof user[keyUsername] === 'string'
               ? require(`@/assets/images/avatar/${
-                  user[keyUsername] === '@system' ? 'system' : user[keyUsername] === 'admin' ? 'admin' : user.gender === 1 ? 'male' : user.gender === 0 ? 'female' : 'user'
+                  user[keyUsername] === '@system'
+                    ? 'system'
+                    : user[keyUsername] === 'admin'
+                    ? 'admin'
+                    : user.gender === 1
+                    ? 'male'
+                    : user.gender === 0
+                    ? 'female'
+                    : 'user'
                 }.png`)
               : require(`@/assets/images/avatar/${user[keyUsername] === 0 ? 'all' : 'group'}.png`)
           "
           :class="`avatar-${size} rounded-circle bg-avatar p-1 ${thumbnail && 'img-thumbnail'}`"
         />
         <div v-else :class="`avatar-${size} rounded-circle`">
-          <div :class="`avatar-title rounded-circle bg-avatar text-light ${fs[size]} ${thumbnail && 'img-thumbnail'}`">
+          <div
+            :class="`avatar-title rounded-circle bg-avatar text-light ${fs[size]} ${
+              thumbnail && 'img-thumbnail'
+            }`"
+          >
             {{
               user.collapse
                 ? user[keyUsername]
@@ -31,21 +47,41 @@
     </span>
   </div>
   <div v-else :title="user[keyFullname]">
-    <img v-if="user[keyAvatar]" :src="`${BASE_URL}${user[keyAvatar]}`" :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail && 'img-thumbnail'}`" />
+    <img
+      v-if="user[keyAvatar]"
+      :src="`${BASE_URL}${user[keyAvatar]}`"
+      :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail && 'img-thumbnail'}`"
+    />
     <img
       v-else-if="$store.state.sys.cfg.use_default_avatar"
       :src="
         typeof user[keyUsername] === 'string'
           ? require(`@/assets/images/avatar/${
-              user[keyUsername] === '@system' ? 'system' : user[keyUsername] === 'admin' ? 'admin' : user.gender === 1 ? 'male' : user.gender === 0 ? 'female' : 'user'
+              user[keyUsername] === '@system'
+                ? 'system'
+                : user[keyUsername] === 'admin'
+                ? 'admin'
+                : user.gender === 1
+                ? 'male'
+                : user.gender === 0
+                ? 'female'
+                : 'user'
             }.png`)
           : require(`@/assets/images/avatar/${user[keyUsername] === 0 ? 'all' : 'group'}.png`)
       "
       :class="`avatar-${size} rounded-circle bg-avatar p-1 ${thumbnail && 'img-thumbnail'}`"
     />
     <div v-else :class="`avatar-${size} rounded-circle`">
-      <div :class="`avatar-title rounded-circle bg-avatar text-light ${fs[size]} ${thumbnail && 'img-thumbnail'}`">
-        {{ typeof user[keyUsername] === 'string' ? user[keyUsername] && user[keyUsername].charAt(0).toUpperCase() : user[keyFullname] && user[keyFullname].charAt(0).toUpperCase() }}
+      <div
+        :class="`avatar-title rounded-circle bg-avatar text-light ${fs[size]} ${
+          thumbnail && 'img-thumbnail'
+        }`"
+      >
+        {{
+          typeof user[keyUsername] === 'string'
+            ? user[keyUsername] && user[keyUsername].charAt(0).toUpperCase()
+            : user[keyFullname] && user[keyFullname].charAt(0).toUpperCase()
+        }}
       </div>
     </div>
   </div>

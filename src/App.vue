@@ -104,7 +104,10 @@ export default {
         if (document.visibilityState === 'visible') {
           const token = jwt.decode(localStorage.getItem('accessToken'));
           if (token && token.exp > Math.round(new Date().getTime() / 1000)) {
-            if (!store.state.user.data.username || token.username === store.state.user.data.username) {
+            if (
+              !store.state.user.data.username ||
+              token.username === store.state.user.data.username
+            ) {
               if (route.value.name === 'login') {
                 await getUserData();
                 router.replace({ name: 'home' });
@@ -122,7 +125,11 @@ export default {
       });
 
       window.addEventListener('resize', () => {
-        if (store.state.sys.cfg.water_mark && store.state.user.data.id) setWatermark(`${store.state.user.data.username} - ${store.state.user.data.fullname}`, moment().format('ll'));
+        if (store.state.sys.cfg.water_mark && store.state.user.data.id)
+          setWatermark(
+            `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
+            moment().format('ll'),
+          );
       });
     });
 
@@ -132,7 +139,8 @@ export default {
     });
 
     const resolveLayoutVariant = computed(() => {
-      const layout = route.value.path == '/' || route.value.meta.layout === 'blank' ? 'blank' : 'vertical';
+      const layout =
+        route.value.path == '/' || route.value.meta.layout === 'blank' ? 'blank' : 'vertical';
       document.documentElement.setAttribute('data-layout', layout);
       return layout;
     });

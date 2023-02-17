@@ -4,18 +4,43 @@
     <div class="card">
       <div class="card-header border-0 p-2 pb-0">
         <span class="float-end">
-          <i class="mdi mdi-format-list-numbered fs-16 cursor-pointer text-muted pe-2" @click="$router.push({ name: 'list', params: { tid: $route.params.tid } })"></i>
+          <i
+            class="mdi mdi-format-list-numbered fs-16 cursor-pointer text-muted pe-2"
+            @click="$router.push({ name: 'list', params: { tid: $route.params.tid } })"
+          ></i>
           <i
             v-if="$route.params.rid != 0"
             class="mdi mdi-eye-outline fs-16 cursor-pointer text-muted pe-2"
-            @click="$router.push({ name: 'view', params: { tid: $route.params.tid, rid: $route.params.rid } })"
+            @click="
+              $router.push({
+                name: 'view',
+                params: { tid: $route.params.tid, rid: $route.params.rid },
+              })
+            "
           ></i>
-          <i class="mdi mdi-refresh fs-16 cursor-pointer text-muted pe-2" @click="handleRefetchDataEdit"></i>
-          <i v-if="tabs.length > 1" class="mdi fs-16 cursor-pointer text-muted pe-2" :class="no_tabs ? 'mdi-tab' : 'mdi-view-dashboard-outline'" @click="no_tabs = !no_tabs"></i>
+          <i
+            class="mdi mdi-refresh fs-16 cursor-pointer text-muted pe-2"
+            @click="handleRefetchDataEdit"
+          ></i>
+          <i
+            v-if="tabs.length > 1"
+            class="mdi fs-16 cursor-pointer text-muted pe-2"
+            :class="no_tabs ? 'mdi-tab' : 'mdi-view-dashboard-outline'"
+            @click="no_tabs = !no_tabs"
+          ></i>
         </span>
       </div>
       <div class="card-body pt-0">
-        <VueSelect v-model="data.id" class="mt-2" :reduce="(item) => item.id" label="title" @search="fetchDataTitle" :options="titles" :clearable="false" @option:selected="handleSelectDataTitle">
+        <VueSelect
+          v-model="data.id"
+          class="mt-2"
+          :reduce="(item) => item.id"
+          label="title"
+          @search="fetchDataTitle"
+          :options="titles"
+          :clearable="false"
+          @option:selected="handleSelectDataTitle"
+        >
           <template v-slot:no-options="{ search, searching }">
             <template v-if="searching">
               <span v-html="$t('components.vs.search', { search })"></span>
@@ -25,14 +50,25 @@
         </VueSelect>
         <Form :id="`zz_${form.id}`" v-slot="{ errors }" @submit="handleSubmitFormData()">
           <div v-if="tabs.length > 1 && no_tabs">
-            <div :id="tab.field" class="p-3 mt-2 border-bottom border-bottom-dashed ribbon-box right" v-for="(tab, index) in tabs" :key="index">
+            <div
+              :id="tab.field"
+              class="p-3 mt-2 border-bottom border-bottom-dashed ribbon-box right"
+              v-for="(tab, index) in tabs"
+              :key="index"
+            >
               <div v-if="tab.name" class="ribbon ribbon-primary round-shape">
                 <i v-if="tab.cfg.icon" :class="`mdi ${tab.cfg.icon} me-2`"></i>
                 {{ tab.name }}
               </div>
               <div class="row">
                 <template v-for="column in tab.columns">
-                  <h5 :id="column.field" :key="column.id" v-if="column._visible" class="fs-14 mb-2 mt-2" :class="`col-sm-${column.col}`">
+                  <h5
+                    :id="column.field"
+                    :key="column.id"
+                    v-if="column._visible"
+                    class="fs-14 mb-2 mt-2"
+                    :class="`col-sm-${column.col}`"
+                  >
                     <component
                       :is="column.component"
                       type="EDIT"
@@ -68,7 +104,16 @@
                     { title: $t('data.column.BasicDataState.archived'), value: 'archived' },
                   ]"
                   :disabled="data.data_state === 'approving'"
-                  :selectable="(option) => (form.flow?.length ? (data.id === 0 ? option.value === 'drafted' : init_data.data_state != 'published' ? option.value != 'published' : option.value) : true)"
+                  :selectable="
+                    (option) =>
+                      form.flow?.length
+                        ? data.id === 0
+                          ? option.value === 'drafted'
+                          : init_data.data_state != 'published'
+                          ? option.value != 'published'
+                          : option.value
+                        : true
+                  "
                 >
                   <template v-slot:no-options="{ search, searching }">
                     <template v-if="searching">
@@ -80,31 +125,63 @@
               </h5>
               <h5 key="acl_view" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                 <label class="form-label">{{ $t('data.column.BasicAclView') }}</label>
-                <UsersSelector v-model="data.acl_view" :placeholder="$t('data.column.BasicAclView')" />
+                <UsersSelector
+                  v-model="data.acl_view"
+                  :placeholder="$t('data.column.BasicAclView')"
+                />
               </h5>
               <h5 key="acl_edit" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                 <label class="form-label">{{ $t('data.column.BasicAclEdit') }}</label>
-                <UsersSelector v-model="data.acl_edit" :disabled="!!form.flow?.length" :placeholder="$t('data.column.BasicAclEdit')" />
+                <UsersSelector
+                  v-model="data.acl_edit"
+                  :disabled="!!form.flow?.length"
+                  :placeholder="$t('data.column.BasicAclEdit')"
+                />
               </h5>
             </div>
             <div class="p-3 border-top border-top-dashed border-0 d-flex justify-content-end gap-2">
-              <div v-if="(!flow && !form.flow?.length) || (flow && init_data.data_state === 'drafted') || data.id === 0">
+              <div
+                v-if="
+                  (!flow && !form.flow?.length) ||
+                  (flow && init_data.data_state === 'drafted') ||
+                  data.id === 0
+                "
+              >
                 <div v-if="form.flow?.length && data.data_state === 'drafted'" class="btn-group">
-                  <button type="submit" class="btn btn-sm btn-primary" :disabled="Object.keys(errors).length || syntax_error">
+                  <button
+                    type="submit"
+                    class="btn btn-sm btn-primary"
+                    :disabled="Object.keys(errors).length || syntax_error"
+                  >
                     <i class="mdi mdi-share-variant-outline" />
                     {{ $t('data.edit.submit') }}
                   </button>
-                  <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown"
+                  ></button>
                   <div class="dropdown-menu dropdown-menu-md p-0">
                     <ul class="list-group list-group-flush">
-                      <li class="list-group-item p-2 d-flex gap-2 align-items-center" v-for="(node, index) in form.flow" :key="index">
-                        <span>#{{ index }} {{ node.title }} [{{ node.logic === 1 ? 'And' : 'Or' }}]</span>
+                      <li
+                        class="list-group-item p-2 d-flex gap-2 align-items-center"
+                        v-for="(node, index) in form.flow"
+                        :key="index"
+                      >
+                        <span>
+                          #{{ index }} {{ node.title }} [{{ node.logic === 1 ? 'And' : 'Or' }}]
+                        </span>
                         <Avatar :data="resolveFlowUsers(node.users)" size="xxs" />
                       </li>
                     </ul>
                   </div>
                 </div>
-                <button v-else type="submit" class="btn btn-sm btn-success" :disabled="Object.keys(errors).length || syntax_error">
+                <button
+                  v-else
+                  type="submit"
+                  class="btn btn-sm btn-success"
+                  :disabled="Object.keys(errors).length || syntax_error"
+                >
                   <i class="mdi mdi-content-save-outline" />
                   {{ $t('data.edit.save') }}
                 </button>
@@ -129,7 +206,12 @@
               <div class="col">
                 <ul class="nav nav-tabs nav-tabs-custom nav-primary">
                   <li class="nav-item" v-for="(tab, index) in tabs" :key="tab.id">
-                    <a :class="`nav-link text-${tab.cfg.style} ${index === current_tab && 'active'}`" data-bs-toggle="tab" :href="`#${tab.field}`" @click="current_tab = index">
+                    <a
+                      :class="`nav-link text-${tab.cfg.style} ${index === current_tab && 'active'}`"
+                      data-bs-toggle="tab"
+                      :href="`#${tab.field}`"
+                      @click="current_tab = index"
+                    >
                       <i v-if="tab.cfg.icon" :class="`mdi ${tab.cfg.icon}`"></i>
                       {{ tab.name }}
                     </a>
@@ -138,10 +220,22 @@
               </div>
             </div>
             <div class="tab-content text-muted">
-              <div class="tab-pane" :class="{ active: index === current_tab }" :id="tab.field" v-for="(tab, index) in tabs" :key="tab.id">
+              <div
+                class="tab-pane"
+                :class="{ active: index === current_tab }"
+                :id="tab.field"
+                v-for="(tab, index) in tabs"
+                :key="tab.id"
+              >
                 <div class="row p-3">
                   <template v-for="column in tab.columns">
-                    <h5 :id="column.field" :key="column.id" v-if="column._visible" class="fs-14 mb-2 mt-2" :class="`col-sm-${column.col}`">
+                    <h5
+                      :id="column.field"
+                      :key="column.id"
+                      v-if="column._visible"
+                      class="fs-14 mb-2 mt-2"
+                      :class="`col-sm-${column.col}`"
+                    >
                       <component
                         :is="column.component"
                         type="EDIT"
@@ -178,44 +272,92 @@
                         ]"
                         :disabled="data.data_state === 'approving'"
                         :selectable="
-                          (option) => (form.flow?.length ? (data.id === 0 ? option.value === 'drafted' : init_data.data_state != 'published' ? option.value != 'published' : option.value) : true)
+                          (option) =>
+                            form.flow?.length
+                              ? data.id === 0
+                                ? option.value === 'drafted'
+                                : init_data.data_state != 'published'
+                                ? option.value != 'published'
+                                : option.value
+                              : true
                         "
                       >
                         <template v-slot:no-options="{ search, searching }">
                           <template v-if="searching">
                             <span v-html="$t('components.vs.search', { search })"></span>
                           </template>
-                          <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+                          <em v-else style="opacity: 0.5">
+                            {{ $t('components.vs.searchOption') }}
+                          </em>
                         </template>
                       </VueSelect>
                     </h5>
                     <h5 key="acl_view" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                       <label class="form-label">{{ $t('data.column.BasicAclView') }}</label>
-                      <UsersSelector v-model="data.acl_view" :placeholder="$t('data.column.BasicAclView')" />
+                      <UsersSelector
+                        v-model="data.acl_view"
+                        :placeholder="$t('data.column.BasicAclView')"
+                      />
                     </h5>
                     <h5 key="acl_edit" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                       <label class="form-label">{{ $t('data.column.BasicAclEdit') }}</label>
-                      <UsersSelector v-model="data.acl_edit" :disabled="!!form.flow?.length" :placeholder="$t('data.column.BasicAclEdit')" />
+                      <UsersSelector
+                        v-model="data.acl_edit"
+                        :disabled="!!form.flow?.length"
+                        :placeholder="$t('data.column.BasicAclEdit')"
+                      />
                     </h5>
                   </div>
-                  <div class="p-3 border-top border-top-dashed border-0 d-flex justify-content-end gap-2">
-                    <div v-if="(!flow && !form.flow?.length) || (flow && init_data.data_state === 'drafted') || data.id === 0">
-                      <div v-if="form.flow?.length && data.data_state === 'drafted'" class="btn-group">
-                        <button type="submit" class="btn btn-sm btn-primary" :disabled="Object.keys(errors).length || syntax_error">
+                  <div
+                    class="p-3 border-top border-top-dashed border-0 d-flex justify-content-end gap-2"
+                  >
+                    <div
+                      v-if="
+                        (!flow && !form.flow?.length) ||
+                        (flow && init_data.data_state === 'drafted') ||
+                        data.id === 0
+                      "
+                    >
+                      <div
+                        v-if="form.flow?.length && data.data_state === 'drafted'"
+                        class="btn-group"
+                      >
+                        <button
+                          type="submit"
+                          class="btn btn-sm btn-primary"
+                          :disabled="Object.keys(errors).length || syntax_error"
+                        >
                           <i class="mdi mdi-share-variant-outline" />
                           {{ $t('data.edit.submit') }}
                         </button>
-                        <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split"
+                          data-bs-toggle="dropdown"
+                        ></button>
                         <div class="dropdown-menu dropdown-menu-md p-0">
                           <ul class="list-group list-group-flush">
-                            <li class="list-group-item p-2 d-flex gap-2 align-items-center" v-for="(node, index) in form.flow" :key="index">
-                              <span>#{{ index }} {{ node.title }} [{{ node.logic === 1 ? 'And' : 'Or' }}]</span>
+                            <li
+                              class="list-group-item p-2 d-flex gap-2 align-items-center"
+                              v-for="(node, index) in form.flow"
+                              :key="index"
+                            >
+                              <span>
+                                #{{ index }} {{ node.title }} [{{
+                                  node.logic === 1 ? 'And' : 'Or'
+                                }}]
+                              </span>
                               <Avatar :data="resolveFlowUsers(node.users)" size="xxs" />
                             </li>
                           </ul>
                         </div>
                       </div>
-                      <button v-else type="submit" class="btn btn-sm btn-success" :disabled="Object.keys(errors).length || syntax_error">
+                      <button
+                        v-else
+                        type="submit"
+                        class="btn btn-sm btn-success"
+                        :disabled="Object.keys(errors).length || syntax_error"
+                      >
                         <i class="mdi mdi-content-save-outline" />
                         {{ $t('data.edit.save') }}
                       </button>
@@ -240,7 +382,13 @@
           </div>
         </Form>
       </div>
-      <button id="showResultModalBtn" type="button" class="d-none" data-bs-toggle="modal" data-bs-target="#result"></button>
+      <button
+        id="showResultModalBtn"
+        type="button"
+        class="d-none"
+        data-bs-toggle="modal"
+        data-bs-target="#result"
+      ></button>
       <div class="modal fade" id="result" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
@@ -248,8 +396,18 @@
               <p class="ck ck-content" v-html="result.msg"></p>
               <hr />
               <div class="d-flex justify-content-end gap-2">
-                <button class="btn btn-sm btn-info" data-bs-dismiss="modal" @click="$router.replace({ name: 'list', params: { tid: form.id } })">{{ $t('data.edit.result.listData') }}</button>
-                <button class="btn btn-sm btn-success" data-bs-dismiss="modal" @click="$router.replace({ name: 'view', params: { tid: form.id, rid: data.id } })">
+                <button
+                  class="btn btn-sm btn-info"
+                  data-bs-dismiss="modal"
+                  @click="$router.replace({ name: 'list', params: { tid: form.id } })"
+                >
+                  {{ $t('data.edit.result.listData') }}
+                </button>
+                <button
+                  class="btn btn-sm btn-success"
+                  data-bs-dismiss="modal"
+                  @click="$router.replace({ name: 'view', params: { tid: form.id, rid: data.id } })"
+                >
                   {{ $t('data.edit.result.viewData') }}
                 </button>
                 <button
@@ -264,7 +422,13 @@
                 >
                   {{ $t('data.edit.result.createNewData') }}
                 </button>
-                <button v-if="data.data_state != 'approving'" class="btn btn-sm btn-danger" data-bs-dismiss="modal">{{ $t('data.edit.result.editData') }}</button>
+                <button
+                  v-if="data.data_state != 'approving'"
+                  class="btn btn-sm btn-danger"
+                  data-bs-dismiss="modal"
+                >
+                  {{ $t('data.edit.result.editData') }}
+                </button>
               </div>
             </div>
           </div>
@@ -272,20 +436,41 @@
       </div>
     </div>
 
-    <button type="button" id="showConfirmCancelEditModalBtn" class="d-none" data-bs-toggle="modal" href="#confirmCancelEditModal"></button>
-    <div class="modal fade" id="confirmCancelEditModal" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
+    <button
+      type="button"
+      id="showConfirmCancelEditModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      href="#confirmCancelEditModal"
+    ></button>
+    <div
+      class="modal fade"
+      id="confirmCancelEditModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      data-bs-focus="false"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
                 <h4>{{ $t('data.edit.confirmCancelEditModal.confirm') }}</h4>
-                <p class="text-muted mx-4 mb-0 mb-2" style="white-space: nowrap">{{ $t('data.edit.confirmCancelEditModal.tips') }}</p>
+                <p class="text-muted mx-4 mb-0 mb-2" style="white-space: nowrap">
+                  {{ $t('data.edit.confirmCancelEditModal.tips') }}
+                </p>
               </div>
             </div>
 
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-success" data-bs-dismiss="modal" @click="cancel_edit_confirm = false">{{ $t('data.edit.confirmCancelEditModal.cancel') }}</button>
+              <button
+                type="button"
+                class="btn w-sm btn-success"
+                data-bs-dismiss="modal"
+                @click="cancel_edit_confirm = false"
+              >
+                {{ $t('data.edit.confirmCancelEditModal.cancel') }}
+              </button>
               <button
                 type="button"
                 class="btn w-sm btn-info"
@@ -298,54 +483,111 @@
               >
                 {{ $t('data.edit.confirmCancelEditModal.staged') }}
               </button>
-              <button type="button" class="btn w-sm btn-danger" data-bs-dismiss="modal" @click="cancel_edit_confirm = true">{{ $t('data.edit.confirmCancelEditModal.back') }}</button>
+              <button
+                type="button"
+                class="btn w-sm btn-danger"
+                data-bs-dismiss="modal"
+                @click="cancel_edit_confirm = true"
+              >
+                {{ $t('data.edit.confirmCancelEditModal.back') }}
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <button type="button" id="showUpdateConflictsModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#updateConflictsModal"></button>
+    <button
+      type="button"
+      id="showUpdateConflictsModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#updateConflictsModal"
+    ></button>
     <div id="updateConflictsModal" class="modal fade zoomIn">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" id="hideUpdateConflictsModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              id="hideUpdateConflictsModalBtn"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
                 <h4>{{ $t('data.edit.updateConflictsModal.title') }}</h4>
                 <p class="text-muted mx-4 mb-0 mb-2" style="white-space: nowrap">
-                  {{ $t('data.edit.updateConflictsModal.tips', { user: getUserInfo(update_conflicts)?.fullname || update_conflicts }) }}
+                  {{
+                    $t('data.edit.updateConflictsModal.tips', {
+                      user: getUserInfo(update_conflicts)?.fullname || update_conflicts,
+                    })
+                  }}
                 </p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-danger" @click="handleSubmitFormData(true)">{{ $t('data.edit.updateConflictsModal.forceUpdate') }}</button>
-              <button type="button" class="btn w-sm btn-success" @click="handleStagedUpdate">{{ $t('data.edit.updateConflictsModal.staged') }}</button>
+              <button type="button" class="btn w-sm btn-danger" @click="handleSubmitFormData(true)">
+                {{ $t('data.edit.updateConflictsModal.forceUpdate') }}
+              </button>
+              <button type="button" class="btn w-sm btn-success" @click="handleStagedUpdate">
+                {{ $t('data.edit.updateConflictsModal.staged') }}
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <button type="button" id="showUseStageDataConfirmModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#useStagedDataConfirmModal"></button>
+    <button
+      type="button"
+      id="showUseStageDataConfirmModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#useStagedDataConfirmModal"
+    ></button>
     <div id="useStagedDataConfirmModal" class="modal fade zoomIn">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" id="hideUseStagedDataConfirmModalBtn" class="btn-close" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              id="hideUseStagedDataConfirmModalBtn"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
-                <h4>{{ $t('data.edit.useStagedDataConfirmModal.title', { user: getUserInfo(update_conflicts)?.fullname || update_conflicts }) }}</h4>
+                <h4>
+                  {{
+                    $t('data.edit.useStagedDataConfirmModal.title', {
+                      user: getUserInfo(update_conflicts)?.fullname || update_conflicts,
+                    })
+                  }}
+                </h4>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-success" data-bs-dismiss="modal" @click="handleApplyStagedData">{{ $t('data.edit.useStagedDataConfirmModal.apply') }}</button>
-              <button type="button" class="btn w-sm btn-primary" data-bs-dismiss="modal" @click="handleDiscardStagedData">{{ $t('data.edit.useStagedDataConfirmModal.discard') }}</button>
+              <button
+                type="button"
+                class="btn w-sm btn-success"
+                data-bs-dismiss="modal"
+                @click="handleApplyStagedData"
+              >
+                {{ $t('data.edit.useStagedDataConfirmModal.apply') }}
+              </button>
+              <button
+                type="button"
+                class="btn w-sm btn-primary"
+                data-bs-dismiss="modal"
+                @click="handleDiscardStagedData"
+              >
+                {{ $t('data.edit.useStagedDataConfirmModal.discard') }}
+              </button>
             </div>
           </div>
         </div>
@@ -358,7 +600,18 @@
 import Breadcrumb from '@/layouts/breadcrumb';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import store from '@store';
-import { useRouter, replaceVariables, getDataByFormula, getRulesByFormula, deepCompare, getUserLeaders, generateFlowByCurrentUser, getUserInfo, encryptData, decryptData } from '@utils';
+import {
+  useRouter,
+  replaceVariables,
+  getDataByFormula,
+  getRulesByFormula,
+  deepCompare,
+  getUserLeaders,
+  generateFlowByCurrentUser,
+  getUserInfo,
+  encryptData,
+  decryptData,
+} from '@utils';
 import { getDataEdit, getDataTitle, createData, checkData, forceData, updateData } from '@api/data';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -437,14 +690,27 @@ export default {
         () => route.value.params.rid,
         (newVal, oldVal) => {
           if (
-            (Number(newVal) === 0 && !(store.state.user.data?.tags?.includes('ALL') || store.state.user.data?.permissions?.[route.value.params.tid]?.create)) ||
-            (Number(newVal) !== 0 && !(store.state.user.data?.tags?.includes('ALL') || store.state.user.data?.permissions?.[route.value.params.tid]?.modify))
+            (Number(newVal) === 0 &&
+              !(
+                store.state.user.data?.tags?.includes('ALL') ||
+                store.state.user.data?.permissions?.[route.value.params.tid]?.create
+              )) ||
+            (Number(newVal) !== 0 &&
+              !(
+                store.state.user.data?.tags?.includes('ALL') ||
+                store.state.user.data?.permissions?.[route.value.params.tid]?.modify
+              ))
           ) {
             router.replace({ name: 'permissionDenied' });
             return;
           }
           if (route.value.name === 'edit' && newVal !== oldVal) {
-            if (Number(init_data.value.id)) forceData({ tid: route.value.params.tid, rid: Number(init_data.value.id), user: null });
+            if (Number(init_data.value.id))
+              forceData({
+                tid: route.value.params.tid,
+                rid: Number(init_data.value.id),
+                user: null,
+              });
             fetchDataEdit(route.value.params.tid, newVal);
           }
         },
@@ -471,7 +737,12 @@ export default {
                 .forEach((column) => setColumnConfiguration(column));
 
               columns.value
-                .filter((column) => column.visible?.includes(`data.${field}`) || column.required?.includes(`data.${field}`) || column.editable?.includes(`data.${field}`))
+                .filter(
+                  (column) =>
+                    column.visible?.includes(`data.${field}`) ||
+                    column.required?.includes(`data.${field}`) ||
+                    column.editable?.includes(`data.${field}`),
+                )
                 .forEach((column) => setColumnRules(column));
             }
             // }, 300);
@@ -482,7 +753,8 @@ export default {
     });
 
     onUnmounted(() => {
-      if (Number(init_data.value.id)) forceData({ tid: form.value.id, rid: Number(init_data.value.id), user: null });
+      if (Number(init_data.value.id))
+        forceData({ tid: form.value.id, rid: Number(init_data.value.id), user: null });
     });
 
     const fetchDataEdit = async (tid, rid) => {
@@ -500,7 +772,9 @@ export default {
         fetchDataTitle();
         current_tab.value = current_tab.value || 0;
         initialized.value = true;
-        const staged = localStorage.getItem(`staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`);
+        const staged = localStorage.getItem(
+          `staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`,
+        );
         if (staged) document.getElementById('showUseStageDataConfirmModalBtn').click();
       } else {
         toast({
@@ -528,7 +802,11 @@ export default {
       getDataTitle(params).then(({ code, data, msg }) => {
         if (code === 200) {
           titles.value = [
-            ...(store.state.user.data.tags.includes('ALL') || store.state.user.data.permissions?.[form.value.id]?.create || false ? [{ id: 0, title: i18n.global.t('data.edit.create') }] : []),
+            ...(store.state.user.data.tags.includes('ALL') ||
+            store.state.user.data.permissions?.[form.value.id]?.create ||
+            false
+              ? [{ id: 0, title: i18n.global.t('data.edit.create') }]
+              : []),
             ...data,
           ];
           if (loading) loading(false);
@@ -569,7 +847,8 @@ export default {
 
     const setFormColumns = async () => {
       tabs.value = [];
-      if (columns.value.filter((column) => column.component === 'LayoutTab').length === 0) tabs.value.push({ columns: [] });
+      if (columns.value.filter((column) => column.component === 'LayoutTab').length === 0)
+        tabs.value.push({ columns: [] });
       for (let column of columns.value) {
         if (column.component.includes('Basic')) {
           // Basic Columns: id, uuid, data_state, created_by, created_at, updated_by, updated_at, acl_view, acl_edit
@@ -577,7 +856,9 @@ export default {
             if (column.field === 'acl_view') {
               data.value.acl_view = Array.from(
                 new Set([
-                  ...(form.value.acl_view.length ? form.value.acl_view : getUserLeaders(store.state.user.data)),
+                  ...(form.value.acl_view.length
+                    ? form.value.acl_view
+                    : getUserLeaders(store.state.user.data)),
                   ...(form.value.flow?.length
                     ? form.value.flow
                         .map((item) => {
@@ -591,9 +872,14 @@ export default {
               );
             }
             if (column.field === 'acl_edit') {
-              data.value.acl_edit = form.value.flow?.length ? [store.state.user.data.username] : form.value.acl_edit.length ? form.value.acl_edit : [store.state.user.data.username];
+              data.value.acl_edit = form.value.flow?.length
+                ? [store.state.user.data.username]
+                : form.value.acl_edit.length
+                ? form.value.acl_edit
+                : [store.state.user.data.username];
             }
-            if (column.field === 'data_state' && form.value.flow?.length) data.value.data_state = 'drafted';
+            if (column.field === 'data_state' && form.value.flow?.length)
+              data.value.data_state = 'drafted';
           }
         } else if (column.component === 'LayoutTab') {
           tabs.value.push({ ...column, ...{ columns: [] } });
@@ -610,7 +896,8 @@ export default {
         column.default = replaceVariables(column.default, alias.value);
         if (Number(data.value.id) === 0 || initialized.value) {
           const val = await getDataByFormula(data.value, column.default);
-          if (val && typeof val === 'string' && val.includes('Error: ')) column.cfg.placeholder = val;
+          if (val && typeof val === 'string' && val.includes('Error: '))
+            column.cfg.placeholder = val;
           else data.value[column.field] = val;
         }
       }
@@ -618,7 +905,9 @@ export default {
       if (column.cfg?.source) {
         column.cfg.search = [];
         column.cfg.source = replaceVariables(column.cfg.source, alias.value);
-        column.cfg.options = await getDataByFormula(data.value, column.cfg.source, { value: !initialized.value ? data.value[column.field] : null });
+        column.cfg.options = await getDataByFormula(data.value, column.cfg.source, {
+          value: !initialized.value ? data.value[column.field] : null,
+        });
 
         if (column.cfg.options.length) {
           data.value[column.field] =
@@ -628,7 +917,8 @@ export default {
                   .map((option) => {
                     return option.value;
                   })
-              : column.cfg.options.find((option) => option.value == data.value[column.field])?.value || null;
+              : column.cfg.options.find((option) => option.value == data.value[column.field])
+                  ?.value || null;
         } else {
           data.value[column.field] = column.component == 'SelectMultiple' ? [] : null;
         }
@@ -778,23 +1068,32 @@ export default {
     };
 
     const handleStagedUpdate = (callback) => {
-      localStorage.setItem(`staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`, encryptData(JSON.stringify(data.value)));
+      localStorage.setItem(
+        `staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`,
+        encryptData(JSON.stringify(data.value)),
+      );
       document.getElementById('hideUpdateConflictsModalBtn').click();
       callback && callback();
     };
 
     const handleApplyStagedData = () => {
-      const staged = localStorage.getItem(`staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`);
+      const staged = localStorage.getItem(
+        `staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`,
+      );
       try {
         data.value = JSON.parse(decryptData(staged));
       } catch (error) {
         console.error(error);
       }
-      localStorage.removeItem(`staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`);
+      localStorage.removeItem(
+        `staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`,
+      );
     };
 
     const handleDiscardStagedData = () => {
-      localStorage.removeItem(`staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`);
+      localStorage.removeItem(
+        `staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`,
+      );
     };
 
     const cancel_edit_confirm = ref(null);

@@ -186,10 +186,32 @@ ClassicEditor.defaultConfig = {
     addTargetToExternalLinks: true,
   },
   image: {
-    toolbar: ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:alignCenter', 'imageStyle:alignRight', 'imageStyle:alignBlockLeft', 'imageStyle:inline', 'imageStyle:alignBlockRight'],
-    styles: ['alignLeft', 'alignCenter', 'alignRight', 'alignBlockLeft', 'inline', 'alignBlockRight'],
+    toolbar: [
+      'imageTextAlternative',
+      '|',
+      'imageStyle:alignLeft',
+      'imageStyle:alignCenter',
+      'imageStyle:alignRight',
+      'imageStyle:alignBlockLeft',
+      'imageStyle:inline',
+      'imageStyle:alignBlockRight',
+    ],
+    styles: [
+      'alignLeft',
+      'alignCenter',
+      'alignRight',
+      'alignBlockLeft',
+      'inline',
+      'alignBlockRight',
+    ],
   },
   table: {
-    contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tablecellproperties'],
+    contentToolbar: [
+      'tableColumn',
+      'tableRow',
+      'mergeTableCells',
+      'tableProperties',
+      'tablecellproperties',
+    ],
   },
 };

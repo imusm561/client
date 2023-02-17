@@ -1,5 +1,10 @@
 <template>
-  <textarea class="form-control h-100" :rows="params._column.cfg.rows" :placeholder="params._column.cfg.placeholder" v-model="value" />
+  <textarea
+    class="form-control h-100"
+    :rows="params._column.cfg.rows"
+    :placeholder="params._column.cfg.placeholder"
+    v-model="value"
+  />
 </template>
 
 <script>

@@ -19,7 +19,13 @@
       :disabled="!editable"
       v-model="value"
     />
-    <Field :name="column.field" v-model="value" class="d-none" :class="{ 'is-invalid': error }" :rules="`${required ? 'required' : ''}`" />
+    <Field
+      :name="column.field"
+      v-model="value"
+      class="d-none"
+      :class="{ 'is-invalid': error }"
+      :rules="`${required ? 'required' : ''}`"
+    />
     <span class="invalid-feedback">{{ error }}</span>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>

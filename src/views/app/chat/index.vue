@@ -8,7 +8,12 @@
           </div>
         </div>
         <div class="search-box">
-          <input type="text" class="form-control bg-light border-light" :placeholder="$t('app.chat.filter')" v-model="search_contact" />
+          <input
+            type="text"
+            class="form-control bg-light border-light"
+            :placeholder="$t('app.chat.filter')"
+            v-model="search_contact"
+          />
           <i class="mdi mdi-magnify fs-16 search-icon"></i>
         </div>
       </div>
@@ -20,19 +25,48 @@
         </div>
         <div v-if="chats.length" class="chat-message-list mb-4">
           <div class="list-unstyled chat-list chat-user-list">
-            <li class v-for="chat in chats" :key="chat.id" :class="{ active: chat.username == current_chat.username }" @click="handleClickContact(chat)">
+            <li
+              class
+              v-for="chat in chats"
+              :key="chat.id"
+              :class="{ active: chat.username == current_chat.username }"
+              @click="handleClickContact(chat)"
+            >
               <a class="d-flex align-items-center cursor-pointer">
-                <div :class="`flex-shrink-0 chat-user-img ${$store.state.org.onlines.includes(chat.username) ? 'online' : 'offline'} user-own-img align-self-center me-2 ms-0`">
+                <div
+                  :class="`flex-shrink-0 chat-user-img ${
+                    $store.state.org.onlines.includes(chat.username) ? 'online' : 'offline'
+                  } user-own-img align-self-center me-2 ms-0`"
+                >
                   <span class="user-status"></span>
                   <Avatar :data="chat" thumbnail />
                 </div>
                 <span class="d-flex flex-column w-75" style="line-height: 100%">
                   <span class="fs-14 text-dark">{{ chat.fullname }}</span>
-                  <span class="fs-10 mt-1 text-muted text-truncate">{{ chat.chat_data.length ? chat.chat_data[chat.chat_data.length - 1].message : chat.post }}</span>
+                  <span class="fs-10 mt-1 text-muted text-truncate">
+                    {{
+                      chat.chat_data.length
+                        ? chat.chat_data[chat.chat_data.length - 1].message
+                        : chat.post
+                    }}
+                  </span>
                 </span>
                 <div class="flex-shrink-0">
-                  <span v-if="chat.chat_data.filter((data) => data.receiver === $store.state.user.data.username && !data.receiver_read).length" class="badge badge-soft-dark rounded p-1">
-                    {{ chat.chat_data.filter((data) => data.receiver === $store.state.user.data.username && !data.receiver_read).length }}
+                  <span
+                    v-if="
+                      chat.chat_data.filter(
+                        (data) =>
+                          data.receiver === $store.state.user.data.username && !data.receiver_read,
+                      ).length
+                    "
+                    class="badge badge-soft-dark rounded p-1"
+                  >
+                    {{
+                      chat.chat_data.filter(
+                        (data) =>
+                          data.receiver === $store.state.user.data.username && !data.receiver_read,
+                      ).length
+                    }}
                   </span>
                 </div>
               </a>
@@ -47,9 +81,18 @@
         </div>
         <div class="chat-message-list">
           <div class="list-unstyled chat-list chat-user-list">
-            <li class v-for="contact in contacts" :key="contact.id" @click="handleClickContact(contact)">
+            <li
+              class
+              v-for="contact in contacts"
+              :key="contact.id"
+              @click="handleClickContact(contact)"
+            >
               <a class="d-flex align-items-center cursor-pointer">
-                <div :class="`flex-shrink-0 chat-user-img ${$store.state.org.onlines.includes(contact.username) ? 'online' : 'offline'} user-own-img align-self-center me-2 ms-0`">
+                <div
+                  :class="`flex-shrink-0 chat-user-img ${
+                    $store.state.org.onlines.includes(contact.username) ? 'online' : 'offline'
+                  } user-own-img align-self-center me-2 ms-0`"
+                >
                   <span class="user-status"></span>
                   <Avatar :data="contact" thumbnail />
                 </div>
@@ -64,7 +107,9 @@
       </div>
     </div>
 
-    <div :class="`user-chat w-100 overflow-hidden ${current_chat.username ? 'user-chat-show' : ''}`">
+    <div
+      :class="`user-chat w-100 overflow-hidden ${current_chat.username ? 'user-chat-show' : ''}`"
+    >
       <div class="chat-content d-lg-flex">
         <div class="w-100 overflow-hidden position-relative">
           <div class="position-relative" v-if="current_chat.username">
@@ -73,22 +118,44 @@
                 <div class="col-sm-4 col-8">
                   <div class="d-flex align-items-center">
                     <div class="flex-shrink-0 d-block d-lg-none me-3">
-                      <span @click="current_chat = {}" class="cursor-pointer fs-18 p-1"><i class="mdi mdi-arrow-left align-bottom"></i></span>
+                      <span @click="current_chat = {}" class="cursor-pointer fs-18 p-1">
+                        <i class="mdi mdi-arrow-left align-bottom"></i>
+                      </span>
                     </div>
                     <div class="flex-grow-1 overflow-hidden">
                       <div class="d-flex align-items-center">
-                        <div :class="`flex-shrink-0 chat-user-img ${$store.state.org.onlines.includes(current_chat.username) ? 'online' : 'offline'} user-own-img align-self-center me-2 ms-0`">
-                          <span class="user-status" style="width: 12px; height: 12px; right: 2px"></span>
+                        <div
+                          :class="`flex-shrink-0 chat-user-img ${
+                            $store.state.org.onlines.includes(current_chat.username)
+                              ? 'online'
+                              : 'offline'
+                          } user-own-img align-self-center me-2 ms-0`"
+                        >
+                          <span
+                            class="user-status"
+                            style="width: 12px; height: 12px; right: 2px"
+                          ></span>
                           <Avatar size="sm" :data="current_chat" thumbnail />
                         </div>
                         <div class="flex-grow-1 overflow-hidden">
                           <h5 class="text-truncate mb-0 fs-16">
-                            <a class="text-reset username" data-bs-toggle="offcanvas" href="#userProfileOffcanvas" aria-controls="userProfileOffcanvas">
+                            <a
+                              class="text-reset username"
+                              data-bs-toggle="offcanvas"
+                              href="#userProfileOffcanvas"
+                              aria-controls="userProfileOffcanvas"
+                            >
                               {{ current_chat.fullname || current_chat.username }}
                             </a>
                           </h5>
                           <p class="text-truncate text-muted fs-14 mb-0 mt-1 userStatus">
-                            <small>{{ $store.state.org.onlines.includes(current_chat.username) ? $t('app.chat.online') : $t('app.chat.offline') }}</small>
+                            <small>
+                              {{
+                                $store.state.org.onlines.includes(current_chat.username)
+                                  ? $t('app.chat.online')
+                                  : $t('app.chat.offline')
+                              }}
+                            </small>
                           </p>
                         </div>
                       </div>
@@ -99,7 +166,13 @@
                   <ul class="list-inline user-chat-nav text-end mb-0">
                     <li class="list-inline-item m-0">
                       <div class="dropdown">
-                        <button class="btn btn-ghost-secondary btn-icon" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button
+                          class="btn btn-ghost-secondary btn-icon"
+                          type="button"
+                          data-bs-toggle="dropdown"
+                          aria-haspopup="true"
+                          aria-expanded="false"
+                        >
                           <i class="mdi mdi-dots-vertical fs-22"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
@@ -140,7 +213,10 @@
                     class="chat-list"
                   >
                     <div class="conversation-list">
-                      <div class="chat-avatar" v-if="data.sender != $store.state.user.data.username">
+                      <div
+                        class="chat-avatar"
+                        v-if="data.sender != $store.state.user.data.username"
+                      >
                         <Avatar :data="current_chat" />
                       </div>
                       <div class="user-chat-content">
@@ -148,7 +224,12 @@
                           <div class="ctext-wrap-content">
                             <span v-if="data.quote && data.quote.id" class="mb-0 ctext-content">
                               <span class="d-flex justify-content-between">
-                                <p>“ {{ getUserInfo(data.quote.sender)?.fullname || data.quote.sender }}&nbsp;&nbsp;&nbsp;</p>
+                                <p>
+                                  “
+                                  {{
+                                    getUserInfo(data.quote.sender)?.fullname || data.quote.sender
+                                  }}&nbsp;&nbsp;&nbsp;
+                                </p>
                                 <p>{{ $moment(data.quote.created_at).format('HH:mm') }}</p>
                               </span>
                               <p>{{ data.quote.message }}</p>
@@ -157,17 +238,36 @@
                             <p class="mb-0 ctext-content">{{ data.message }}</p>
                           </div>
                           <div class="dropdown align-self-start message-box-drop">
-                            <a class="dropdown-toggle" role="button" @click="handleClickQuote(data)">
+                            <a
+                              class="dropdown-toggle"
+                              role="button"
+                              @click="handleClickQuote(data)"
+                            >
                               <i class="mdi mdi-comment-quote-outline text-muted align-bottom"></i>
                             </a>
                           </div>
                           <div class="conversation-name">
-                            <small class="text-muted time">{{ $moment(data.created_at).format('HH:mm') }}</small>
+                            <small class="text-muted time">
+                              {{ $moment(data.created_at).format('HH:mm') }}
+                            </small>
                             <span class="text-success check-message-icon">
-                              <i :class="`mdi mdi-${data.id === 0 ? 'spin mdi-loading' : data.receiver_read ? 'check-all' : 'check'} align-bottom`"></i>
+                              <i
+                                :class="`mdi mdi-${
+                                  data.id === 0
+                                    ? 'spin mdi-loading'
+                                    : data.receiver_read
+                                    ? 'check-all'
+                                    : 'check'
+                                } align-bottom`"
+                              ></i>
                             </span>
                             <span
-                              v-if="($moment().valueOf() - $moment(data.created_at).valueOf()) / 1000 < 120 && data.sender === $store.state.user.data.username && !data.receiver_read"
+                              v-if="
+                                ($moment().valueOf() - $moment(data.created_at).valueOf()) / 1000 <
+                                  120 &&
+                                data.sender === $store.state.user.data.username &&
+                                !data.receiver_read
+                              "
                               class="text-primary check-message-icon cursor-pointer"
                               @click="handleWithdrawMsg(data)"
                             >
@@ -182,8 +282,15 @@
               </div>
             </div>
 
-            <span v-if="quote" class="badge bg-soft-info text-dark position-absolute fs-15 mw-50 text-truncate" style="margin-top: -12px">
-              <i class="mdi mdi-close-thick text-danger fs-15 cursor-pointer" @click="quote = null" />
+            <span
+              v-if="quote"
+              class="badge bg-soft-info text-dark position-absolute fs-15 mw-50 text-truncate"
+              style="margin-top: -12px"
+            >
+              <i
+                class="mdi mdi-close-thick text-danger fs-15 cursor-pointer"
+                @click="quote = null"
+              />
               {{ $t('app.chat.quote') }}: {{ quote.message }}
             </span>
             <div class="chat-input-section mt-3">
@@ -191,8 +298,19 @@
                 <div class="row g-0 align-items-center">
                   <div class="col">
                     <div class="input-group">
-                      <Field id="message_input" name="message" v-model="message" autocomplete="off" class="form-control" rules="required" />
-                      <button type="submit" :disabled="errors.message" class="btn btn-success chat-send waves-effect waves-light">
+                      <Field
+                        id="message_input"
+                        name="message"
+                        v-model="message"
+                        autocomplete="off"
+                        class="form-control"
+                        rules="required"
+                      />
+                      <button
+                        type="submit"
+                        :disabled="errors.message"
+                        class="btn btn-success chat-send waves-effect waves-light"
+                      >
                         <i class="mdi mdi-send align-bottom"></i>
                       </button>
                     </div>
@@ -212,7 +330,12 @@
             <div class="row g-0">
               <div class="col">
                 <div class="btn nav-btn">
-                  <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                  <button
+                    type="button"
+                    class="btn-close btn-close-dark"
+                    data-bs-dismiss="offcanvas"
+                    aria-label="Close"
+                  ></button>
                 </div>
               </div>
             </div>
@@ -220,7 +343,11 @@
         </div>
         <div class="p-3 text-center">
           <a class="d-flex justify-content-center align-items-center cursor-pointer">
-            <div :class="`flex-shrink-0 chat-user-img ${$store.state.org.onlines.includes(current_chat.username) ? 'online' : 'offline'} user-own-img align-self-center`">
+            <div
+              :class="`flex-shrink-0 chat-user-img ${
+                $store.state.org.onlines.includes(current_chat.username) ? 'online' : 'offline'
+              } user-own-img align-self-center`"
+            >
               <span class="user-status" style="width: 15px; height: 15px; right: 5px"></span>
               <Avatar :data="current_chat" size="md" thumbnail />
             </div>
@@ -229,13 +356,23 @@
           <p class="text-muted text-capitalize">{{ current_chat.post }}</p>
 
           <div class="d-flex gap-2 justify-content-center">
-            <button type="button" class="btn avatar-xs p-0" data-bs-toggle="tooltip" data-bs-placement="top">
+            <button
+              type="button"
+              class="btn avatar-xs p-0"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+            >
               <span class="avatar-title rounded bg-light text-body">
                 <a :href="`tel:${current_chat.phone}`"><i class="mdi mdi-phone"></i></a>
               </span>
             </button>
 
-            <button type="button" class="btn avatar-xs p-0" data-bs-toggle="tooltip" data-bs-placement="top">
+            <button
+              type="button"
+              class="btn avatar-xs p-0"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+            >
               <span class="avatar-title rounded bg-light text-body">
                 <a :href="`mailto:${current_chat.phone}`"><i class="mdi mdi-email"></i></a>
               </span>
@@ -246,24 +383,40 @@
         <div class="border-top border-top-dashed p-3">
           <h5 class="fs-15 mb-3">{{ $t('app.chat.personalDetails') }}</h5>
           <div class="mb-3">
-            <p class="text-muted text-uppercase fw-medium fs-12 mb-1">{{ $t('app.chat.personalDetails.phone') }}</p>
+            <p class="text-muted text-uppercase fw-medium fs-12 mb-1">
+              {{ $t('app.chat.personalDetails.phone') }}
+            </p>
             <h6>{{ current_chat.phone }}</h6>
           </div>
           <div class="mb-3">
-            <p class="text-muted text-uppercase fw-medium fs-12 mb-1">{{ $t('app.chat.personalDetails.email') }}</p>
+            <p class="text-muted text-uppercase fw-medium fs-12 mb-1">
+              {{ $t('app.chat.personalDetails.email') }}
+            </p>
             <h6>{{ current_chat.email }}</h6>
           </div>
           <div class="mb-3">
-            <p class="text-muted text-uppercase fw-medium fs-12 mb-1">{{ $t('app.chat.personalDetails.department') }}</p>
-            <h6>{{ $store.state.org.depts.find((dept) => dept.id === current_chat.dept)?.name }}</h6>
+            <p class="text-muted text-uppercase fw-medium fs-12 mb-1">
+              {{ $t('app.chat.personalDetails.department') }}
+            </p>
+            <h6>
+              {{ $store.state.org.depts.find((dept) => dept.id === current_chat.dept)?.name }}
+            </h6>
           </div>
           <div class="mb-3">
-            <p class="text-muted text-uppercase fw-medium fs-12 mb-1">{{ $t('app.chat.personalDetails.loginCount') }}</p>
+            <p class="text-muted text-uppercase fw-medium fs-12 mb-1">
+              {{ $t('app.chat.personalDetails.loginCount') }}
+            </p>
             <h6>{{ current_chat.login_count || 'Never' }}</h6>
           </div>
           <div>
-            <p class="text-muted text-uppercase fw-medium fs-12 mb-1">{{ $t('app.chat.personalDetails.lastLoginAt') }}</p>
-            <h6>{{ current_chat.last_login_at ? $moment(current_chat.last_login_at).fromNow() : 'Never' }}</h6>
+            <p class="text-muted text-uppercase fw-medium fs-12 mb-1">
+              {{ $t('app.chat.personalDetails.lastLoginAt') }}
+            </p>
+            <h6>
+              {{
+                current_chat.last_login_at ? $moment(current_chat.last_login_at).fromNow() : 'Never'
+              }}
+            </h6>
           </div>
         </div>
       </div>
@@ -291,27 +444,43 @@ export default {
 
     const _chats = ref([]);
     const _contacts = computed(() => {
-      return store.state.org.users.filter((user) => user.username !== store.state.user.data.username);
+      return store.state.org.users.filter(
+        (user) => user.username !== store.state.user.data.username,
+      );
     });
 
     const search_contact = ref('');
 
     const chats = computed(() => {
       if (search_contact.value)
-        return _chats.value.filter((chat) => chat.username.toLowerCase().includes(search_contact.value.toLowerCase()) || chat.fullname.toLowerCase().includes(search_contact.value.toLowerCase()));
+        return _chats.value.filter(
+          (chat) =>
+            chat.username.toLowerCase().includes(search_contact.value.toLowerCase()) ||
+            chat.fullname.toLowerCase().includes(search_contact.value.toLowerCase()),
+        );
       else return _chats.value;
     });
     const contacts = computed(() => {
       if (search_contact.value)
-        return _contacts.value.filter((user) => user.username.toLowerCase().includes(search_contact.value.toLowerCase()) || user.fullname.toLowerCase().includes(search_contact.value.toLowerCase()));
+        return _contacts.value.filter(
+          (user) =>
+            user.username.toLowerCase().includes(search_contact.value.toLowerCase()) ||
+            user.fullname.toLowerCase().includes(search_contact.value.toLowerCase()),
+        );
       else return _contacts.value;
     });
 
     const scrollToBottom = (behavior = 'auto') => {
       setTimeout(() => {
         if (document.getElementById('user-chat')) {
-          const chatConversationList = document.getElementById('user-chat').querySelector('.chat-conversation .simplebar-content-wrapper');
-          const offsetHeight = document.getElementById('user-chat').getElementsByClassName('chat-conversation-list')[0].scrollHeight - window.innerHeight + 600;
+          const chatConversationList = document
+            .getElementById('user-chat')
+            .querySelector('.chat-conversation .simplebar-content-wrapper');
+          const offsetHeight =
+            document.getElementById('user-chat').getElementsByClassName('chat-conversation-list')[0]
+              .scrollHeight -
+            window.innerHeight +
+            600;
           chatConversationList.scrollTo({
             top: offsetHeight,
             behavior,
@@ -328,7 +497,9 @@ export default {
       (val) => {
         if (val) {
           scrollToBottom('smooth');
-          const unReadData = current_chat.value.chat_data.filter((data) => data.receiver === store.state.user.data.username && !data.receiver_read);
+          const unReadData = current_chat.value.chat_data.filter(
+            (data) => data.receiver === store.state.user.data.username && !data.receiver_read,
+          );
           if (unReadData.length) {
             handleReadMsg(() => {
               unReadData.map((data) => {
@@ -549,7 +720,9 @@ export default {
       }).then(({ code, msg }) => {
         if (code === 200) {
           current_chat.value = {};
-          const idx = _chats.value.findIndex((chat) => chat.username === current_chat.value.username);
+          const idx = _chats.value.findIndex(
+            (chat) => chat.username === current_chat.value.username,
+          );
           _chats.value.splice(idx, 1);
         } else
           toast({

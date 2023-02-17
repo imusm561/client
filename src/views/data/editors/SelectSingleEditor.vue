@@ -16,7 +16,12 @@
       <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
     </template>
   </VueSelect>
-  <VueSelect v-else :placeholder="params._column.cfg.placeholder" v-model="value" :options="params._column.cfg.options">
+  <VueSelect
+    v-else
+    :placeholder="params._column.cfg.placeholder"
+    v-model="value"
+    :options="params._column.cfg.options"
+  >
     <template v-slot:no-options="{ search, searching }">
       <template v-if="searching">
         <span v-html="$t('components.vs.search', { search })"></span>
@@ -53,7 +58,9 @@ export default defineComponent({
 
     const handleSelecterSearch = async (keyword, loading) => {
       loading(true);
-      search.value = await getDataByFormula(props.params.data, props.params._column.cfg.source, { search: keyword });
+      search.value = await getDataByFormula(props.params.data, props.params._column.cfg.source, {
+        search: keyword,
+      });
       loading(false);
     };
 
@@ -63,7 +70,11 @@ export default defineComponent({
     };
 
     const options = computed(() => {
-      return unique([...search.value, ...(props.params._column.cfg.options || []), ...select.value]);
+      return unique([
+        ...search.value,
+        ...(props.params._column.cfg.options || []),
+        ...select.value,
+      ]);
     });
 
     return {

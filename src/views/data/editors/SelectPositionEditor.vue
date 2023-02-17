@@ -1,5 +1,10 @@
 <template>
-  <input class="form-control h-100" :type="params._column.cfg.type" :placeholder="params._column.cfg.placeholder" v-model="value" />
+  <input
+    class="form-control h-100"
+    :type="params._column.cfg.type"
+    :placeholder="params._column.cfg.placeholder"
+    v-model="value"
+  />
 </template>
 
 <script>

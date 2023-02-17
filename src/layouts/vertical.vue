@@ -68,7 +68,8 @@ export default {
         };
         let siblings = getSiblings(collapse.parentElement);
         siblings.forEach((item) => {
-          if (item.childNodes.length > 2) item.firstElementChild.setAttribute('aria-expanded', 'false');
+          if (item.childNodes.length > 2)
+            item.firstElementChild.setAttribute('aria-expanded', 'false');
           let ids = item.querySelectorAll('*[id]');
           ids.forEach((id) => {
             let aChild = id.parentNode.firstChild;
@@ -79,7 +80,8 @@ export default {
             if (id.childNodes.length > 2) {
               let val = id.querySelectorAll('ul li a');
               val.forEach((subitem) => {
-                if (subitem.hasAttribute('aria-expanded')) subitem.setAttribute('aria-expanded', 'false');
+                if (subitem.hasAttribute('aria-expanded'))
+                  subitem.setAttribute('aria-expanded', 'false');
               });
             }
           });
@@ -131,7 +133,9 @@ export default {
       document.getElementById('menu-overlay').click();
       if (document.getElementsByClassName('active').length > 0) {
         const currentPosition = document.getElementsByClassName('active')[0].offsetTop;
-        if (currentPosition > 500) if (this.$refs.isSimplebar) this.$refs.isSimplebar.value.getScrollElement().scrollTop = currentPosition + 300;
+        if (currentPosition > 500)
+          if (this.$refs.isSimplebar)
+            this.$refs.isSimplebar.value.getScrollElement().scrollTop = currentPosition + 300;
       }
     };
 

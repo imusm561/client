@@ -21,7 +21,8 @@
     'Choose heading': 'Choose heading',
     Circle: 'Circle',
     Column: 'Column',
-    'Could not insert image at the current position.': 'Could not insert image at the current position.',
+    'Could not insert image at the current position.':
+      'Could not insert image at the current position.',
     'Could not obtain resized image URL.': 'Could not obtain resized image URL.',
     Decimal: 'Decimal',
     'Decimal with leading zero': 'Decimal with leading zero',
@@ -133,12 +134,14 @@
     'This link has no URL': 'This link has no URL',
     'This media URL is not supported.': 'This media URL is not supported.',
     Tiny: 'Tiny',
-    'Tip: Paste the URL into the content to embed faster.': 'Tip: Paste the URL into the content to embed faster.',
+    'Tip: Paste the URL into the content to embed faster.':
+      'Tip: Paste the URL into the content to embed faster.',
     'Toggle caption off': 'Toggle caption off',
     'Toggle caption on': 'Toggle caption on',
     'Toggle the circle list style': 'Toggle the circle list style',
     'Toggle the decimal list style': 'Toggle the decimal list style',
-    'Toggle the decimal with leading zero list style': 'Toggle the decimal with leading zero list style',
+    'Toggle the decimal with leading zero list style':
+      'Toggle the decimal with leading zero list style',
     'Toggle the disc list style': 'Toggle the disc list style',
     'Toggle the lower–latin list style': 'Toggle the lower–latin list style',
     'Toggle the lower–roman list style': 'Toggle the lower–roman list style',

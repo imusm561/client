@@ -1,5 +1,7 @@
 <template>
-  <span v-if="params.value" class="badge text-uppercase" :class="resolveBadgeBg(params.value)">{{ $t(`data.column.BasicDataState.${params.value}`) }}</span>
+  <span v-if="params.value" class="badge text-uppercase" :class="resolveBadgeBg(params.value)">
+    {{ $t(`data.column.BasicDataState.${params.value}`) }}
+  </span>
   <span v-else></span>
 </template>
 

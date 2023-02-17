@@ -4,7 +4,11 @@
       <div class="navbar-header">
         <div class="d-flex">
           <div class="dropdown d-xl-none topbar-head-dropdown header-item">
-            <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" @click="toggleMenu">
+            <button
+              type="button"
+              class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
+              @click="toggleMenu"
+            >
               <i class="mdi mdi-format-indent-increase fs-22"></i>
             </button>
           </div>
@@ -22,7 +26,10 @@
                 @keyup.enter.stop="handleEnter"
               />
               <span class="mdi mdi-magnify search-widget-icon"></span>
-              <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none" id="search-close-options"></span>
+              <span
+                class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none"
+                id="search-close-options"
+              ></span>
             </div>
             <div class="dropdown-menu dropdown-menu-lg" id="search-dropdown">
               <div data-simplebar style="max-height: 320px">
@@ -57,7 +64,14 @@
               <div class="p-0">
                 <div class="form-group p-3 m-0">
                   <div class="input-group">
-                    <input type="text" class="form-control" :placeholder="$t('layout.navbar.search.placeholder')" v-model="search.keyword" @input="handleSearch" @keyup.enter.stop="handleEnter" />
+                    <input
+                      type="text"
+                      class="form-control"
+                      :placeholder="$t('layout.navbar.search.placeholder')"
+                      v-model="search.keyword"
+                      @input="handleSearch"
+                      @keyup.enter.stop="handleEnter"
+                    />
                     <button class="btn btn-primary" type="submit">
                       <i class="mdi mdi-magnify"></i>
                     </button>
@@ -80,7 +94,13 @@
           </div>
 
           <div class="dropdown topbar-head-dropdown ms-1 header-item">
-            <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button
+              type="button"
+              class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
+              data-bs-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
               <i class="mdi mdi-view-grid-outline fs-22 text-secondary"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-lg p-0 dropdown-menu-end">
@@ -142,13 +162,29 @@
           </div>
 
           <div class="dropdown topbar-head-dropdown ms-1 header-item">
-            <button type="button" class="btn btn-icon btn-topbar btn-ghost-danger rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown">
+            <button
+              type="button"
+              class="btn btn-icon btn-topbar btn-ghost-danger rounded-circle"
+              id="page-header-notifications-dropdown"
+              data-bs-toggle="dropdown"
+            >
               <i class="mdi mdi-bell-outline fs-22 text-danger"></i>
               <span
                 class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger"
-                v-if="chat_notices.length + mail_notices.length + comment_notices.length + flow_notices.length !== 0"
+                v-if="
+                  chat_notices.length +
+                    mail_notices.length +
+                    comment_notices.length +
+                    flow_notices.length !==
+                  0
+                "
               >
-                {{ chat_notices.length + mail_notices.length + comment_notices.length + flow_notices.length }}
+                {{
+                  chat_notices.length +
+                  mail_notices.length +
+                  comment_notices.length +
+                  flow_notices.length
+                }}
               </span>
             </button>
             <div class="dropdown-menu dropdown-menu-xl dropdown-menu-end p-0">
@@ -156,39 +192,95 @@
                 <div class="p-3">
                   <div class="row align-items-center">
                     <div class="col">
-                      <h6 class="m-0 fs-16 fw-semibold text-white">{{ $t('layout.navbar.notifications') }}</h6>
+                      <h6 class="m-0 fs-16 fw-semibold text-white">
+                        {{ $t('layout.navbar.notifications') }}
+                      </h6>
                     </div>
-                    <div class="col-auto dropdown-tabs" v-if="chat_notices.length + mail_notices.length + comment_notices.length + flow_notices.length !== 0">
+                    <div
+                      class="col-auto dropdown-tabs"
+                      v-if="
+                        chat_notices.length +
+                          mail_notices.length +
+                          comment_notices.length +
+                          flow_notices.length !==
+                        0
+                      "
+                    >
                       <span class="badge badge-soft-light fs-13">
-                        {{ $t('layout.navbar.notifications.total', { total: chat_notices.length + mail_notices.length + comment_notices.length + flow_notices.length }) }}
+                        {{
+                          $t('layout.navbar.notifications.total', {
+                            total:
+                              chat_notices.length +
+                              mail_notices.length +
+                              comment_notices.length +
+                              flow_notices.length,
+                          })
+                        }}
                       </span>
                     </div>
                   </div>
                 </div>
                 <div class="px-2 pt-2">
-                  <ul class="nav nav-tabs dropdown-tabs nav-tabs-custom" data-dropdown-tabs="true" id="notificationItemsTab" role="tablist">
+                  <ul
+                    class="nav nav-tabs dropdown-tabs nav-tabs-custom"
+                    data-dropdown-tabs="true"
+                    id="notificationItemsTab"
+                    role="tablist"
+                  >
                     <li class="nav-item">
-                      <a class="nav-link active" data-bs-toggle="tab" href="#chats-tab" role="tab" @click.capture.stop>
+                      <a
+                        class="nav-link active"
+                        data-bs-toggle="tab"
+                        href="#chats-tab"
+                        role="tab"
+                        @click.capture.stop
+                      >
                         {{ $t('layout.navbar.notifications.chats') }}
-                        <span v-if="chat_notices.length > 0" class="badge bg-danger">{{ chat_notices.length }}</span>
+                        <span v-if="chat_notices.length > 0" class="badge bg-danger">
+                          {{ chat_notices.length }}
+                        </span>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#mails-tab" role="tab" @click.capture.stop>
+                      <a
+                        class="nav-link"
+                        data-bs-toggle="tab"
+                        href="#mails-tab"
+                        role="tab"
+                        @click.capture.stop
+                      >
                         {{ $t('layout.navbar.notifications.mails') }}
-                        <span v-if="mail_notices.length > 0" class="badge bg-danger">{{ mail_notices.length }}</span>
+                        <span v-if="mail_notices.length > 0" class="badge bg-danger">
+                          {{ mail_notices.length }}
+                        </span>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#comments-tab" role="tab" @click.capture.stop>
+                      <a
+                        class="nav-link"
+                        data-bs-toggle="tab"
+                        href="#comments-tab"
+                        role="tab"
+                        @click.capture.stop
+                      >
                         {{ $t('layout.navbar.notifications.comments') }}
-                        <span v-if="comment_notices.length > 0" class="badge bg-danger">{{ comment_notices.length }}</span>
+                        <span v-if="comment_notices.length > 0" class="badge bg-danger">
+                          {{ comment_notices.length }}
+                        </span>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#flows-tab" role="tab" @click.capture.stop>
+                      <a
+                        class="nav-link"
+                        data-bs-toggle="tab"
+                        href="#flows-tab"
+                        role="tab"
+                        @click.capture.stop
+                      >
                         {{ $t('layout.navbar.notifications.flows') }}
-                        <span v-if="flow_notices.length > 0" class="badge bg-danger">{{ flow_notices.length }}</span>
+                        <span v-if="flow_notices.length > 0" class="badge bg-danger">
+                          {{ flow_notices.length }}
+                        </span>
                       </a>
                     </li>
                   </ul>
@@ -197,8 +289,17 @@
 
               <div class="tab-content" id="notificationItemsTabContent">
                 <div class="tab-pane fade py-2 ps-2 show active" id="chats-tab" role="tabpanel">
-                  <div data-simplebar v-if="chat_notices.length" style="max-height: 300px" class="pe-2">
-                    <div class="text-reset notification-item d-block dropdown-item cursor-pointer" v-for="(item, index) in chat_notices" :key="index">
+                  <div
+                    data-simplebar
+                    v-if="chat_notices.length"
+                    style="max-height: 300px"
+                    class="pe-2"
+                  >
+                    <div
+                      class="text-reset notification-item d-block dropdown-item cursor-pointer"
+                      v-for="(item, index) in chat_notices"
+                      :key="index"
+                    >
                       <div class="d-flex">
                         <Avatar class="me-3" :data="item.user" />
                         <div class="flex-1 w-50" @click="handleClickChatNotice(item)">
@@ -216,7 +317,9 @@
                           </p>
                         </div>
                         <div class="col-auto dropdown-tabs" v-if="item.chat_data.length > 1">
-                          <span class="badge badge-soft-success fs-13">{{ item.chat_data.length - 1 }} More</span>
+                          <span class="badge badge-soft-success fs-13">
+                            {{ item.chat_data.length - 1 }} More
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -225,13 +328,24 @@
                 </div>
 
                 <div class="tab-pane fade py-2 ps-2" id="mails-tab" role="tabpanel">
-                  <div data-simplebar v-if="mail_notices.length" style="max-height: 300px" class="pe-2">
-                    <div class="text-reset notification-item d-block dropdown-item cursor-pointer" v-for="(mail, index) in mail_notices" :key="index">
+                  <div
+                    data-simplebar
+                    v-if="mail_notices.length"
+                    style="max-height: 300px"
+                    class="pe-2"
+                  >
+                    <div
+                      class="text-reset notification-item d-block dropdown-item cursor-pointer"
+                      v-for="(mail, index) in mail_notices"
+                      :key="index"
+                    >
                       <div class="d-flex">
                         <Avatar class="me-3" :data="getUserInfo(mail.created_by)" />
                         <div class="flex-1 w-50" @click="handleClickMailNotice(mail)">
                           <span class="stretched-link">
-                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">{{ getUserInfo(mail.created_by)?.fullname || mail.created_by }}</h6>
+                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">
+                              {{ getUserInfo(mail.created_by)?.fullname || mail.created_by }}
+                            </h6>
                           </span>
                           <div class="fs-13 text-muted">
                             <p class="mb-1 text-truncate">{{ mail.subject }}</p>
@@ -250,13 +364,24 @@
                 </div>
 
                 <div class="tab-pane fade py-2 ps-2" id="comments-tab" role="tabpanel">
-                  <div data-simplebar v-if="comment_notices.length" style="max-height: 300px" class="pe-2">
-                    <div class="text-reset notification-item d-block dropdown-item cursor-pointer" v-for="(comment, index) in comment_notices" :key="index">
+                  <div
+                    data-simplebar
+                    v-if="comment_notices.length"
+                    style="max-height: 300px"
+                    class="pe-2"
+                  >
+                    <div
+                      class="text-reset notification-item d-block dropdown-item cursor-pointer"
+                      v-for="(comment, index) in comment_notices"
+                      :key="index"
+                    >
                       <div class="d-flex">
                         <Avatar class="me-3" :data="getUserInfo(comment.created_by)" />
                         <div class="flex-1 w-50" @click="handleClickCommentNotice(comment)">
                           <span class="stretched-link">
-                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">{{ getUserInfo(comment.created_by)?.fullname || comment.created_by }}</h6>
+                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">
+                              {{ getUserInfo(comment.created_by)?.fullname || comment.created_by }}
+                            </h6>
                           </span>
                           <div class="fs-13 text-muted">
                             <p class="mb-1 text-truncate">{{ replaceHtml(comment.content) }}</p>
@@ -275,13 +400,31 @@
                 </div>
 
                 <div class="tab-pane fade py-2 ps-2" id="flows-tab" role="tabpanel">
-                  <div data-simplebar v-if="flow_notices.length" style="max-height: 300px" class="pe-2">
-                    <div class="text-reset notification-item d-block dropdown-item cursor-pointer" v-for="(flow, index) in flow_notices" :key="index">
+                  <div
+                    data-simplebar
+                    v-if="flow_notices.length"
+                    style="max-height: 300px"
+                    class="pe-2"
+                  >
+                    <div
+                      class="text-reset notification-item d-block dropdown-item cursor-pointer"
+                      v-for="(flow, index) in flow_notices"
+                      :key="index"
+                    >
                       <div class="d-flex">
-                        <Avatar class="me-3" :data="getUserInfo(flow.updated_by || flow.created_by)" />
+                        <Avatar
+                          class="me-3"
+                          :data="getUserInfo(flow.updated_by || flow.created_by)"
+                        />
                         <div class="flex-1 w-50" @click="handleClickFlowNotice(flow)">
                           <span class="stretched-link">
-                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">{{ getUserInfo(flow.updated_by || flow.created_by)?.fullname || flow.updated_by || flow.created_by }}</h6>
+                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">
+                              {{
+                                getUserInfo(flow.updated_by || flow.created_by)?.fullname ||
+                                flow.updated_by ||
+                                flow.created_by
+                              }}
+                            </h6>
                           </span>
                           <div class="fs-13 text-muted">
                             <p class="mb-1 text-truncate">{{ flow.title }}</p>
@@ -304,14 +447,25 @@
 
           <!-- Theme Trigger -->
           <div class="ms-1 header-item d-none d-sm-flex">
-            <span class="btn btn-icon btn-topbar rounded-circle" :class="theme === 'dark' ? 'btn-ghost-warning' : 'btn-ghost-dark'" @click="theme = theme === 'dark' ? 'light' : 'dark'">
-              <i class="mdi mdi-theme-light-dark fs-22" :class="theme === 'dark' ? 'text-warning' : 'text-dark'"></i>
+            <span
+              class="btn btn-icon btn-topbar rounded-circle"
+              :class="theme === 'dark' ? 'btn-ghost-warning' : 'btn-ghost-dark'"
+              @click="theme = theme === 'dark' ? 'light' : 'dark'"
+            >
+              <i
+                class="mdi mdi-theme-light-dark fs-22"
+                :class="theme === 'dark' ? 'text-warning' : 'text-dark'"
+              ></i>
             </span>
           </div>
 
           <!-- Language Selector-->
           <div class="dropdown ms-1 topbar-head-dropdown header-item">
-            <button type="button" class="btn btn-icon btn-topbar btn-ghost-info rounded-circle" data-bs-toggle="dropdown">
+            <button
+              type="button"
+              class="btn btn-icon btn-topbar btn-ghost-info rounded-circle"
+              data-bs-toggle="dropdown"
+            >
               <i class="mdi mdi-translate fs-22 text-info"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-end">
@@ -329,12 +483,23 @@
           </div>
 
           <div class="dropdown ms-sm-3 header-item topbar-user">
-            <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button
+              type="button"
+              class="btn"
+              id="page-header-user-dropdown"
+              data-bs-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
               <span class="d-flex align-items-center">
                 <Avatar :data="$store.state.user.data" />
                 <span class="text-start ms-xl-2">
-                  <span class="d-none d-xl-inline-block ms-1 fw-medium text-dark">{{ $store.state.user.data.fullname }}</span>
-                  <span class="d-none d-xl-block ms-1 fs-12 text-muted">{{ $store.state.user.data.post }}</span>
+                  <span class="d-none d-xl-inline-block ms-1 fw-medium text-dark">
+                    {{ $store.state.user.data.fullname }}
+                  </span>
+                  <span class="d-none d-xl-block ms-1 fs-12 text-muted">
+                    {{ $store.state.user.data.post }}
+                  </span>
                 </span>
               </span>
             </button>
@@ -349,8 +514,19 @@
               </router-link>
 
               <div class="dropdown-item cursor-pointer" @click="toggleFullScreen">
-                <i :class="['fs-16 text-muted align-middle me-1 mdi', isFullScreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen']"></i>
-                <span class="align-middle">{{ isFullScreen ? $t('layout.navbar.user.dropdown.fullScreen.exit') : $t('layout.navbar.user.dropdown.fullScreen') }}</span>
+                <i
+                  :class="[
+                    'fs-16 text-muted align-middle me-1 mdi',
+                    isFullScreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen',
+                  ]"
+                ></i>
+                <span class="align-middle">
+                  {{
+                    isFullScreen
+                      ? $t('layout.navbar.user.dropdown.fullScreen.exit')
+                      : $t('layout.navbar.user.dropdown.fullScreen')
+                  }}
+                </span>
               </div>
               <div class="dropdown-divider"></div>
               <div class="dropdown-item cursor-pointer" @click="handleUserLogout">
@@ -427,20 +603,30 @@ export default {
       let tid = Number(search.keyword) > 0 ? Number(search.keyword) : null;
       let rid = null;
 
-      if (search.keyword.includes('/') && search.keyword.split('/')[0]?.length && search.keyword.split('/')[1]?.length) {
-        tid = Number(search.keyword.split('/')[0]) > 0 ? Number(search.keyword.split('/')[0]) : null;
-        rid = Number(search.keyword.split('/')[1]) >= 0 ? Number(search.keyword.split('/')[1]) : null;
+      if (
+        search.keyword.includes('/') &&
+        search.keyword.split('/')[0]?.length &&
+        search.keyword.split('/')[1]?.length
+      ) {
+        tid =
+          Number(search.keyword.split('/')[0]) > 0 ? Number(search.keyword.split('/')[0]) : null;
+        rid =
+          Number(search.keyword.split('/')[1]) >= 0 ? Number(search.keyword.split('/')[1]) : null;
       }
 
       search.result.form = JSON.parse(JSON.stringify(store.state.user.forms)).filter(
-        (form) => store.state.user.forms.every((f) => f.pid != form.id) && (form.title?.toLowerCase().includes(search.keyword?.toLowerCase()) || form.id === tid),
+        (form) =>
+          store.state.user.forms.every((f) => f.pid != form.id) &&
+          (form.title?.toLowerCase().includes(search.keyword?.toLowerCase()) || form.id === tid),
       );
       if (rid != null) {
         search.result.form = search.result.form
           .filter((form) => form.route && !form.redirect && form.status && form.id === tid)
           .map((form) => {
             form.title = `${form.title}/${rid}`;
-            form.route = { path: rid === 0 ? `/data/edit/${tid}/${rid}` : `/data/view/${tid}/${rid}` };
+            form.route = {
+              path: rid === 0 ? `/data/edit/${tid}/${rid}` : `/data/view/${tid}/${rid}`,
+            };
             return form;
           });
       }
@@ -448,7 +634,8 @@ export default {
       search.result.user = store.state.org.users.filter(
         (user) =>
           user.username != store.state.user.data.username &&
-          (user.username?.toLowerCase().includes(search.keyword?.toLowerCase()) || user.fullname?.toLowerCase().includes(search.keyword?.toLowerCase())),
+          (user.username?.toLowerCase().includes(search.keyword?.toLowerCase()) ||
+            user.fullname?.toLowerCase().includes(search.keyword?.toLowerCase())),
       );
     };
 
@@ -465,7 +652,9 @@ export default {
       }
 
       if (search.result.form.length) {
-        const forms = search.result.form.filter((form) => form.status === 1 && (form.redirect || form.route));
+        const forms = search.result.form.filter(
+          (form) => form.status === 1 && (form.redirect || form.route),
+        );
         if (forms?.[0]?.route) {
           router.push(forms[0].route);
           return;
@@ -508,12 +697,19 @@ export default {
     const scrollHandler = () => {
       var pageTopbar = document.getElementById('page-topbar');
       if (pageTopbar) {
-        document.body.scrollTop >= 50 || document.documentElement.scrollTop >= 50 ? pageTopbar.classList.add('topbar-shadow') : pageTopbar.classList.remove('topbar-shadow');
+        document.body.scrollTop >= 50 || document.documentElement.scrollTop >= 50
+          ? pageTopbar.classList.add('topbar-shadow')
+          : pageTopbar.classList.remove('topbar-shadow');
       }
     };
 
     const fullScreenHandler = () => {
-      if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) isFullScreen.value = false;
+      if (
+        !document.fullscreenElement &&
+        !document.mozFullScreenElement &&
+        !document.webkitFullscreenElement
+      )
+        isFullScreen.value = false;
       else isFullScreen.value = true;
     };
 
@@ -611,12 +807,14 @@ export default {
     });
 
     const handleClickCommentNotice = (comment) => {
-      router.replace({ path: comment.source, query: { tab: 'comment', id: comment.id } }).then(() => {
-        store.commit('user/DEL_NOTICE', {
-          app: 'comment',
-          data: comment,
+      router
+        .replace({ path: comment.source, query: { tab: 'comment', id: comment.id } })
+        .then(() => {
+          store.commit('user/DEL_NOTICE', {
+            app: 'comment',
+            data: comment,
+          });
         });
-      });
     };
 
     const flow_notices = computed(() => {
@@ -659,7 +857,10 @@ export default {
         store.commit('sys/TOGGLE_LANG', value);
         if (store.state.sys.cfg.water_mark && store.state.user.data.id) {
           removeWatermark();
-          setWatermark(`${store.state.user.data.username} - ${store.state.user.data.fullname}`, moment().format('ll'));
+          setWatermark(
+            `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
+            moment().format('ll'),
+          );
         }
         reload();
       },
@@ -671,7 +872,11 @@ export default {
 
     const isFullScreen = ref(false);
     const toggleFullScreen = () => {
-      if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
+      if (
+        !document.fullscreenElement &&
+        !document.mozFullScreenElement &&
+        !document.webkitFullscreenElement
+      ) {
         if (document.documentElement.requestFullscreen) {
           document.documentElement.requestFullscreen();
         } else if (document.documentElement.mozRequestFullScreen) {

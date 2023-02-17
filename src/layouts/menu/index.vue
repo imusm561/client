@@ -1,6 +1,11 @@
 <template>
   <ul class="navbar-nav h-100" id="navbar-nav">
-    <component :is="resolveNavItemComponent(item)" v-for="item in items" :key="`${item.id}-${item.title}`" :item="item" />
+    <component
+      :is="resolveNavItemComponent(item)"
+      v-for="item in items"
+      :key="`${item.id}-${item.title}`"
+      :item="item"
+    />
   </ul>
 </template>
 

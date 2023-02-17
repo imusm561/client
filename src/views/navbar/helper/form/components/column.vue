@@ -13,7 +13,12 @@
                   <i :class="`mdi ${item.icon}`" />
                   {{ $t(item.title) }}
                 </h5>
-                <draggable class="row" :list="item.list" :group="{ name: 'component', pull: 'clone', put: false }" :sort="false">
+                <draggable
+                  class="row"
+                  :list="item.list"
+                  :group="{ name: 'component', pull: 'clone', put: false }"
+                  :sort="false"
+                >
                   <div class="col-sm-6 p-1" v-for="(component, cidx) in item.list" :key="cidx">
                     <div class="drag-item cursor-move p-2">
                       <i :class="`mdi ${component.icon}`" />
@@ -30,7 +35,9 @@
             <div class="flex-grow-1">
               <h4>
                 <code>#{{ form.id }}</code>
-                <span class="ms-2">{{ form.title }} {{ $t('layout.navbar.helper.form.column.columns') }}</span>
+                <span class="ms-2">
+                  {{ form.title }} {{ $t('layout.navbar.helper.form.column.columns') }}
+                </span>
               </h4>
             </div>
             <div class="flex-shrink-0">
@@ -49,7 +56,10 @@
                 <button
                   v-if="changes.create.length || changes.update.length || changes.delete.length"
                   type="button"
-                  :disabled="saving && (changes.create.length || changes.update.length || changes.delete.length)"
+                  :disabled="
+                    saving &&
+                    (changes.create.length || changes.update.length || changes.delete.length)
+                  "
                   class="btn btn-sm btn-soft-secondary btn-icon waves-effect waves-light ms-1"
                   @click="handleSaveFormColumns"
                 >
@@ -75,7 +85,11 @@
             @add="handleAddColumn"
             @sort="handleSortColumn"
           >
-            <div :class="`col-sm-${column.col || 12} pe-1 ps-1`" v-for="(column, index) in columns" :key="index">
+            <div
+              :class="`col-sm-${column.col || 12} pe-1 ps-1`"
+              v-for="(column, index) in columns"
+              :key="index"
+            >
               <div
                 :class="[
                   'mb-3',
@@ -105,7 +119,10 @@
                       () => {
                         const copy_column = JSON.parse(JSON.stringify(columns[index]));
                         copy_column.alias = null;
-                        copy_column.name = $t('layout.navbar.helper.form.column.components.duplicate', { name: copy_column.name });
+                        copy_column.name = $t(
+                          'layout.navbar.helper.form.column.components.duplicate',
+                          { name: copy_column.name },
+                        );
                         delete copy_column.id;
                         delete copy_column.uuid;
                         delete copy_column.data_state;
@@ -131,12 +148,21 @@
               </div>
             </div>
           </draggable>
-          <Empty v-if="columns.length === 0" :text="$t('layout.navbar.helper.form.column.components.empty')" />
+          <Empty
+            v-if="columns.length === 0"
+            :text="$t('layout.navbar.helper.form.column.components.empty')"
+          />
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="viewAndEditColumnModal" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
+    <div
+      class="modal fade"
+      id="viewAndEditColumnModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      data-bs-focus="false"
+    >
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
           <Form v-slot="{ errors }">
@@ -146,7 +172,8 @@
               <div v-if="current_column.created_at" class="text-muted">
                 {{
                   $t('layout.navbar.helper.form.column.config.create', {
-                    user: getUserInfo(current_column.created_by)?.fullname || current_column.created_by,
+                    user:
+                      getUserInfo(current_column.created_by)?.fullname || current_column.created_by,
                     time: $moment(current_column.created_at).format('llll'),
                   })
                 }}
@@ -155,12 +182,18 @@
               <div v-if="current_column.updated_at" class="text-muted">
                 {{
                   $t('layout.navbar.helper.form.column.config.update', {
-                    user: getUserInfo(current_column.updated_by)?.fullname || current_column.updated_by,
+                    user:
+                      getUserInfo(current_column.updated_by)?.fullname || current_column.updated_by,
                     time: $moment(current_column.updated_at).format('llll'),
                   })
                 }}
               </div>
-              <button type="button" class="btn-close" :disabled="Object.keys(errors).length" data-bs-dismiss="modal"></button>
+              <button
+                type="button"
+                class="btn-close"
+                :disabled="Object.keys(errors).length"
+                data-bs-dismiss="modal"
+              ></button>
             </div>
             <div class="modal-body p-0">
               <div data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
@@ -351,12 +384,20 @@ export default {
         existe_columns.forEach((cloumn) => {
           let server_item = server_columns.find((item) => item.id === cloumn.id);
           let existe_item = existe_columns.find((item) => item.id === cloumn.id);
-          if (Object.keys(deepCompare(existe_item, server_item)).length) changes.value.update.push(cloumn);
+          if (Object.keys(deepCompare(existe_item, server_item)).length)
+            changes.value.update.push(cloumn);
         });
 
-        changes.value.delete = server_columns.filter((server_item) => existe_columns.every((old_item) => old_item.id != server_item.id));
+        changes.value.delete = server_columns.filter((server_item) =>
+          existe_columns.every((old_item) => old_item.id != server_item.id),
+        );
 
-        if (changes.value.create.length || changes.value.update.length || changes.value.delete.length) emit('setColumnsChangedFlag', true);
+        if (
+          changes.value.create.length ||
+          changes.value.update.length ||
+          changes.value.delete.length
+        )
+          emit('setColumnsChangedFlag', true);
         else emit('setColumnsChangedFlag', false);
       },
       { immediate: true, deep: true },
@@ -372,7 +413,8 @@ export default {
 
     onUnmounted(() => {
       const viewAndEditColumnModal = document.getElementById('viewAndEditColumnModal');
-      if (viewAndEditColumnModal) viewAndEditColumnModal.removeEventListener('shown.bs.modal', () => {});
+      if (viewAndEditColumnModal)
+        viewAndEditColumnModal.removeEventListener('shown.bs.modal', () => {});
     });
 
     const scrollToTop = (modal) => {
@@ -395,7 +437,9 @@ export default {
 
     const handleCopyColumns = () => {
       const text = {
-        keyword: `copy_form_columns_at_${moment().format('YYYY-MM-DD')}_by_${store.state.user.data.username}`,
+        keyword: `copy_form_columns_at_${moment().format('YYYY-MM-DD')}_by_${
+          store.state.user.data.username
+        }`,
         columns: columns.value.map((column) => {
           return {
             name: column.name,
@@ -442,7 +486,13 @@ export default {
     const handlePasteColumns = () => {
       pasteFromClipboard()
         .then((text) => {
-          if (text.includes(`copy_form_columns_at_${moment().format('YYYY-MM-DD')}_by_${store.state.user.data.username}`)) {
+          if (
+            text.includes(
+              `copy_form_columns_at_${moment().format('YYYY-MM-DD')}_by_${
+                store.state.user.data.username
+              }`,
+            )
+          ) {
             try {
               text = JSON.parse(text);
               if (text.columns && Array.isArray(text.columns)) {
@@ -452,7 +502,9 @@ export default {
                   props: {
                     variant: 'success',
                     icon: 'mdi-check-circle',
-                    text: i18n.global.t('layout.navbar.helper.form.column.components.paste.success'),
+                    text: i18n.global.t(
+                      'layout.navbar.helper.form.column.components.paste.success',
+                    ),
                   },
                 });
               }
@@ -508,7 +560,12 @@ export default {
         }
 
         if (
-          columns.value.some((column, index) => column.component === 'LayoutTab' && (columns.value?.[index - 1]?.component === 'LayoutTab' || columns.value?.[index + 1]?.component === 'LayoutTab'))
+          columns.value.some(
+            (column, index) =>
+              column.component === 'LayoutTab' &&
+              (columns.value?.[index - 1]?.component === 'LayoutTab' ||
+                columns.value?.[index + 1]?.component === 'LayoutTab'),
+          )
         ) {
           toast({
             component: ToastificationContent,
@@ -530,7 +587,10 @@ export default {
 
       if (changes.value.create.length) {
         completed.create = false;
-        const { code: create_code, msg: create_msg } = await createColumns({ tid: props.form.id, columns: changes.value.create });
+        const { code: create_code, msg: create_msg } = await createColumns({
+          tid: props.form.id,
+          columns: changes.value.create,
+        });
         if (create_code === 200) {
           completed.create = true;
         } else {

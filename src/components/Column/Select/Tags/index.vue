@@ -5,7 +5,14 @@
       <span v-if="column.alias" class="badge bg-primary ms-2">{{ column.alias }}</span>
     </label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
-    <VueSelect class="w-100" :placeholder="column.cfg.placeholder" multiple :close-on-select="false" taggable push-tags></VueSelect>
+    <VueSelect
+      class="w-100"
+      :placeholder="column.cfg.placeholder"
+      multiple
+      :close-on-select="false"
+      taggable
+      push-tags
+    ></VueSelect>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
   <div v-else-if="type === 'EDIT'">
@@ -29,7 +36,13 @@
         <em v-else style="opacity: 0.5">{{ $t('components.vs.generateOption') }}</em>
       </template>
     </VueSelect>
-    <Field :name="column.field" v-model="value" class="d-none" :class="{ 'is-invalid': error }" :rules="`${required ? 'required' : ''}`" />
+    <Field
+      :name="column.field"
+      v-model="value"
+      class="d-none"
+      :class="{ 'is-invalid': error }"
+      :rules="`${required ? 'required' : ''}`"
+    />
     <span class="invalid-feedback">{{ error }}</span>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
@@ -72,7 +85,9 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const options = computed(() => {
-      return Array.from(new Set([...(props.column.cfg.options || []), ...(props.modelValue || [])]));
+      return Array.from(
+        new Set([...(props.column.cfg.options || []), ...(props.modelValue || [])]),
+      );
     });
 
     return {

@@ -2,7 +2,11 @@
   <span v-if="params.value && params.value.length">
     <div class="mt-1">
       <div class="avatar-group">
-        <span v-for="(file, index) in params.value" :key="index" class="avatar-group-item cursor-pointer">
+        <span
+          v-for="(file, index) in params.value"
+          :key="index"
+          class="avatar-group-item cursor-pointer"
+        >
           <div :title="file.name">
             <img
               v-if="file.category == 'image'"
@@ -25,7 +29,12 @@
               "
               @dblclick="handleDbclickFile(file)"
             />
-            <i v-else class="file-icon" :class="$fileIcons.getClassWithColor(file.name)" @dblclick="handleDbclickFile(file)" />
+            <i
+              v-else
+              class="file-icon"
+              :class="$fileIcons.getClassWithColor(file.name)"
+              @dblclick="handleDbclickFile(file)"
+            />
           </div>
         </span>
       </div>

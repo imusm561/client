@@ -7,11 +7,18 @@
       <div v-else>
         <i :class="`mdi ${icon} text-${variant} fs-16 align-middle me-2`"></i>
       </div>
-      <span :class="`fw-semibold me-auto text-truncate text-${variant}`">{{ title ? title : user ? user.fullname : $store.state.sys.name }}</span>
+      <span :class="`fw-semibold me-auto text-truncate text-${variant}`">
+        {{ title ? title : user ? user.fullname : $store.state.sys.name }}
+      </span>
       <small v-if="time" style="white-space: nowrap">{{ $moment(time).fromNow() }}</small>
       <button type="button" class="btn-close" @click="$emit('close-toast')"></button>
     </div>
-    <div class="toast-body" :class="{ 'cursor-pointer ': !!to }" :title="text" @click="handleClickText">
+    <div
+      class="toast-body"
+      :class="{ 'cursor-pointer ': !!to }"
+      :title="text"
+      @click="handleClickText"
+    >
       <span class="text-muted text-truncate-five-lines">{{ text }}</span>
     </div>
   </div>

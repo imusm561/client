@@ -4,8 +4,15 @@
     <div class="card">
       <div class="card-header border-0 p-2 pb-0">
         <span class="float-end">
-          <i class="mdi mdi-table-eye fs-16 cursor-pointer text-muted pe-2" data-bs-toggle="modal" data-bs-target="#formInfoModal"></i>
-          <i class="mdi mdi-refresh fs-16 cursor-pointer text-muted pe-2" @click="handleRefetchDataList"></i>
+          <i
+            class="mdi mdi-table-eye fs-16 cursor-pointer text-muted pe-2"
+            data-bs-toggle="modal"
+            data-bs-target="#formInfoModal"
+          ></i>
+          <i
+            class="mdi mdi-refresh fs-16 cursor-pointer text-muted pe-2"
+            @click="handleRefetchDataList"
+          ></i>
         </span>
       </div>
       <div class="card-body d-flex flex-column pt-0" style="height: fit-content">
@@ -14,13 +21,16 @@
           <div class="d-flex justify-content-end gap-2">
             <div
               v-if="
-                ($store.state.user.data?.tags?.includes('ALL') || $store.state.user.data?.permissions?.[$route.params.tid]?.batch) &&
+                ($store.state.user.data?.tags?.includes('ALL') ||
+                  $store.state.user.data?.permissions?.[$route.params.tid]?.batch) &&
                 selectedRows.length > 1 &&
                 (!form.flow || form.flow?.length === 0) &&
                 selectedRows.every((row) => !['archived', 'approving'].includes(row.data_state))
               "
             >
-              <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="dropdown">{{ $tc('data.list.header.batchUpdate', { count: selectedRows.length }) }}</button>
+              <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="dropdown">
+                {{ $tc('data.list.header.batchUpdate', { count: selectedRows.length }) }}
+              </button>
               <div class="dropdown-menu">
                 <span
                   class="dropdown-item cursor-pointer"
@@ -74,11 +84,16 @@
                   {{ column.name }}
                 </span>
                 <div class="dropdown-divider"></div>
-                <span class="dropdown-item cursor-pointer" @click="handleDeselectAllRows()">{{ $tc('data.list.header.deselect', { count: selectedRows.length }) }}</span>
+                <span class="dropdown-item cursor-pointer" @click="handleDeselectAllRows()">
+                  {{ $tc('data.list.header.deselect', { count: selectedRows.length }) }}
+                </span>
               </div>
             </div>
             <button
-              v-if="$store.state.user.data?.tags?.includes('ALL') || $store.state.user.data?.permissions?.[$route.params.tid]?.create"
+              v-if="
+                $store.state.user.data?.tags?.includes('ALL') ||
+                $store.state.user.data?.permissions?.[$route.params.tid]?.create
+              "
               type="button"
               class="btn btn-sm btn-primary"
               @click="$router.push({ name: 'edit', params: { tid: $route.params.tid, rid: 0 } })"
@@ -128,7 +143,13 @@
 
       <input id="importData" class="d-none" type="file" @input="handleFileInput" />
 
-      <div class="modal fade" id="batchUpdateModal" data-bs-focus="false" data-bs-backdrop="static" data-bs-keyboard="false">
+      <div
+        class="modal fade"
+        id="batchUpdateModal"
+        data-bs-focus="false"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+      >
         <div class="modal-dialog modal-lg modal-dialog-centered">
           <div class="modal-content" v-if="batch.column">
             <div class="modal-header p-2 bg-light">
@@ -142,7 +163,12 @@
                     .toString()
                 }}
               </h5>
-              <button type="button" class="btn-close" id="hideBatchUpdateModalModalBtn" data-bs-dismiss="modal"></button>
+              <button
+                type="button"
+                class="btn-close"
+                id="hideBatchUpdateModalModalBtn"
+                data-bs-dismiss="modal"
+              ></button>
             </div>
             <div class="modal-body p-3">
               <Form v-slot="{ errors }" @submit="handleSubmitBatchUpdate">
@@ -161,7 +187,11 @@
                     }
                   "
                 ></component>
-                <button type="submit" class="btn btn-sm btn-success mt-3 float-end" :disabled="Object.keys(errors).length || batch.syntax_error">
+                <button
+                  type="submit"
+                  class="btn btn-sm btn-success mt-3 float-end"
+                  :disabled="Object.keys(errors).length || batch.syntax_error"
+                >
                   <i class="mdi mdi-content-save-outline" />
                   {{ $t('data.list.batchUpdateModal.footer.update') }}
                 </button>
@@ -176,19 +206,36 @@
           <div class="modal-content">
             <div class="modal-header p-2 bg-light">
               <h5 class="modal-title">#{{ form.id }} {{ form.title }}</h5>
-              <button type="button" class="btn-close" id="hideFormInfoModalBtn" data-bs-dismiss="modal"></button>
+              <button
+                type="button"
+                class="btn-close"
+                id="hideFormInfoModalBtn"
+                data-bs-dismiss="modal"
+              ></button>
             </div>
             <div class="modal-body p-0">
               <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   <span class="fw-medium">{{ $t('data.list.formInfoModal.creation') }}</span>
-                  <span class="badge bg-primary">{{ getUserInfo(form.created_by)?.fullname || form.created_by }} @ {{ $moment(form.created_at).format('llll') }}</span>
+                  <span class="badge bg-primary">
+                    {{ getUserInfo(form.created_by)?.fullname || form.created_by }} @
+                    {{ $moment(form.created_at).format('llll') }}
+                  </span>
                 </li>
-                <li v-if="form.updated_by" class="list-group-item d-flex justify-content-between align-items-center">
+                <li
+                  v-if="form.updated_by"
+                  class="list-group-item d-flex justify-content-between align-items-center"
+                >
                   <span class="fw-medium">{{ $t('data.list.formInfoModal.lastUpdate') }}</span>
-                  <span class="badge bg-secondary">{{ getUserInfo(form.updated_by)?.fullname || form.updated_by }} @ {{ $moment(form.updated_at).format('llll') }}</span>
+                  <span class="badge bg-secondary">
+                    {{ getUserInfo(form.updated_by)?.fullname || form.updated_by }} @
+                    {{ $moment(form.updated_at).format('llll') }}
+                  </span>
                 </li>
-                <li v-if="form.flow?.length" class="list-group-item d-flex justify-content-between align-items-center">
+                <li
+                  v-if="form.flow?.length"
+                  class="list-group-item d-flex justify-content-between align-items-center"
+                >
                   <span class="fw-medium">{{ $t('data.list.formInfoModal.approval') }}</span>
                   <span>
                     <span v-for="(flow, index) in form.flow" :key="index">
@@ -201,7 +248,9 @@
                   <span class="fw-medium">{{ $t('data.list.formInfoModal.totalRecords') }}</span>
                   <span>
                     <span v-for="(val, key) in records" :key="key">
-                      <span class="badge ms-2" :class="resolveDataStateVariant(key)">{{ $t(`data.column.BasicDataState.${key}`) }}: {{ val }}</span>
+                      <span class="badge ms-2" :class="resolveDataStateVariant(key)">
+                        {{ $t(`data.column.BasicDataState.${key}`) }}: {{ val }}
+                      </span>
                     </span>
                   </span>
                 </li>
@@ -210,43 +259,97 @@
                 <div class="card-header">
                   <ul class="nav nav-tabs-custom rounded card-header-tabs nav-justified">
                     <li class="nav-item">
-                      <a class="nav-link p-2 active" data-bs-toggle="tab" href="#tab_columns">{{ $t('data.list.formInfoModal.tab.columns') }}</a>
+                      <a class="nav-link p-2 active" data-bs-toggle="tab" href="#tab_columns">
+                        {{ $t('data.list.formInfoModal.tab.columns') }}
+                      </a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link p-2" data-bs-toggle="tab" href="#tab_logs">{{ $t('data.list.formInfoModal.tab.logs') }}</a>
+                      <a class="nav-link p-2" data-bs-toggle="tab" href="#tab_logs">
+                        {{ $t('data.list.formInfoModal.tab.logs') }}
+                      </a>
                     </li>
                   </ul>
                 </div>
                 <div class="card-body p-0">
                   <div class="tab-content">
                     <div class="tab-pane active" id="tab_columns">
-                      <div v-if="columns.filter((column) => column.type && !column.component.includes('Basic')).length" data-simplebar class="p-0" style="max-height: 40vh">
-                        <table class="table table-hover table-striped table-bordered table-nowrap align-middle mb-0">
+                      <div
+                        v-if="
+                          columns.filter(
+                            (column) => column.type && !column.component.includes('Basic'),
+                          ).length
+                        "
+                        data-simplebar
+                        class="p-0"
+                        style="max-height: 40vh"
+                      >
+                        <table
+                          class="table table-hover table-striped table-bordered table-nowrap align-middle mb-0"
+                        >
                           <thead class="table-light">
                             <tr>
                               <th class="text-capitalize">id</th>
-                              <th class="text-capitalize">{{ $t('data.list.formInfoModal.tab.columns.component') }}</th>
-                              <th class="text-capitalize">{{ $t('data.list.formInfoModal.tab.columns.name') }}</th>
-                              <th class="text-capitalize">{{ $t('data.list.formInfoModal.tab.columns.alias') }}</th>
-                              <th class="text-capitalize">{{ $t('data.list.formInfoModal.tab.columns.type') }}</th>
-                              <th class="text-capitalize">{{ $t('data.list.formInfoModal.tab.columns.length') }}</th>
-                              <th class="text-capitalize">{{ $t('data.list.formInfoModal.tab.columns.tags') }}</th>
-                              <th class="text-capitalize">{{ $t('data.list.formInfoModal.tab.columns.default') }}</th>
-                              <th class="text-capitalize">{{ $t('data.list.formInfoModal.tab.columns.source') }}</th>
+                              <th class="text-capitalize">
+                                {{ $t('data.list.formInfoModal.tab.columns.component') }}
+                              </th>
+                              <th class="text-capitalize">
+                                {{ $t('data.list.formInfoModal.tab.columns.name') }}
+                              </th>
+                              <th class="text-capitalize">
+                                {{ $t('data.list.formInfoModal.tab.columns.alias') }}
+                              </th>
+                              <th class="text-capitalize">
+                                {{ $t('data.list.formInfoModal.tab.columns.type') }}
+                              </th>
+                              <th class="text-capitalize">
+                                {{ $t('data.list.formInfoModal.tab.columns.length') }}
+                              </th>
+                              <th class="text-capitalize">
+                                {{ $t('data.list.formInfoModal.tab.columns.tags') }}
+                              </th>
+                              <th class="text-capitalize">
+                                {{ $t('data.list.formInfoModal.tab.columns.default') }}
+                              </th>
+                              <th class="text-capitalize">
+                                {{ $t('data.list.formInfoModal.tab.columns.source') }}
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            <tr v-for="column in columns.filter((column) => column.type && !column.component.includes('Basic'))" :key="column.id">
+                            <tr
+                              v-for="column in columns.filter(
+                                (column) => column.type && !column.component.includes('Basic'),
+                              )"
+                              :key="column.id"
+                            >
                               <td class="fw-medium text-primary">#{{ column.id }}</td>
-                              <td class="fw-medium">{{ $t(`data.list.formInfoModal.tab.columns.component.${column.component}`) }}</td>
-                              <td style="max-width: 200px" class="text-truncate" :title="column.name">{{ column.name }}</td>
+                              <td class="fw-medium">
+                                {{
+                                  $t(
+                                    `data.list.formInfoModal.tab.columns.component.${column.component}`,
+                                  )
+                                }}
+                              </td>
+                              <td
+                                style="max-width: 200px"
+                                class="text-truncate"
+                                :title="column.name"
+                              >
+                                {{ column.name }}
+                              </td>
                               <td>
                                 <span class="badge bg-secondary">{{ column.alias }}</span>
                               </td>
                               <td>{{ column.type }}</td>
                               <td>{{ column.length }}</td>
                               <td>
-                                <span class="badge bg-info me-1" v-for="tag in column.tags" :key="tag">{{ tag }}</span>
+                                <span
+                                  class="badge bg-info me-1"
+                                  v-for="tag in column.tags"
+                                  :key="tag"
+                                >
+                                  {{ tag }}
+                                </span>
                               </td>
                               <td>{{ column.default }}</td>
                               <td>{{ column?.cfg?.source }}</td>
@@ -274,8 +377,26 @@
 import { onMounted, onUnmounted, watch, ref, computed } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
-import { useRouter, decryptData, replaceHtml, getUserInfo, copyToClipboard, replaceVariables, getRulesByFormula, getDataByFormula, generateFlowByCurrentUser } from '@utils';
-import { getDataForm, getDataList, getDataSets, getDataTemplate, importData, checkData, updateData } from '@api/data';
+import {
+  useRouter,
+  decryptData,
+  replaceHtml,
+  getUserInfo,
+  copyToClipboard,
+  replaceVariables,
+  getRulesByFormula,
+  getDataByFormula,
+  generateFlowByCurrentUser,
+} from '@utils';
+import {
+  getDataForm,
+  getDataList,
+  getDataSets,
+  getDataTemplate,
+  importData,
+  checkData,
+  updateData,
+} from '@api/data';
 import { getCustomColumns, createCustomColumns, updateCustomColumns } from '@api/custom';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -285,7 +406,8 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { AgGridVue } from 'ag-grid-vue3';
 import 'ag-grid-enterprise';
 import { LicenseManager } from 'ag-grid-enterprise';
-if (store.state.sys.cfg?.ag_grid?.license) LicenseManager.setLicenseKey(decryptData(store.state.sys.cfg.ag_grid.license));
+if (store.state.sys.cfg?.ag_grid?.license)
+  LicenseManager.setLicenseKey(decryptData(store.state.sys.cfg.ag_grid.license));
 import AG_GRID_LOCALE_EN from '@utils/i18n/ag-gird/en.json';
 import AG_GRID_LOCALE_ZH_CN from '@utils/i18n/ag-gird/zh-cn.json';
 import Empty from '@components/Empty';
@@ -411,7 +533,9 @@ export default {
       };
     });
 
-    const localeText = ref(store.state.sys.lang === 'zh-cn' ? AG_GRID_LOCALE_ZH_CN : AG_GRID_LOCALE_EN);
+    const localeText = ref(
+      store.state.sys.lang === 'zh-cn' ? AG_GRID_LOCALE_ZH_CN : AG_GRID_LOCALE_EN,
+    );
 
     const defaultColDef = ref({
       resizable: true,
@@ -465,7 +589,10 @@ export default {
     });
 
     const statusBar = ref({
-      statusPanels: [{ statusPanel: 'agSelectedRowCountComponent' }, { statusPanel: 'agAggregationComponent' }],
+      statusPanels: [
+        { statusPanel: 'agSelectedRowCountComponent' },
+        { statusPanel: 'agAggregationComponent' },
+      ],
     });
 
     onMounted(() => {
@@ -501,9 +628,11 @@ export default {
         customs.value = res.data;
         if (customs.value)
           columns.value.sort((a, b) => {
-            return customs.value.data.findIndex((column) => column.field === a.field) < customs.value.data.findIndex((column) => column.field === b.field)
+            return customs.value.data.findIndex((column) => column.field === a.field) <
+              customs.value.data.findIndex((column) => column.field === b.field)
               ? -1
-              : customs.value.data.findIndex((column) => column.field === a.field) > customs.value.data.findIndex((column) => column.field === b.field)
+              : customs.value.data.findIndex((column) => column.field === a.field) >
+                customs.value.data.findIndex((column) => column.field === b.field)
               ? 1
               : 0;
           });
@@ -609,7 +738,9 @@ export default {
 
     const generateColumnDef = (column) => {
       const columnDef = {};
-      const custom = customs.value ? customs.value.data.find((item) => item.field === column.field) || null : null;
+      const custom = customs.value
+        ? customs.value.data.find((item) => item.field === column.field) || null
+        : null;
 
       // ============================================================================
       columnDef.field = column.field;
@@ -626,7 +757,18 @@ export default {
       // ============================================================================
 
       // ============================================================================
-      columnDef.hide = custom ? custom.hide : ['uuid', 'data_state', 'created_by', 'created_at', 'updated_by', 'updated_at', 'acl_view', 'acl_edit'].includes(column.field);
+      columnDef.hide = custom
+        ? custom.hide
+        : [
+            'uuid',
+            'data_state',
+            'created_by',
+            'created_at',
+            'updated_by',
+            'updated_at',
+            'acl_view',
+            'acl_edit',
+          ].includes(column.field);
       // ============================================================================
 
       // ============================================================================
@@ -663,29 +805,45 @@ export default {
           }
         }
 
-        checkData({ tid: Number(route.value.params.tid), rid: params.data.id }).then(({ code, data: editing, msg }) => {
-          if (code === 200) {
-            if (editing === null || editing === store.state.user.data.username) {
-              updateData({
-                tid: Number(route.value.params.tid),
-                id: params.data.id,
-                [params.column.colId]: params.newValue,
-                flow: form.value.flow,
-              }).then((res) => {
-                if (res.code != 200) {
-                  params.data[params.colDef.field] = params.oldValue;
-                  params.api.applyTransaction({ update: [params.data] });
-                  params.api.refreshCells();
-                  toast({
-                    component: ToastificationContent,
-                    props: {
-                      variant: 'danger',
-                      icon: 'mdi-alert',
-                      text: res.msg,
-                    },
-                  });
-                }
-              });
+        checkData({ tid: Number(route.value.params.tid), rid: params.data.id }).then(
+          ({ code, data: editing, msg }) => {
+            if (code === 200) {
+              if (editing === null || editing === store.state.user.data.username) {
+                updateData({
+                  tid: Number(route.value.params.tid),
+                  id: params.data.id,
+                  [params.column.colId]: params.newValue,
+                  flow: form.value.flow,
+                }).then((res) => {
+                  if (res.code != 200) {
+                    params.data[params.colDef.field] = params.oldValue;
+                    params.api.applyTransaction({ update: [params.data] });
+                    params.api.refreshCells();
+                    toast({
+                      component: ToastificationContent,
+                      props: {
+                        variant: 'danger',
+                        icon: 'mdi-alert',
+                        text: res.msg,
+                      },
+                    });
+                  }
+                });
+              } else {
+                params.data[params.colDef.field] = params.oldValue;
+                params.api.applyTransaction({ update: [params.data] });
+                params.api.refreshCells();
+                toast({
+                  component: ToastificationContent,
+                  props: {
+                    variant: 'danger',
+                    icon: 'mdi-alert',
+                    text: i18n.global.t('data.list.cellEdit.conflicts', {
+                      user: getUserInfo(editing)?.fullname || editing,
+                    }),
+                  },
+                });
+              }
             } else {
               params.data[params.colDef.field] = params.oldValue;
               params.api.applyTransaction({ update: [params.data] });
@@ -695,24 +853,12 @@ export default {
                 props: {
                   variant: 'danger',
                   icon: 'mdi-alert',
-                  text: i18n.global.t('data.list.cellEdit.conflicts', { user: getUserInfo(editing)?.fullname || editing }),
+                  text: msg,
                 },
               });
             }
-          } else {
-            params.data[params.colDef.field] = params.oldValue;
-            params.api.applyTransaction({ update: [params.data] });
-            params.api.refreshCells();
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
+          },
+        );
       };
       // columnDef.onCellClicked = (params) => {
       //   console.log('onCellClicked', params);
@@ -722,14 +868,21 @@ export default {
         if (
           !form.value.flow?.length &&
           params.data.data_state != 'approving' &&
-          !params.api.getEditingCells().find((cell) => cell.rowIndex === params.rowIndex && cell.column.colId === params.column.getId()) &&
-          (column?.tags?.includes('cellEdit') || ['BasicDataState', 'BasicAclView', 'BasicAclEdit'].includes(column.component)) &&
+          !params.api
+            .getEditingCells()
+            .find(
+              (cell) =>
+                cell.rowIndex === params.rowIndex && cell.column.colId === params.column.getId(),
+            ) &&
+          (column?.tags?.includes('cellEdit') ||
+            ['BasicDataState', 'BasicAclView', 'BasicAclEdit'].includes(column.component)) &&
           (store.state.user.data?.tags?.includes('ALL') ||
             store.state.user.data?.permissions?.[route.value.params.tid]?.all ||
             params.data.created_by === store.state.user.data.username ||
             params.data.updated_by === store.state.user.data.username ||
             params.data.acl_edit.includes(store.state.user.data.username) ||
-            (params.data.acl_edit.length === 0 && params.data.acl_view.includes(store.state.user.data.username)) ||
+            (params.data.acl_edit.length === 0 &&
+              params.data.acl_view.includes(store.state.user.data.username)) ||
             (params.data.acl_view.length === 0 && params.data.acl_edit.length === 0))
         ) {
           if (['InputRichtext', 'InputCode', 'SelectFile'].includes(column.component)) {
@@ -755,12 +908,24 @@ export default {
           if (_column._editable) {
             if (_column.cfg?.source) {
               // _column.cfg.source = replaceVariables(_column.cfg.source, alias.value);
-              _column.cfg.options = await getDataByFormula(params.data, _column.cfg.source, { value: params.data[_column.field] });
+              _column.cfg.options = await getDataByFormula(params.data, _column.cfg.source, {
+                value: params.data[_column.field],
+              });
             }
 
             params.colDef.editable = true;
-            params.colDef.cellEditor = ['InputTextarea'].includes(column.component) ? 'agLargeTextCellEditor' : `${column.component}Editor`;
-            params.colDef.cellEditorPopup = ['BasicDataState', 'BasicAclView', 'BasicAclEdit', 'InputTextarea', 'SelectSingle', 'SelectMultiple', 'SelectTags'].includes(column.component);
+            params.colDef.cellEditor = ['InputTextarea'].includes(column.component)
+              ? 'agLargeTextCellEditor'
+              : `${column.component}Editor`;
+            params.colDef.cellEditorPopup = [
+              'BasicDataState',
+              'BasicAclView',
+              'BasicAclEdit',
+              'InputTextarea',
+              'SelectSingle',
+              'SelectMultiple',
+              'SelectTags',
+            ].includes(column.component);
 
             params.colDef.cellEditorParams = {
               _form: form.value,
@@ -794,13 +959,18 @@ export default {
         columnDef.filter = 'agSetColumnFilter';
         columnDef.filterParams = {
           values: async (params) => {
-            const { data } = await getDataSets({ tid: Number(route.value.params.tid), field: column.field });
+            const { data } = await getDataSets({
+              tid: Number(route.value.params.tid),
+              field: column.field,
+            });
             params.success(
               Array.from(
                 new Set(
                   data
                     .map((item) => {
-                      return Array.isArray(item[column.field]) && item[column.field].length === 0 ? null : item[column.field];
+                      return Array.isArray(item[column.field]) && item[column.field].length === 0
+                        ? null
+                        : item[column.field];
                     })
                     .flat(),
                 ),
@@ -828,16 +998,25 @@ export default {
         columnDef.filter = 'agSetColumnFilter';
         columnDef.filterParams = {
           values: async (params) => {
-            if (['SelectSingle', 'SelectMultiple'].includes(column.component) && column.cfg.options.length && !column.cfg.source) {
+            if (
+              ['SelectSingle', 'SelectMultiple'].includes(column.component) &&
+              column.cfg.options.length &&
+              !column.cfg.source
+            ) {
               params.success(column.cfg.options);
             } else {
-              const { data } = await getDataSets({ tid: Number(route.value.params.tid), field: column.field });
+              const { data } = await getDataSets({
+                tid: Number(route.value.params.tid),
+                field: column.field,
+              });
               params.success(
                 Array.from(
                   new Set(
                     data
                       .map((item) => {
-                        return Array.isArray(item[column.field]) && item[column.field].length === 0 ? null : item[column.field];
+                        return Array.isArray(item[column.field]) && item[column.field].length === 0
+                          ? null
+                          : item[column.field];
                       })
                       .flat(),
                   ),
@@ -861,7 +1040,10 @@ export default {
         columnDef.filter = 'agSetColumnFilter';
         columnDef.filterParams = {
           values: async (params) => {
-            const { data } = await getDataSets({ tid: Number(route.value.params.tid), field: column.field });
+            const { data } = await getDataSets({
+              tid: Number(route.value.params.tid),
+              field: column.field,
+            });
             params.success(
               Array.from(
                 new Set(
@@ -894,7 +1076,19 @@ export default {
 
       // ============================================================================
       columnDef.headerName = column.name;
-      if (['BasicId', 'BasicUuid', 'BasicDataState', 'BasicCreatedAt', 'BasicCreatedBy', 'BasicUpdatedAt', 'BasicUpdatedBy', 'BasicAclView', 'BasicAclEdit'].includes(column.component))
+      if (
+        [
+          'BasicId',
+          'BasicUuid',
+          'BasicDataState',
+          'BasicCreatedAt',
+          'BasicCreatedBy',
+          'BasicUpdatedAt',
+          'BasicUpdatedBy',
+          'BasicAclView',
+          'BasicAclEdit',
+        ].includes(column.component)
+      )
         columnDef.headerName = i18n.global.t(`data.column.${column.component}`);
       // columnDef.headerTooltip = column.name;
       // columnDef.headerClass = 'text-primary';
@@ -968,7 +1162,11 @@ export default {
       // ============================================================================
       columnDef.sortable = true;
       columnDef.sort = ['id', 'updated_at'].includes(column.field) ? 'desc' : null;
-      columnDef.sortIndex = ['updated_at'].includes(column.field) ? 1 : ['id'].includes(column.field) ? 2 : null;
+      columnDef.sortIndex = ['updated_at'].includes(column.field)
+        ? 1
+        : ['id'].includes(column.field)
+        ? 2
+        : null;
       // columnDef.unSortIcon = true
 
       // ============================================================================
@@ -982,7 +1180,9 @@ export default {
         ? 350
         : ['data_state'].includes(column.field)
         ? 150
-        : ['created_by', 'created_at', 'updated_by', 'updated_at', 'acl_view', 'acl_edit'].includes(column.field)
+        : ['created_by', 'created_at', 'updated_by', 'updated_at', 'acl_view', 'acl_edit'].includes(
+            column.field,
+          )
         ? 200
         : 220;
       columnDef.minWidth = 100;
@@ -992,7 +1192,9 @@ export default {
         ? 400
         : ['data_state'].includes(column.field)
         ? 200
-        : ['created_by', 'created_at', 'updated_by', 'updated_at', 'acl_view', 'acl_edit'].includes(column.field)
+        : ['created_by', 'created_at', 'updated_by', 'updated_at', 'acl_view', 'acl_edit'].includes(
+            column.field,
+          )
         ? 250
         : 880;
       columnDef.resizable = true;
@@ -1007,7 +1209,8 @@ export default {
       if (column.cfg?.source) {
         column.cfg.search = [];
         column.cfg.source = replaceVariables(column.cfg.source, alias.value);
-        if (!column.cfg.source?.includes('data.')) column.cfg.options = await getDataByFormula({}, column.cfg.source, { value: null });
+        if (!column.cfg.source?.includes('data.'))
+          column.cfg.options = await getDataByFormula({}, column.cfg.source, { value: null });
       }
     };
 
@@ -1015,7 +1218,11 @@ export default {
       if (column.visible) column.visible = replaceVariables(column.visible, alias.value);
       if (column.required) column.required = replaceVariables(column.required, alias.value);
       if (column.editable) column.editable = replaceVariables(column.editable, alias.value);
-      if (!column.visible?.includes('data.') && !column.required?.includes('data.') && !column.editable?.includes('data.')) {
+      if (
+        !column.visible?.includes('data.') &&
+        !column.required?.includes('data.') &&
+        !column.editable?.includes('data.')
+      ) {
         const { visible, required, editable } = await getRulesByFormula({}, column);
         column._visible = visible;
         column._required = required;
@@ -1069,7 +1276,10 @@ export default {
               props: {
                 variant: 'danger',
                 icon: 'mdi-alert',
-                text: i18n.global.t('data.list.batchUpdate.conflicts', { count: editing.length, ids: editing.toString() }),
+                text: i18n.global.t('data.list.batchUpdate.conflicts', {
+                  count: editing.length,
+                  ids: editing.toString(),
+                }),
               },
             });
           }
@@ -1088,7 +1298,15 @@ export default {
 
     const setFormColumnDefs = async () => {
       const hasTab = columns.value.some((column) => column.component === 'LayoutTab');
-      const defs = hasTab ? [{ headerName: i18n.global.t('data.column.Basic'), children: [], headerClass: 'text-primary mdi mdi-information-outline' }] : [];
+      const defs = hasTab
+        ? [
+            {
+              headerName: i18n.global.t('data.column.Basic'),
+              children: [],
+              headerClass: 'text-primary mdi mdi-information-outline',
+            },
+          ]
+        : [];
       for (let index = 0; index < columns.value.length; index++) {
         const column = columns.value[index];
         await setColumnConfiguration(column);
@@ -1110,7 +1328,11 @@ export default {
           batch.value.columns.push(JSON.parse(JSON.stringify(column)));
 
         if (column.component === 'LayoutTab') {
-          defs.push({ headerName: column.name, children: [], headerClass: `text-${column.cfg.style} mdi ${column.cfg.icon}` });
+          defs.push({
+            headerName: column.name,
+            children: [],
+            headerClass: `text-${column.cfg.style} mdi ${column.cfg.icon}`,
+          });
         } else if (column.type) {
           if (hasTab) defs[defs.length - 1].children.push(generateColumnDef(column));
           else defs.push(generateColumnDef(column));
@@ -1170,9 +1392,14 @@ export default {
     const getContextMenuItems = (params) => {
       const menu = [
         {
-          name: i18n.global.t('data.list.contextMenu.view', { data: `${form.value.id}/${params.node?.data?.id}` }),
+          name: i18n.global.t('data.list.contextMenu.view', {
+            data: `${form.value.id}/${params.node?.data?.id}`,
+          }),
           action: () => {
-            const { href } = router.resolve({ name: 'view', params: { tid: form.value.id, rid: params.node?.data?.id } });
+            const { href } = router.resolve({
+              name: 'view',
+              params: { tid: form.value.id, rid: params.node?.data?.id },
+            });
             window.open(href, '_blank');
           },
           icon: '<i class="mdi mdi-eye-outline fs-14" style="margin-left: 2px;" />',
@@ -1181,9 +1408,14 @@ export default {
 
       if (!form.value.flow?.length || params.node?.data?.data_state === 'drafted') {
         menu.push({
-          name: i18n.global.t('data.list.contextMenu.edit', { data: `${form.value.id}/${params.node?.data?.id}` }),
+          name: i18n.global.t('data.list.contextMenu.edit', {
+            data: `${form.value.id}/${params.node?.data?.id}`,
+          }),
           action: () => {
-            const { href } = router.resolve({ name: 'edit', params: { tid: form.value.id, rid: params.node?.data?.id } });
+            const { href } = router.resolve({
+              name: 'edit',
+              params: { tid: form.value.id, rid: params.node?.data?.id },
+            });
             window.open(href, '_blank');
           },
           icon: '<i class="mdi mdi-square-edit-outline fs-14" style="margin-left: 2px;" />',
@@ -1210,7 +1442,10 @@ export default {
         // 'export', // excelExport
       );
 
-      if (store.state.user.data?.tags?.includes('ALL') || store.state.user.data?.permissions?.[route.value.params.tid]?.export) {
+      if (
+        store.state.user.data?.tags?.includes('ALL') ||
+        store.state.user.data?.permissions?.[route.value.params.tid]?.export
+      ) {
         const menu_export = {
           name: i18n.global.t('data.list.contextMenu.export'),
           subMenu: [
@@ -1229,7 +1464,9 @@ export default {
 
         if (selectedRows.value.length) {
           menu_export.subMenu.push({
-            name: i18n.global.tc('data.list.contextMenu.export.selectedRows', { count: selectedRows.value.length }),
+            name: i18n.global.tc('data.list.contextMenu.export.selectedRows', {
+              count: selectedRows.value.length,
+            }),
             action: () => {
               gridApi.exportDataAsExcel({
                 onlySelected: true,
@@ -1241,7 +1478,11 @@ export default {
         menu.push(menu_export);
       }
 
-      if (!form.value.flow?.length && (store.state.user.data?.tags?.includes('ALL') || store.state.user.data?.permissions?.[route.value.params.tid]?.import)) {
+      if (
+        !form.value.flow?.length &&
+        (store.state.user.data?.tags?.includes('ALL') ||
+          store.state.user.data?.permissions?.[route.value.params.tid]?.import)
+      ) {
         const menu_import = {
           name: i18n.global.t('data.list.contextMenu.import'),
           subMenu: [
@@ -1261,7 +1502,9 @@ export default {
                   let downloadElement = document.createElement('a');
                   downloadElement.style.display = 'none';
                   downloadElement.href = href;
-                  downloadElement.download = `${form.value.id}_${form.value.title}_import_template_${store.state.user.data.username}_${new Date().getTime()}.xlsx`;
+                  downloadElement.download = `${form.value.id}_${
+                    form.value.title
+                  }_import_template_${store.state.user.data.username}_${new Date().getTime()}.xlsx`;
                   document.body.appendChild(downloadElement);
                   downloadElement.click();
                   document.body.removeChild(downloadElement);

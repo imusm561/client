@@ -17,17 +17,32 @@
             <div class="card mt-4">
               <div class="card-body p-4">
                 <div class="text-center mt-2">
-                  <h5 class="text-primary">{{ $t('public.authentication.forgotPassword.title') }}</h5>
-                  <p class="text-muted">{{ $t('public.authentication.forgotPassword.tip', { sys: $store.state.sys.name }) }}</p>
+                  <h5 class="text-primary">
+                    {{ $t('public.authentication.forgotPassword.title') }}
+                  </h5>
+                  <p class="text-muted">
+                    {{
+                      $t('public.authentication.forgotPassword.tip', { sys: $store.state.sys.name })
+                    }}
+                  </p>
                 </div>
 
                 <div class="p-2 mt-4">
                   <div v-if="formtype === 'sms_verification'">
                     <Form v-slot="{ errors }" @submit="handleVerifyCode">
                       <div class="mb-3">
-                        <label for="phone" class="form-label">{{ $t('public.authentication.forgotPassword.form.phone') }}</label>
+                        <label for="phone" class="form-label">
+                          {{ $t('public.authentication.forgotPassword.form.phone') }}
+                        </label>
                         <div class="float-end" v-if="!canSendVerificationCode">
-                          <span class="text-muted">{{ $tc('public.authentication.forgotPassword.form.resendVerificationCodeCountDown', { count: resendVerificationCodeCountDown }) }}</span>
+                          <span class="text-muted">
+                            {{
+                              $tc(
+                                'public.authentication.forgotPassword.form.resendVerificationCodeCountDown',
+                                { count: resendVerificationCodeCountDown },
+                              )
+                            }}
+                          </span>
                         </div>
                         <div class="position-relative">
                           <Field
@@ -39,14 +54,26 @@
                             rules="required|phone"
                           />
                           <span class="invalid-feedback">{{ errors.phone || res.phone }}</span>
-                          <button v-if="phone && !errors.phone" type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
-                            <i :class="['align-middle mdi', canSendVerificationCode ? 'mdi-send' : 'mdi-send-clock-outline']" @click="handleSendVerificationCode"></i>
+                          <button
+                            v-if="phone && !errors.phone"
+                            type="button"
+                            class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
+                          >
+                            <i
+                              :class="[
+                                'align-middle mdi',
+                                canSendVerificationCode ? 'mdi-send' : 'mdi-send-clock-outline',
+                              ]"
+                              @click="handleSendVerificationCode"
+                            ></i>
                           </button>
                         </div>
                       </div>
 
                       <div class="mb-3">
-                        <label for="code" class="form-label">{{ $t('public.authentication.forgotPassword.form.code') }}</label>
+                        <label for="code" class="form-label">
+                          {{ $t('public.authentication.forgotPassword.form.code') }}
+                        </label>
                         <Field
                           name="code"
                           v-model="code"
@@ -60,7 +87,13 @@
                       </div>
 
                       <div class="mt-4">
-                        <button class="btn btn-success w-100" type="submit" :disabled="Object.keys(errors).length">{{ $t('public.authentication.forgotPassword.form.verify') }}</button>
+                        <button
+                          class="btn btn-success w-100"
+                          type="submit"
+                          :disabled="Object.keys(errors).length"
+                        >
+                          {{ $t('public.authentication.forgotPassword.form.verify') }}
+                        </button>
                       </div>
                     </Form>
                   </div>
@@ -68,45 +101,77 @@
                   <div v-else-if="formtype === 'reset_password'">
                     <Form v-slot="{ errors }" @submit="handleResetPassword">
                       <div class="mb-3">
-                        <label for="newpassword" class="form-label">{{ $('public.authentication.forgotPassword.form.newPassword') }}</label>
+                        <label for="newpassword" class="form-label">
+                          {{ $('public.authentication.forgotPassword.form.newPassword') }}
+                        </label>
                         <div class="position-relative">
                           <Field
                             :type="isNewPasswordVisible ? 'text' : 'password'"
                             name="newpassword"
                             v-model="newpassword"
-                            :placeholder="$('public.authentication.forgotPassword.form.newPassword')"
+                            :placeholder="
+                              $('public.authentication.forgotPassword.form.newPassword')
+                            "
                             :class="['form-control', errors.newpassword && 'is-invalid']"
                             rules="required|password"
                             autocomplete="off"
                           />
                           <span class="invalid-feedback">{{ errors.newpassword }}</span>
-                          <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
-                            <i :class="['align-middle mdi', isNewPasswordVisible ? 'mdi-eye-off' : 'mdi-eye']" @click="isNewPasswordVisible = !isNewPasswordVisible"></i>
+                          <button
+                            type="button"
+                            class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
+                          >
+                            <i
+                              :class="[
+                                'align-middle mdi',
+                                isNewPasswordVisible ? 'mdi-eye-off' : 'mdi-eye',
+                              ]"
+                              @click="isNewPasswordVisible = !isNewPasswordVisible"
+                            ></i>
                           </button>
                         </div>
                       </div>
 
                       <div class="mb-3">
-                        <label for="confirmpassword" class="form-label">{{ $t('public.authentication.forgotPassword.form.confirmPassword') }}</label>
+                        <label for="confirmpassword" class="form-label">
+                          {{ $t('public.authentication.forgotPassword.form.confirmPassword') }}
+                        </label>
                         <div class="position-relative">
                           <Field
                             :type="isConfirmPasswordVisible ? 'text' : 'password'"
                             name="confirmpassword"
                             v-model="confirmpassword"
-                            :placeholder="$t('public.authentication.forgotPassword.form.confirmPassword')"
+                            :placeholder="
+                              $t('public.authentication.forgotPassword.form.confirmPassword')
+                            "
                             :class="['form-control', errors.confirmpassword && 'is-invalid']"
                             rules="required|confirmed:@newpassword"
                             autocomplete="off"
                           />
                           <span class="invalid-feedback">{{ errors.confirmpassword }}</span>
-                          <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted">
-                            <i :class="['align-middle mdi', isConfirmPasswordVisible ? 'mdi-eye-off' : 'mdi-eye']" @click="isConfirmPasswordVisible = !isConfirmPasswordVisible"></i>
+                          <button
+                            type="button"
+                            class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
+                          >
+                            <i
+                              :class="[
+                                'align-middle mdi',
+                                isConfirmPasswordVisible ? 'mdi-eye-off' : 'mdi-eye',
+                              ]"
+                              @click="isConfirmPasswordVisible = !isConfirmPasswordVisible"
+                            ></i>
                           </button>
                         </div>
                       </div>
 
                       <div class="mt-4">
-                        <button class="btn btn-success w-100" type="submit" :disabled="Object.keys(errors).length">{{ $t('public.authentication.forgotPassword.form.reset') }}</button>
+                        <button
+                          class="btn btn-success w-100"
+                          type="submit"
+                          :disabled="Object.keys(errors).length"
+                        >
+                          {{ $t('public.authentication.forgotPassword.form.reset') }}
+                        </button>
                       </div>
                     </Form>
                   </div>
@@ -117,7 +182,10 @@
             <div class="mt-4 text-center">
               <p class="mb-0">
                 {{ $t('public.authentication.forgotPassword.form.tontent') }}
-                <router-link :to="{ name: 'login', query: $route.query }" class="fw-semibold text-primary text-decoration-underline">
+                <router-link
+                  :to="{ name: 'login', query: $route.query }"
+                  class="fw-semibold text-primary text-decoration-underline"
+                >
                   {{ $t('public.authentication.forgotPassword.form.clickHere') }}
                 </router-link>
               </p>
@@ -131,7 +199,9 @@
       <div class="row">
         <div class="col-lg-12">
           <div class="text-center">
-            <p class="mb-0 text-muted">&copy; {{ new Date().getFullYear() }} {{ $store.state.sys.company }}</p>
+            <p class="mb-0 text-muted">
+              &copy; {{ new Date().getFullYear() }} {{ $store.state.sys.company }}
+            </p>
           </div>
         </div>
       </div>

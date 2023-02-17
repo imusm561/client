@@ -1,5 +1,7 @@
 <template>
-  <div :class="`ms-3 mt-2 form-check form-switch form-switch-${params._column.cfg.style} form-switch-md`">
+  <div
+    :class="`ms-3 mt-2 form-check form-switch form-switch-${params._column.cfg.style} form-switch-md`"
+  >
     <input type="checkbox" class="form-check-input" :checked="value" v-model="value" />
   </div>
 </template>

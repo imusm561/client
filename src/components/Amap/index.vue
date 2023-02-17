@@ -1,6 +1,13 @@
 <template>
   <div class="position-relative">
-    <input type="text" class="form-control pe-5 text-truncate" :class="fieldClass" :placeholder="placeholder" :disabled="disabled" v-model="vModel" />
+    <input
+      type="text"
+      class="form-control pe-5 text-truncate"
+      :class="fieldClass"
+      :placeholder="placeholder"
+      :disabled="disabled"
+      v-model="vModel"
+    />
     <button
       v-if="$store.state.sys.cfg.amap && $store.state.sys.cfg.amap.map_key"
       type="button"
@@ -13,9 +20,22 @@
       <i class="align-middle mdi mdi-map-search-outline"></i>
     </button>
     <div class="offcanvas offcanvas-top" :id="`amapOffcanvas_${id}`" style="height: 100vh">
-      <i :id="`hideAmapOffcanvas_${id}Btn`" class="cursor-pointer fs-24 text-muted mdi mdi-close-box-outline position-absolute" style="z-index: 1; right: 5px" data-bs-dismiss="offcanvas" />
+      <i
+        :id="`hideAmapOffcanvas_${id}Btn`"
+        class="cursor-pointer fs-24 text-muted mdi mdi-close-box-outline position-absolute"
+        style="z-index: 1; right: 5px"
+        data-bs-dismiss="offcanvas"
+      />
       <div class="position-absolute p-2 search" style="z-index: 1">
-        <input type="text" class="form-control mb-2" :placeholder="$t('components.amap.search')" v-model="search_str" style="z-index: 1" @click="handleClickSearcher" @input="handleSearchTips" />
+        <input
+          type="text"
+          class="form-control mb-2"
+          :placeholder="$t('components.amap.search')"
+          v-model="search_str"
+          style="z-index: 1"
+          @click="handleClickSearcher"
+          @input="handleSearchTips"
+        />
 
         <div class="list-group" data-simplebar style="max-height: 40vh; z-index: 1">
           <div
@@ -27,7 +47,13 @@
           >
             {{ tip.name }} - {{ tip.district }}
           </div>
-          <div class="list-group-item list-group-item-action cursor-pointer p-2" :class="{ active: poi.id === position.id }" v-for="(poi, index) in pois" :key="index" @click="handleClickPoi(poi)">
+          <div
+            class="list-group-item list-group-item-action cursor-pointer p-2"
+            :class="{ active: poi.id === position.id }"
+            v-for="(poi, index) in pois"
+            :key="index"
+            @click="handleClickPoi(poi)"
+          >
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0">
                 <img
@@ -51,17 +77,29 @@
                 />
               </div>
               <div class="flex-grow-1 ms-2" style="width: 85%">
-                <h5 class="list-title fs-15 mb-1 text-truncate" :title="poi.name">{{ index + 1 }}. {{ poi.name }}</h5>
-                <p class="list-text mb-0 fs-12 text-truncate" :title="poi.address">{{ poi.address }}</p>
+                <h5 class="list-title fs-15 mb-1 text-truncate" :title="poi.name">
+                  {{ index + 1 }}. {{ poi.name }}
+                </h5>
+                <p class="list-text mb-0 fs-12 text-truncate" :title="poi.address">
+                  {{ poi.address }}
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="position-absolute text-end text-dark p-3" style="z-index: 1; right: 0; bottom: 0" v-if="position">
-        <div class="cursor-pointer" @click="handleSelectPosition('address')">{{ position.address }}</div>
-        <div class="cursor-pointer" @click="handleSelectPosition('location')">{{ position.location.lng }},{{ position.location.lat }}</div>
+      <div
+        class="position-absolute text-end text-dark p-3"
+        style="z-index: 1; right: 0; bottom: 0"
+        v-if="position"
+      >
+        <div class="cursor-pointer" @click="handleSelectPosition('address')">
+          {{ position.address }}
+        </div>
+        <div class="cursor-pointer" @click="handleSelectPosition('location')">
+          {{ position.location.lng }},{{ position.location.lat }}
+        </div>
       </div>
       <div :id="`amap_${id}`" class="w-100 h-100"></div>
     </div>
@@ -153,8 +191,11 @@ export default defineComponent({
 
     const handleSelectPosition = (key) => {
       document.getElementById(`hideAmapOffcanvas_${props.id}Btn`).click();
-      copyToClipboard(`${position.value.address}@${position.value.location.lng},${position.value.location.lat}`);
-      if (key === 'location') vModel.value = `${position.value.location.lng},${position.value.location.lat}`;
+      copyToClipboard(
+        `${position.value.address}@${position.value.location.lng},${position.value.location.lat}`,
+      );
+      if (key === 'location')
+        vModel.value = `${position.value.location.lng},${position.value.location.lat}`;
       else vModel.value = position.value.address;
     };
 
@@ -224,8 +265,14 @@ export default defineComponent({
                 location: result.poiList.pois[0].location,
                 address: vModel.value,
               };
-              marker.setPosition([result.poiList.pois[0].location.lng, result.poiList.pois[0].location.lat]);
-              amap.setZoomAndCenter(15, [result.poiList.pois[0].location.lng, result.poiList.pois[0].location.lat]);
+              marker.setPosition([
+                result.poiList.pois[0].location.lng,
+                result.poiList.pois[0].location.lat,
+              ]);
+              amap.setZoomAndCenter(15, [
+                result.poiList.pois[0].location.lng,
+                result.poiList.pois[0].location.lat,
+              ]);
               marker.setTitle(vModel.value);
               search_str.value = vModel.value;
             }

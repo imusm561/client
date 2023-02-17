@@ -55,14 +55,27 @@
         <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
       </template>
     </VueSelect>
-    <Field :name="column.field" v-model="value" class="d-none" :class="{ 'is-invalid': error }" :rules="`${required ? 'required' : ''}`" />
+    <Field
+      :name="column.field"
+      v-model="value"
+      class="d-none"
+      :class="{ 'is-invalid': error }"
+      :rules="`${required ? 'required' : ''}`"
+    />
     <span class="invalid-feedback">{{ error }}</span>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
   <div v-else>
     <div v-for="(item, index) in value" :key="index">
       {{ index + 1 }}.
-      <span v-if="item.tid && item.rid" class="cursor-pointer text-decoration-underline text-secondary" @click="handleClickValue(item)" :title="`${item.tid}/${item.rid}`">{{ item.text }}</span>
+      <span
+        v-if="item.tid && item.rid"
+        class="cursor-pointer text-decoration-underline text-secondary"
+        @click="handleClickValue(item)"
+        :title="`${item.tid}/${item.rid}`"
+      >
+        {{ item.text }}
+      </span>
       <span v-else>{{ item }}</span>
     </div>
   </div>
@@ -107,7 +120,11 @@ export default defineComponent({
     };
 
     const options = computed(() => {
-      return unique([...(props.column.cfg.search || []), ...(props.column.cfg.options || []), ...(props.column.cfg.selected || [])]);
+      return unique([
+        ...(props.column.cfg.search || []),
+        ...(props.column.cfg.options || []),
+        ...(props.column.cfg.selected || []),
+      ]);
     });
 
     const { router } = useRouter();
