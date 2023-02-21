@@ -1,12 +1,13 @@
 {
   "name": "lcdp",
-  "version": "3.1.2",
+  "version": "3.2.0",
   "private": true,
   "scripts": {
     "serve": "export NODE_ENV=development && vue-cli-service serve",
     "build": "export NODE_ENV=production && vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "deploy": "cd ../server && chmod +x deploy.sh && cd ../ && ./server/deploy.sh"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-alignment": "35.2.1",
