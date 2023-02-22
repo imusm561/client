@@ -13,7 +13,12 @@
                     type="file"
                     accept="image/*"
                     class="profile-img-file-input"
-                    @change="handleUploadAvatar"
+                    @click="
+                      (e) => {
+                        e.target.value = '';
+                      }
+                    "
+                    @change="handleFileInput"
                   />
                   <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">
                     <span class="avatar-title rounded-circle bg-light text-body">
@@ -675,6 +680,92 @@
         </div>
       </div>
     </div>
+    <button
+      id="showAvatarCropperModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#avatarCropperModal"
+    />
+    <div id="avatarCropperModal" class="modal fade zoomIn">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mt-2 text-center">
+              <VueCropper
+                ref="cropper"
+                style="width: 300px; height: 300px; margin: 0 auto"
+                :img="option.img"
+                :output-size="option.outputSize"
+                :output-type="option.outputType"
+                :info="option.info"
+                :can-scale="option.canScale"
+                :auto-crop="option.autoCrop"
+                :auto-crop-width="option.autoCropWidth"
+                :auto-crop-height="option.autoCropHeight"
+                :fixed="option.fixed"
+                :fixed-number="option.fixedNumber"
+                :full="option.full"
+                :fixed-box="option.fixedBox"
+                :can-move="option.canMove"
+                :can-move-box="option.canMoveBox"
+                :original="option.original"
+                :center-box="option.centerBox"
+                :high="option.high"
+                :info-true="option.infoTrue"
+                :max-img-size="option.maxImgSize"
+                :enlarge="option.enlarge"
+                :mode="option.mode"
+              ></VueCropper>
+              <span
+                class="mt-2 btn btn-icon btn-topbar rounded-circle btn-ghost-primary"
+                @click="$refs.cropper.rotateLeft()"
+              >
+                <i class="mdi mdi-rotate-left fs-22 text-dark"></i>
+              </span>
+              <span
+                class="mt-2 btn btn-icon btn-topbar rounded-circle btn-ghost-primary"
+                @click="$refs.cropper.rotateRight()"
+              >
+                <i class="mdi mdi-rotate-right fs-22 text-dark"></i>
+              </span>
+              <span
+                class="mt-2 btn btn-icon btn-topbar rounded-circle btn-ghost-primary"
+                @click="$refs.cropper.changeScale(1)"
+              >
+                <i class="mdi mdi-image-size-select-large fs-22 text-dark"></i>
+              </span>
+              <span
+                class="mt-2 btn btn-icon btn-topbar rounded-circle btn-ghost-primary"
+                @click="$refs.cropper.changeScale(-1)"
+              >
+                <i class="mdi mdi-image-size-select-small fs-22 text-dark"></i>
+              </span>
+            </div>
+            <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">
+                {{ $t('layout.navbar.user.dropdown.setting.avatarCropperModal.cancel') }}
+              </button>
+              <button
+                type="button"
+                class="btn w-sm btn-danger"
+                data-bs-dismiss="modal"
+                @click="handleUploadAvatar"
+              >
+                {{ $t('layout.navbar.user.dropdown.setting.avatarCropperModal.submit') }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="unBindConfirmModal" class="modal fade zoomIn">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -720,6 +811,9 @@ import { ref, onMounted, onUnmounted, computed, inject } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
 import { getAuthQr } from '@api/auth';
+import { VueCropper } from 'vue-cropper';
+import 'vue-cropper/dist/index.css';
+import { base64ToFile } from '@utils';
 import {
   uploadAvatar,
   updateUser,
@@ -738,6 +832,7 @@ export default {
   components: {
     FlatPickr,
     Avatar,
+    VueCropper,
   },
   setup() {
     const { router } = useRouter();
@@ -858,22 +953,72 @@ export default {
     const isNewPasswordVisible = ref(false);
     const isConfirmPasswordVisible = ref(false);
 
-    const handleUploadAvatar = (e) => {
-      let formData = new FormData();
-      formData.append('avatar', e.target.files[0], e.target.files[0].name);
-      uploadAvatar(formData).then(({ code, msg, data }) => {
-        if (code === 200) {
-          user.value.avatar = data.url;
+    const cropper = ref(null);
+    const option = ref({
+      file: null,
+      img: null,
+      outputSize: 1,
+      outputType: 'png',
+      info: true,
+      canScale: true,
+      autoCrop: true,
+      autoCropWidth: 200,
+      autoCropHeight: 200,
+      fixed: true,
+      fixedNumber: [1, 1],
+      full: false,
+      fixedBox: false,
+      canMove: true,
+      canMoveBox: true,
+      original: false,
+      centerBox: false,
+      high: true,
+      infoTrue: false,
+      maxImgSize: 200,
+      enlarge: 1,
+      mode: 'cover',
+    });
+
+    const handleFileInput = (e) => {
+      option.value.file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        let data;
+        if (typeof e.target.result === 'object') {
+          data = window.URL.createObjectURL(new Blob([e.target.result]));
         } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
+          data = e.target.result;
         }
+        option.value.img = data;
+        document.getElementById('showAvatarCropperModalBtn').click();
+      };
+      reader.readAsDataURL(option.value.file);
+    };
+
+    const handleUploadAvatar = () => {
+      cropper.value.getCropData((data) => {
+        const avatar = base64ToFile(
+          data,
+          `${option.value.file.name.substring(0, option.value.file.name.lastIndexOf('.'))}[${
+            option.value.autoCropWidth
+          }x${option.value.autoCropHeight}].${option.value.outputType}`,
+        );
+        const formData = new FormData();
+        formData.append('avatar', avatar, avatar.name);
+        uploadAvatar(formData).then(({ code, msg, data }) => {
+          if (code === 200) {
+            user.value.avatar = data.url;
+          } else {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: msg,
+              },
+            });
+          }
+        });
       });
     };
 
@@ -938,6 +1083,9 @@ export default {
       isNewPasswordVisible,
       isConfirmPasswordVisible,
 
+      cropper,
+      option,
+      handleFileInput,
       handleUploadAvatar,
       handleSaveUserInfo,
       handleChangePassword,

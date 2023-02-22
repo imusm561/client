@@ -487,6 +487,8 @@
   "layout.navbar.user.dropdown.setting.unBindConfirmModal.confirm": "Are you sure to unbind this account ?",
   "layout.navbar.user.dropdown.setting.unBindConfirmModal.cancel": "Cancel",
   "layout.navbar.user.dropdown.setting.unBindConfirmModal.confirmed": "Confirm",
+  "layout.navbar.user.dropdown.setting.avatarCropperModal.cancel": "Cancel",
+  "layout.navbar.user.dropdown.setting.avatarCropperModal.submit": "Submit",
 
   "layout.navbar.user.dropdown.fullScreen": "Full Screen",
   "layout.navbar.user.dropdown.fullScreen.exit": "Exit Full Screen",

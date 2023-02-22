@@ -1,6 +1,6 @@
 {
   "name": "lcdp",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "private": true,
   "scripts": {
     "serve": "export NODE_ENV=development && vue-cli-service serve",
@@ -64,6 +64,7 @@
     "v-viewer": "^3.0.10",
     "vee-validate": "^4.5.11",
     "vue": "3.2.39",
+    "vue-cropper": "^1.0.5",
     "vue-draggable-next": "^2.1.1",
     "vue-flatpickr-component": "^9.0.5",
     "vue-i18n": "^9.2.2",

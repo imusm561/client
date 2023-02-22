@@ -141,7 +141,18 @@
         ></AgGridVue>
       </div>
 
-      <input id="importData" class="d-none" type="file" @input="handleFileInput" />
+      <input
+        id="importData"
+        class="d-none"
+        type="file"
+        @click="
+          (e) => {
+            e.target.value = '';
+          }
+        "
+        @change="handleFileInput"
+        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      />
 
       <div
         class="modal fade"
@@ -1532,10 +1543,10 @@ export default {
     };
 
     const handleFileInput = (e) => {
-      const data = new FormData();
-      data.append('file', e.target.files[0], e.target.files[0].name);
-      data.append('tid', form.value.id);
-      importData(data).then(({ code, msg, data }) => {
+      const formData = new FormData();
+      formData.append('file', e.target.files[0], e.target.files[0].name);
+      formData.append('tid', form.value.id);
+      importData(formData).then(({ code, msg, data }) => {
         if (code === 200) {
           gridApi.refreshServerSide({ purge: true });
           e.target.value = null;

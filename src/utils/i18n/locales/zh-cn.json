@@ -487,6 +487,8 @@
   "layout.navbar.user.dropdown.setting.unBindConfirmModal.confirm": "确定要解绑这个账号吗？",
   "layout.navbar.user.dropdown.setting.unBindConfirmModal.cancel": "取消",
   "layout.navbar.user.dropdown.setting.unBindConfirmModal.confirmed": "确定",
+  "layout.navbar.user.dropdown.setting.avatarCropperModal.cancel": "取消",
+  "layout.navbar.user.dropdown.setting.avatarCropperModal.submit": "提交",
 
   "layout.navbar.user.dropdown.fullScreen": "网页全屏",
   "layout.navbar.user.dropdown.fullScreen.exit": "退出全屏",
