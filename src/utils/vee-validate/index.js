@@ -1,4 +1,5 @@
 import { configure, defineRule } from 'vee-validate';
+import store from '@store';
 import i18n from '@utils/i18n';
 
 configure({
@@ -61,14 +62,22 @@ defineRule('include', (value, [target]) => {
   if (isEmpty(value)) {
     return true;
   }
-  return value.includes(target) || i18n.global.t('vee.validate.include', { target });
+  const user = store.state.org.users.find((user) => user.username === target);
+  return (
+    value.includes(target) ||
+    i18n.global.t('vee.validate.include', { target: user ? user.fullname : target })
+  );
 });
 
 defineRule('exclude', (value, [target]) => {
   if (isEmpty(value)) {
     return true;
   }
-  return !value.includes(target.trim()) || i18n.global.t('vee.validate.exclude', { target });
+  const user = store.state.org.users.find((user) => user.username === target);
+  return (
+    !value.includes(target.trim()) ||
+    i18n.global.t('vee.validate.exclude', { target: user ? user.fullname : target })
+  );
 });
 
 defineRule('username', (value) => {
