@@ -428,7 +428,7 @@
 import store from '@store';
 import { computed, onMounted, ref, reactive, watch, onUnmounted } from 'vue';
 import { getChats, sendMsg, withdrawMsg, readMsg, delChat } from '@api/app/chat';
-import { useRouter, getUserInfo } from '@utils';
+import { useRouter, getUserInfo, encryptData, decryptData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Avatar from '@components/Avatar';
@@ -519,6 +519,9 @@ export default {
           _chats.value = data
             .filter((chat) => _contacts.value.find((contact) => contact.username === chat.username))
             .map((chat) => {
+              chat.chat_data.forEach((item) => {
+                item.message = decryptData(item.message);
+              });
               const contact = _contacts.value.find((contact) => contact.username === chat.username);
               return {
                 ...contact,
@@ -566,7 +569,7 @@ export default {
             created_at: data.created_at,
             sender: data.sender,
             receiver: data.receiver,
-            message: data.message,
+            message: decryptData(data.message),
             quote: data.quote,
             receiver_read: current_chat.value.username === data.sender ? true : false,
           });
@@ -647,7 +650,7 @@ export default {
         sendMsg({
           sender: temp_data.sender,
           receiver: temp_data.receiver,
-          message: temp_data.message,
+          message: encryptData(temp_data.message),
           quote: temp_data.quote,
         }).then(({ code, msg, data }) => {
           if (code === 200) {

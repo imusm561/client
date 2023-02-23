@@ -1,7 +1,7 @@
 import { watch } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
-import { clearUserData, getUserInfo, replaceHtml } from '@utils';
+import { clearUserData, getUserInfo, replaceHtml, decryptData } from '@utils';
 import { getUserData } from '@api/user';
 import router from '@router';
 import { useToast } from 'vue-toastification';
@@ -45,30 +45,31 @@ const initSocket = (socket) => {
     store.commit('org/SET_ONLINES', onlines);
   });
 
-  socket.on('addChatNotify', (item) => {
+  socket.on('addChatNotify', (chat) => {
     // if (router.currentRoute.value.name !== 'chat') { }
-    const user = getUserInfo(item.sender);
+    chat.message = decryptData(chat.message);
+    const user = getUserInfo(chat.sender);
     if (user) {
       store.commit('user/ADD_NOTICE', {
         app: 'chat',
-        data: item,
+        data: chat,
       });
       if (store.state.user.data?.config?.chatNotify)
         toast({
           component: ToastificationContent,
           props: {
             user: user,
-            text: item.message,
+            text: chat.message,
             to: { name: 'chat', query: { contact: user.username } },
           },
         });
     }
   });
 
-  socket.on('delChatNotify', (item) => {
+  socket.on('delChatNotify', (chat) => {
     store.commit('user/DEL_NOTICE', {
       app: 'chat',
-      data: { user: { username: item.sender }, id: item.id },
+      data: { user: { username: chat.sender }, id: chat.id },
     });
   });
 

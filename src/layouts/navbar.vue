@@ -318,7 +318,11 @@
                         </div>
                         <div class="col-auto dropdown-tabs" v-if="item.chat_data.length > 1">
                           <span class="badge badge-soft-success fs-13">
-                            {{ item.chat_data.length - 1 }} More
+                            {{
+                              $t('layout.navbar.notifications.chats.more', {
+                                count: item.chat_data.length - 1,
+                              })
+                            }}
                           </span>
                         </div>
                       </div>
