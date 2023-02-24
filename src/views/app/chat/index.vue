@@ -41,16 +41,16 @@
                   <span class="user-status"></span>
                   <Avatar :data="chat" thumbnail />
                 </div>
-                <span class="d-flex flex-column w-75" style="line-height: 100%">
-                  <span class="fs-14 text-dark">{{ chat.fullname }}</span>
-                  <span class="fs-10 mt-1 text-muted text-truncate">
+                <div class="flex-grow-1 overflow-hidden" style="line-height: 100%">
+                  <div class="fs-14 text-dark">{{ chat.fullname }}</div>
+                  <div class="fs-10 mt-1 text-muted text-truncate">
                     {{
                       chat.chat_data.length
                         ? decryptData(chat.chat_data[chat.chat_data.length - 1].message)
                         : chat.post
                     }}
-                  </span>
-                </span>
+                  </div>
+                </div>
                 <div class="flex-shrink-0">
                   <span
                     v-if="
