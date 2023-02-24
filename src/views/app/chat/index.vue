@@ -46,7 +46,7 @@
                   <span class="fs-10 mt-1 text-muted text-truncate">
                     {{
                       chat.chat_data.length
-                        ? chat.chat_data[chat.chat_data.length - 1].message
+                        ? decryptData(chat.chat_data[chat.chat_data.length - 1].message)
                         : chat.post
                     }}
                   </span>
@@ -232,10 +232,10 @@
                                 </p>
                                 <p>{{ $moment(data.quote.created_at).format('HH:mm') }}</p>
                               </span>
-                              <p>{{ data.quote.message }}</p>
+                              <p>{{ decryptData(data.quote.message) }}</p>
                               <hr />
                             </span>
-                            <p class="mb-0 ctext-content">{{ data.message }}</p>
+                            <p class="mb-0 ctext-content">{{ decryptData(data.message) }}</p>
                           </div>
                           <div class="dropdown align-self-start message-box-drop">
                             <a
@@ -291,7 +291,7 @@
                 class="mdi mdi-close-thick text-danger fs-15 cursor-pointer"
                 @click="quote = null"
               />
-              {{ $t('app.chat.quote') }}: {{ quote.message }}
+              {{ $t('app.chat.quote') }}: {{ decryptData(quote.message) }}
             </span>
             <div class="chat-input-section mt-3">
               <Form v-slot="{ errors }" @submit="handleSendMsg">
@@ -519,9 +519,6 @@ export default {
           _chats.value = data
             .filter((chat) => _contacts.value.find((contact) => contact.username === chat.username))
             .map((chat) => {
-              chat.chat_data.forEach((item) => {
-                item.message = decryptData(item.message);
-              });
               const contact = _contacts.value.find((contact) => contact.username === chat.username);
               return {
                 ...contact,
@@ -569,7 +566,7 @@ export default {
             created_at: data.created_at,
             sender: data.sender,
             receiver: data.receiver,
-            message: decryptData(data.message),
+            message: data.message,
             quote: data.quote,
             receiver_read: current_chat.value.username === data.sender ? true : false,
           });
@@ -643,14 +640,14 @@ export default {
           created_at: new Date(),
           sender: store.state.user.data.username,
           receiver: current_chat.value.username,
-          message: message.value.trim(),
+          message: encryptData(message.value.trim()),
           quote: quote.value,
         });
         current_chat.value.chat_data.push(temp_data);
         sendMsg({
           sender: temp_data.sender,
           receiver: temp_data.receiver,
-          message: encryptData(temp_data.message),
+          message: temp_data.message,
           quote: temp_data.quote,
         }).then(({ code, msg, data }) => {
           if (code === 200) {
@@ -752,6 +749,7 @@ export default {
       handleWithdrawMsg,
       handleDelChat,
       getUserInfo,
+      decryptData,
     };
   },
 };

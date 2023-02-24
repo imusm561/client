@@ -1,4 +1,4 @@
-import { listToTree, getUserInfo, decryptData } from '@utils';
+import { listToTree, getUserInfo } from '@utils';
 import { setWatermark, removeWatermark } from '@utils/watermark';
 import store from '@store';
 import app from '../menu/app';
@@ -52,9 +52,6 @@ export default {
       window.forms = value;
     },
     SET_NOTICES(state, value) {
-      value.chat.forEach((chat) => {
-        chat.chat_data[0].message = decryptData(chat.chat_data[0].message);
-      });
       state.notices = value;
       window.notices = value;
     },

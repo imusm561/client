@@ -307,7 +307,9 @@
                             <h6 class="mt-0 mb-1 fs-13 fw-semibold">{{ item.user.fullname }}</h6>
                           </span>
                           <div class="fs-13 text-muted">
-                            <p class="mb-1 text-truncate">{{ item.chat_data[0].message }}</p>
+                            <p class="mb-1 text-truncate">
+                              {{ decryptData(item.chat_data[0].message) }}
+                            </p>
                           </div>
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                             <span>
@@ -552,7 +554,7 @@ import { userLogout } from '@api/user';
 import { getSearchResult } from '@api/com/search';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import { useRouter, clearUserData, getUserInfo, replaceHtml } from '@utils';
+import { useRouter, clearUserData, getUserInfo, replaceHtml, decryptData } from '@utils';
 import { setWatermark, removeWatermark } from '@utils/watermark';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
@@ -921,6 +923,7 @@ export default {
       handleEnter,
 
       chat_notices,
+      decryptData,
       handleClickChatNotice,
 
       mail_notices,

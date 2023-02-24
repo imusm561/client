@@ -47,7 +47,6 @@ const initSocket = (socket) => {
 
   socket.on('addChatNotify', (chat) => {
     // if (router.currentRoute.value.name !== 'chat') { }
-    chat.message = decryptData(chat.message);
     const user = getUserInfo(chat.sender);
     if (user) {
       store.commit('user/ADD_NOTICE', {
@@ -59,7 +58,7 @@ const initSocket = (socket) => {
           component: ToastificationContent,
           props: {
             user: user,
-            text: chat.message,
+            text: decryptData(chat.message),
             to: { name: 'chat', query: { contact: user.username } },
           },
         });
