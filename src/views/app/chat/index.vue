@@ -287,8 +287,30 @@
 
             <div class="chat-input-section">
               <div class="chat-input-toolpanel d-flex align-items-center cursor-pointer">
-                <div class="flex-shrink-0 align-self-center ms-0">
-                  <i class="fs-20 me-2 text-muted mdi mdi-emoticon-outline cursor-pointer"></i>
+                <div class="flex-shrink-0 align-self-center ms-0 d-flex">
+                  <div class="dropup">
+                    <i
+                      class="fs-20 me-2 text-muted mdi mdi-emoticon-outline cursor-pointer"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    ></i>
+                    <div
+                      class="dropdown-menu"
+                      style="width: 100vw; max-width: 340px; height: 220px; overflow: auto"
+                    >
+                      <div class="row g-0">
+                        <div
+                          class="emoji col-1 text-center fs-20"
+                          style="border-radius: 5px"
+                          v-for="(item, index) in emoji.split(',')"
+                          :key="index"
+                          @click="handleClickEmoji(item)"
+                        >
+                          {{ item }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <i class="fs-20 me-2 text-muted mdi mdi-folder-outline cursor-pointer"></i>
                   <!-- <i class="fs-20 me-2 text-muted mdi mdi-content-cut"></i> -->
                 </div>
@@ -481,7 +503,9 @@ export default {
             top: offsetHeight,
             behavior,
           });
-          document.getElementById('message_input').focus();
+          setTimeout(() => {
+            document.getElementById('message_input').focus();
+          }, 50);
         }
       }, 0);
     };
@@ -640,6 +664,13 @@ export default {
       }
     };
 
+    const handleClickEmoji = (item) => {
+      message.value += item;
+      setTimeout(() => {
+        document.getElementById('message_input').focus();
+      }, 50);
+    };
+
     const handleSendMsg = () => {
       if (message.value.trim()) {
         const temp_data = reactive({
@@ -752,6 +783,9 @@ export default {
       quote,
       message,
       handleKeyDownEvent,
+      emoji:
+        '😀,😁,😂,😃,😄,😅,😆,😉,😊,😋,😎,😍,😘,😗,😙,😚,😇,😐,😑,😶,😏,😣,😥,😮,😯,😪,😫,😴,😌,😛,😜,😝,😒,😓,😔,😕,😲,😷,😖,😞,😟,😤,😢,😭,😦,😧,😨,😬,😰,😱,😳,😵,😡,😠,💘,❤,💓,💔,💕,💖,💗,💙,💚,💛,💜,💝,💞,💟,❣,💪,👈,👉,☝,👆,👇,✌,✋,👌,👍,👎,✊,👊,👋,👏,👐,✍,🍇,🍈,🍉,🍊,🍋,🍌,🍍,🍎,🍏,🍐,🍑,🍒,🍓,🍅,🍆,🌽,🍄,🌰,🍞,🍖,🍗,🍔,🍟,🍕,🍳,🍲,🍱,🍘,🍙,🍚,🍛,🍜,🍝,🍠,🍢,🍣,🍤,🍥,🍡,🍦,🍧,🍨,🍩,🍪,🎂,🍰,🍫,🍬,🍭,🍮,🍯,🍼,☕,🍵,🍶,🍷,🍸,🍹,🍺,🍻,🍴,🌹,🍀,🍎,💰,📱,🌙,🍁,🍂,🍃,🌷,💎,🔪,🔫,🏀,⚽,⚡,👄,👍,🔥,🙈,🙉,🙊,🐵,🐒,🐶,🐕,🐩,🐺,🐱,😺,😸,😹,😻,😼,😽,🙀,😿,😾,🐈,🐯,🐅,🐆,🐴,🐎,🐮,🐂,🐃,🐄,🐷,🐖,🐗,🐽,🐏,🐑,🐐,🐪,🐫,🐘,🐭,🐁,🐀,🐹,🐰,🐇,🐻,🐨,🐼,🐾,🐔,🐓,🐣,🐤,🐥,🐦,🐧,🐸,🐊,🐢,🐍,🐲,🐉,🐳,🐋,🐬,🐟,🐠,🐡,🐙,🐚,🐌,🐛,🐜,🐝,🐞,🦋,😈,👿,👹,👺,💀,☠,👻,👽,👾,💣',
+      handleClickEmoji,
       handleSendMsg,
       handleClickQuote,
       handleWithdrawMsg,

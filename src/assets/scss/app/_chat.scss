@@ -448,6 +448,12 @@
 
     padding: 5px 10px 0 10px;
 
+    .emoji {
+      &:hover {
+        background-color: $info;
+      }
+    }
+
     .chat-quote {
 
       &:hover {
