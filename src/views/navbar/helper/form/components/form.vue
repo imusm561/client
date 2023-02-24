@@ -89,42 +89,40 @@
               </div>
             </div>
             <div class="flex-shrink-0">
-              <div>
-                <button
-                  v-if="isModified(['form'])"
-                  type="button"
-                  class="btn btn-sm btn-soft-secondary btn-icon waves-effect waves-light ms-1"
-                  @click="handleSaveFormInfo"
-                >
-                  <i class="fs-20 mdi mdi-content-save"></i>
-                </button>
-                <button
-                  v-if="isModified(['form'])"
-                  type="button"
-                  class="btn btn-sm btn-soft-success btn-icon waves-effect waves-light ms-1"
-                  @click="handleRestoreFormInfo"
-                >
-                  <i class="fs-20 mdi mdi-restore"></i>
-                </button>
-                <button
-                  type="button"
-                  v-if="!isParentOrHasRedirect(current_form)"
-                  class="btn btn-sm btn-soft-primary btn-icon waves-effect waves-light ms-1"
-                  data-bs-toggle="modal"
-                  data-bs-target="#confirmBackupFormDataModal"
-                >
-                  <i class="fs-20 mdi mdi-database-clock"></i>
-                </button>
-                <button
-                  type="button"
-                  v-if="!isParentOrHasRedirect(current_form)"
-                  class="btn btn-sm btn-soft-danger btn-icon waves-effect waves-light ms-1"
-                  data-bs-toggle="modal"
-                  data-bs-target="#confirmTruncateFormDataModal"
-                >
-                  <i class="fs-20 mdi mdi-database-refresh"></i>
-                </button>
-              </div>
+              <button
+                v-if="isModified(['form'])"
+                type="button"
+                class="btn btn-sm btn-soft-secondary btn-icon waves-effect waves-light ms-1"
+                @click="handleSaveFormInfo"
+              >
+                <i class="fs-20 mdi mdi-content-save"></i>
+              </button>
+              <button
+                v-if="isModified(['form'])"
+                type="button"
+                class="btn btn-sm btn-soft-success btn-icon waves-effect waves-light ms-1"
+                @click="handleRestoreFormInfo"
+              >
+                <i class="fs-20 mdi mdi-restore"></i>
+              </button>
+              <button
+                type="button"
+                v-if="!isParentOrHasRedirect(current_form)"
+                class="btn btn-sm btn-soft-primary btn-icon waves-effect waves-light ms-1"
+                data-bs-toggle="modal"
+                data-bs-target="#confirmBackupFormDataModal"
+              >
+                <i class="fs-20 mdi mdi-database-clock"></i>
+              </button>
+              <button
+                type="button"
+                v-if="!isParentOrHasRedirect(current_form)"
+                class="btn btn-sm btn-soft-danger btn-icon waves-effect waves-light ms-1"
+                data-bs-toggle="modal"
+                data-bs-target="#confirmTruncateFormDataModal"
+              >
+                <i class="fs-20 mdi mdi-database-refresh"></i>
+              </button>
             </div>
           </div>
 

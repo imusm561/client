@@ -113,7 +113,7 @@
       <div class="chat-content d-lg-flex">
         <div class="w-100 overflow-hidden position-relative">
           <div class="position-relative" v-if="current_chat.username">
-            <div class="p-2 user-chat-topbar mb-1">
+            <div class="p-2 user-chat-topbar">
               <div class="row align-items-center">
                 <div class="col-sm-4 col-8">
                   <div class="d-flex align-items-center">
@@ -235,7 +235,10 @@
                               <p>{{ decryptData(data.quote.message) }}</p>
                               <hr />
                             </span>
-                            <p class="mb-0 ctext-content">{{ decryptData(data.message) }}</p>
+                            <p
+                              class="mb-0 ctext-content"
+                              v-html="decryptData(data.message).replace(/\n/g, '<br />')"
+                            ></p>
                           </div>
                           <div class="dropdown align-self-start message-box-drop">
                             <a
@@ -282,41 +285,34 @@
               </div>
             </div>
 
-            <span
-              v-if="quote"
-              class="badge bg-soft-info text-dark position-absolute fs-15 mw-50 text-truncate"
-              style="margin-top: -12px"
-            >
-              <i
-                class="mdi mdi-close-thick text-danger fs-15 cursor-pointer"
-                @click="quote = null"
-              />
-              {{ $t('app.chat.quote') }}: {{ decryptData(quote.message) }}
-            </span>
-            <div class="chat-input-section mt-3">
-              <Form v-slot="{ errors }" @submit="handleSendMsg">
-                <div class="row g-0 align-items-center">
-                  <div class="col">
-                    <div class="input-group">
-                      <Field
-                        id="message_input"
-                        name="message"
-                        v-model="message"
-                        autocomplete="off"
-                        class="form-control"
-                        rules="required"
-                      />
-                      <button
-                        type="submit"
-                        :disabled="errors.message"
-                        class="btn btn-success chat-send waves-effect waves-light"
-                      >
-                        <i class="mdi mdi-send align-bottom"></i>
-                      </button>
-                    </div>
-                  </div>
+            <div class="chat-input-section">
+              <div class="chat-input-toolpanel d-flex align-items-center cursor-pointer">
+                <div class="flex-shrink-0 align-self-center ms-0">
+                  <i class="fs-20 me-2 text-muted mdi mdi-emoticon-outline cursor-pointer"></i>
+                  <i class="fs-20 me-2 text-muted mdi mdi-folder-outline cursor-pointer"></i>
+                  <!-- <i class="fs-20 me-2 text-muted mdi mdi-content-cut"></i> -->
                 </div>
-              </Form>
+                <div v-if="quote" class="flex-grow-1 overflow-hidden">
+                  <small
+                    class="chat-quote text-muted text-truncate"
+                    @click="quote = null"
+                    :title="$t('app.chat.quote.remove')"
+                  >
+                    {{ $t('app.chat.quote') }}: {{ decryptData(quote.message) }}
+                  </small>
+                </div>
+                <div class="flex-shrink-0"></div>
+              </div>
+
+              <div class="chat-input-area">
+                <textarea
+                  id="message_input"
+                  class="form-control"
+                  style="resize: none; border: none; height: 110px"
+                  v-model="message"
+                  @keydown="handleKeyDownEvent"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -633,6 +629,17 @@ export default {
     const quote = ref(null);
     const message = ref('');
 
+    const handleKeyDownEvent = (e) => {
+      if (e.keyCode == 13) {
+        if (!e.metaKey) {
+          e.preventDefault();
+          handleSendMsg();
+        } else {
+          message.value = message.value + '\n';
+        }
+      }
+    };
+
     const handleSendMsg = () => {
       if (message.value.trim()) {
         const temp_data = reactive({
@@ -643,6 +650,7 @@ export default {
           message: encryptData(message.value.trim()),
           quote: quote.value,
         });
+        message.value = '';
         current_chat.value.chat_data.push(temp_data);
         sendMsg({
           sender: temp_data.sender,
@@ -653,7 +661,6 @@ export default {
           if (code === 200) {
             temp_data.id = data.id;
             temp_data.created_at = data.created_at;
-            message.value = '';
             quote.value = null;
           } else {
             toast({
@@ -744,6 +751,7 @@ export default {
       handleClickContact,
       quote,
       message,
+      handleKeyDownEvent,
       handleSendMsg,
       handleClickQuote,
       handleWithdrawMsg,

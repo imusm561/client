@@ -597,6 +597,7 @@
   "app.chat.close": "关闭",
   "app.chat.delete": "删除",
   "app.chat.quote": "引用",
+  "app.chat.quote.remove": "移除引用",
   "app.chat.personalDetails": "个人信息",
   "app.chat.personalDetails.phone": "手机",
   "app.chat.personalDetails.email": "邮箱",

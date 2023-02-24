@@ -597,6 +597,7 @@
   "app.chat.close": "Close",
   "app.chat.delete": "Delete",
   "app.chat.quote": "Quote",
+  "app.chat.quote.remove": "Remove quote",
   "app.chat.personalDetails": "Personal Details",
   "app.chat.personalDetails.phone": "Phone",
   "app.chat.personalDetails.email": "Email",
