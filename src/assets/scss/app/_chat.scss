@@ -22,7 +22,7 @@
 .chat-list {
   margin: 0;
 
-  >li {
+  > li {
     &.active {
       a {
         background-color: $chat-content-bg;
@@ -191,7 +191,7 @@
     padding-top: 10px;
     margin-bottom: 0;
 
-    >li {
+    > li {
       display: flex;
     }
   }
@@ -356,7 +356,7 @@
         bottom: 10px;
 
         li {
-          >a {
+          > a {
             font-size: 18px;
             color: $white;
             display: inline-block;
@@ -455,16 +455,10 @@
     }
 
     .chat-quote {
-
       &:hover {
         text-decoration: line-through;
         text-decoration-color: red;
       }
-
     }
   }
-
-
-
-
 }
