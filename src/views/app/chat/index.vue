@@ -297,8 +297,9 @@
                       aria-expanded="false"
                     ></i>
                     <div
-                      class="dropdown-menu"
-                      style="width: 100vw; max-width: 340px; height: 220px; overflow: auto"
+                      data-simplebar
+                      class="dropdown-menu p-0"
+                      style="width: 100vw; max-width: 340px; height: 220px"
                     >
                       <div class="row g-0">
                         <div
