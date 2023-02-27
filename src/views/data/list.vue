@@ -1401,8 +1401,9 @@ export default {
     };
 
     const getContextMenuItems = (params) => {
-      const menu = [
-        {
+      const menu = [];
+      if (params.node) {
+        menu.push({
           name: i18n.global.t('data.list.contextMenu.view', {
             data: `${form.value.id}/${params.node?.data?.id}`,
           }),
@@ -1414,79 +1415,79 @@ export default {
             window.open(href, '_blank');
           },
           icon: '<i class="mdi mdi-eye-outline fs-14" style="margin-left: 2px;" />',
-        },
-      ];
-
-      if (!form.value.flow?.length || params.node?.data?.data_state === 'drafted') {
-        menu.push({
-          name: i18n.global.t('data.list.contextMenu.edit', {
-            data: `${form.value.id}/${params.node?.data?.id}`,
-          }),
-          action: () => {
-            const { href } = router.resolve({
-              name: 'edit',
-              params: { tid: form.value.id, rid: params.node?.data?.id },
-            });
-            window.open(href, '_blank');
-          },
-          icon: '<i class="mdi mdi-square-edit-outline fs-14" style="margin-left: 2px;" />',
         });
-      }
 
-      if (typeof params.value === 'object') {
-        menu.push({
-          name: i18n.global.t('data.list.contextMenu.copy'),
-          action: () => {
-            copyToClipboard(JSON.stringify(params.value));
-          },
-          icon: '<i class="mdi mdi-code-json fs-14" style="margin-left: 2px;" />',
-        });
-      }
-
-      menu.push(
-        'copy',
-        'copyWithHeaders',
-        'copyWithGroupHeaders',
-        'paste',
-        'separator',
-        'chartRange',
-        // 'export', // excelExport
-      );
-
-      if (
-        store.state.user.data?.tags?.includes('ALL') ||
-        store.state.user.data?.permissions?.[route.value.params.tid]?.export
-      ) {
-        const menu_export = {
-          name: i18n.global.t('data.list.contextMenu.export'),
-          subMenu: [
-            {
-              name: i18n.global.t('data.list.contextMenu.export.allRows'),
-              action: () => {
-                gridApi.exportDataAsExcel({
-                  exportedRows: 'all',
-                });
-              },
-              icon: '<i class="mdi mdi-format-list-bulleted-square fs-14" style="margin-left: 2px;" />',
-            },
-          ],
-          icon: '<i class="mdi mdi-export fs-14" style="margin-left: 2px;" />',
-        };
-
-        if (selectedRows.value.length) {
-          menu_export.subMenu.push({
-            name: i18n.global.tc('data.list.contextMenu.export.selectedRows', {
-              count: selectedRows.value.length,
+        if (!form.value.flow?.length || params.node?.data?.data_state === 'drafted') {
+          menu.push({
+            name: i18n.global.t('data.list.contextMenu.edit', {
+              data: `${form.value.id}/${params.node?.data?.id}`,
             }),
             action: () => {
-              gridApi.exportDataAsExcel({
-                onlySelected: true,
+              const { href } = router.resolve({
+                name: 'edit',
+                params: { tid: form.value.id, rid: params.node?.data?.id },
               });
+              window.open(href, '_blank');
             },
-            icon: '<i class="mdi mdi-checkbox-marked-outline fs-14" style="margin-left: 2px;" />',
+            icon: '<i class="mdi mdi-square-edit-outline fs-14" style="margin-left: 2px;" />',
           });
         }
-        menu.push(menu_export);
+
+        if (typeof params.value === 'object') {
+          menu.push({
+            name: i18n.global.t('data.list.contextMenu.copy'),
+            action: () => {
+              copyToClipboard(JSON.stringify(params.value));
+            },
+            icon: '<i class="mdi mdi-code-json fs-14" style="margin-left: 2px;" />',
+          });
+        }
+
+        menu.push(
+          'copy',
+          'copyWithHeaders',
+          'copyWithGroupHeaders',
+          'paste',
+          'separator',
+          'chartRange',
+          // 'export', // excelExport
+        );
+
+        if (
+          store.state.user.data?.tags?.includes('ALL') ||
+          store.state.user.data?.permissions?.[route.value.params.tid]?.export
+        ) {
+          const menu_export = {
+            name: i18n.global.t('data.list.contextMenu.export'),
+            subMenu: [
+              {
+                name: i18n.global.t('data.list.contextMenu.export.allRows'),
+                action: () => {
+                  gridApi.exportDataAsExcel({
+                    exportedRows: 'all',
+                  });
+                },
+                icon: '<i class="mdi mdi-format-list-bulleted-square fs-14" style="margin-left: 2px;" />',
+              },
+            ],
+            icon: '<i class="mdi mdi-export fs-14" style="margin-left: 2px;" />',
+          };
+
+          if (selectedRows.value.length) {
+            menu_export.subMenu.push({
+              name: i18n.global.tc('data.list.contextMenu.export.selectedRows', {
+                count: selectedRows.value.length,
+              }),
+              action: () => {
+                gridApi.exportDataAsExcel({
+                  onlySelected: true,
+                });
+              },
+              icon: '<i class="mdi mdi-checkbox-marked-outline fs-14" style="margin-left: 2px;" />',
+            });
+          }
+          menu.push(menu_export);
+        }
       }
 
       if (
