@@ -147,6 +147,7 @@
     <div class="mt-1 d-flex">
       <div class="btn-group float-start" v-if="!readonly && (multiple || files.length === 0)">
         <button
+          id="uploadFile"
           type="button"
           :disabled="disabled"
           class="btn btn-sm"
@@ -173,7 +174,11 @@
               @click="$refs.fileUploadRef.$el.click()"
             >
               <i class="mdi mdi-file-upload" />
-              <span class="ms-1">Select File{{ accept == '*' && multiple ? 's' : '' }}</span>
+              <span class="ms-1">
+                {{
+                  $t('components.uploader.selectFile', { count: accept == '*' && multiple ? 2 : 1 })
+                }}
+              </span>
             </a>
           </li>
           <li v-if="accept == '*' && multiple">
@@ -183,7 +188,7 @@
               @click="$refs.folderUploadRef.$el.click()"
             >
               <i class="mdi mdi-folder-upload" />
-              <span class="ms-1">Select Folder</span>
+              <span class="ms-1">{{ $t('components.uploader.selectFolder') }}</span>
             </a>
           </li>
           <div v-if="qrable && !isMobile()">
@@ -320,6 +325,7 @@ export default defineComponent({
     });
 
     const onFileAdded = (file) => {
+      file.key = Math.random().toString(36).slice(-6);
       file.pause();
       file['_status'] = { value: 'computing', text: 0 };
       file['extension'] = getFileSuffix(file.name);
@@ -328,6 +334,7 @@ export default defineComponent({
         if (categories[category].includes(file.extension)) fileCategory = category;
       }
       file['category'] = fileCategory;
+      emit('added', file);
       computeFile(file);
       nextTick(() => {
         setTimeout(() => {
@@ -479,6 +486,7 @@ export default defineComponent({
         if (code === 200) {
           handleCancelUpload(file);
           files.value = [...files.value, ...[data]];
+          emit('completed', { ...file, data });
         } else {
           toast({
             component: ToastificationContent,

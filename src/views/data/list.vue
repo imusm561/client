@@ -142,7 +142,7 @@
       </div>
 
       <input
-        id="importData"
+        id="data-list-file-input"
         class="d-none"
         type="file"
         @click="
@@ -1500,7 +1500,7 @@ export default {
             {
               name: i18n.global.t('data.list.contextMenu.import.upload'),
               action: () => {
-                document.getElementById('importData').click();
+                document.getElementById('data-list-file-input').click();
               },
               icon: '<i class="mdi mdi-file-upload-outline fs-14" style="margin-left: 2px;" />',
             },

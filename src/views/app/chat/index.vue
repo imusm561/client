@@ -46,7 +46,11 @@
                   <div class="fs-10 mt-1 text-muted text-truncate">
                     {{
                       chat.chat_data.length
-                        ? decryptData(chat.chat_data[chat.chat_data.length - 1].message)
+                        ? chat.chat_data[chat.chat_data.length - 1].type === 'file'
+                          ? JSON.parse(
+                              decryptData(chat.chat_data[chat.chat_data.length - 1].message),
+                            )?.name
+                          : decryptData(chat.chat_data[chat.chat_data.length - 1].message)
                         : chat.post
                     }}
                   </div>
@@ -232,13 +236,10 @@
                                 </p>
                                 <p>{{ $moment(data.quote.created_at).format('HH:mm') }}</p>
                               </span>
-                              <p>{{ decryptData(data.quote.message) }}</p>
+                              <Message :item="data.quote" />
                               <hr />
                             </span>
-                            <p
-                              class="mb-0 ctext-content"
-                              v-html="decryptData(data.message).replace(/\n/g, '<br />')"
-                            ></p>
+                            <Message :item="data" />
                           </div>
                           <div class="dropdown align-self-start message-box-drop">
                             <a
@@ -266,6 +267,7 @@
                             </span>
                             <span
                               v-if="
+                                data.id &&
                                 ($moment().valueOf() - $moment(data.created_at).valueOf()) / 1000 <
                                   120 &&
                                 data.sender === $store.state.user.data.username &&
@@ -311,7 +313,16 @@
                       </div>
                     </div>
                   </div>
-                  <i class="fs-20 me-2 text-muted mdi mdi-folder-outline cursor-pointer"></i>
+                  <i
+                    class="fs-20 me-2 text-muted mdi mdi-folder-outline cursor-pointer"
+                    @click="handleClickFileInput"
+                  ></i>
+                  <Uploader
+                    class="d-none"
+                    :multiple="false"
+                    @added="handleAddedFile"
+                    @completed="handleCompletedFile"
+                  />
                   <!-- <i class="fs-20 me-2 text-muted mdi mdi-content-cut"></i> -->
                 </div>
                 <div v-if="quote" class="flex-grow-1 overflow-hidden">
@@ -320,7 +331,12 @@
                     @click="quote = null"
                     :title="$t('app.chat.quote.remove')"
                   >
-                    {{ $t('app.chat.quote') }}: {{ decryptData(quote.message) }}
+                    {{ $t('app.chat.quote') }}:
+                    {{
+                      quote.type === 'file'
+                        ? JSON.parse(decryptData(quote.message))?.name
+                        : decryptData(quote.message)
+                    }}
                   </small>
                 </div>
                 <div class="flex-shrink-0"></div>
@@ -450,10 +466,13 @@ import { useRouter, getUserInfo, encryptData, decryptData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Avatar from '@components/Avatar';
-
+import Uploader from '@components/Uploader';
+import Message from './Message';
 export default {
   components: {
     Avatar,
+    Uploader,
+    Message,
   },
   setup() {
     const toast = useToast();
@@ -671,6 +690,60 @@ export default {
       }, 50);
     };
 
+    const handleClickFileInput = () => {
+      document.getElementById('uploadFile').click();
+    };
+
+    const handleAddedFile = (e) => {
+      const temp_file = {
+        category: e.category,
+        extension: e.extension,
+        name: e.name,
+        size: e.size,
+      };
+      const temp_data = reactive({
+        key: e.key,
+        id: 0,
+        created_at: new Date(),
+        sender: store.state.user.data.username,
+        receiver: current_chat.value.username,
+        type: 'file',
+        message: encryptData(JSON.stringify(temp_file)),
+        quote: quote.value,
+      });
+      current_chat.value.chat_data.push(temp_data);
+    };
+
+    const handleCompletedFile = (e) => {
+      const temp_data = current_chat.value.chat_data.find((item) => item.key === e.key);
+      if (temp_data) {
+        temp_data.message = encryptData(JSON.stringify(e.data));
+        sendMsg({
+          uid: e.data.id,
+          sender: temp_data.sender,
+          receiver: temp_data.receiver,
+          type: temp_data.type,
+          message: temp_data.message,
+          quote: temp_data.quote,
+        }).then(({ code, msg, data }) => {
+          if (code === 200) {
+            temp_data.id = data.id;
+            temp_data.created_at = data.created_at;
+            delete temp_data.key;
+          } else {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: msg,
+              },
+            });
+          }
+        });
+      }
+    };
+
     const handleSendMsg = () => {
       if (message.value.trim()) {
         const temp_data = reactive({
@@ -678,6 +751,7 @@ export default {
           created_at: new Date(),
           sender: store.state.user.data.username,
           receiver: current_chat.value.username,
+          type: 'text',
           message: encryptData(message.value.trim()),
           quote: quote.value,
         });
@@ -686,6 +760,7 @@ export default {
         sendMsg({
           sender: temp_data.sender,
           receiver: temp_data.receiver,
+          type: temp_data.type,
           message: temp_data.message,
           quote: temp_data.quote,
         }).then(({ code, msg, data }) => {
@@ -786,6 +861,9 @@ export default {
       emoji:
         '😀,😁,😂,😃,😄,😅,😆,😉,😊,😋,😎,😍,😘,😗,😙,😚,😇,😐,😑,😶,😏,😣,😥,😮,😯,😪,😫,😴,😌,😛,😜,😝,😒,😓,😔,😕,😲,😷,😖,😞,😟,😤,😢,😭,😦,😧,😨,😬,😰,😱,😳,😵,😡,😠,💘,❤,💓,💔,💕,💖,💗,💙,💚,💛,💜,💝,💞,💟,❣,💪,👈,👉,☝,👆,👇,✌,✋,👌,👍,👎,✊,👊,👋,👏,👐,✍,🍇,🍈,🍉,🍊,🍋,🍌,🍍,🍎,🍏,🍐,🍑,🍒,🍓,🍅,🍆,🌽,🍄,🌰,🍞,🍖,🍗,🍔,🍟,🍕,🍳,🍲,🍱,🍘,🍙,🍚,🍛,🍜,🍝,🍠,🍢,🍣,🍤,🍥,🍡,🍦,🍧,🍨,🍩,🍪,🎂,🍰,🍫,🍬,🍭,🍮,🍯,🍼,☕,🍵,🍶,🍷,🍸,🍹,🍺,🍻,🍴,🌹,🍀,🍎,💰,📱,🌙,🍁,🍂,🍃,🌷,💎,🔪,🔫,🏀,⚽,⚡,👄,👍,🔥,🙈,🙉,🙊,🐵,🐒,🐶,🐕,🐩,🐺,🐱,😺,😸,😹,😻,😼,😽,🙀,😿,😾,🐈,🐯,🐅,🐆,🐴,🐎,🐮,🐂,🐃,🐄,🐷,🐖,🐗,🐽,🐏,🐑,🐐,🐪,🐫,🐘,🐭,🐁,🐀,🐹,🐰,🐇,🐻,🐨,🐼,🐾,🐔,🐓,🐣,🐤,🐥,🐦,🐧,🐸,🐊,🐢,🐍,🐲,🐉,🐳,🐋,🐬,🐟,🐠,🐡,🐙,🐚,🐌,🐛,🐜,🐝,🐞,🦋,😈,👿,👹,👺,💀,☠,👻,👽,👾,💣',
       handleClickEmoji,
+      handleClickFileInput,
+      handleAddedFile,
+      handleCompletedFile,
       handleSendMsg,
       handleClickQuote,
       handleWithdrawMsg,

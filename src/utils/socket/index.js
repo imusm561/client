@@ -58,7 +58,10 @@ const initSocket = (socket) => {
           component: ToastificationContent,
           props: {
             user: user,
-            text: decryptData(chat.message),
+            text:
+              chat.type === 'file'
+                ? JSON.parse(decryptData(chat.message))?.name
+                : decryptData(chat.message),
             to: { name: 'chat', query: { contact: user.username } },
           },
         });

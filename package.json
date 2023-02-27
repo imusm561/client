@@ -1,6 +1,6 @@
 {
   "name": "lcdp",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "private": true,
   "scripts": {
     "serve": "export NODE_ENV=development && vue-cli-service serve",

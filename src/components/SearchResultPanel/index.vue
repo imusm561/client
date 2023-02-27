@@ -202,7 +202,7 @@
             <i
               class="mdi mdi-eye cursor-pointer ms-1 text-primary"
               :title="file.source"
-              @click.stop="$router.push({ path: file.source })"
+              @click.stop="handleViewFileSource(file.source)"
             />
             <i
               class="mdi mdi-download cursor-pointer ms-1 text-primary"
@@ -254,6 +254,11 @@ export default defineComponent({
       window.open(href, '_blank');
     };
 
+    const handleViewFileSource = (source) => {
+      // const { href } = router.resolve({ path: source });
+      window.open(`${process.env.BASE_URL}${source.substring(1)}`, '_blank');
+    };
+
     const handleDownloadFile = (file) => {
       let downloadElement = document.createElement('a');
       downloadElement.href = `${process.env.BASE_URL}cor/file/load/${file.uuid}`;
@@ -265,6 +270,7 @@ export default defineComponent({
 
     return {
       handlePreviewFile,
+      handleViewFileSource,
       handleDownloadFile,
       size2Str,
       replaceHtml,

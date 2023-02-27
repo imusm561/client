@@ -589,7 +589,7 @@ export default {
 
     const handleViewFileSource = (source) => {
       // const { href } = router.resolve({ path: source });
-      window.open(source, '_blank');
+      window.open(`${process.env.BASE_URL}${source.substring(1)}`, '_blank');
     };
 
     const handleDownloadFile = (file) => {

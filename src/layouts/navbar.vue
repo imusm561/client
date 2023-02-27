@@ -308,7 +308,11 @@
                           </span>
                           <div class="fs-13 text-muted">
                             <p class="mb-1 text-truncate">
-                              {{ decryptData(item.chat_data[0].message) }}
+                              {{
+                                item.chat_data[0].type === 'file'
+                                  ? JSON.parse(decryptData(item.chat_data[0].message))?.name
+                                  : decryptData(item.chat_data[0].message)
+                              }}
                             </p>
                           </div>
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
@@ -684,7 +688,8 @@ export default {
 
       if (search.result.file.length) {
         router.push({
-          path: search.result.file[0].source,
+          name: 'preview',
+          params: { uuid: search.result.file[0].uuid },
         });
         return;
       }

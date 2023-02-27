@@ -850,6 +850,8 @@
   "components.pagination.next": "下一页",
   "components.pagination.goto": "前往",
 
+  "components.uploader.selectFile": "选择文件",
+  "components.uploader.selectFolder": "选择文件夹",
   "components.uploader.status.computing": "计算中...",
   "components.uploader.status.waiting": "等待上传...",
   "components.uploader.status.uploading": "上传中...",

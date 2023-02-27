@@ -850,6 +850,8 @@
   "components.pagination.next": "Next",
   "components.pagination.goto": "Go to",
 
+  "components.uploader.selectFile": "Select File | Select Files",
+  "components.uploader.selectFolder": "Select Folder",
   "components.uploader.status.computing": "Computing...",
   "components.uploader.status.waiting": "Waiting...",
   "components.uploader.status.uploading": "Uploading...",
