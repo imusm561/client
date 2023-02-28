@@ -131,14 +131,14 @@
                 <h6 class="pb-1">
                   <span class="text-muted">{{ $t('data.column.BasicCreatedAt') }}:&nbsp;</span>
                   <span>
-                    {{ getUserInfo(data.created_by)?.fullname || data.created_by }} @
+                    {{ getUserInfo(data.created_by).fullname }} @
                     {{ $moment(data.created_at).format('llll') }}
                   </span>
                 </h6>
                 <h6 class="pb-1" v-if="data.updated_at && data.updated_by">
                   <span class="text-muted">{{ $t('data.column.BasicUpdatedAt') }}:&nbsp;</span>
                   <span>
-                    {{ getUserInfo(data.updated_by)?.fullname || data.updated_by }} @
+                    {{ getUserInfo(data.updated_by).fullname }} @
                     {{ $moment(data.updated_at).format('llll') }}
                   </span>
                 </h6>
@@ -163,7 +163,7 @@
                 {{ tab.name }}
               </div>
               <div class="row">
-                <template v-for="column in tab.columns" :class="`col-sm-${column.col} mb-2 mt-2`">
+                <template v-for="column in tab.columns">
                   <div
                     :id="column.field"
                     :key="column.id"
@@ -235,7 +235,7 @@
                 :key="tab.id"
               >
                 <div class="row p-3">
-                  <template v-for="column in tab.columns" :class="`col-sm-${column.col} mb-2 mt-2`">
+                  <template v-for="column in tab.columns">
                     <div
                       :id="column.field"
                       :key="column.id"
@@ -365,7 +365,7 @@
               <div class="flex-grow-1 ms-3">
                 <span>
                   <div class="fw-medium fs-10">
-                    {{ getUserInfo(flow.created_by)?.fullname || flow.created_by }}
+                    {{ getUserInfo(flow.created_by).fullname }}
                     <i
                       v-if="flow.created_by != $store.state.user.data.username"
                       class="mdi mdi-chat-processing-outline text-muted cursor-pointer"
@@ -449,7 +449,7 @@
                       <Avatar class="me-2" :data="getUserInfo(item.username)" size="xs" />
                       <div>
                         <div class="fw-medium text-dark">
-                          {{ getUserInfo(item.username)?.fullname || item.username }}
+                          {{ getUserInfo(item.username).fullname }}
                           <i
                             v-if="item.username != $store.state.user.data.username"
                             class="mdi mdi-chat-processing-outline text-muted cursor-pointer"

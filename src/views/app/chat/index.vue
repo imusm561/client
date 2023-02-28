@@ -230,9 +230,7 @@
                               <span class="d-flex justify-content-between">
                                 <p class="me-3">
                                   “
-                                  {{
-                                    getUserInfo(data.quote.sender)?.fullname || data.quote.sender
-                                  }}
+                                  {{ getUserInfo(data.quote.sender).fullname }}
                                 </p>
                                 <small class="text-muted time">
                                   <span
@@ -311,7 +309,7 @@
               </div>
             </div>
 
-            <div class="chat-input-section">
+            <div class="chat-input-section shadow-lg">
               <div class="chat-input-toolpanel d-flex align-items-center cursor-pointer">
                 <div class="flex-shrink-0 align-self-center ms-0 d-flex">
                   <div class="dropup">
@@ -375,7 +373,7 @@
                   v-model="message"
                   @keydown="handleKeyDownEvent"
                   :placeholder="`@${
-                    getUserInfo(current_chat.username)?.fullname || current_chat.username
+                    getUserInfo(current_chat.username).fullname
                   }`"
                 />
               </div>

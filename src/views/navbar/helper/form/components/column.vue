@@ -173,7 +173,7 @@
                 {{
                   $t('layout.navbar.helper.form.column.config.create', {
                     user:
-                      getUserInfo(current_column.created_by)?.fullname || current_column.created_by,
+                      getUserInfo(current_column.created_by).fullname,
                     time: $moment(current_column.created_at).format('llll'),
                   })
                 }}
@@ -183,7 +183,7 @@
                 {{
                   $t('layout.navbar.helper.form.column.config.update', {
                     user:
-                      getUserInfo(current_column.updated_by)?.fullname || current_column.updated_by,
+                      getUserInfo(current_column.updated_by).fullname,
                     time: $moment(current_column.updated_at).format('llll'),
                   })
                 }}

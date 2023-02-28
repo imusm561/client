@@ -88,11 +88,11 @@
                     :title="
                       $t('layout.navbar.helper.code.file.info', {
                         created_by: current.created_by
-                          ? getUserInfo(current.created_by)?.fullname || current.created_by
+                          ? getUserInfo(current.created_by).fullname
                           : $t('layout.navbar.helper.code.file.info.system'),
                         created_at: $moment(current.created_at || current.birthtime).format('llll'),
                         updated_by: current.updated_by
-                          ? getUserInfo(current.updated_by)?.fullname || current.updated_by
+                          ? getUserInfo(current.updated_by).fullname
                           : $t('layout.navbar.helper.code.file.info.system'),
                         updated_at: $moment(current.updated_at || current.mtime).format('llll'),
                       })

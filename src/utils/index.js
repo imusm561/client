@@ -69,7 +69,7 @@ export const clearUserData = () => {
 export const getUserInfo = (value, key = 'username') => {
   if (key === 'username' && value === '@system') return { username: '@system', fullname: 'System' };
   const userInfo = store.state.org.users.find((user) => user[key] === value);
-  return userInfo || null;
+  return userInfo || { username: value, fullname: value };
 };
 
 export const getUserLeaders = (user, leaders = []) => {
@@ -365,11 +365,11 @@ export const getDataByFormula = (
       if (expr == '*==userlist') {
         if (type === 'Single') {
           const user = getUserInfo(options.value);
-          resolve(user?.fullname || options.value);
+          resolve(user.fullname);
         } else {
           const users = options.value.map((item) => {
             const user = getUserInfo(item);
-            return user?.fullname || item;
+            return user.fullname;
           });
           resolve(users);
         }

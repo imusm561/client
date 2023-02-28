@@ -155,16 +155,7 @@
                       </span>
                     </div>
                     <div class="flex-shrink-0">
-                      <div class="avatar-group">
-                        <span
-                          v-for="(user, index) in task._users"
-                          :key="index"
-                          class="avatar-group-item cursor-pointer"
-                          :title="user.title || user.fullname"
-                        >
-                          <Avatar :data="user" size="xxs" />
-                        </span>
-                      </div>
+                      <Avatar :data="task._users" size="xxs" />
                     </div>
                   </div>
                 </div>
@@ -530,22 +521,9 @@ export default {
       getTasks().then(({ code, data, msg }) => {
         if (code === 200) {
           _tasks.value = data.map((task) => {
-            task._users = task.users
-              .filter((username) => getUserInfo(username))
-              .slice(0, 4)
-              .map((username) => {
-                return getUserInfo(username);
-              });
-            if (task.users.length > 5)
-              task._users.push({
-                more: '···',
-                title: task.users
-                  .slice(4)
-                  .map((u) => {
-                    return u.fullname;
-                  })
-                  .toString(),
-              });
+            task._users = task.users.map((username) => {
+              return getUserInfo(username);
+            });
             return task;
           });
           setTaskStatusList();

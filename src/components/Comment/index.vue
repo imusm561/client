@@ -22,7 +22,7 @@
       <label v-if="comment.reply">
         {{
           $t('component.comment.replyTo', {
-            user: getUserInfo(comment.reply.created_by)?.fullname || comment.reply.created_by,
+            user: getUserInfo(comment.reply.created_by).fullname,
           })
         }}
         <i class="mdi mdi-close-circle text-danger cursor-pointer" @click="comment.reply = null" />

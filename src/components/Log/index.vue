@@ -10,7 +10,7 @@
             <div class="flex-grow-1 ms-3">
               <span>
                 <span class="d-block fw-medium">
-                  {{ getUserInfo(log.created_by)?.fullname || log.created_by }}
+                  {{ getUserInfo(log.created_by).fullname }}
                   <i
                     v-if="log.created_by != $store.state.user.data.username"
                     class="mdi mdi-chat-processing-outline text-muted cursor-pointer"

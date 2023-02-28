@@ -164,7 +164,7 @@
                       <td style="white-space: nowrap">#{{ log.id }}</td>
                       <td style="white-space: nowrap">{{ log.uuid }}</td>
                       <td style="white-space: nowrap">
-                        {{ getUserInfo(log.created_by)?.fullname || log.created_by }}
+                        {{ getUserInfo(log.created_by).fullname }}
                       </td>
                       <td style="white-space: nowrap">
                         {{ $moment(log.created_at).format('llll') }}

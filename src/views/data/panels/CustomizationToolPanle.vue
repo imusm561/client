@@ -47,7 +47,7 @@
               class="ag-group-title ag-filter-toolpanel-group-title text-truncate"
               style="cursor: pointer"
             >
-              {{ getUserInfo(item.created_by)?.fullname || item.created_by }}
+              {{ getUserInfo(item.created_by).fullname }}
               [{{
                 item.children.filter(
                   (filter) => !keyword || filter.name.toLowerCase().includes(keyword.toLowerCase()),

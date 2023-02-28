@@ -229,7 +229,7 @@
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   <span class="fw-medium">{{ $t('data.list.formInfoModal.creation') }}</span>
                   <span class="badge bg-primary">
-                    {{ getUserInfo(form.created_by)?.fullname || form.created_by }} @
+                    {{ getUserInfo(form.created_by).fullname }} @
                     {{ $moment(form.created_at).format('llll') }}
                   </span>
                 </li>
@@ -239,7 +239,7 @@
                 >
                   <span class="fw-medium">{{ $t('data.list.formInfoModal.lastUpdate') }}</span>
                   <span class="badge bg-secondary">
-                    {{ getUserInfo(form.updated_by)?.fullname || form.updated_by }} @
+                    {{ getUserInfo(form.updated_by).fullname }} @
                     {{ $moment(form.updated_at).format('llll') }}
                   </span>
                 </li>
@@ -850,7 +850,7 @@ export default {
                     variant: 'danger',
                     icon: 'mdi-alert',
                     text: i18n.global.t('data.list.cellEdit.conflicts', {
-                      user: getUserInfo(editing)?.fullname || editing,
+                      user: getUserInfo(editing).fullname,
                     }),
                   },
                 });

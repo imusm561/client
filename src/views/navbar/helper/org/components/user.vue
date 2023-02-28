@@ -105,7 +105,7 @@
                 }}
               </td>
               <td>{{ user.post }}</td>
-              <td>{{ getUserInfo(user.leader, 'id')?.fullname || user.leader }}</td>
+              <td>{{ getUserInfo(user.leader, 'id').fullname }}</td>
               <td>
                 <span
                   class="badge text-uppercase"

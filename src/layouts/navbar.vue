@@ -354,7 +354,7 @@
                         <div class="flex-1 w-50" @click="handleClickMailNotice(mail)">
                           <span class="stretched-link">
                             <h6 class="mt-0 mb-1 fs-13 fw-semibold">
-                              {{ getUserInfo(mail.created_by)?.fullname || mail.created_by }}
+                              {{ getUserInfo(mail.created_by).fullname }}
                             </h6>
                           </span>
                           <div class="fs-13 text-muted">
@@ -390,7 +390,7 @@
                         <div class="flex-1 w-50" @click="handleClickCommentNotice(comment)">
                           <span class="stretched-link">
                             <h6 class="mt-0 mb-1 fs-13 fw-semibold">
-                              {{ getUserInfo(comment.created_by)?.fullname || comment.created_by }}
+                              {{ getUserInfo(comment.created_by).fullname }}
                             </h6>
                           </span>
                           <div class="fs-13 text-muted">
@@ -429,11 +429,7 @@
                         <div class="flex-1 w-50" @click="handleClickFlowNotice(flow)">
                           <span class="stretched-link">
                             <h6 class="mt-0 mb-1 fs-13 fw-semibold">
-                              {{
-                                getUserInfo(flow.updated_by || flow.created_by)?.fullname ||
-                                flow.updated_by ||
-                                flow.created_by
-                              }}
+                              {{ getUserInfo(flow.updated_by || flow.created_by).fullname }}
                             </h6>
                           </span>
                           <div class="fs-13 text-muted">

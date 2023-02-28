@@ -522,7 +522,7 @@
                 <p class="text-muted mx-4 mb-0 mb-2" style="white-space: nowrap">
                   {{
                     $t('data.edit.updateConflictsModal.tips', {
-                      user: getUserInfo(update_conflicts)?.fullname || update_conflicts,
+                      user: getUserInfo(update_conflicts).fullname,
                     })
                   }}
                 </p>
@@ -565,7 +565,7 @@
                 <h4>
                   {{
                     $t('data.edit.useStagedDataConfirmModal.title', {
-                      user: getUserInfo(update_conflicts)?.fullname || update_conflicts,
+                      user: getUserInfo(update_conflicts).fullname,
                     })
                   }}
                 </h4>
