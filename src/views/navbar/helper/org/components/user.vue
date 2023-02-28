@@ -980,6 +980,7 @@ export default {
           id: current_user.value.id,
           data_state: 'deleted',
         }).then(() => {
+          getData();
           document.getElementById('hideDeleteUserModalBtn').click();
         });
       } else {
