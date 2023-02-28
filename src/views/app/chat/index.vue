@@ -206,7 +206,7 @@
 
             <div class="position-relative" id="user-chat">
               <div data-simplebar class="chat-conversation p-3 p-lg-4">
-                <ul class="list-unstyled chat-conversation-list">
+                <ul class="chat-conversation-list">
                   <li
                     v-for="(data, index) in current_chat.chat_data"
                     :key="index"
@@ -227,14 +227,24 @@
                         <div class="ctext-wrap">
                           <div class="ctext-wrap-content">
                             <span v-if="data.quote && data.quote.id" class="mb-0 ctext-content">
-                              <span class="d-flex justify-content-between">
+                              <span class="d-flex justify-content-between" style="min-width: 120px">
                                 <p>
                                   “
                                   {{
                                     getUserInfo(data.quote.sender)?.fullname || data.quote.sender
-                                  }}&nbsp;&nbsp;&nbsp;
+                                  }}
                                 </p>
-                                <p>{{ $moment(data.quote.created_at).format('HH:mm') }}</p>
+                                <small class="text-muted time">
+                                  <span
+                                    v-if="
+                                      $moment(data.quote.created_at).format('YYYYMMDD') !=
+                                      $moment().format('YYYYMMDD')
+                                    "
+                                  >
+                                    {{ $moment(data.created_at).format('lll') }}
+                                  </span>
+                                  <span v-else>{{ $moment(data.created_at).format('HH:mm') }}</span>
+                                </small>
                               </span>
                               <Message :item="data.quote" />
                               <hr />
@@ -252,7 +262,21 @@
                           </div>
                           <div class="conversation-name">
                             <small class="text-muted time">
-                              {{ $moment(data.created_at).format('HH:mm') }}
+                              <span
+                                v-if="
+                                  index === 0 ||
+                                  (index > 0 &&
+                                    $moment(current_chat.chat_data[index].created_at).format(
+                                      'YYYYMMDD',
+                                    ) !=
+                                      $moment(current_chat.chat_data[index - 1].created_at).format(
+                                        'YYYYMMDD',
+                                      ))
+                                "
+                              >
+                                {{ $moment(data.created_at).format('llll') }}
+                              </span>
+                              <span v-else>{{ $moment(data.created_at).format('HH:mm') }}</span>
                             </small>
                             <span class="text-success check-message-icon">
                               <i
