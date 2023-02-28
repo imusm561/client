@@ -12,7 +12,14 @@
       :close-on-select="false"
       taggable
       push-tags
-    ></VueSelect>
+    >
+      <template v-slot:no-options="{ search, searching }">
+        <template v-if="searching">
+          <span v-html="$t('components.vs.search', { search })"></span>
+        </template>
+        <em v-else style="opacity: 0.5">{{ $t('components.vs.generateOption') }}</em>
+      </template>
+    </VueSelect>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
   <div v-else-if="type === 'EDIT'">

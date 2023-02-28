@@ -5,7 +5,14 @@
       <span v-if="column.alias" class="badge bg-primary ms-2">{{ column.alias }}</span>
     </label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
-    <VueSelect :placeholder="column.cfg.placeholder"></VueSelect>
+    <VueSelect :placeholder="column.cfg.placeholder">
+      <template v-slot:no-options="{ search, searching }">
+        <template v-if="searching">
+          <span v-html="$t('components.vs.search', { search })"></span>
+        </template>
+        <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+      </template>
+    </VueSelect>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
   <div v-else-if="type === 'EDIT'">
