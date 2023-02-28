@@ -204,7 +204,7 @@
               </div>
             </div>
 
-            <div class="position-relative" id="user-chat">
+            <div class="position-relative fade-out" :key="current_chat.username" id="user-chat">
               <div data-simplebar class="chat-conversation p-3 p-lg-4">
                 <ul class="chat-conversation-list">
                   <li
@@ -227,8 +227,8 @@
                         <div class="ctext-wrap">
                           <div class="ctext-wrap-content">
                             <span v-if="data.quote && data.quote.id" class="mb-0 ctext-content">
-                              <span class="d-flex justify-content-between" style="min-width: 120px">
-                                <p>
+                              <span class="d-flex justify-content-between">
+                                <p class="me-3">
                                   “
                                   {{
                                     getUserInfo(data.quote.sender)?.fullname || data.quote.sender
@@ -374,6 +374,9 @@
                   style="resize: none; border: none; height: 110px"
                   v-model="message"
                   @keydown="handleKeyDownEvent"
+                  :placeholder="`@${
+                    getUserInfo(current_chat.username)?.fullname || current_chat.username
+                  }`"
                 />
               </div>
             </div>
@@ -533,25 +536,21 @@ export default {
     });
 
     const scrollToBottom = (behavior = 'auto') => {
-      setTimeout(() => {
-        if (document.getElementById('user-chat')) {
-          const chatConversationList = document
-            .getElementById('user-chat')
-            .querySelector('.chat-conversation .simplebar-content-wrapper');
-          const offsetHeight =
-            document.getElementById('user-chat').getElementsByClassName('chat-conversation-list')[0]
-              .scrollHeight -
-            window.innerHeight +
-            600;
-          chatConversationList.scrollTo({
-            top: offsetHeight,
-            behavior,
-          });
-          setTimeout(() => {
+      setTimeout(
+        () => {
+          if (document.getElementById('user-chat')) {
+            const chatConversationList = document
+              .getElementById('user-chat')
+              .querySelector('.chat-conversation .simplebar-content-wrapper');
+            chatConversationList.scrollTo({
+              top: chatConversationList.scrollHeight,
+              behavior,
+            });
             document.getElementById('message_input').focus();
-          }, 50);
-        }
-      }, 0);
+          }
+        },
+        behavior === 'smooth' ? 0 : 10,
+      );
     };
 
     const current_chat = ref({});
@@ -675,6 +674,13 @@ export default {
     });
 
     const handleClickContact = (contact) => {
+      if (message.value) {
+        sessionStorage.setItem(
+          `${current_chat.value.username}ChatMessage`,
+          encryptData(message.value),
+        );
+        message.value = '';
+      }
       store.commit('user/DEL_NOTICE', {
         app: 'chat',
         data: { user: contact },
@@ -690,8 +696,13 @@ export default {
         _chats.value.push(chat);
       }
       current_chat.value = chat;
-      search_contact.value = '';
       scrollToBottom();
+      search_contact.value = '';
+      const temp_message = sessionStorage.getItem(`${contact.username}ChatMessage`);
+      if (temp_message) {
+        sessionStorage.removeItem(`${contact.username}ChatMessage`);
+        message.value = decryptData(temp_message);
+      }
     };
 
     const quote = ref(null);
@@ -822,7 +833,7 @@ export default {
           const idx = current_chat.value.chat_data.findIndex((item) => item.id === data.id);
           if (idx != -1) current_chat.value.chat_data.splice(idx, 1);
           quote.value = data.quote;
-          message.value = data.message;
+          message.value = decryptData(data.message);
         } else
           toast({
             component: ToastificationContent,
@@ -899,3 +910,21 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.fade-out {
+  animation-name: fade-out;
+  animation-duration: 1s;
+}
+@keyframes fade-out {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+</style>
