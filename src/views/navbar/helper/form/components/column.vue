@@ -172,8 +172,7 @@
               <div v-if="current_column.created_at" class="text-muted">
                 {{
                   $t('layout.navbar.helper.form.column.config.create', {
-                    user:
-                      getUserInfo(current_column.created_by).fullname,
+                    user: getUserInfo(current_column.created_by).fullname,
                     time: $moment(current_column.created_at).format('llll'),
                   })
                 }}
@@ -182,8 +181,7 @@
               <div v-if="current_column.updated_at" class="text-muted">
                 {{
                   $t('layout.navbar.helper.form.column.config.update', {
-                    user:
-                      getUserInfo(current_column.updated_by).fullname,
+                    user: getUserInfo(current_column.updated_by).fullname,
                     time: $moment(current_column.updated_at).format('llll'),
                   })
                 }}

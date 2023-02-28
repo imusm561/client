@@ -372,9 +372,7 @@
                   style="resize: none; border: none; height: 110px"
                   v-model="message"
                   @keydown="handleKeyDownEvent"
-                  :placeholder="`@${
-                    getUserInfo(current_chat.username).fullname
-                  }`"
+                  :placeholder="`@${getUserInfo(current_chat.username).fullname}`"
                 />
               </div>
             </div>
