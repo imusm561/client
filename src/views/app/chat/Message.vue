@@ -15,7 +15,7 @@
         :src="`${BASE_URL}cor/file/load/${JSON.parse(decryptData(item.message)).uuid}`"
         :alt="JSON.parse(decryptData(item.message)).name"
         :title="JSON.parse(decryptData(item.message)).name"
-        style="width: 200px; height: auto"
+        style="width: auto; max-width: 200px; height: auto; max-height: 200px"
       />
       <img
         v-else
