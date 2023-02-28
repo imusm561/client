@@ -4,7 +4,7 @@
     <div class="card adaptive">
       <div class="card-body">
         <div class="row h-100">
-          <div class="col-5">
+          <div class="col-md-5">
             <div class="d-flex">
               <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.redis.keys') }}</h4>
               <i
@@ -42,7 +42,7 @@
             </el-tree>
           </div>
 
-          <div class="col-7 d-none d-md-block">
+          <div class="col-md-7 d-none d-md-block">
             <div class="d-flex flex-column" style="height: 100%">
               <span class="fs-16">{{ current.key || '*' }}</span>
               <MonacoEditor
