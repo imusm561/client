@@ -250,14 +250,7 @@
                       :reduce="(item) => item.value"
                       label="title"
                       :options="status"
-                      :selectable="
-                        (option) =>
-                          current_task.progress <= 0
-                            ? ['todo', 'urgent'].includes(option.value)
-                            : current_task.progress >= 100
-                            ? ['review', 'completed'].includes(option.value)
-                            : ['urgent', 'inprogress'].includes(option.value)
-                      "
+                      :selectable="(option) => option.condition(Number(current_task.progress))"
                     >
                       <template v-slot:no-options="{ search, searching }">
                         <template v-if="searching">
@@ -285,14 +278,7 @@
                       :placeholder="$t('app.task.editTaskModal.form.progress')"
                       v-model="current_task.progress"
                       rules="required|between:0,100"
-                      @input="
-                        current_task.status =
-                          current_task.progress <= 0
-                            ? 'todo'
-                            : current_task.progress >= 100
-                            ? 'review'
-                            : 'inprogress'
-                      "
+                      @input="handleChangeTaskProgress"
                     />
                     <span class="invalid-feedback">{{ errors.progress }}</span>
                   </div>
@@ -426,7 +412,7 @@ import { replaceHtml, getUserInfo } from '@utils';
 import FlatPickr from '@components/FlatPickr';
 import Avatar from '@components/Avatar';
 import UsersSelector from '@components/UsersSelector';
-import i18n from '@utils/i18n';
+import useTask from './useTask';
 export default {
   components: {
     draggable: VueDraggableNext,
@@ -439,6 +425,8 @@ export default {
     const toast = useToast();
     const socket = window.socket;
     const moment = window.moment;
+
+    const { status } = useTask();
 
     const search_users = ref([]);
     const search_keyword = ref('');
@@ -467,14 +455,8 @@ export default {
           name: 'group',
           /* eslint-disable-next-line no-unused-vars */
           put: (to, from, dragEl, evt) => {
-            return ['todo'].includes(to.el.id)
-              ? Number(dragEl.getAttribute('data-progress')) <= 0
-              : ['urgent'].includes(to.el.id)
-              ? Number(dragEl.getAttribute('data-progress')) < 100
-              : ['inprogress'].includes(to.el.id)
-              ? Number(dragEl.getAttribute('data-progress')) > 0 &&
-                Number(dragEl.getAttribute('data-progress')) < 100
-              : Number(dragEl.getAttribute('data-progress')) >= 100;
+            const option = status.value.find((item) => item.value === to.el.id);
+            return option?.condition(Number(dragEl.getAttribute('data-progress')));
           },
           pull: true,
         };
@@ -487,34 +469,6 @@ export default {
         return item;
       });
     };
-
-    const status = ref([
-      {
-        title: i18n.global.t('app.task.status.todo'),
-        value: 'todo',
-        variant: 'secondary', // ['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark'][Math.floor(Math.random() * 7)],
-      },
-      {
-        title: i18n.global.t('app.task.status.urgent'),
-        value: 'urgent',
-        variant: 'warning',
-      },
-      {
-        title: i18n.global.t('app.task.status.inprogress'),
-        value: 'inprogress',
-        variant: 'primary',
-      },
-      {
-        title: i18n.global.t('app.task.status.review'),
-        value: 'review',
-        variant: 'info',
-      },
-      {
-        title: i18n.global.t('app.task.status.completed'),
-        value: 'completed',
-        variant: 'success',
-      },
-    ]);
 
     const _tasks = ref([]);
     const fetchTasks = () => {
@@ -577,13 +531,23 @@ export default {
         users: [store.state.user.data.username],
         due_date: moment().add(7, 'd').format('YYYY-MM-DD'),
         progress: 0,
-        status: 'todo',
+        status: status.value[0].value,
         sort: 0,
       };
     };
 
     const handleEditTask = (task) => {
       current_task.value = JSON.parse(JSON.stringify(task));
+    };
+
+    const handleChangeTaskProgress = (e) => {
+      for (let index = 0; index < status.value.length; index++) {
+        const option = status.value[index];
+        if (option.condition(Number(e.target.value || 0))) {
+          current_task.value.status = option.value;
+          break;
+        }
+      }
     };
 
     const handleSubmitTask = () => {
@@ -674,6 +638,7 @@ export default {
       current_task,
       handleCreateTask,
       handleEditTask,
+      handleChangeTaskProgress,
       handleSubmitTask,
       handleDelTask,
       handleSortTask,
