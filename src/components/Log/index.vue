@@ -41,7 +41,7 @@
         </div>
       </div>
     </div>
-    <Empty text="No Logs" v-else />
+    <Empty :text="$t('components.log.empty')" v-else />
     <button
       id="showLogDataOffcanvasBtn"
       class="d-none"
