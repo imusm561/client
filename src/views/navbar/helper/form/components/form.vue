@@ -59,9 +59,8 @@
           </div>
         </div>
 
-        <hr class="d-md-none d-block mt-4 mb-3" />
-
         <div class="col-xl-8 col-md-8" v-if="current_form.id">
+          <hr class="d-md-none d-block mt-4 mb-3" />
           <div class="d-flex">
             <div class="flex-grow-1 text-truncate">
               <h4 class="text-truncate">
