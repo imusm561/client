@@ -690,16 +690,17 @@ export default {
         () => route.value.params.rid,
         (newVal, oldVal) => {
           if (
-            (Number(newVal) === 0 &&
+            route.value.name === 'edit' &&
+            ((Number(newVal) === 0 &&
               !(
                 store.state.user.data?.tags?.includes('ALL') ||
                 store.state.user.data?.permissions?.[route.value.params.tid]?.create
               )) ||
-            (Number(newVal) !== 0 &&
-              !(
-                store.state.user.data?.tags?.includes('ALL') ||
-                store.state.user.data?.permissions?.[route.value.params.tid]?.modify
-              ))
+              (Number(newVal) !== 0 &&
+                !(
+                  store.state.user.data?.tags?.includes('ALL') ||
+                  store.state.user.data?.permissions?.[route.value.params.tid]?.modify
+                )))
           ) {
             router.replace({ name: 'permissionDenied' });
             return;
