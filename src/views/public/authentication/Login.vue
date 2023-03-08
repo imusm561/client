@@ -257,7 +257,7 @@
 <script>
 import { ref, computed, onMounted, onUnmounted, watch, reactive } from 'vue';
 import { userLogin, getUserData } from '@api/user';
-import { getAuthQr } from '@api/auth';
+import { getQRCode } from '@api/weixin';
 import { sendVerificationCode } from '@api/com/sms';
 import { arrayBufferToBase64, useRouter, hashData } from '@utils';
 import store from '@store';
@@ -282,39 +282,49 @@ export default {
       },
     ]);
 
+    if (store.state.sys.var.weixin)
+      types.push({
+        icon: 'mdi-wechat',
+        name: 'scan_qrcode',
+        class: 'btn-success',
+      });
+
     const logintype = ref(types[0].name);
 
     const qr_key = ref(null);
     const qr_src = ref(null);
     const qr_scaned = ref(false);
-    const qr_val = ref(null);
 
     watch(
       () => logintype.value,
-      (newVal, oldVal) => {
-        if (oldVal === 'scan_qrcode' && newVal != oldVal) {
-          generateQRCode();
-        }
+      (val) => {
+        if (val === 'scan_qrcode') generateQRCode();
       },
       { immediate: true },
     );
 
     const generateQRCode = () => {
-      qr_key.value = Math.random().toString(36).slice(-6);
+      qr_key.value = `login:${Math.random().toString(36).slice(-6)}`;
       qr_src.value = null;
       qr_scaned.value = false;
 
-      getAuthQr({
-        key: qr_key.value,
-      }).then(({ code, data }) => {
+      const params = {
+        soid: store.state.sys.var.weixin.soid,
+      };
+
+      if (store.state.sys.var.weixin.type === 'mini_program') {
+        params.scene = `key=${qr_key.value}&id=0&lang=${store.state.sys.lang}`;
+        params.page = 'pages/auth/auth';
+      } else {
+        params.scene = qr_key.value;
+      }
+
+      getQRCode(params).then(({ code, data }) => {
         if (code === 200) {
-          if (data?.data && types.findIndex((type) => type.name === 'scan_qrcode') === -1) {
-            types.push({
-              icon: 'mdi-wechat',
-              name: 'scan_qrcode',
-              class: 'btn-success',
-            });
+          if (store.state.sys.var.weixin.type === 'mini_program' && data?.data) {
             qr_src.value = `data:image/jpeg;base64,${arrayBufferToBase64(data.data)}`;
+          } else {
+            qr_src.value = data.url;
           }
         }
       });
@@ -326,14 +336,12 @@ export default {
           qr_scaned.value = true;
         }
       });
-      socket.on('QRCodeLogin', ({ key, val }) => {
+      socket.on('QRCodeLogin', ({ key }) => {
         if (logintype.value === 'scan_qrcode' && qr_scaned.value === true && key === qr_key.value) {
-          qr_val.value = val;
           canSubmit.value = true;
           handleFormSubmit();
         }
       });
-      generateQRCode();
     });
 
     onUnmounted(() => {
@@ -399,8 +407,8 @@ export default {
           params.phone = phone.value;
           params.code = code.value;
         } else if (params.logintype == 'scan_qrcode') {
+          params.soid = store.state.sys.var.weixin.soid;
           params.key = qr_key.value;
-          params.val = qr_val.value;
         }
         userLogin(params).then(({ code, data }) => {
           if (code === 200) {

@@ -316,7 +316,7 @@
                         </label>
                         <label v-else class="form-label">
                           <span
-                            v-if="qr_available"
+                            v-if="$store.state.sys.var.weixin"
                             class="cursor-pointer text-primary text-decoration-underline"
                             data-bs-toggle="dropdown"
                             id="bindDropdownBtn"
@@ -810,7 +810,7 @@
 import { ref, onMounted, onUnmounted, computed, inject } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
-import { getAuthQr } from '@api/auth';
+import { getQRCode } from '@api/weixin';
 import { VueCropper } from 'vue-cropper';
 import 'vue-cropper/dist/index.css';
 import { base64ToFile } from '@utils';
@@ -844,33 +844,30 @@ export default {
 
     const login_history = ref([]);
 
-    const qr_available = ref(true);
     const qr_key = ref(null);
     const qr_src = ref(null);
 
     const generateQRCode = () => {
-      qr_key.value = Math.random().toString(36).slice(-6);
+      qr_key.value = `bind:${Math.random().toString(36).slice(-6)}`;
       qr_src.value = null;
 
-      getAuthQr({
-        key: qr_key.value,
-        id: user.value.id,
-      }).then(({ code, data }) => {
+      const params = {
+        soid: store.state.sys.var.weixin.soid,
+      };
+
+      if (store.state.sys.var.weixin.type === 'mini_program') {
+        params.scene = `key=${qr_key.value}&id=${user.value.id}&lang=${store.state.sys.lang}`;
+        params.page = 'pages/auth/auth';
+      } else {
+        params.scene = qr_key.value;
+      }
+
+      getQRCode(params).then(({ code, data }) => {
         if (code === 200) {
-          if (data?.data) qr_src.value = `data:image/jpeg;base64,${arrayBufferToBase64(data.data)}`;
-          else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: i18n.global.t(
-                  'layout.navbar.user.dropdown.setting.personalDetails.openid.unavailable',
-                ),
-              },
-            });
-            document.getElementById('bindDropdownBtn')?.click();
-            qr_available.value = false;
+          if (store.state.sys.var.weixin.type === 'mini_program' && data?.data) {
+            qr_src.value = `data:image/jpeg;base64,${arrayBufferToBase64(data.data)}`;
+          } else {
+            qr_src.value = data.url;
           }
         }
       });
@@ -1067,7 +1064,6 @@ export default {
       uaParser,
       login_history,
 
-      qr_available,
       qr_key,
       qr_src,
 

@@ -238,7 +238,7 @@
                   }}
                 </p>
                 <h5 class="text-warning" v-if="confirm.children?.length">
-                  {{ $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.warning') }}
+                  {{ $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.attention') }}
                 </h5>
                 <input class="form-control" v-model="confirm.confirm" :placeholder="confirm.path" />
               </div>
@@ -420,7 +420,7 @@ export default {
                     newNode.language = 'mysql';
                     break;
                   default:
-                    newNode.language = 'plaintext';
+                    newNode.language = /.log(.\d{1,2})?$/.test(newNode.name) ? 'log' : 'plaintext';
                     break;
                 }
               }
