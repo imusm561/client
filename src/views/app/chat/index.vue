@@ -269,7 +269,11 @@
                                     ) !=
                                       $moment(current_chat.chat_data[index - 1].created_at).format(
                                         'YYYYMMDD',
-                                      ))
+                                      )) ||
+                                  (index === current_chat.chat_data.length - 1 &&
+                                    $moment(current_chat.chat_data[index].created_at).format(
+                                      'YYYYMMDD',
+                                    ) != $moment().format('YYYYMMDD'))
                                 "
                               >
                                 {{ $moment(data.created_at).format('llll') }}
@@ -464,16 +468,14 @@
             <p class="text-muted text-uppercase fw-medium fs-12 mb-1">
               {{ $t('app.chat.personalDetails.loginCount') }}
             </p>
-            <h6>{{ current_chat.login_count || 'Never' }}</h6>
+            <h6>{{ current_chat.login_count || '-' }}</h6>
           </div>
           <div>
             <p class="text-muted text-uppercase fw-medium fs-12 mb-1">
               {{ $t('app.chat.personalDetails.lastLoginAt') }}
             </p>
             <h6>
-              {{
-                current_chat.last_login_at ? $moment(current_chat.last_login_at).fromNow() : 'Never'
-              }}
+              {{ current_chat.last_login_at ? $moment(current_chat.last_login_at).fromNow() : '-' }}
             </h6>
           </div>
         </div>
