@@ -2,7 +2,7 @@ import i18n from '@utils/i18n';
 export default {
   namespaced: true,
   state: {
-    lang: 'en',
+    lang: 'en-us',
     theme: 'light',
     name: '',
     company: '',
@@ -17,11 +17,11 @@ export default {
   },
   mutations: {
     TOGGLE_LANG(state, lang) {
-      i18n.global.locale = lang;
+      state.lang = ['en-us', 'zh-cn'].includes(lang) ? lang : 'en-us';
+      i18n.global.locale = state.lang;
       const moment = window.moment;
-      moment.locale(lang);
-      state.lang = lang;
-      localStorage.setItem('locale', lang);
+      moment.locale(state.lang);
+      localStorage.setItem('locale', state.lang);
     },
     TOGGLE_THEME(state, theme) {
       state.theme = theme;

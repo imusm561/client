@@ -441,7 +441,7 @@ import interactionPlugin, { Draggable } from '@fullcalendar/interaction';
 import bootstrapPlugin from '@fullcalendar/bootstrap';
 import listPlugin from '@fullcalendar/list';
 import '@fullcalendar/core/vdom';
-import en from '@fullcalendar/core/locales/es-us';
+import usUs from '@fullcalendar/core/locales/es-us';
 import zhCn from '@fullcalendar/core/locales/zh-cn';
 import { getEvents, createEvent, updateEvent } from '@api/app/calendar';
 import FlatPickr from '@components/FlatPickr';
@@ -676,7 +676,7 @@ export default {
     };
 
     const calendarOptions = ref({
-      locales: [en, zhCn],
+      locales: [usUs, zhCn],
       locale: store.state.sys.lang,
       firstDay: 0,
       timeZone: 'local',

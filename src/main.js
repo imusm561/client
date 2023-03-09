@@ -18,7 +18,7 @@ import i18n from '@utils/i18n';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
 momentDurationFormatSetup(moment);
-moment.locale(['en', 'zh-cn']);
+moment.locale(['en-us', 'zh-cn']);
 app.config.globalProperties.$moment = moment;
 window.moment = moment;
 

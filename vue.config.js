@@ -113,7 +113,7 @@ module.exports = {
         }),
 
         new MomentLocalesPlugin({
-          localesToKeep: ['en', 'zh-cn'],
+          localesToKeep: ['zh-cn'],
         }),
 
         new CompressionWebpackPlugin({

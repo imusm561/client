@@ -848,7 +848,7 @@ export default {
     const languages = ref([
       {
         flag: require('@/assets/images/flags/usa.png'),
-        language: 'en',
+        language: 'en-us',
         title: 'English',
       },
       {

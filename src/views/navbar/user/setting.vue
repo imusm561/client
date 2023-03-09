@@ -822,7 +822,7 @@ import {
   unbindUser,
   getUserData,
 } from '@api/user';
-import { useRouter, clearUserData, deepCompare, hashData, arrayBufferToBase64 } from '@utils';
+import { useRouter, clearUserData, deepCompare, hashData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import FlatPickr from '@components/FlatPickr';
@@ -863,13 +863,7 @@ export default {
       }
 
       getQRCode(params).then(({ code, data }) => {
-        if (code === 200) {
-          if (store.state.sys.var.weixin.type === 'mini_program' && data?.data) {
-            qr_src.value = `data:image/jpeg;base64,${arrayBufferToBase64(data.data)}`;
-          } else {
-            qr_src.value = data.url;
-          }
-        }
+        if (code === 200) qr_src.value = data.src;
       });
     };
 

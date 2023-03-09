@@ -19,33 +19,44 @@ function loadLocaleMessages() {
   return messages;
 }
 
-const setDateTimeFormats = {
-  short: {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  },
-  long: {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'long',
-    hour: 'numeric',
-    minute: 'numeric',
-  },
-};
-
 const dateTimeFormats = {
-  en: setDateTimeFormats,
-  es: setDateTimeFormats,
-  de: setDateTimeFormats,
-  'en-GB': setDateTimeFormats,
+  'en-us': {
+    short: {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    },
+    long: {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      weekday: 'short',
+      hour: 'numeric',
+      minute: 'numeric',
+    },
+  },
+  'zh-cn': {
+    short: {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    },
+    long: {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      weekday: 'short',
+      hour: 'numeric',
+      minute: 'numeric',
+      // hour12: true,
+    },
+  },
 };
 
 export default createI18n({
   // legacy: false,
-  locale: 'en',
-  fallbackLocale: 'en',
+  locale: 'en-us',
+  fallbackLocale: 'en-us',
   messages: loadLocaleMessages(),
   dateTimeFormats,
 });

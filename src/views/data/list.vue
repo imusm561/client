@@ -419,7 +419,7 @@ import 'ag-grid-enterprise';
 import { LicenseManager } from 'ag-grid-enterprise';
 if (store.state.sys.cfg?.ag_grid?.license)
   LicenseManager.setLicenseKey(decryptData(store.state.sys.cfg.ag_grid.license));
-import AG_GRID_LOCALE_EN from '@utils/i18n/ag-gird/en.json';
+import AG_GRID_LOCALE_EN_US from '@utils/i18n/ag-gird/en-us.json';
 import AG_GRID_LOCALE_ZH_CN from '@utils/i18n/ag-gird/zh-cn.json';
 import Empty from '@components/Empty';
 import Log from '@components/Log';
@@ -545,7 +545,7 @@ export default {
     });
 
     const localeText = ref(
-      store.state.sys.lang === 'zh-cn' ? AG_GRID_LOCALE_ZH_CN : AG_GRID_LOCALE_EN,
+      store.state.sys.lang === 'zh-cn' ? AG_GRID_LOCALE_ZH_CN : AG_GRID_LOCALE_EN_US,
     );
 
     const defaultColDef = ref({

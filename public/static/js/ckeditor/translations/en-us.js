@@ -1,5 +1,5 @@
 !(function (e) {
-  const t = (e['en'] = e['en'] || {});
+  const t = (e['en-us'] = e['en-us'] || {});
   (t.dictionary = Object.assign(t.dictionary || {}, {
     '%0 of %1': '%0 of %1',
     'Align center': 'Align center',

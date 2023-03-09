@@ -259,7 +259,7 @@ import { ref, computed, onMounted, onUnmounted, watch, reactive } from 'vue';
 import { userLogin, getUserData } from '@api/user';
 import { getQRCode } from '@api/weixin';
 import { sendVerificationCode } from '@api/com/sms';
-import { arrayBufferToBase64, useRouter, hashData } from '@utils';
+import { useRouter, hashData } from '@utils';
 import store from '@store';
 export default {
   page: {
@@ -320,13 +320,7 @@ export default {
       }
 
       getQRCode(params).then(({ code, data }) => {
-        if (code === 200) {
-          if (store.state.sys.var.weixin.type === 'mini_program' && data?.data) {
-            qr_src.value = `data:image/jpeg;base64,${arrayBufferToBase64(data.data)}`;
-          } else {
-            qr_src.value = data.url;
-          }
-        }
+        if (code === 200) qr_src.value = data.src;
       });
     };
 
