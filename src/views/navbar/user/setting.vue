@@ -731,12 +731,7 @@ import i18n from '@utils/i18n';
 import { VueCropper } from 'vue-cropper';
 import 'vue-cropper/dist/index.css';
 import { base64ToFile } from '@utils';
-import {
-  uploadAvatar,
-  updateUser,
-  changePassword,
-  getUserLogs,
-} from '@api/user';
+import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
 import { useRouter, clearUserData, deepCompare, hashData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
