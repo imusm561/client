@@ -192,16 +192,16 @@
 
                     <div v-show="logintype === 'scan_qrcode'">
                       <div class="text-center">
-                        <div v-if="qr_scaned" class="fs-22" style="margin: 117px 0">
+                        <div v-if="qr.scaned" class="fs-22" style="margin: 117px 0">
                           {{ $t('public.authentication.login.qrScaned.authorization') }}
                         </div>
                         <img
                           v-else
-                          :key="qr_key"
-                          :src="qr_src || require('@/assets/images/gif/loading.gif')"
+                          :key="qr.scene"
+                          :src="qr.src || require('@/assets/images/gif/loading.gif')"
                           width="243"
                           height="243"
-                          :style="{ padding: qr_src ? '5%' : '25%' }"
+                          :style="{ padding: qr.src ? '5%' : '25%' }"
                         />
                       </div>
                     </div>
@@ -291,10 +291,6 @@ export default {
 
     const logintype = ref(types[0].name);
 
-    const qr_key = ref(null);
-    const qr_src = ref(null);
-    const qr_scaned = ref(false);
-
     watch(
       () => logintype.value,
       (val) => {
@@ -303,35 +299,36 @@ export default {
       { immediate: true },
     );
 
+    const qr = reactive({
+      src: null,
+      scene: null,
+      scaned: false,
+    });
+
     const generateQRCode = () => {
-      qr_key.value = `login:${Math.random().toString(36).slice(-6)}`;
-      qr_src.value = null;
-      qr_scaned.value = false;
+      qr.src = null;
+      qr.scene = `login:${Math.random().toString(36).slice(-6)}`;
+      qr.scaned = false;
 
       const params = {
         soid: store.state.sys.var.weixin.soid,
+        scene: qr.scene,
+        expire: 60,
       };
 
-      if (store.state.sys.var.weixin.type === 'mini_program') {
-        params.scene = `key=${qr_key.value}&id=0&lang=${store.state.sys.lang}`;
-        params.page = 'pages/auth/auth';
-      } else {
-        params.scene = qr_key.value;
-      }
-
       getQRCode(params).then(({ code, data }) => {
-        if (code === 200) qr_src.value = data.src;
+        if (code === 200) qr.src = data.src;
       });
     };
 
     onMounted(() => {
-      socket.on('ScanQRCode', ({ key }) => {
-        if (logintype.value === 'scan_qrcode' && key === qr_key.value) {
-          qr_scaned.value = true;
+      socket.on('QRCodeScan', ({ scene }) => {
+        if (logintype.value === 'scan_qrcode' && !qr.scaned && scene === qr.scene) {
+          qr.scaned = true;
         }
       });
-      socket.on('QRCodeLogin', ({ key }) => {
-        if (logintype.value === 'scan_qrcode' && qr_scaned.value === true && key === qr_key.value) {
+      socket.on('QRCodeLogin', ({ scene }) => {
+        if (logintype.value === 'scan_qrcode' && qr.scaned && scene === qr.scene) {
           canSubmit.value = true;
           handleFormSubmit();
         }
@@ -339,7 +336,7 @@ export default {
     });
 
     onUnmounted(() => {
-      socket.removeListener('ScanQRCode');
+      socket.removeListener('QRCodeScan');
       socket.removeListener('QRCodeLogin');
     });
 
@@ -402,7 +399,7 @@ export default {
           params.code = code.value;
         } else if (params.logintype == 'scan_qrcode') {
           params.soid = store.state.sys.var.weixin.soid;
-          params.key = qr_key.value;
+          params.scene = qr.scene;
         }
         userLogin(params).then(({ code, data }) => {
           if (code === 200) {
@@ -432,9 +429,7 @@ export default {
       types,
       logintype,
 
-      qr_key,
-      qr_src,
-      qr_scaned,
+      qr,
 
       username,
       password,

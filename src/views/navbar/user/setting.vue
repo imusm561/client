@@ -285,7 +285,7 @@
                         </VueSelect>
                       </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-12">
                       <div class="mb-3">
                         <label class="form-label">
                           {{ $t('layout.navbar.user.dropdown.setting.personalDetails.address') }}
@@ -297,51 +297,6 @@
                             $t('layout.navbar.user.dropdown.setting.personalDetails.address')
                           "
                           v-model="user.address"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-lg-6">
-                      <div class="mb-3">
-                        <label v-if="user.openid" class="d-flex form-label justify-content-between">
-                          <span>
-                            {{ $t('layout.navbar.user.dropdown.setting.personalDetails.openid') }}
-                          </span>
-                          <span
-                            class="cursor-pointer text-danger text-decoration-underline"
-                            data-bs-toggle="modal"
-                            data-bs-target="#unBindConfirmModal"
-                          >
-                            {{ $t('layout.navbar.user.dropdown.setting.personalDetails.unbind') }}
-                          </span>
-                        </label>
-                        <label v-else class="form-label">
-                          <span
-                            v-if="$store.state.sys.var.weixin"
-                            class="cursor-pointer text-primary text-decoration-underline"
-                            data-bs-toggle="dropdown"
-                            id="bindDropdownBtn"
-                          >
-                            {{ $t('layout.navbar.user.dropdown.setting.personalDetails.openid') }}
-                          </span>
-                          <span v-else>
-                            {{ $t('layout.navbar.user.dropdown.setting.personalDetails.openid') }}
-                          </span>
-                          <ul class="dropdown-menu p-1">
-                            <img
-                              :key="qr_key"
-                              :src="qr_src || require('@/assets/images/gif/loading.gif')"
-                              width="200"
-                              height="200"
-                              :style="{ padding: qr_src ? '5%' : '40%' }"
-                            />
-                          </ul>
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          placeholder="OpenID"
-                          v-model="user.openid"
-                          disabled
                         />
                       </div>
                     </div>
@@ -766,51 +721,13 @@
         </div>
       </div>
     </div>
-    <div id="unBindConfirmModal" class="modal fade zoomIn">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="mt-2 text-center">
-              <div class="fs-15 mx-4 mx-sm-5">
-                <h4>{{ $t('layout.navbar.user.dropdown.setting.unBindConfirmModal.title') }}</h4>
-                <p class="text-muted mx-4 mb-0">
-                  {{ $t('layout.navbar.user.dropdown.setting.unBindConfirmModal.confirm') }}
-                </p>
-              </div>
-            </div>
-            <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">
-                {{ $t('layout.navbar.user.dropdown.setting.unBindConfirmModal.cancel') }}
-              </button>
-              <button
-                type="button"
-                class="btn w-sm btn-danger"
-                data-bs-dismiss="modal"
-                @click="handleUnbindUser"
-              >
-                {{ $t('layout.navbar.user.dropdown.setting.unBindConfirmModal.confirmed') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, computed, inject } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
-import { getQRCode } from '@api/weixin';
 import { VueCropper } from 'vue-cropper';
 import 'vue-cropper/dist/index.css';
 import { base64ToFile } from '@utils';
@@ -819,8 +736,6 @@ import {
   updateUser,
   changePassword,
   getUserLogs,
-  unbindUser,
-  getUserData,
 } from '@api/user';
 import { useRouter, clearUserData, deepCompare, hashData } from '@utils';
 import { useToast } from 'vue-toastification';
@@ -837,35 +752,10 @@ export default {
   setup() {
     const { router } = useRouter();
     const toast = useToast();
-    const socket = window.socket;
-    const reload = inject('reload');
 
     const user = ref(JSON.parse(JSON.stringify(store.state.user.data)));
 
     const login_history = ref([]);
-
-    const qr_key = ref(null);
-    const qr_src = ref(null);
-
-    const generateQRCode = () => {
-      qr_key.value = `bind:${Math.random().toString(36).slice(-6)}`;
-      qr_src.value = null;
-
-      const params = {
-        soid: store.state.sys.var.weixin.soid,
-      };
-
-      if (store.state.sys.var.weixin.type === 'mini_program') {
-        params.scene = `key=${qr_key.value}&id=${user.value.id}&lang=${store.state.sys.lang}`;
-        params.page = 'pages/auth/auth';
-      } else {
-        params.scene = qr_key.value;
-      }
-
-      getQRCode(params).then(({ code, data }) => {
-        if (code === 200) qr_src.value = data.src;
-      });
-    };
 
     onMounted(() => {
       getUserLogs({ type: 1 }).then(({ code, data, msg }) => {
@@ -882,32 +772,6 @@ export default {
           });
         }
       });
-
-      const bindDropdownBtn = document.getElementById('bindDropdownBtn');
-      if (bindDropdownBtn) {
-        bindDropdownBtn.addEventListener('show.bs.dropdown', () => {
-          generateQRCode();
-        });
-        bindDropdownBtn.addEventListener('hide.bs.dropdown', () => {
-          qr_key.value = null;
-          qr_src.value = null;
-        });
-      }
-
-      socket.on('BindQRCode', async ({ key }) => {
-        if (key === qr_key.value) {
-          await getUserData();
-          reload();
-        }
-      });
-    });
-
-    onUnmounted(() => {
-      const bindDropdownBtn = document.getElementById('bindDropdownBtn');
-      if (bindDropdownBtn) {
-        bindDropdownBtn.removeEventListener('show.bs.dropdown', () => {});
-        bindDropdownBtn.removeEventListener('hide.bs.dropdown', () => {});
-      }
     });
 
     const resolveDeviceIcon = computed(() => {
@@ -917,24 +781,6 @@ export default {
         else return 'mdi-desktop-mac';
       };
     });
-
-    const handleUnbindUser = () => {
-      unbindUser().then(async ({ code, msg }) => {
-        if (code === 200) {
-          await getUserData();
-          reload();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
 
     const currentpassword = ref('');
     const newpassword = ref('');
@@ -1057,11 +903,6 @@ export default {
 
       uaParser,
       login_history,
-
-      qr_key,
-      qr_src,
-
-      handleUnbindUser,
 
       resolveDeviceIcon,
 
