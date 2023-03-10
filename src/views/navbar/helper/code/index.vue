@@ -232,7 +232,9 @@
                   {{
                     $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm.before')
                   }}
-                  <code class="text-primary fw-bold d-block">{{ confirm.path }}</code>
+                  <code class="text-primary fw-bold d-block" style="white-space: break-spaces">
+                    {{ confirm.path }}
+                  </code>
                   {{
                     $t('layout.navbar.helper.code.confirmDeleteFileOrDirectoryModal.confirm.after')
                   }}
