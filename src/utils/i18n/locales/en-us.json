@@ -416,6 +416,7 @@
   "layout.navbar.user.dropdown.profile": "Profile",
   "layout.navbar.user.dropdown.profil.department": "Department",
   "layout.navbar.user.dropdown.profil.post": "Post",
+  "layout.navbar.user.dropdown.profil.leader": "Leader",
   "layout.navbar.user.dropdown.profil.phone": "Phone",
   "layout.navbar.user.dropdown.profil.email": "Email",
   "layout.navbar.user.dropdown.profil.overview": "Overview",

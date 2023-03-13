@@ -27,6 +27,11 @@
                           </div>
                           <div class="vr"></div>
                           <div>
+                            {{ $t('layout.navbar.user.dropdown.profil.leader') }}:
+                            {{ getUserInfo($store.state.user.data.leader, 'id').fullname }}
+                          </div>
+                          <div class="vr"></div>
+                          <div>
                             {{ $t('layout.navbar.user.dropdown.profil.post') }}:
                             {{ $store.state.user.data.post }}
                           </div>
@@ -493,7 +498,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { getUserLogs, getUserFiles } from '@api/user';
 import { useToast } from 'vue-toastification';
-import { useRouter, size2Str } from '@utils';
+import { useRouter, size2Str, getUserInfo } from '@utils';
 import ToastificationContent from '@components/ToastificationContent';
 import MonacoEditor from '@components/MonacoEditor';
 import Empty from '@components/Empty';
@@ -602,6 +607,8 @@ export default {
     };
 
     return {
+      getUserInfo,
+
       recent_activities,
       uaParser,
       resolveDeviceIcon,

@@ -74,11 +74,16 @@ export const getUserInfo = (value, key = 'username') => {
 
 export const getUserLeaders = (user, leaders = []) => {
   const leader = getUserInfo(user.leader, 'id');
-  if (leader.id === user.id) {
-    return leaders;
-  } else {
+  if (leader) {
     leaders.unshift(leader.username);
-    return getUserLeaders(leader, leaders);
+    if (leader.id === user.id) {
+      return Array.from(new Set(leaders));
+    } else {
+      leaders.unshift(leader.username);
+      return getUserLeaders(leader, leaders);
+    }
+  } else {
+    return leaders;
   }
 };
 

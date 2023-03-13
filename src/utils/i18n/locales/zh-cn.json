@@ -416,6 +416,7 @@
   "layout.navbar.user.dropdown.profile": "个人信息",
   "layout.navbar.user.dropdown.profil.department": "部门",
   "layout.navbar.user.dropdown.profil.post": "岗位",
+  "layout.navbar.user.dropdown.profil.leader": "上级",
   "layout.navbar.user.dropdown.profil.phone": "手机",
   "layout.navbar.user.dropdown.profil.email": "邮箱",
   "layout.navbar.user.dropdown.profil.overview": "我的信息",
