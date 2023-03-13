@@ -518,7 +518,6 @@
   "public.authentication.login.form.resendVerificationCodeCountDown": "Resend after {count} second | Resend after {count} seconds",
   "public.authentication.login.form.code": "Code",
   "public.authentication.login.form.signInWith": "Sign in with",
-  "public.authentication.login.qrScaned.authorization": "Waiting for authorization...",
 
   "public.authentication.forgotPassword": "Forgot Password",
   "public.authentication.forgotPassword.title": "Forgot Password?",

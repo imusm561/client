@@ -190,20 +190,17 @@
                       </div>
                     </div>
 
-                    <div v-show="logintype === 'scan_qrcode'">
-                      <div class="text-center">
-                        <div v-if="qr.scaned" class="fs-22" style="margin: 117px 0">
-                          {{ $t('public.authentication.login.qrScaned.authorization') }}
-                        </div>
-                        <img
-                          v-else
-                          :key="qr.scene"
-                          :src="qr.src || require('@/assets/images/gif/loading.gif')"
-                          width="243"
-                          height="243"
-                          :style="{ padding: qr.src ? '5%' : '25%' }"
-                        />
-                      </div>
+                    <div v-if="logintype === 'scan_qrcode'" class="text-center">
+                      <img
+                        :key="qr.scene"
+                        :src="qr.src || require('@/assets/images/gif/loading.gif')"
+                        width="243"
+                        height="243"
+                        :style="{
+                          padding: qr.src ? '5%' : '25%',
+                          filter: qr.scaned ? 'blur(6px)' : 'unset',
+                        }"
+                      />
                     </div>
                   </Form>
                   <div class="mt-4 text-center">
