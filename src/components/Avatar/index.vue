@@ -6,6 +6,7 @@
           v-if="user[keyAvatar]"
           :src="`${BASE_URL}${user[keyAvatar]}`"
           :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail && 'img-thumbnail'}`"
+          loading="lazy"
         />
         <img
           v-else-if="$store.state.sys.cfg.use_default_avatar"
@@ -27,6 +28,7 @@
               : require(`@/assets/images/avatar/${user[keyUsername] === 0 ? 'all' : 'group'}.png`)
           "
           :class="`avatar-${size} rounded-circle bg-avatar p-1 ${thumbnail && 'img-thumbnail'}`"
+          loading="lazy"
         />
         <div v-else :class="`avatar-${size} rounded-circle`">
           <div
@@ -51,6 +53,7 @@
       v-if="user[keyAvatar]"
       :src="`${BASE_URL}${user[keyAvatar]}`"
       :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail && 'img-thumbnail'}`"
+      loading="lazy"
     />
     <img
       v-else-if="$store.state.sys.cfg.use_default_avatar"
@@ -70,6 +73,7 @@
           : require(`@/assets/images/avatar/${user[keyUsername] === 0 ? 'all' : 'group'}.png`)
       "
       :class="`avatar-${size} rounded-circle bg-avatar p-1 ${thumbnail && 'img-thumbnail'}`"
+      loading="lazy"
     />
     <div v-else :class="`avatar-${size} rounded-circle`">
       <div

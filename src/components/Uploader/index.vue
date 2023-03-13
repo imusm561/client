@@ -18,7 +18,7 @@
             class="rounded avatar-xs cursor-pointer"
             @click="
               () => {
-                let images = files.filter((file) => file.category == 'image');
+                const images = files.filter((file) => file.category == 'image');
                 $viewerApi({
                   options: {
                     focus: false,
@@ -31,6 +31,7 @@
                 });
               }
             "
+            loading="lazy"
           />
           <i v-else class="file-icon" :class="$fileIcons.getClassWithColor(file.name)" />
         </div>

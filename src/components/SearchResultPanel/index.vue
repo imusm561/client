@@ -188,6 +188,7 @@
             v-if="file.category == 'image'"
             :src="`${BASE_URL}cor/file/load/${file.uuid}`"
             class="rounded avatar-xs cursor-pointer"
+            loading="lazy"
           />
           <i v-else class="file-icon" :class="$fileIcons.getClassWithColor(file.name)" />
         </div>

@@ -14,7 +14,7 @@
               class="avatar-xs cursor-pointer mb-3"
               @click="
                 handleClickImage(() => {
-                  let images = params.value.filter((file) => file.category == 'image');
+                  const images = params.value.filter((file) => file.category == 'image');
                   $viewerApi({
                     options: {
                       focus: false,
@@ -28,6 +28,7 @@
                 })
               "
               @dblclick="handleDbclickFile(file)"
+              loading="lazy"
             />
             <i
               v-else

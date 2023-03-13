@@ -15,7 +15,10 @@
         :src="`${BASE_URL}cor/file/load/${JSON.parse(decryptData(item.message)).uuid}`"
         :alt="JSON.parse(decryptData(item.message)).name"
         :title="JSON.parse(decryptData(item.message)).name"
-        style="width: auto; max-width: 200px; height: auto; max-height: 200px"
+        style="width: auto; max-width: 200px; max-height: 200px"
+        :style="{ height: loaded[item.id] ? 'auto' : '200px' }"
+        @load="loaded[item.id] = true"
+        loading="lazy"
       />
       <img
         v-else
@@ -49,6 +52,7 @@
 
 <script>
 import { useRouter, decryptData, size2Str } from '@utils';
+import { reactive } from 'vue';
 export default {
   props: {
     item: {
@@ -64,10 +68,13 @@ export default {
       window.open(route.href, '_blank');
     };
 
+    const loaded = reactive({});
+
     return {
       decryptData,
       size2Str,
       handlePreviewFile,
+      loaded,
     };
   },
 };

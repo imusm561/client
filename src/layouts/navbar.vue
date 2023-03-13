@@ -116,43 +116,43 @@
                 <div class="row g-0">
                   <div v-permission="'org'" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'org' }">
-                      <img src="@/assets/images/navbar/helper/org.png" />
+                      <img src="@/assets/images/navbar/helper/org.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.org') }}</span>
                     </router-link>
                   </div>
                   <div v-permission="'form'" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'form' }">
-                      <img src="@/assets/images/navbar/helper/form.png" />
+                      <img src="@/assets/images/navbar/helper/form.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.form') }}</span>
                     </router-link>
                   </div>
                   <div v-permission="'job'" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'job' }">
-                      <img src="@/assets/images/navbar/helper/job.png" />
+                      <img src="@/assets/images/navbar/helper/job.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.job') }}</span>
                     </router-link>
                   </div>
                   <div v-permission="'code'" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'code' }">
-                      <img src="@/assets/images/navbar/helper/code.png" />
+                      <img src="@/assets/images/navbar/helper/code.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.code') }}</span>
                     </router-link>
                   </div>
                   <div v-permission="'sql'" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'sql' }">
-                      <img src="@/assets/images/navbar/helper/sql.png" />
+                      <img src="@/assets/images/navbar/helper/sql.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.sql') }}</span>
                     </router-link>
                   </div>
                   <div v-permission="'redis'" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'redis' }">
-                      <img src="@/assets/images/navbar/helper/redis.png" />
+                      <img src="@/assets/images/navbar/helper/redis.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.redis') }}</span>
                     </router-link>
                   </div>
                   <div v-permission="'log'" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'log' }">
-                      <img src="@/assets/images/navbar/helper/log.png" />
+                      <img src="@/assets/images/navbar/helper/log.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.log') }}</span>
                     </router-link>
                   </div>
@@ -482,7 +482,7 @@
                 :class="{ active: lang === item.language }"
                 @click="handleChangeLang(item.language)"
               >
-                <img :src="item.flag" class="me-2" height="24" />
+                <img :src="item.flag" class="me-2" height="24" loading="lazy" />
                 <span class="align-middle">{{ item.title }}</span>
               </div>
             </div>

@@ -316,6 +316,7 @@
                       @dblclick="handleDblClickMap(current_event.location)"
                       class="img-fluid"
                       :alt="current_event.location"
+                      loading="lazy"
                     />
                     <h6 v-else class="d-block fw-semibold mb-0">
                       <span>{{ current_event.location }}</span>

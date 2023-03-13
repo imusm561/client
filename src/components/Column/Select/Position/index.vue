@@ -35,6 +35,7 @@
       @dblclick="handleDblClickMap(value)"
       class="img-fluid"
       :alt="value"
+      loading="lazy"
     />
     <span v-else>
       <i class="mdi mdi-map-marker text-info" />

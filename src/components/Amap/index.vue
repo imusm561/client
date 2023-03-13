@@ -74,6 +74,7 @@
                         });
                     }
                   "
+                  loading="lazy"
                 />
               </div>
               <div class="flex-grow-1 ms-2" style="width: 85%">

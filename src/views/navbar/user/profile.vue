@@ -402,6 +402,7 @@
                               });
                             }
                           "
+                          loading="lazy"
                         />
                         <i
                           v-else
