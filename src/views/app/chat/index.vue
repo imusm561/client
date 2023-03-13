@@ -547,7 +547,7 @@ export default {
             document.getElementById('message_input').focus();
           }
         },
-        behavior === 'smooth' ? 0 : 10,
+        behavior === 'smooth' ? 0 : 500,
       );
     };
 
