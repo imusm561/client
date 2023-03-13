@@ -305,21 +305,21 @@
           <li class="nav-item">
             <a
               class="nav-link"
-              :class="{ active: !$route.query.tab || $route.query.tab === 'log' }"
+              :class="{ active: !$route.query.tab || $route.query.tab === 'comment' }"
               data-bs-toggle="tab"
-              href="#tab_logs"
+              href="#tab_comments"
             >
-              {{ $t('data.view.logs') }}
+              {{ $t('data.view.comments') }}
             </a>
           </li>
           <li class="nav-item">
             <a
               class="nav-link"
-              :class="{ active: $route.query.tab === 'comment' }"
+              :class="{ active: $route.query.tab === 'log' }"
               data-bs-toggle="tab"
-              href="#tab_comments"
+              href="#tab_logs"
             >
-              {{ $t('data.view.comments') }}
+              {{ $t('data.view.logs') }}
             </a>
           </li>
         </ul>
@@ -328,21 +328,17 @@
         <div class="tab-content">
           <div
             class="tab-pane"
-            :class="{ active: !$route.query.tab || $route.query.tab === 'log' }"
-            id="tab_logs"
+            :class="{ active: !$route.query.tab || $route.query.tab === 'comment' }"
+            id="tab_comments"
           >
+            <Comment :key="$route.path" :source="$route.path" />
+          </div>
+          <div class="tab-pane" :class="{ active: $route.query.tab === 'log' }" id="tab_logs">
             <Log
               :key="$route.path"
               :tid="Number($route.params.tid)"
               :rid="Number($route.params.rid)"
             />
-          </div>
-          <div
-            class="tab-pane"
-            :class="{ active: $route.query.tab === 'comment' }"
-            id="tab_comments"
-          >
-            <Comment :key="$route.path" :source="$route.path" />
           </div>
         </div>
       </div>

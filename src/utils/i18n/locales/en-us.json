@@ -496,6 +496,7 @@
 
   "layout.navbar.user.dropdown.Logout": "Logout",
 
+  "component.comment": "Comment",
   "component.comment.empty": "No Comments!",
   "component.comment.delete": "Delete",
   "component.comment.reply": "Reply",

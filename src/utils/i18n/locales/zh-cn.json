@@ -496,6 +496,7 @@
 
   "layout.navbar.user.dropdown.Logout": "注销登录",
 
+  "component.comment": "评论",
   "component.comment.empty": "暂无评论",
   "component.comment.delete": "删除",
   "component.comment.reply": "回复",

@@ -27,7 +27,7 @@
         }}
         <i class="mdi mdi-close-circle text-danger cursor-pointer" @click="comment.reply = null" />
       </label>
-      <label v-else>{{ $t('layout.navbar.helper.jobDetail.comments') }}:</label>
+      <label v-else>{{ $t('component.comment') }}:</label>
       <CKEditor
         v-model="comment.content"
         id="ck_comment"
