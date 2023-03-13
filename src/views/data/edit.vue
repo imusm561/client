@@ -103,6 +103,7 @@
                     { title: $t('data.column.BasicDataState.drafted'), value: 'drafted' },
                     { title: $t('data.column.BasicDataState.archived'), value: 'archived' },
                   ]"
+                  :clearable="false"
                   :disabled="data.data_state === 'approving'"
                   :selectable="
                     (option) =>
@@ -270,6 +271,7 @@
                           { title: $t('data.column.BasicDataState.drafted'), value: 'drafted' },
                           { title: $t('data.column.BasicDataState.archived'), value: 'archived' },
                         ]"
+                        :clearable="false"
                         :disabled="data.data_state === 'approving'"
                         :selectable="
                           (option) =>
