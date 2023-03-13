@@ -486,7 +486,7 @@
 
 <script>
 import store from '@store';
-import { computed, onMounted, ref, reactive, watch, onUnmounted } from 'vue';
+import { computed, onMounted, ref, reactive, watch, onUnmounted, nextTick } from 'vue';
 import { getChats, sendMsg, withdrawMsg, readMsg, delChat } from '@api/app/chat';
 import { useRouter, getUserInfo, encryptData, decryptData } from '@utils';
 import { useToast } from 'vue-toastification';
@@ -534,21 +534,18 @@ export default {
     });
 
     const scrollToBottom = (behavior = 'auto') => {
-      setTimeout(
-        () => {
-          if (document.getElementById('user-chat')) {
-            const chatConversationList = document
-              .getElementById('user-chat')
-              .querySelector('.chat-conversation .simplebar-content-wrapper');
-            chatConversationList.scrollTo({
-              top: chatConversationList.scrollHeight,
-              behavior,
-            });
-            document.getElementById('message_input').focus();
-          }
-        },
-        behavior === 'smooth' ? 0 : 500,
-      );
+      nextTick(() => {
+        if (document.getElementById('user-chat')) {
+          const chatConversationList = document
+            .getElementById('user-chat')
+            .querySelector('.chat-conversation .simplebar-content-wrapper');
+          chatConversationList.scrollTo({
+            top: chatConversationList.scrollHeight,
+            behavior,
+          });
+          document.getElementById('message_input').focus();
+        }
+      });
     };
 
     const current_chat = ref({});
@@ -912,13 +909,10 @@ export default {
 <style lang="scss" scoped>
 .fade-out {
   animation-name: fade-out;
-  animation-duration: 1s;
+  animation-duration: 0.5s;
 }
 @keyframes fade-out {
   0% {
-    opacity: 0;
-  }
-  50% {
     opacity: 0;
   }
   100% {

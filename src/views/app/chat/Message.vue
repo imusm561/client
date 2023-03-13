@@ -15,8 +15,11 @@
         :src="`${BASE_URL}cor/file/load/${JSON.parse(decryptData(item.message)).uuid}`"
         :alt="JSON.parse(decryptData(item.message)).name"
         :title="JSON.parse(decryptData(item.message)).name"
-        style="width: auto; max-width: 200px; max-height: 200px"
-        :style="{ height: loaded[item.id] ? 'auto' : '200px' }"
+        style="max-width: 200px; max-height: 200px"
+        :style="{
+          width: loaded[item.id] ? 'auto' : '150px',
+          height: loaded[item.id] ? 'auto' : '200px',
+        }"
         @load="loaded[item.id] = true"
         loading="lazy"
       />
