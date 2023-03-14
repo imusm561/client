@@ -18,7 +18,7 @@
       />
     </div>
     <Empty :text="$t('component.comment.empty')" v-else />
-    <Form class="mt-1" v-slot="{ errors }" @submit="handleCreateComment">
+    <Form class="mt-1" v-slot="{ errors }" @submit="handleCreateComment" :key="comment.key">
       <label v-if="comment.reply">
         {{
           $t('component.comment.replyTo', {
@@ -208,6 +208,7 @@ export default defineComponent({
     });
 
     const comment = ref({
+      key: Math.random().toString(36).slice(-6),
       content: '',
       reply: null,
     });
@@ -228,6 +229,7 @@ export default defineComponent({
           fetchComments().then(() => {
             scrollToComment(data);
             comment.value = {
+              key: Math.random().toString(36).slice(-6),
               content: '',
               reply: null,
             };
