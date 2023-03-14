@@ -465,7 +465,10 @@ export default {
         moment(job.value.start).format('YYYY-MM-DD HH:mm:ss'),
         moment(job.value.end).format('YYYY-MM-DD HH:mm:ss'),
       ];
-      document.getElementById('showEditJobModalBtn').click();
+      temp_job.value.key = Math.random().toString(36).slice(-6);
+      setTimeout(() => {
+        document.getElementById('showEditJobModalBtn').click();
+      }, 10);
     };
 
     const handleDelJob = () => {

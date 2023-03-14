@@ -207,7 +207,7 @@
               data-bs-dismiss="modal"
             ></button>
           </div>
-          <Form v-slot="{ errors }" @submit="handleSubmitTask">
+          <Form v-slot="{ errors }" @submit="handleSubmitTask" :key="current_task.key">
             <div class="modal-body p-0">
               <div data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
                 <div class="row g-3">
@@ -525,6 +525,7 @@ export default {
 
     const handleCreateTask = () => {
       current_task.value = {
+        key: Math.random().toString(36).slice(-6),
         title: '',
         description: '',
         tags: [],

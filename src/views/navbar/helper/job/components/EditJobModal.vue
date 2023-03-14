@@ -30,7 +30,7 @@
               data-bs-dismiss="modal"
             ></button>
           </div>
-          <Form v-slot="{ errors }" @submit="handleSubmitJob">
+          <Form v-slot="{ errors }" @submit="handleSubmitJob" :key="job.key">
             <div class="modal-body p-0">
               <div data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
                 <div class="row g-3">

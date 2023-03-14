@@ -693,7 +693,7 @@
               data-bs-dismiss="modal"
             ></button>
           </div>
-          <Form v-slot="{ errors }" @submit="handleSubmitPubForm">
+          <Form v-slot="{ errors }" @submit="handleSubmitPubForm" :key="current_pub.key">
             <div class="modal-body p-0">
               <div data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
                 <div class="row g-3">
@@ -1649,7 +1649,11 @@ export default {
 
     const qrCodeKey = ref(null);
     const handleCreatePubForm = () => {
-      current_pub.value = { tid: current_form.value.id, status: 1 };
+      current_pub.value = {
+        key: Math.random().toString(36).slice(-6),
+        tid: current_form.value.id,
+        status: 1,
+      };
       document.getElementById('showViewAndEditPubModalBtn').click();
       qrCodeKey.value = null;
     };

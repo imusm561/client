@@ -209,6 +209,7 @@ export default {
 
     const handleCreateJob = () => {
       const job = {
+        key: Math.random().toString(36).slice(-6),
         title: '',
         status: 1,
         rule: '0 0 * * * *',
@@ -224,7 +225,9 @@ export default {
         moment(job.start).format('YYYY-MM-DD HH:mm:ss'),
         moment(job.end).format('YYYY-MM-DD HH:mm:ss'),
       ];
-      document.getElementById('showEditJobModalBtn').click();
+      setTimeout(() => {
+        document.getElementById('showEditJobModalBtn').click();
+      }, 10);
     };
 
     const handleEditJob = (job) => {
@@ -233,7 +236,10 @@ export default {
         moment(job.start).format('YYYY-MM-DD HH:mm:ss'),
         moment(job.end).format('YYYY-MM-DD HH:mm:ss'),
       ];
-      document.getElementById('showEditJobModalBtn').click();
+      current_job.value.key = Math.random().toString(36).slice(-6);
+      setTimeout(() => {
+        document.getElementById('showEditJobModalBtn').click();
+      }, 10);
     };
 
     const handleDelJob = (job) => {

@@ -407,7 +407,7 @@
               data-bs-dismiss="modal"
             ></button>
           </div>
-          <Form v-slot="{ errors }" @submit="handleSubmitMail">
+          <Form v-slot="{ errors }" @submit="handleSubmitMail" :key="new_mail.key">
             <div class="modal-body p-0">
               <div data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
                 <div class="row g-3">
@@ -1477,8 +1477,8 @@ export default {
         } catch (error) {
           console.error(error);
         }
+        localStorage.removeItem(`staged_app_mail_${store.state.user.data.id}`);
       }
-      localStorage.removeItem(`staged_app_mail_${store.state.user.data.id}`);
       handleCloseMail();
       randerVsUsers(new_mail.value);
     };
