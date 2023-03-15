@@ -1,4 +1,5 @@
 import i18n from '@utils/i18n';
+import { decryptData } from '@utils';
 export default {
   namespaced: true,
   state: {
@@ -7,8 +8,8 @@ export default {
     name: '',
     company: '',
     beian: '',
+    key: '',
     cfg: {},
-    var: {},
   },
   getters: {
     logo(state) {
@@ -28,12 +29,12 @@ export default {
       document.documentElement.setAttribute('data-theme', theme);
     },
     UPDATE_SYS_INFO(state, value) {
-      state.name = value.sys.name;
-      state.company = value.sys.company;
-      state.beian = value.sys.beian;
-      state.cfg = value.sys.cfg;
-      state.var = value.var;
-      if (value.sys.cfg?.amap?.map_key) {
+      state.name = value.name;
+      state.company = value.company;
+      state.beian = value.beian;
+      state.key = value.key;
+      state.cfg = JSON.parse(decryptData(value.cfg));
+      if (value.cfg?.amap?.map_key) {
         const script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = `//webapi.amap.com/maps?v=2.0&key=${value.sys.cfg.amap.map_key}&plugin=AMap.AutoComplete,AMap.PlaceSearch,AMap.Geocoder,AMap.CitySearch`;

@@ -25,7 +25,7 @@ window.moment = moment;
 import io from 'socket.io-client';
 import initSocket from '@utils/socket';
 watch(
-  () => store.state.sys.var.origin,
+  () => store.state.sys.cfg.origin,
   (val) => {
     if (val) {
       const socket = io(val, {

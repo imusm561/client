@@ -45,15 +45,15 @@ export default {
         setWatermark(`${value.username} - ${value.fullname}`, moment().format('ll'));
       else removeWatermark();
       state.data = value;
-      window.user = value;
+      // window.user = value;
     },
     SET_FORMS(state, value) {
       state.forms = value;
-      window.forms = value;
+      // window.forms = value;
     },
     SET_NOTICES(state, value) {
       state.notices = value;
-      window.notices = value;
+      // window.notices = value;
     },
     ADD_NOTICE(state, value) {
       if (value.app == 'chat') {
@@ -73,7 +73,7 @@ export default {
       } else if (value.app == 'flow') {
         state.notices.flow.unshift(value.data);
       }
-      window.notices = state.notices;
+      // window.notices = state.notices;
     },
     DEL_NOTICE(state, value) {
       if (value.app == 'chat') {
@@ -98,7 +98,7 @@ export default {
         const idx = state.notices.flow.findIndex((flow) => flow.id == value.data.id);
         if (idx !== -1) state.notices.flow.splice(idx, 1);
       }
-      window.notices = state.notices;
+      // window.notices = state.notices;
     },
   },
   actions: {},

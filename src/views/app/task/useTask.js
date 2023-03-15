@@ -13,13 +13,13 @@ export default function useTask() {
       title: i18n.global.t('app.task.status.urgent'),
       value: 'urgent',
       variant: 'warning',
-      condition: new Function('progress', 'return progress <= 0'),
+      condition: new Function('progress', 'return progress < 100'),
     },
     {
       title: i18n.global.t('app.task.status.inprogress'),
       value: 'inprogress',
       variant: 'primary',
-      condition: new Function('progress', 'return progress > 0 && progress < 100'),
+      condition: new Function('progress', 'return progress >= 0 && progress < 100'),
     },
     {
       title: i18n.global.t('app.task.status.review'),

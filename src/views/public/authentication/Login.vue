@@ -279,7 +279,7 @@ export default {
       },
     ]);
 
-    if (store.state.sys.var.weixin)
+    if (store.state.sys.cfg.weixin)
       types.push({
         icon: 'mdi-wechat',
         name: 'scan_qrcode',
@@ -308,7 +308,7 @@ export default {
       qr.scaned = false;
 
       const params = {
-        soid: store.state.sys.var.weixin.soid,
+        soid: store.state.sys.cfg.weixin.soid,
         scene: qr.scene,
         expire: 60,
       };
@@ -395,7 +395,7 @@ export default {
           params.phone = phone.value;
           params.code = code.value;
         } else if (params.logintype == 'scan_qrcode') {
-          params.soid = store.state.sys.var.weixin.soid;
+          params.soid = store.state.sys.cfg.weixin.soid;
           params.scene = qr.scene;
         }
         userLogin(params).then(({ code, data }) => {

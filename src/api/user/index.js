@@ -1,6 +1,6 @@
 import axios from '@utils/axios';
 import store from '@store';
-import { generateApiQuery } from '@utils';
+import { generateApiQuery, decryptData } from '@utils';
 
 export const userLogin = (data) => {
   return axios.post('/cor/user/login', data);
@@ -13,7 +13,7 @@ export const userLogout = () => {
 export const getUserData = () => {
   return axios.get('/cor/user/data').then(({ code, data }) => {
     if (code === 200) {
-      const { depts, roles, users, onlines, user, forms, notices } = data;
+      const { depts, roles, users, onlines, user, forms, notices } = JSON.parse(decryptData(data));
       // Store received data in vuex for global use
       store.commit('org/SET_DEPTS', depts);
       store.commit('org/SET_ROLES', roles);
