@@ -824,7 +824,7 @@
 
   "components.amap.search": "Input for search tips...",
   "components.amap.missingKey": "Missing Amap key!",
-  "components.amap.initializing": "Amap instance is not initialized yet!",
+  "components.amap.initialization.failed": "Amap instance initialization failed!",
   "components.amap.tips.empty": "No result found for {district} - ${name}...",
 
   "components.empty.text": "No Data!",

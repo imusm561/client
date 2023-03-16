@@ -824,7 +824,7 @@
 
   "components.amap.search": "搜索更多建议...",
   "components.amap.missingKey": "缺少地图接口密钥！",
-  "components.amap.initializing": "地图实例赞未初始化完成！",
+  "components.amap.initialization.failed": "地图实例初始化失败！",
   "components.amap.tips.empty": "暂未找到`{district} - ${name}`的相关建议...",
 
   "components.empty.text": "暂无数据",

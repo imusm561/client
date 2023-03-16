@@ -226,7 +226,7 @@ export default defineComponent({
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: i18n.global.t('components.amap.initializing'),
+            text: i18n.global.t('components.amap.initialization.failed'),
           },
         });
         return;

@@ -315,7 +315,7 @@ export const resolveColumnTitle = (column) => {
   let title = column.field;
   if (column.alias) title += `|${column.alias}`;
   if (column.default) title += `|${column.default}`;
-  if (column.cfg?.source) title += `|${column.cfg?.source}`;
+  if (column.cfg?.source) title += `|${column.cfg.source}`;
   return title;
 };
 
