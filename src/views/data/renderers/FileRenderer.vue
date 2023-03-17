@@ -1,6 +1,6 @@
 <template>
   <span v-if="params.value && params.value.length">
-    <div class="avatar-group">
+    <div class="avatar-group mt-1">
       <span
         v-for="(file, index) in params.value"
         :key="index"
@@ -31,7 +31,7 @@
           />
           <i
             v-else
-            class="file-icon"
+            class="file-icon mt-n2"
             :class="$fileIcons.getClassWithColor(file.name)"
             @dblclick="handleDbclickFile(file)"
           />
