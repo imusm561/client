@@ -1,6 +1,6 @@
 <template>
   <VueSelect
-    v-if="params._column.cfg.source"
+    v-if="params._column.cfg.__source"
     :placeholder="params._column.cfg.placeholder"
     v-model="value"
     :reduce="(item) => item.value"
@@ -58,7 +58,7 @@ export default defineComponent({
 
     const handleSelecterSearch = async (keyword, loading) => {
       loading(true);
-      search.value = await getDataByFormula(props.params.data, props.params._column.cfg.source, {
+      search.value = await getDataByFormula(props.params.data, props.params._column.cfg.__source, {
         search: keyword,
       });
       loading(false);

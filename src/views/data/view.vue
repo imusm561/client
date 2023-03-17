@@ -745,8 +745,8 @@ export default {
 
     const setColumnValue = async (column) => {
       if (column.cfg?.source) {
-        column.cfg.source = replaceVariables(column.cfg.source, alias.value);
-        data.value[column.field] = await getDataByFormula(data.value, column.cfg.source, {
+        column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
+        data.value[column.field] = await getDataByFormula(data.value, column.cfg.__source, {
           view: true,
           value: data.value[column.field],
         });

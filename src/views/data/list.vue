@@ -363,7 +363,7 @@
                                 </span>
                               </td>
                               <td>{{ column.default }}</td>
-                              <td>{{ column?.cfg?.source }}</td>
+                              <td>{{ column.cfg?.source }}</td>
                             </tr>
                           </tbody>
                         </table>
@@ -907,18 +907,14 @@ export default {
             return;
           }
           const _column = JSON.parse(JSON.stringify(column));
-          // if (_column.visible) _column.visible = replaceVariables(_column.visible, alias.value);
-          // if (_column.required) _column.required = replaceVariables(_column.required, alias.value);
-          // if (_column.editable) _column.editable = replaceVariables(_column.editable, alias.value);
           const { visible, required, editable } = await getRulesByFormula(params.data, _column);
           _column._visible = visible;
           _column._required = required;
           _column._editable = editable;
 
           if (_column._editable) {
-            if (_column.cfg?.source) {
-              // _column.cfg.source = replaceVariables(_column.cfg.source, alias.value);
-              _column.cfg.options = await getDataByFormula(params.data, _column.cfg.source, {
+            if (_column.cfg?.__source) {
+              _column.cfg.options = await getDataByFormula(params.data, _column.cfg.__source, {
                 value: params.data[_column.field],
               });
             }
@@ -1011,7 +1007,7 @@ export default {
             if (
               ['SelectSingle', 'SelectMultiple'].includes(column.component) &&
               column.cfg.options.length &&
-              !column.cfg.source
+              !column.cfg.__source
             ) {
               params.success(column.cfg.options);
             } else {
@@ -1215,12 +1211,12 @@ export default {
     };
 
     const setColumnConfiguration = async (column) => {
-      if (column.default) column.default = replaceVariables(column.default, alias.value);
+      if (column.default) column.__default = replaceVariables(column.default, alias.value);
       if (column.cfg?.source) {
         column.cfg.search = [];
-        column.cfg.source = replaceVariables(column.cfg.source, alias.value);
-        if (!column.cfg.source?.includes('data.'))
-          column.cfg.options = await getDataByFormula({}, column.cfg.source, { value: null });
+        column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
+        if (!column.cfg.__source?.includes('data.'))
+          column.cfg.options = await getDataByFormula({}, column.cfg.__source, { value: null });
       }
     };
 
@@ -1242,7 +1238,7 @@ export default {
 
     const handleSelecterSearch = async ({ search, loading, column }) => {
       loading(true);
-      column.cfg.search = await getDataByFormula({}, column.cfg.source, { search });
+      column.cfg.search = await getDataByFormula({}, column.cfg.__source, { search });
       loading(false);
     };
 
@@ -1332,8 +1328,8 @@ export default {
           !column.required?.includes('data.') &&
           !column.editable?.includes('data.') &&
           column._editable &&
-          !column.default?.includes('data.') &&
-          !column.cfg?.source?.includes('data.')
+          !column.__default?.includes('data.') &&
+          !column.cfg?.__source?.includes('data.')
         )
           batch.value.columns.push(JSON.parse(JSON.stringify(column)));
 

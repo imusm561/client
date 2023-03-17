@@ -35,8 +35,8 @@ export default defineComponent({
     const data = ref(null);
 
     if (column.cfg?.source && props.params.value && props.params.value != '(Select All)') {
-      column.cfg.source = replaceVariables(column.cfg.source, props.params._alias);
-      getDataByFormula(props.params.data, column.cfg.source, {
+      column.cfg.__source = replaceVariables(column.cfg.source, props.params._alias);
+      getDataByFormula(props.params.data, column.cfg.__source, {
         view: true,
         value: props.params.value,
       }).then((res) => {

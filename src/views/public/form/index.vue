@@ -261,8 +261,8 @@ export default {
               columns.value
                 .filter(
                   (column) =>
-                    column.default?.includes(`data.${field}`) ||
-                    column.cfg?.source?.includes(`data.${field}`) ||
+                    column.__default?.includes(`data.${field}`) ||
+                    column.cfg?.__source?.includes(`data.${field}`) ||
                     column.cfg?.prefix?.includes(`data.${field}`) ||
                     column.cfg?.href?.includes(`data.${field}`),
                 )
@@ -356,9 +356,9 @@ export default {
 
     const setColumnConfiguration = async (column) => {
       if (column.default) {
-        column.default = replaceVariables(column.default, alias.value);
+        column.__default = replaceVariables(column.default, alias.value);
         if (Number(data.value.id) === 0 || initialized.value) {
-          const val = await getDataByFormula(data.value, column.default);
+          const val = await getDataByFormula(data.value, column.__default);
           if (val && typeof val === 'string' && val.includes('Error: '))
             column.cfg.placeholder = val;
           else data.value[column.field] = val;
@@ -367,8 +367,8 @@ export default {
 
       if (column.cfg?.source) {
         column.cfg.search = [];
-        column.cfg.source = replaceVariables(column.cfg.source, alias.value);
-        column.cfg.options = await getDataByFormula(data.value, column.cfg.source, {
+        column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
+        column.cfg.options = await getDataByFormula(data.value, column.cfg.__source, {
           value: !initialized.value ? data.value[column.field] : null,
         });
 
@@ -410,7 +410,7 @@ export default {
 
     const handleSelecterSearch = async ({ search, loading, column }) => {
       loading(true);
-      column.cfg.search = await getDataByFormula(data.value, column.cfg.source, { search });
+      column.cfg.search = await getDataByFormula(data.value, column.cfg.__source, { search });
       loading(false);
     };
 
