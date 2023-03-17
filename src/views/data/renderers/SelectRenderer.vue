@@ -38,14 +38,13 @@
 
 <script>
 import { defineComponent, ref } from 'vue';
-import { useRouter, replaceVariables, getDataByFormula } from '@utils';
+import { useRouter, getDataByFormula } from '@utils';
 export default defineComponent({
   setup(props) {
     const column = JSON.parse(JSON.stringify(props.params._column));
     const data = ref(null);
 
-    if (column.cfg?.source) {
-      column.cfg.__source = replaceVariables(column.cfg.source, props.params._alias);
+    if (column.cfg?.__source) {
       getDataByFormula(props.params.data, column.cfg.__source, {
         view: true,
         value: props.params.value,

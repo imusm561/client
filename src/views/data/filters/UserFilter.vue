@@ -31,7 +31,7 @@ export default defineComponent({
     else if (props.params.value.includes('@pub'))
       user.value = {
         username: props.params.value,
-        fullname: props.params.value.replace('@pub_', ''),
+        fullname: props.params.value.replace('@pub_', 'Pub_'),
       };
     else user.value = store.state.org.users.find((user) => user.username === props.params.value);
     return { user };

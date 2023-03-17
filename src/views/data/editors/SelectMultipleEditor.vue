@@ -40,11 +40,7 @@ import { defineComponent, computed, ref, watch } from 'vue';
 import { getDataByFormula } from '@utils';
 export default defineComponent({
   setup(props) {
-    const value = ref(
-      props.params.value.map((val) => {
-        return Number(val);
-      }),
-    );
+    const value = ref(props.params.value);
 
     const getValue = () => {
       return value.value;

@@ -2,7 +2,7 @@
   <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)">
     <div v-if="Array.isArray(params.value)" class="mt-1" style="line-height: initial">
       <Avatar
-        v-if="params.value.inputLength"
+        v-if="params.value.length"
         :data="$store.state.org.users.filter((user) => params.value.includes(user.username))"
         size="xs"
       />
@@ -42,7 +42,7 @@ export default defineComponent({
       else if (props.params.value.includes('@pub'))
         user.value = {
           username: props.params.value,
-          fullname: props.params.value.replace('@pub_', ''),
+          fullname: props.params.value.replace('@pub_', 'Pub_'),
         };
       else user.value = store.state.org.users.find((user) => user.username === props.params.value);
     }

@@ -28,15 +28,14 @@
 
 <script>
 import { defineComponent, ref } from 'vue';
-import { replaceVariables, getDataByFormula } from '@utils';
+import { getDataByFormula } from '@utils';
 export default defineComponent({
   setup(props) {
     const column = JSON.parse(JSON.stringify(props.params._column));
     const data = ref(null);
 
-    if (column.cfg?.source && props.params.value && props.params.value != '(Select All)') {
-      column.cfg.__source = replaceVariables(column.cfg.source, props.params._alias);
-      getDataByFormula(props.params.data, column.cfg.__source, {
+    if (column.cfg?.__source && props.params.value && props.params.value != '(Select All)') {
+      getDataByFormula({}, column.cfg.__source, {
         view: true,
         value: props.params.value,
       }).then((res) => {
