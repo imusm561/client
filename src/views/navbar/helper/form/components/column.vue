@@ -195,23 +195,21 @@
             </div>
             <div class="modal-body p-0">
               <div data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
-                <div>
-                  <component
-                    :is="`${current_column.component}Config`"
-                    v-model="current_column"
-                    :errors="errors"
-                    :alias="
-                      alias.filter(
-                        (item) =>
-                          !columns
-                            .map((column) => {
-                              return column.alias;
-                            })
-                            .includes(item),
-                      )
-                    "
-                  />
-                </div>
+                <component
+                  :is="`${current_column.component}Config`"
+                  v-model="current_column"
+                  :errors="errors"
+                  :alias="
+                    alias.filter(
+                      (item) =>
+                        !columns
+                          .map((column) => {
+                            return column.alias;
+                          })
+                          .includes(item),
+                    )
+                  "
+                />
               </div>
             </div>
             <!-- <div class="modal-footer p-3 pt-1 pb-1">
