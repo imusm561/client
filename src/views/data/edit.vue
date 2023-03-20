@@ -720,13 +720,10 @@ export default {
         { immediate: true },
       );
 
-      // let timer = null;
       watch(
         () => formData.value,
-        async (newVal, oldVal) => {
+        (newVal, oldVal) => {
           if (initialized.value) {
-            // if (timer) clearTimeout(timer);
-            // timer = setTimeout(() => {
             const changes = deepCompare(newVal || {}, oldVal || {});
             for (let field in changes) {
               columns.value
@@ -735,20 +732,16 @@ export default {
                     column.__default?.includes(`data.${field}`) ||
                     column.cfg?.__source?.includes(`data.${field}`) ||
                     column.cfg?.prefix?.includes(`data.${field}`) ||
-                    column.cfg?.href?.includes(`data.${field}`),
-                )
-                .forEach((column) => setColumnConfiguration(column));
-
-              columns.value
-                .filter(
-                  (column) =>
+                    column.cfg?.href?.includes(`data.${field}`) ||
                     column.visible?.includes(`data.${field}`) ||
                     column.required?.includes(`data.${field}`) ||
                     column.editable?.includes(`data.${field}`),
                 )
-                .forEach((column) => setColumnRules(column));
+                .map(async (column) => {
+                  await setColumnRules(column);
+                  await setColumnConfiguration(column);
+                });
             }
-            // }, 300);
           }
         },
         { immediate: true, deep: true },
@@ -887,54 +880,10 @@ export default {
         } else if (column.component === 'LayoutTab') {
           tabs.value.push({ ...column, ...{ columns: [] } });
         } else {
-          await setColumnConfiguration(column);
           await setColumnRules(column);
+          await setColumnConfiguration(column);
           tabs.value[tabs.value.length - 1].columns.push(column);
         }
-      }
-    };
-
-    const setColumnConfiguration = async (column) => {
-      if (column.default) {
-        column.__default = replaceVariables(column.default, alias.value);
-        if (Number(data.value.id) === 0 || initialized.value) {
-          const val = await getDataByFormula(data.value, column.__default);
-          if (val && typeof val === 'string' && val.includes('Error: '))
-            column.cfg.placeholder = val;
-          else data.value[column.field] = val;
-        }
-      }
-
-      if (column.cfg?.source) {
-        column.cfg.search = [];
-        column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
-        column.cfg.options = await getDataByFormula(data.value, column.cfg.__source, {
-          value: !initialized.value ? data.value[column.field] : null,
-        });
-
-        if (column.cfg.options.length) {
-          data.value[column.field] =
-            column.component == 'SelectMultiple'
-              ? column.cfg.options
-                  .filter((option) => data.value[column.field]?.includes(option.value))
-                  .map((option) => {
-                    return option.value;
-                  })
-              : column.cfg.options.find((option) => option.value == data.value[column.field])
-                  ?.value || null;
-        } else {
-          data.value[column.field] = column.component == 'SelectMultiple' ? [] : null;
-        }
-      }
-
-      if (column.cfg?.prefix) {
-        column.cfg.prefix = replaceVariables(column.cfg.prefix, alias.value);
-        column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
-      }
-
-      if (column.cfg?.href) {
-        column.cfg.href = replaceVariables(column.cfg.href, alias.value);
-        column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
       }
     };
 
@@ -946,6 +895,54 @@ export default {
       column._visible = visible;
       column._required = required;
       column._editable = editable;
+    };
+
+    const setColumnConfiguration = async (column) => {
+      if (column._visible) {
+        if (column.default) {
+          column.__default = replaceVariables(column.default, alias.value);
+          if (Number(data.value.id) === 0 || initialized.value) {
+            const val = await getDataByFormula(data.value, column.__default);
+            if (val && typeof val === 'string' && val.includes('Error: '))
+              column.cfg.placeholder = val;
+            else data.value[column.field] = val;
+          }
+        }
+
+        if (column.cfg?.source) {
+          column.cfg.search = [];
+          column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
+          column.cfg.options = await getDataByFormula(data.value, column.cfg.__source, {
+            value: !initialized.value ? data.value[column.field] : null,
+          });
+
+          if (column.cfg.options.length) {
+            data.value[column.field] =
+              column.component == 'SelectMultiple'
+                ? column.cfg.options
+                    .filter((option) => data.value[column.field]?.includes(option.value))
+                    .map((option) => {
+                      return option.value;
+                    })
+                : column.cfg.options.find((option) => option.value == data.value[column.field])
+                    ?.value || null;
+          } else {
+            data.value[column.field] = column.component == 'SelectMultiple' ? [] : null;
+          }
+        }
+
+        if (column.cfg?.prefix) {
+          column.cfg.prefix = replaceVariables(column.cfg.prefix, alias.value);
+          column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
+        }
+
+        if (column.cfg?.href) {
+          column.cfg.href = replaceVariables(column.cfg.href, alias.value);
+          column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
+        }
+      } else {
+        delete data.value[column.field];
+      }
     };
 
     const handleSelectDataTitle = (e) => {
