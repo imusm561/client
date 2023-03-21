@@ -6,7 +6,7 @@
           <div class="col-lg-12">
             <div class="text-center mb-3">
               <router-link to="/" class="d-inline-block auth-logo">
-                <img :src="`${BASE_URL}static/img/logo/${logo}.png`" alt="" height="55" />
+                <img :src="`${BASE_URL}static/img/logo/${logo}.png`" :alt="logo" height="55" />
               </router-link>
             </div>
           </div>

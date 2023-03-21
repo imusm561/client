@@ -145,7 +145,7 @@
                         <em v-else style="opacity: 0.5">{{ $t('components.vs.generateTag') }}</em>
                       </template>
                     </VueSelect>
-                    <Field name="tags" v-model="job.tags" rules="" class="d-none" />
+                    <Field name="tags" v-model="job.tags" class="d-none" />
                     <span class="invalid-feedback">{{ errors.tags }}</span>
                   </div>
                   <div class="col-12">

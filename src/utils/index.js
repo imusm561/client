@@ -134,10 +134,9 @@ export const getNodeById = (tree, id) => {
 export const getListPath = (path) => {
   let structure = path.split('/');
   if (structure[1] === 'data' && ['view', 'edit'].includes(structure[2])) {
-    // ["", "data", "view", "3", "100"]
-    structure[2] = 'list'; // ["", "data", "list", "3", "100"]
-    structure.splice(4, 1); // ["", "data", "list", "3"]
-    return structure.join('/'); // /data/list/3
+    structure[2] = 'list';
+    structure.splice(4, 1);
+    return structure.join('/');
   }
   return path;
 };

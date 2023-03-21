@@ -387,18 +387,16 @@
 
     <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="userProfileOffcanvas">
       <div v-if="current_chat.id" class="offcanvas-body profile-offcanvas p-0">
-        <div class="">
-          <div class="team-settings">
-            <div class="row g-0">
-              <div class="col">
-                <div class="btn nav-btn">
-                  <button
-                    type="button"
-                    class="btn-close btn-close-dark"
-                    data-bs-dismiss="offcanvas"
-                    aria-label="Close"
-                  ></button>
-                </div>
+        <div class="team-settings">
+          <div class="row g-0">
+            <div class="col">
+              <div class="btn nav-btn">
+                <button
+                  type="button"
+                  class="btn-close btn-close-dark"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"
+                ></button>
               </div>
             </div>
           </div>
