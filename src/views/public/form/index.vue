@@ -405,8 +405,15 @@ export default {
       if (column.cfg?.prefix)
         column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
       if (column.cfg?.href) column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
-      if (column.cfg?.min) column.cfg.minDate = await getDataByFormula(data.value, column.cfg.min);
-      if (column.cfg?.max) column.cfg.maxDate = await getDataByFormula(data.value, column.cfg.max);
+
+      if (column.cfg?.min) {
+        const minDate = await getDataByFormula(data.value, column.cfg.min);
+        if (isNaN(minDate) && !isNaN(Date.parse(minDate))) column.cfg.minDate = minDate;
+      }
+      if (column.cfg?.max) {
+        const maxDate = await getDataByFormula(data.value, column.cfg.max);
+        if (isNaN(maxDate) && !isNaN(Date.parse(maxDate))) column.cfg.maxDate = maxDate;
+      }
     };
 
     const setColumnRules = async (column) => {
