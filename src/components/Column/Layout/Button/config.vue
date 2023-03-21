@@ -117,11 +117,11 @@
     </div>
 
     <div class="col-md-12">
-      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.editable') }}</label>
+      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.disabled') }}</label>
       <input
         v-model="column.editable"
         type="text"
-        :placeholder="$t('layout.navbar.helper.form.column.config.editable')"
+        :placeholder="$t('layout.navbar.helper.form.column.config.disabled')"
         class="form-control"
       />
     </div>

@@ -407,6 +407,13 @@ export default {
         viewAndEditColumnModal.addEventListener('shown.bs.modal', () => {
           scrollToTop(viewAndEditColumnModal);
         });
+
+      document.onkeydown = (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+          if (!viewAndEditColumnModal.classList.contains('show')) handleSaveFormColumns();
+          e.preventDefault();
+        }
+      };
     });
 
     onUnmounted(() => {

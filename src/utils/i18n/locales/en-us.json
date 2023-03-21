@@ -308,6 +308,7 @@
   "layout.navbar.helper.form.column.config.visible": "Visible",
   "layout.navbar.helper.form.column.config.required": "Required",
   "layout.navbar.helper.form.column.config.editable": "Editable",
+  "layout.navbar.helper.form.column.config.disabled": "Disabled",
   "layout.navbar.helper.form.column.config.tags": "Tags",
   "layout.navbar.helper.form.column.config.header": "Header",
   "layout.navbar.helper.form.column.config.footer": "Footer",

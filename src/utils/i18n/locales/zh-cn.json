@@ -306,6 +306,7 @@
   "layout.navbar.helper.form.column.config.options": "可选项",
   "layout.navbar.helper.form.column.config.source": "数据源",
   "layout.navbar.helper.form.column.config.visible": "可见条件",
+  "layout.navbar.helper.form.column.config.disabled": "禁用条件",
   "layout.navbar.helper.form.column.config.required": "必填条件",
   "layout.navbar.helper.form.column.config.editable": "可编辑条件",
   "layout.navbar.helper.form.column.config.tags": "标签",
