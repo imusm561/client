@@ -1210,20 +1210,35 @@ export default {
       return columnDef;
     };
 
-    const setColumnConfiguration = async (column) => {
+    const replaceColumnVariables = (column) => {
+      if (column.visible) column.visible = replaceVariables(column.visible, alias.value);
+      if (column.required) column.required = replaceVariables(column.required, alias.value);
+      if (column.editable) column.editable = replaceVariables(column.editable, alias.value);
       if (column.default) column.__default = replaceVariables(column.default, alias.value);
+      if (column.cfg?.source)
+        column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
+      if (column.cfg?.min) column.cfg.min = replaceVariables(column.cfg.min, alias.value);
+      if (column.cfg?.max) column.cfg.max = replaceVariables(column.cfg.max, alias.value);
+    };
+
+    const setColumnConfiguration = async (column) => {
       if (column.cfg?.source) {
         column.cfg.search = [];
-        column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
         if (!column.cfg.__source?.includes('data.'))
           column.cfg.options = await getDataByFormula({}, column.cfg.__source, { value: null });
+      }
+
+      if (column.cfg?.min && !column.cfg.min?.includes('data.')) {
+        const minDate = await getDataByFormula({}, column.cfg.min);
+        if (isNaN(minDate) && !isNaN(Date.parse(minDate))) column.cfg.minDate = minDate;
+      }
+      if (column.cfg?.max && !column.cfg.max?.includes('data.')) {
+        const maxDate = await getDataByFormula({}, column.cfg.max);
+        if (isNaN(maxDate) && !isNaN(Date.parse(maxDate))) column.cfg.maxDate = maxDate;
       }
     };
 
     const setColumnRules = async (column) => {
-      if (column.visible) column.visible = replaceVariables(column.visible, alias.value);
-      if (column.required) column.required = replaceVariables(column.required, alias.value);
-      if (column.editable) column.editable = replaceVariables(column.editable, alias.value);
       if (
         !column.visible?.includes('data.') &&
         !column.required?.includes('data.') &&
@@ -1315,6 +1330,7 @@ export default {
         : [];
       for (let index = 0; index < columns.value.length; index++) {
         const column = columns.value[index];
+        await replaceColumnVariables(column);
         await setColumnConfiguration(column);
         await setColumnRules(column);
 
