@@ -586,11 +586,11 @@ export default {
           labelKey: 'customization',
           iconKey: 'menu',
           toolPanel: 'CustomizationToolPanle',
-          toolPanelParams: {
-            context: {
-              tid: Number(route.value.params.tid),
-            },
-          },
+          // toolPanelParams: {
+          //   context: {
+          //     tid: Number(route.value.params.tid),
+          //   },
+          // },
           minWidth: 200,
           maxWidth: 300,
           width: 250,

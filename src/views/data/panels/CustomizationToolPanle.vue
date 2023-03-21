@@ -239,7 +239,7 @@
 
 <script>
 import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
-import { deepCompare, getUserInfo } from '@utils';
+import { useRouter, deepCompare, getUserInfo } from '@utils';
 import { getCustomFilters, createCustomFilter, updateCustomFilter } from '@api/custom';
 import MonacoEditor from '@components/MonacoEditor';
 import store from '@store';
@@ -254,6 +254,7 @@ export default defineComponent({
     const toast = useToast();
     const moment = window.moment;
     const socket = window.socket;
+    const { route } = useRouter();
     const system = [
       {
         id: 'created_by_me',
@@ -650,7 +651,7 @@ export default defineComponent({
 
     onMounted(() => {
       socket.on('refetchFilters', (res) => {
-        if (res.tid === props.params.context.tid) fetchFormFilters();
+        if (res.tid === Number(route.value.params.tid)) fetchFormFilters();
       });
       fetchFormFilters();
     });
@@ -660,7 +661,7 @@ export default defineComponent({
     });
 
     const fetchFormFilters = () => {
-      getCustomFilters({ tid: props.params.context.tid }).then(({ code, data, msg }) => {
+      getCustomFilters({ tid: Number(route.value.params.tid) }).then(({ code, data, msg }) => {
         if (code === 200) {
           data = [...system, ...data];
           _filters.value = JSON.parse(JSON.stringify(data));
@@ -670,7 +671,7 @@ export default defineComponent({
             if (item) {
               item.children.push({
                 id: ei.id,
-                tid: ei.tid || props.params.context.tid,
+                tid: ei.tid || Number(route.value.params.tid),
                 name: ei.name,
                 data: ei.data,
               });
@@ -682,7 +683,7 @@ export default defineComponent({
                 children: [
                   {
                     id: ei.id,
-                    tid: ei.tid || props.params.context.tid,
+                    tid: ei.tid || Number(route.value.params.tid),
                     name: ei.name,
                     data: ei.data,
                   },
@@ -759,7 +760,7 @@ export default defineComponent({
         });
       } else {
         createCustomFilter({
-          tid: props.params.context.tid,
+          tid: Number(route.value.params.tid),
           name: create_filter.value.name,
           data: JSON.parse(create_filter.value.data),
         }).then(({ code, msg }) => {
