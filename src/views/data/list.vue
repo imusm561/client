@@ -1381,10 +1381,13 @@ export default {
             .then((res) => {
               params.successCallback(res.data.rows, res.data.count);
             })
-            .catch((error) => {
-              console.error(error);
+            .catch(() => {
               params.failCallback();
             });
+          // .catch((error) => {
+          //   console.error(error);
+          //   params.failCallback();
+          // });
         }
       },
     };

@@ -219,7 +219,7 @@ export default defineComponent({
   props: {
     id: {
       type: String,
-      default: () => "Uploader",
+      default: () => 'Uploader',
       requried: true,
     },
     modelValue: {
