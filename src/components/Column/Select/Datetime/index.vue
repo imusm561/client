@@ -16,6 +16,7 @@
     <label class="form-label" :title="resolveColumnTitle(column)">{{ column.name }}</label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
     <FlatPickr
+      :key="JSON.stringify(column.cfg)"
       :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
       :class="['form-control', error && 'is-invalid']"
       :placeholder="column.cfg.placeholder"
@@ -42,7 +43,7 @@
 </template>
 
 <script>
-import { defineComponent, computed } from 'vue';
+import { defineComponent, onMounted, computed } from 'vue';
 import { resolveColumnTitle } from '@utils';
 import FlatPickr from '@components/FlatPickr';
 export default defineComponent({
@@ -78,6 +79,22 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+    const moment = window.moment;
+    onMounted(() => {
+      emit(
+        'update:modelValue',
+        moment(props.modelValue).format(
+          props.column.cfg.dateFormat
+            .replace('Y', 'YYYY')
+            .replace('m', 'MM')
+            .replace('d', 'DD')
+            .replace('H', 'HH')
+            .replace('i', 'mm')
+            .replace('S', 'ss'),
+        ),
+      );
+    });
+
     return {
       resolveColumnTitle,
       value: computed({

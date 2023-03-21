@@ -20,7 +20,7 @@ export default defineComponent({
   },
   props: {
     modelValue: {
-      type: [String, Array],
+      type: [String, Array, Date],
       default: () => {
         return '';
       },

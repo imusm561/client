@@ -733,13 +733,22 @@ export default {
                     column.cfg?.__source?.includes(`data.${field}`) ||
                     column.cfg?.prefix?.includes(`data.${field}`) ||
                     column.cfg?.href?.includes(`data.${field}`) ||
+                    column.cfg?.min?.includes(`data.${field}`) ||
+                    column.cfg?.max?.includes(`data.${field}`),
+                )
+                .map(async (column) => {
+                  await setColumnConfiguration(column);
+                });
+
+              columns.value
+                .filter(
+                  (column) =>
                     column.visible?.includes(`data.${field}`) ||
                     column.required?.includes(`data.${field}`) ||
                     column.editable?.includes(`data.${field}`),
                 )
                 .map(async (column) => {
                   await setColumnRules(column);
-                  await setColumnConfiguration(column);
                 });
             }
           }
@@ -880,68 +889,81 @@ export default {
         } else if (column.component === 'LayoutTab') {
           tabs.value.push({ ...column, ...{ columns: [] } });
         } else {
-          await setColumnRules(column);
+          await replaceColumnVariables(column);
           await setColumnConfiguration(column);
+          await setColumnRules(column);
           tabs.value[tabs.value.length - 1].columns.push(column);
         }
       }
     };
 
-    const setColumnRules = async (column) => {
+    const replaceColumnVariables = (column) => {
       if (column.visible) column.visible = replaceVariables(column.visible, alias.value);
       if (column.required) column.required = replaceVariables(column.required, alias.value);
       if (column.editable) column.editable = replaceVariables(column.editable, alias.value);
-      const { visible, required, editable } = await getRulesByFormula(data.value, column);
-      column._visible = visible;
-      column._required = required;
-      column._editable = editable;
+      if (column.default) column.__default = replaceVariables(column.default, alias.value);
+      if (column.cfg?.source)
+        column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
+      if (column.cfg?.prefix) column.cfg.prefix = replaceVariables(column.cfg.prefix, alias.value);
+      if (column.cfg?.href) column.cfg.href = replaceVariables(column.cfg.href, alias.value);
+      if (column.cfg?.min) column.cfg.min = replaceVariables(column.cfg.min, alias.value);
+      if (column.cfg?.max) column.cfg.max = replaceVariables(column.cfg.max, alias.value);
     };
 
     const setColumnConfiguration = async (column) => {
-      if (column._visible) {
-        if (column.default) {
-          column.__default = replaceVariables(column.default, alias.value);
-          if (Number(data.value.id) === 0 || initialized.value) {
-            const val = await getDataByFormula(data.value, column.__default);
-            if (val && typeof val === 'string' && val.includes('Error: '))
-              column.cfg.placeholder = val;
-            else data.value[column.field] = val;
-          }
+      if (column.default) {
+        if (Number(data.value.id) === 0 || initialized.value) {
+          const val = await getDataByFormula(data.value, column.__default);
+          if (val && typeof val === 'string' && val.includes('Error: '))
+            column.cfg.placeholder = val;
+          else data.value[column.field] = column.component == 'SelectTags' ? val.split(',') : val;
         }
+      }
 
-        if (column.cfg?.source) {
-          column.cfg.search = [];
-          column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
-          column.cfg.options = await getDataByFormula(data.value, column.cfg.__source, {
-            value: !initialized.value ? data.value[column.field] : null,
-          });
+      if (column.cfg?.source) {
+        column.cfg.search = [];
+        column.cfg.options = await getDataByFormula(data.value, column.cfg.__source, {
+          value: !initialized.value ? data.value[column.field] : null,
+        });
 
-          if (column.cfg.options.length) {
-            data.value[column.field] =
-              column.component == 'SelectMultiple'
-                ? column.cfg.options
-                    .filter((option) => data.value[column.field]?.includes(option.value))
-                    .map((option) => {
-                      return option.value;
-                    })
-                : column.cfg.options.find((option) => option.value == data.value[column.field])
-                    ?.value || null;
-          } else {
-            data.value[column.field] = column.component == 'SelectMultiple' ? [] : null;
-          }
+        column.cfg.selected = [];
+        if (column.cfg.options.length) {
+          data.value[column.field] =
+            column.component == 'SelectMultiple'
+              ? column.cfg.options
+                  .filter((option) => data.value[column.field]?.includes(option.value))
+                  .map((option) => {
+                    return option.value;
+                  })
+              : column.cfg.options.find((option) => option.value == data.value[column.field])
+                  ?.value || null;
+        } else {
+          data.value[column.field] = column.component == 'SelectMultiple' ? [] : null;
         }
+      }
 
-        if (column.cfg?.prefix) {
-          column.cfg.prefix = replaceVariables(column.cfg.prefix, alias.value);
-          column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
-        }
+      if (column.cfg?.prefix)
+        column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
+      if (column.cfg?.href) column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
+      if (column.cfg?.min) column.cfg.minDate = await getDataByFormula(data.value, column.cfg.min);
+      if (column.cfg?.max) column.cfg.maxDate = await getDataByFormula(data.value, column.cfg.max);
+    };
 
-        if (column.cfg?.href) {
-          column.cfg.href = replaceVariables(column.cfg.href, alias.value);
-          column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
-        }
-      } else {
-        delete data.value[column.field];
+    const setColumnRules = async (column) => {
+      const { visible, required, editable } = await getRulesByFormula(data.value, column);
+      // column._visible = visible;
+      column._required = required;
+      column._editable = editable;
+
+      if (column._visible != visible) {
+        column._visible = visible;
+        if (column._visible) setColumnConfiguration(column);
+        else
+          data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
+            column.component,
+          )
+            ? []
+            : null;
       }
     };
 

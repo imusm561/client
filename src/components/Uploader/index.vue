@@ -160,7 +160,7 @@
         <button
           type="button"
           :disabled="disabled"
-          id="uploadDropdownMenu"
+          :id="`${id}_uploadDropdownMenu`"
           class="btn btn-sm dropdown-toggle dropdown-toggle-split"
           :class="fieldClass"
           data-bs-toggle="dropdown"
@@ -217,6 +217,11 @@ import ToastificationContent from '@components/ToastificationContent';
 import i18n from '@utils/i18n';
 export default defineComponent({
   props: {
+    id: {
+      type: String,
+      default: () => "Uploader",
+      requried: true,
+    },
     modelValue: {
       type: Array,
       default: () => [],
@@ -529,7 +534,7 @@ export default defineComponent({
           else if (type === 'del') files.value = files.value.filter((_file) => _file.id != file.id);
         }
       });
-      const uploadDropdownMenu = document.getElementById('uploadDropdownMenu');
+      const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
       if (uploadDropdownMenu) {
         uploadDropdownMenu.addEventListener('show.bs.dropdown', () => {
           qrcode.value = null;
@@ -543,7 +548,7 @@ export default defineComponent({
 
     onUnmounted(() => {
       socket.removeListener('fileChanged');
-      const uploadDropdownMenu = document.getElementById('uploadDropdownMenu');
+      const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
       if (uploadDropdownMenu) {
         uploadDropdownMenu.removeEventListener('show.bs.dropdown', () => {});
         uploadDropdownMenu.removeEventListener('hide.bs.dropdown', () => {});

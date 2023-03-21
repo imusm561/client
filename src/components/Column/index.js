@@ -213,8 +213,8 @@ const columns = [
         cfg: {
           placeholder: '',
           dateFormat: 'Y-m-d',
-          minDate: null,
-          maxDate: null,
+          min: null,
+          max: null,
         },
         header: '',
         footer: '',
@@ -255,7 +255,7 @@ const columns = [
         tags: [],
         cfg: {
           style: 'btn-primary',
-          placeholder: 'Upload',
+          placeholder: 'Browse',
           accept: '*',
           prefix: '',
           multiple: false,

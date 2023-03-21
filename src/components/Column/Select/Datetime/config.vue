@@ -113,11 +113,11 @@
       v-if="['Y-m-d H:i:S', 'Y-m-d H:i', 'Y-m-d'].includes(column.cfg.dateFormat)"
       class="col-md-6"
     >
-      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.minDate') }}</label>
+      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.min') }}</label>
       <input
-        v-model="column.cfg.minDate"
+        v-model="column.cfg.min"
         type="text"
-        :placeholder="$t('layout.navbar.helper.form.column.config.minDate')"
+        :placeholder="$t('layout.navbar.helper.form.column.config.min')"
         class="form-control"
       />
     </div>
@@ -126,11 +126,11 @@
       v-if="['Y-m-d H:i:S', 'Y-m-d H:i', 'Y-m-d'].includes(column.cfg.dateFormat)"
       class="col-md-6"
     >
-      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.maxDate') }}</label>
+      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.max') }}</label>
       <input
-        v-model="column.cfg.maxDate"
+        v-model="column.cfg.max"
         type="text"
-        :placeholder="$t('layout.navbar.helper.form.column.config.maxDate')"
+        :placeholder="$t('layout.navbar.helper.form.column.config.max')"
         class="form-control"
       />
     </div>
