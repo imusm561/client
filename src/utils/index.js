@@ -506,7 +506,7 @@ export const getRulesByFormula = (data, column) => {
       if (column[key]) {
         try {
           let fn = new Function('data', 'return ' + column[key]);
-          res[key] = fn(data);
+          res[key] = !!fn(data);
         } catch (error) {
           res[key] = !res[key];
         }
