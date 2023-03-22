@@ -170,7 +170,7 @@
                         :key="index"
                       >
                         <span>
-                          #{{ index }} {{ node.title }} [{{ node.logic === 1 ? 'And' : 'Or' }}]
+                          #{{ index + 1 }} {{ node.title }} [{{ node.logic === 1 ? 'And' : 'Or' }}]
                         </span>
                         <Avatar :data="resolveFlowUsers(node.users)" size="xxs" />
                       </li>
@@ -345,7 +345,7 @@
                               :key="index"
                             >
                               <span>
-                                #{{ index }} {{ node.title }} [{{
+                                #{{ index + 1 }} {{ node.title }} [{{
                                   node.logic === 1 ? 'And' : 'Or'
                                 }}]
                               </span>
