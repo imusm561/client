@@ -385,7 +385,7 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted, watch, ref, computed } from 'vue';
+import { onMounted, onUnmounted, watch, ref, computed, nextTick } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
 import {
@@ -636,18 +636,14 @@ export default {
         records.value = data.records;
         const res = await getCustomColumns({ tid: Number(route.value.params.tid) });
         customs.value = res.data;
-        if (customs.value)
-          columns.value.sort((a, b) => {
-            return customs.value.data.findIndex((column) => column.field === a.field) <
-              customs.value.data.findIndex((column) => column.field === b.field)
-              ? -1
-              : customs.value.data.findIndex((column) => column.field === a.field) >
-                customs.value.data.findIndex((column) => column.field === b.field)
-              ? 1
-              : 0;
-          });
         await setFormConfiguration();
         await setFormColumnDefs();
+        nextTick(() => {
+          if (customs.value)
+            customs.value.data.forEach((custom, index) => {
+              gridColumnApi.moveColumn(custom.field, index);
+            });
+        });
         gridApi.setFilterModel({
           data_state: {
             filterType: 'set',
@@ -673,10 +669,10 @@ export default {
     };
 
     let gridApi = null;
-    // let gridColumnApi = null;
+    let gridColumnApi = null;
     const onGridReady = (params) => {
       gridApi = params.api;
-      // gridColumnApi = params.columnApi;
+      gridColumnApi = params.columnApi;
     };
 
     let timer = null;
@@ -684,22 +680,14 @@ export default {
       const tid = Number(route.value.params.tid);
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
-        const hasTab = columns.value.some((column) => column.component === 'LayoutTab');
-        const columnDefs = hasTab
-          ? gridApi
-              .getColumnDefs()
-              .map((item) => {
-                return item.children;
-              })
-              .flat()
-          : gridApi.getColumnDefs();
+        const columnState = gridColumnApi.getColumnState();
         if (customs.value) {
           updateCustomColumns({
             id: customs.value.id,
             tid,
-            data: columnDefs.map((column) => {
+            data: columnState.map((column) => {
               return {
-                field: column.field,
+                field: column.colId,
                 hide: column.hide,
                 width: column.width,
                 pinned: column.pinned,
@@ -720,9 +708,9 @@ export default {
         } else {
           createCustomColumns({
             tid,
-            data: columnDefs.map((column) => {
+            data: columnState.map((column) => {
               return {
-                field: column.field,
+                field: column.colId,
                 hide: column.hide,
                 width: column.width,
                 pinned: column.pinned,
