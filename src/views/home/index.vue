@@ -175,7 +175,11 @@
                   </thead>
 
                   <tbody>
-                    <tr v-for="(task, index) of tasks.slice(0, 9)" :key="index">
+                    <tr
+                      v-for="(task, index) of tasks.slice(0, 9)"
+                      :key="index"
+                      :class="resolveTaskVariant(task)"
+                    >
                       <td
                         class="fw-medium text-truncate"
                         style="min-width: 100px; max-width: 200px"
@@ -193,7 +197,7 @@
                         />
                       </td>
                       <td>
-                        <span :class="`badge bg-${resolveTaskVariant(task.status)} text-uppercase`">
+                        <span :class="`badge bg-${resolveTaskStatusVariant(task)} text-uppercase`">
                           {{ $t(`home.task.status.${task.status}`) }}
                         </span>
                       </td>
@@ -294,6 +298,7 @@ import { getUserInfo } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import i18n from '@utils/i18n';
+import useTask from '../app/task/useTask';
 export default {
   components: {
     Breadcrumb,
@@ -330,22 +335,12 @@ export default {
       },
     ]);
 
-    const resolveTaskVariant = computed(() => {
-      return (status) => {
-        switch (status) {
-          case 'todo':
-            return 'secondary';
-          case 'urgent':
-            return 'warning';
-          case 'inprogress':
-            return 'primary';
-          case 'review':
-            return 'info';
-          case 'completed':
-            return 'success';
-          default:
-            return 'secondary';
-        }
+    const { status, resolveTaskVariant } = useTask();
+
+    const resolveTaskStatusVariant = computed(() => {
+      return (task) => {
+        const target = status.value.find((item) => item.value === task.status);
+        return target?.variant || status.value[0].variant;
       };
     });
 
@@ -394,6 +389,7 @@ export default {
     return {
       types,
       heatmapRangeColor,
+      resolveTaskStatusVariant,
       resolveTaskVariant,
       activities,
       analytics,

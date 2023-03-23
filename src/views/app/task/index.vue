@@ -426,18 +426,10 @@ export default {
     const socket = window.socket;
     const moment = window.moment;
 
-    const { status } = useTask();
+    const { status, resolveTaskVariant } = useTask();
 
     const search_users = ref([]);
     const search_keyword = ref('');
-
-    const resolveTaskVariant = (task) => {
-      if (task.progress === 100) return 'bg-soft-success';
-      if (moment(task.due_date).valueOf() < moment().valueOf()) return 'bg-soft-danger';
-      else if (moment(task.due_date).valueOf() - moment().valueOf() < 24 * 60 * 60 * 1000)
-        return 'bg-soft-primary';
-      else return null;
-    };
 
     const filterKeyword = (str) => {
       if (!search_keyword.value) return true;
