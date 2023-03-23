@@ -74,7 +74,6 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    console.log(props.column);
     return {
       resolveColumnTitle,
       value: computed({
