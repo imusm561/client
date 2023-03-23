@@ -197,6 +197,7 @@
                       batch.syntax_error = $event;
                     }
                   "
+                  @refresh="setColumnConfiguration($event)"
                 ></component>
                 <button
                   type="submit"
@@ -1599,6 +1600,8 @@ export default {
       getRowId,
       serverSideDatasource,
       handleRefetchDataList,
+
+      setColumnConfiguration,
 
       getContextMenuItems,
       onSelectionChanged,

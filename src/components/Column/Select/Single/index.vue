@@ -16,7 +16,14 @@
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
   <div v-else-if="type === 'EDIT'">
-    <label class="form-label" :title="resolveColumnTitle(column)">{{ column.name }}</label>
+    <label class="form-label" :title="resolveColumnTitle(column)">
+      {{ column.name }}
+      <i
+        v-if="column.cfg.source"
+        class="refresh mdi mdi-refresh fs-12 cursor-pointer text-info"
+        @click="$emit('refresh', column)"
+      ></i>
+    </label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
     <VueSelect
       v-if="column.cfg.source"

@@ -49,6 +49,7 @@
                         syntax_error = $event;
                       }
                     "
+                    @refresh="setColumnConfiguration($event)"
                   ></component>
                 </h5>
               </template>
@@ -114,6 +115,7 @@
                           syntax_error = $event;
                         }
                       "
+                      @refresh="setColumnConfiguration($event)"
                     ></component>
                   </h5>
                 </template>
@@ -499,6 +501,8 @@ export default {
       fetchPubForm,
       handleRefetchPubForm,
       handleSelecterSearch,
+
+      setColumnConfiguration,
 
       handleSubmitFormData,
     };

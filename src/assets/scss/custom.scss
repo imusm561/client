@@ -280,3 +280,15 @@ input:-webkit-autofill {
     margin: 6px 4px 0 4px;
   }
 }
+
+.form-label {
+  .refresh {
+    display: none;
+  }
+
+  &:hover {
+    .refresh {
+      display: unset;
+    }
+  }
+}

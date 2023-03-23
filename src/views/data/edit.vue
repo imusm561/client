@@ -84,6 +84,7 @@
                           syntax_error = $event;
                         }
                       "
+                      @refresh="setColumnConfiguration($event)"
                     ></component>
                   </h5>
                 </template>
@@ -252,6 +253,7 @@
                             syntax_error = $event;
                           }
                         "
+                        @refresh="setColumnConfiguration($event)"
                       ></component>
                     </h5>
                   </template>
@@ -944,6 +946,7 @@ export default {
 
       if (column.cfg?.prefix)
         column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
+
       if (column.cfg?.href) column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
 
       if (column.cfg?.min) {
@@ -1159,6 +1162,8 @@ export default {
       fetchDataTitle,
       handleSelectDataTitle,
       handleSelecterSearch,
+
+      setColumnConfiguration,
 
       resolveFlowUsers,
 
