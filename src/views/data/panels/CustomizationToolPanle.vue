@@ -124,7 +124,7 @@
               data-bs-dismiss="modal"
             ></button>
           </div>
-          <Form v-slot="{ errors }" @submit="handleSubmitFilter">
+          <Form v-slot="{ errors }" @submit="handleSubmitFilter" :key="create_filter.key">
             <div class="modal-body p-0">
               <div data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
                 <div class="row g-3">
@@ -739,6 +739,7 @@ export default defineComponent({
     const handleCreateFilter = () => {
       const stringifyFilterModel = JSON.stringify(props.params.api.getFilterModel(), null, 2);
       create_filter.value = {
+        key: Math.random().toString(36).slice(-6),
         name: create_filter.value.data === stringifyFilterModel ? create_filter.value.name : '',
         data: stringifyFilterModel,
       };
