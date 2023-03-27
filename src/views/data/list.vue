@@ -411,7 +411,7 @@ import {
 import { getCustomColumns, createCustomColumns, updateCustomColumns } from '@api/custom';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import Breadcrumb from '@/layouts/breadcrumb';
+import Breadcrumb from '@layouts/breadcrumb';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { AgGridVue } from 'ag-grid-vue3';

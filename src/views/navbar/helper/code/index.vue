@@ -268,7 +268,7 @@
 </template>
 
 <script>
-import Breadcrumb from '@/layouts/breadcrumb';
+import Breadcrumb from '@layouts/breadcrumb';
 import MonacoEditor from '@components/MonacoEditor';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';

@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import Breadcrumb from '@/layouts/breadcrumb';
+import Breadcrumb from '@layouts/breadcrumb';
 import MonacoEditor from '@components/MonacoEditor';
 import i18n from '@utils/i18n';
 import { ref } from 'vue';

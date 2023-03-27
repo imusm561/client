@@ -250,7 +250,7 @@
 </template>
 
 <script>
-import Breadcrumb from '@/layouts/breadcrumb';
+import Breadcrumb from '@layouts/breadcrumb';
 import Pagination from '@components/Pagination';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';

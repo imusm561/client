@@ -45,7 +45,7 @@
 
 <script>
 import { ref } from 'vue';
-import Breadcrumb from '@/layouts/breadcrumb';
+import Breadcrumb from '@layouts/breadcrumb';
 import Dept from './components/dept.vue';
 import Role from './components/role.vue';
 import User from './components/user.vue';

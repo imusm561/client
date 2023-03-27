@@ -601,7 +601,7 @@
 </template>
 
 <script>
-import Breadcrumb from '@/layouts/breadcrumb';
+import Breadcrumb from '@layouts/breadcrumb';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import store from '@store';
 import {

@@ -23,7 +23,7 @@
 
 <script>
 import { ref, watch } from 'vue';
-import Breadcrumb from '@/layouts/breadcrumb';
+import Breadcrumb from '@layouts/breadcrumb';
 import Form from './components/form.vue';
 import Column from './components/column.vue';
 export default {

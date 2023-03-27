@@ -161,6 +161,7 @@ module.exports = {
       .set('@utils', path.resolve(__dirname, 'src/utils'))
       .set('@store', path.resolve(__dirname, 'src/store'))
       .set('@router', path.resolve(__dirname, 'src/router'))
+      .set('@layouts', path.resolve(__dirname, 'src/layouts'))
       .set('@components', path.resolve(__dirname, 'src/components'));
 
     if (process.env.NODE_ENV === 'production') {

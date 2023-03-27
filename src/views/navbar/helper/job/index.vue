@@ -148,7 +148,7 @@
 </template>
 
 <script>
-import Breadcrumb from '@/layouts/breadcrumb';
+import Breadcrumb from '@layouts/breadcrumb';
 import EditJobModal from './components/EditJobModal';
 import DeleteJobModal from './components/DeleteJobModal';
 import Empty from '@components/Empty';

@@ -13,8 +13,8 @@
 
 <script>
 import pkg from '../package.json';
-import vertical from '@/layouts/vertical';
-import blank from '@/layouts/blank';
+import vertical from '@layouts/vertical';
+import blank from '@layouts/blank';
 import store from '@store';
 import { useRouter, clearUserData } from '@utils';
 import { computed, onMounted, onUnmounted, ref, nextTick, provide } from 'vue';

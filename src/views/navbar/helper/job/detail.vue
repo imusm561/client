@@ -230,7 +230,7 @@
   </div>
 </template>
 <script>
-import Breadcrumb from '@/layouts/breadcrumb';
+import Breadcrumb from '@layouts/breadcrumb';
 import Pagination from '@components/Pagination';
 import Empty from '@components/Empty';
 import Comment from '@components/Comment';

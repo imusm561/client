@@ -289,7 +289,7 @@
 <script>
 import { onMounted, computed, reactive, ref } from 'vue';
 import store from '@store';
-import Breadcrumb from '@/layouts/breadcrumb';
+import Breadcrumb from '@layouts/breadcrumb';
 import { CalendarHeatmap } from 'vue3-calendar-heatmap';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
