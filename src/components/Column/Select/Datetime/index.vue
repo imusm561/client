@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { defineComponent, onMounted, computed } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { resolveColumnTitle } from '@utils';
 import FlatPickr from '@components/FlatPickr';
 export default defineComponent({
@@ -86,22 +86,6 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const moment = window.moment;
-    onMounted(() => {
-      emit(
-        'update:modelValue',
-        moment(props.modelValue).format(
-          props.column.cfg.dateFormat
-            .replace('Y', 'YYYY')
-            .replace('m', 'MM')
-            .replace('d', 'DD')
-            .replace('H', 'HH')
-            .replace('i', 'mm')
-            .replace('S', 'ss'),
-        ),
-      );
-    });
-
     return {
       resolveColumnTitle,
       value: computed({
@@ -109,7 +93,7 @@ export default defineComponent({
           return props.modelValue;
         },
         set(value) {
-          emit('update:modelValue', value);
+          emit('update:modelValue', value || null);
         },
       }),
     };

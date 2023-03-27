@@ -224,6 +224,7 @@ export default {
     const { route } = useRouter();
     const socket = window.socket;
     const toast = useToast();
+    const moment = window.moment;
 
     const pub = ref({});
     const form = ref({});
@@ -332,30 +333,44 @@ export default {
     };
 
     const setFormColumns = async () => {
+      const BasicColumns = columns.value.filter((column) => column.component.includes('Basic'));
+      const FormColumns = columns.value.filter((column) => !column.component.includes('Basic'));
+      const HasTabs = FormColumns.find((column) => column.component === 'LayoutTab') ? true : false;
+
+      if (Number(data.value.id) === 0) {
+        for (let column of BasicColumns) {
+          if (column.field === 'acl_view' && form.value.acl_view.length)
+            data.value.acl_view = Array.from(
+              new Set([...form.value.acl_view, ...(data.value.acl_view || [])]),
+            );
+          if (column.field === 'acl_edit' && form.value.acl_edit.length)
+            data.value.acl_edit = Array.from(
+              new Set([...form.value.acl_edit, ...(data.value.acl_edit || [])]),
+            );
+        }
+      }
+
       tabs.value = [];
-      if (columns.value.filter((column) => column.component === 'LayoutTab').length === 0)
-        tabs.value.push({ columns: [] });
-      for (let column of columns.value) {
-        if (column.component.includes('Basic')) {
-          // Basic Columns: id, uuid, data_state, created_by, created_at, updated_by, updated_at, acl_view, acl_edit
-          if (Number(data.value.id) === 0) {
-            if (column.field === 'acl_view' && form.value.acl_view.length)
-              data.value.acl_view = Array.from(
-                new Set([...form.value.acl_view, ...(data.value.acl_view || [])]),
-              );
-            if (column.field === 'acl_edit' && form.value.acl_edit.length)
-              data.value.acl_edit = Array.from(
-                new Set([...form.value.acl_edit, ...(data.value.acl_edit || [])]),
-              );
-          }
-        } else if (column.component === 'LayoutTab') {
-          tabs.value.push({ ...column, ...{ columns: [] } });
-        } else {
+
+      if (HasTabs)
+        FormColumns.forEach((column) => {
+          if (column.component === 'LayoutTab')
+            tabs.value.push({ ...column, ...{ children: [], columns: [] } });
+          else tabs.value[tabs.value.length - 1].children.push(column);
+        });
+      else
+        tabs.value.push({
+          children: FormColumns,
+          columns: [],
+        });
+
+      for (let tab of tabs.value) {
+        for await (let column of tab.children) {
           await replaceColumnVariables(column);
           await setColumnConfiguration(column);
           await setColumnRules(column);
-          tabs.value[tabs.value.length - 1].columns.push(column);
         }
+        tab.columns = tab.children;
       }
     };
 
@@ -376,9 +391,29 @@ export default {
       if (column.default) {
         if (Number(data.value.id) === 0 || initialized.value) {
           const val = await getDataByFormula(data.value, column.__default);
-          if (val && typeof val === 'string' && val.includes('Error: '))
-            column.cfg.placeholder = val;
-          else data.value[column.field] = column.component == 'SelectTags' ? val.split(',') : val;
+          const res =
+            column.component === 'SelectTags'
+              ? val.split(',')
+              : column.component === 'SelectDatetime'
+              ? moment(val).format(
+                  column.cfg.dateFormat
+                    .replace('Y', 'YYYY')
+                    .replace('m', 'MM')
+                    .replace('d', 'DD')
+                    .replace('H', 'HH')
+                    .replace('i', 'mm')
+                    .replace('S', 'ss'),
+                )
+              : val;
+
+          if (
+            res &&
+            typeof res === 'string' &&
+            (res.includes('Error: ') ||
+              (column.component === 'SelectDatetime' && res === 'Invalid date'))
+          )
+            column.cfg.placeholder = res;
+          else data.value[column.field] = res;
         }
       }
 
