@@ -23,7 +23,6 @@
     </label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
     <FlatPickr
-      :key="JSON.stringify(column.cfg)"
       :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
       :class="['form-control', error && 'is-invalid']"
       :placeholder="column.cfg.placeholder"

@@ -35,6 +35,7 @@
                   :class="`col-sm-${column.col}`"
                 >
                   <component
+                    :key="hashData(JSON.stringify(column))"
                     :is="column.component"
                     type="EDIT"
                     :column="column"
@@ -101,6 +102,7 @@
                     :class="`col-sm-${column.col}`"
                   >
                     <component
+                      :key="hashData(JSON.stringify(column))"
                       :is="column.component"
                       type="EDIT"
                       :column="column"
@@ -174,6 +176,7 @@ import {
   getDataByFormula,
   getRulesByFormula,
   deepCompare,
+  hashData,
 } from '@utils';
 
 import { useToast } from 'vue-toastification';
@@ -532,6 +535,8 @@ export default {
       no_tabs,
       tabs,
       current_tab,
+
+      hashData,
 
       fetchPubForm,
       handleRefetchPubForm,

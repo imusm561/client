@@ -13,7 +13,6 @@
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
     <MonacoEditor
       :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
-      :key="`key_${column.field}${editable ? '_enable' : '_disabled'}`"
       :class="{ 'is-invalid': error || syntax_error }"
       @error="onOccuredSyntaxError"
       v-model="value"

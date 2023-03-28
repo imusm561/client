@@ -70,6 +70,7 @@
                     :class="`col-sm-${column.col}`"
                   >
                     <component
+                      :key="hashData(JSON.stringify(column))"
                       :is="column.component"
                       type="EDIT"
                       :column="column"
@@ -239,6 +240,7 @@
                       :class="`col-sm-${column.col}`"
                     >
                       <component
+                        :key="hashData(JSON.stringify(column))"
                         :is="column.component"
                         type="EDIT"
                         :column="column"
@@ -615,6 +617,7 @@ import {
   getUserInfo,
   encryptData,
   decryptData,
+  hashData,
 } from '@utils';
 import { getDataEdit, getDataTitle, createData, checkData, forceData, updateData } from '@api/data';
 import { useToast } from 'vue-toastification';
@@ -1191,6 +1194,8 @@ export default {
       tabs,
       current_tab,
       titles,
+
+      hashData,
 
       fetchDataEdit,
       handleRefetchDataEdit,
