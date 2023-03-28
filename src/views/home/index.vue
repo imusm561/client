@@ -198,7 +198,7 @@
                       </td>
                       <td>
                         <span :class="`badge bg-${resolveTaskStatusVariant(task)} text-uppercase`">
-                          {{ $t(`home.task.status.${task.status}`) }}
+                          {{ $t(`app.task.status.${task.status}`) }}
                         </span>
                       </td>
                       <td style="min-width: 120px">
