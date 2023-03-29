@@ -4,7 +4,7 @@
     <div class="card adaptive">
       <div class="card-body">
         <div class="row h-100">
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class="d-flex">
               <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.code.files') }}</h4>
               <i
@@ -79,7 +79,7 @@
               </template>
             </el-tree>
           </div>
-          <div class="col-md-8 d-none d-md-block">
+          <div class="col-md-9 d-none d-md-block">
             <div class="d-flex flex-column" style="height: 100%">
               <span>
                 <div class="d-flex justify-content-between mb-2">

@@ -158,7 +158,6 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import useJob from './useJob';
 import { replaceHtml } from '@utils';
-
 export default {
   components: {
     Breadcrumb,
