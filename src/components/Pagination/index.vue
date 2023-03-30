@@ -1,7 +1,7 @@
 <template>
   <div class="pagination-wrap hstack gap-2">
     <span v-if="layout.includes('total')" class="float-start">
-      {{ $tc('components.pagination.total', { count }) }}
+      {{ $tc('components.pagination.total', { total }) }}
     </span>
     <div v-if="layout.includes('sizes')" class="btn-group dropup d-none d-md-flex">
       <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
