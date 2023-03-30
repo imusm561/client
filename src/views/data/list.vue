@@ -612,6 +612,7 @@ export default {
         (newVal, oldVal) => {
           if (newVal && newVal !== oldVal) {
             init.value = true;
+            columnDefs.value = [];
             fetchDataForm();
             selectedRows.value = [];
           }
