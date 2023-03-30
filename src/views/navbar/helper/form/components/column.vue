@@ -2,7 +2,7 @@
   <div class="card card-height-100">
     <div class="card-body">
       <div class="row">
-        <div class="col-xl-4 col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
           <div class="sticky-side-div">
             <div class="align-items-center d-flex">
               <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.form.column.components') }}</h4>
@@ -20,7 +20,7 @@
                   :sort="false"
                 >
                   <div class="col-sm-6 p-1" v-for="(component, cidx) in item.list" :key="cidx">
-                    <div class="drag-item cursor-move p-2">
+                    <div class="drag-item text-truncate cursor-move p-2">
                       <i :class="`mdi ${component.icon}`" />
                       {{ $t(component.name) }}
                     </div>
@@ -30,7 +30,7 @@
             </div>
           </div>
         </div>
-        <div class="col-xl-8 col-md-8">
+        <div class="col-md-9">
           <div class="d-flex">
             <div class="flex-grow-1">
               <h4>

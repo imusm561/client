@@ -2,7 +2,7 @@
   <div class="card card-height-100">
     <div class="card-body">
       <div class="row">
-        <div class="col-xl-4 col-md-4">
+        <div class="col-md-3">
           <div class="sticky-side-div">
             <div class="align-items-center d-flex">
               <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.forms') }}</h4>
@@ -59,7 +59,7 @@
           </div>
         </div>
 
-        <div class="col-xl-8 col-md-8" v-if="current_form.id">
+        <div class="col-md-9" v-if="current_form.id">
           <hr class="d-md-none d-block mt-4 mb-3" />
           <div class="d-flex">
             <div class="flex-grow-1 text-truncate">
