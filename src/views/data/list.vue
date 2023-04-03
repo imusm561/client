@@ -104,7 +104,7 @@
           </div>
         </div>
         <AgGridVue
-          :key="$route.params.tid"
+          :key="`${$route.params.tid}_${theme}`"
           class="ag-height"
           :class="
             $store.state.sys.theme === 'dark' ? `ag-theme-${theme}-dark` : `ag-theme-${theme}`
@@ -699,7 +699,6 @@ export default {
       };
       gridApi.setTheme = (val) => {
         theme.value = val;
-        gridApi.refreshServerSide({ purge: true });
       };
     };
 
