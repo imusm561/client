@@ -1,13 +1,18 @@
 <template>
-  <span
-    v-if="params.value"
-    class="text-primary text-decoration-underline cursor-pointer fw-medium"
-    @click="handleViewData"
-    @dblclick="handleEditData"
-  >
-    #{{ params.value }}
+  <span v-if="params.node.group" class="fw-medium">
+    {{ params.value }}
   </span>
-  <span v-else></span>
+  <span v-else>
+    <span
+      v-if="params.value"
+      class="text-primary text-decoration-underline cursor-pointer fw-medium"
+      @click="handleViewData"
+      @dblclick="handleEditData"
+    >
+      #{{ params.value }}
+    </span>
+    <span v-else></span>
+  </span>
 </template>
 
 <script>

@@ -123,6 +123,7 @@
           :getRowClass="getRowClass"
           :enableRangeSelection="true"
           :suppressRowClickSelection="true"
+          :isRowSelectable="isRowSelectable"
           @selectionChanged="onSelectionChanged"
           :enableCharts="true"
           :sideBar="sideBar"
@@ -1540,6 +1541,9 @@ export default {
     };
 
     const selectedRows = ref([]);
+    const isRowSelectable = (node) => {
+      return node.group ? false : true;
+    };
     const onSelectionChanged = () => {
       selectedRows.value = gridApi.getSelectedRows();
     };
@@ -1605,6 +1609,7 @@ export default {
       setColumnConfiguration,
 
       getContextMenuItems,
+      isRowSelectable,
       onSelectionChanged,
       selectedRows,
       handleDeselectAllRows,
