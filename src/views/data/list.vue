@@ -139,6 +139,8 @@
           @columnPinned="handleColumnChange"
           @columnResized="handleColumnChange"
           @columnMoved="handleColumnChange"
+          @sortChanged="handleColumnChange"
+          @columnRowGroupChanged="handleColumnChange"
         ></AgGridVue>
       </div>
 
@@ -387,7 +389,7 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted, watch, ref, computed, nextTick } from 'vue';
+import { onMounted, onUnmounted, watch, ref, computed, nextTick, reactive } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
 import {
@@ -607,12 +609,18 @@ export default {
       ],
     });
 
+    const ready = reactive({
+      setCustom: false,
+      getRows: false,
+    });
+
     onMounted(() => {
       watch(
         () => route.value.params.tid,
         (newVal, oldVal) => {
           if (newVal && newVal !== oldVal) {
-            init.value = true;
+            ready.setCustom = false;
+            ready.getRows = false;
             columnDefs.value = [];
             fetchDataForm();
             selectedRows.value = [];
@@ -642,10 +650,16 @@ export default {
         await setFormConfiguration();
         await setFormColumnDefs();
         nextTick(() => {
-          if (customs.value)
+          if (customs.value) {
             customs.value.data.forEach((custom, index) => {
-              gridColumnApi.moveColumn(custom.field, index);
+              gridColumnApi.moveColumn(custom.colId, index);
             });
+            setTimeout(() => {
+              ready.setCustom = true;
+            }, 1000);
+          } else {
+            ready.setCustom = true;
+          }
         });
         gridApi.setFilterModel({
           data_state: {
@@ -680,22 +694,15 @@ export default {
 
     let timer = null;
     const handleColumnChange = () => {
+      if (!ready.setCustom) return;
       const tid = Number(route.value.params.tid);
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
-        const columnState = gridColumnApi.getColumnState();
         if (customs.value) {
           updateCustomColumns({
             id: customs.value.id,
             tid,
-            data: columnState.map((column) => {
-              return {
-                field: column.colId,
-                hide: column.hide,
-                width: column.width,
-                pinned: column.pinned,
-              };
-            }),
+            data: gridColumnApi.getColumnState(),
           }).then(({ code, msg }) => {
             if (code != 200) {
               toast({
@@ -711,14 +718,7 @@ export default {
         } else {
           createCustomColumns({
             tid,
-            data: columnState.map((column) => {
-              return {
-                field: column.colId,
-                hide: column.hide,
-                width: column.width,
-                pinned: column.pinned,
-              };
-            }),
+            data: gridColumnApi.getColumnState(),
           }).then(({ code, data, msg }) => {
             if (code === 200) {
               customs.value = data;
@@ -740,7 +740,7 @@ export default {
     const generateColumnDef = (column) => {
       const columnDef = {};
       const custom = customs.value
-        ? customs.value.data.find((item) => item.field === column.field) || null
+        ? customs.value.data.find((item) => item.colId === column.field) || null
         : null;
 
       // ============================================================================
@@ -1149,17 +1149,25 @@ export default {
       // ============================================================================
 
       // ============================================================================
-      columnDef.rowGroup = false;
+      columnDef.rowGroup = custom ? custom.rowGroup : false;
+      columnDef.rowGroupIndex = custom ? custom.rowGroupIndex : null;
       columnDef.enableRowGroup = true;
       columnDef.enableValue = true;
+      columnDef.aggFunc = custom ? custom.aggFunc : null;
       columnDef.allowedAggFuncs = ['avg', 'count', 'max', 'min', 'sum'];
 
       // ============================================================================
 
       // ============================================================================
       columnDef.sortable = true;
-      columnDef.sort = ['id', 'updated_at'].includes(column.field) ? 'desc' : null;
-      columnDef.sortIndex = ['updated_at'].includes(column.field)
+      columnDef.sort = custom
+        ? custom.sort
+        : ['id', 'updated_at'].includes(column.field)
+        ? 'desc'
+        : null;
+      columnDef.sortIndex = custom
+        ? custom.sortIndex
+        : ['updated_at'].includes(column.field)
         ? 1
         : ['id'].includes(column.field)
         ? 2
@@ -1195,7 +1203,7 @@ export default {
         ? 250
         : 880;
       columnDef.resizable = true;
-      // columnDef.flex = 1
+      columnDef.flex = custom ? custom.flex : null;
       // ============================================================================
 
       return columnDef;
@@ -1375,12 +1383,10 @@ export default {
       }
     };
 
-    const init = ref(true);
-
     const serverSideDatasource = {
       getRows(params) {
-        if (init.value) {
-          init.value = false;
+        if (!ready.getRows) {
+          ready.getRows = true;
           params.successCallback([], 0);
         } else {
           document.getElementById('handleSetCurrentFilter').click();
