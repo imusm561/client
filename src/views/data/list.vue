@@ -106,7 +106,9 @@
         <AgGridVue
           :key="$route.params.tid"
           class="ag-height"
-          :class="$store.state.sys.theme === 'dark' ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
+          :class="
+            $store.state.sys.theme === 'dark' ? `ag-theme-${theme}-dark` : `ag-theme-${theme}`
+          "
           :columnDefs="columnDefs"
           multiSortKey="ctrl"
           :animateRows="true"
@@ -411,12 +413,13 @@ import {
   checkData,
   updateData,
 } from '@api/data';
-import { getCustomColumns, createCustomColumns, updateCustomColumns } from '@api/custom';
+import { getCustomColumn, createCustomColumn, updateCustomColumn } from '@api/custom';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Breadcrumb from '@layouts/breadcrumb';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
 import 'ag-grid-enterprise';
 import { LicenseManager } from 'ag-grid-enterprise';
@@ -527,6 +530,7 @@ export default {
     const alias = ref({});
     const columns = ref([]);
     const customs = ref(null);
+    const theme = ref('alpine');
     const records = ref({});
     const resolveDataStateVariant = computed(() => {
       return (state) => {
@@ -619,7 +623,6 @@ export default {
         () => route.value.params.tid,
         (newVal, oldVal) => {
           if (newVal && newVal !== oldVal) {
-            ready.setCustom = false;
             ready.getRows = false;
             columnDefs.value = [];
             fetchDataForm();
@@ -639,13 +642,14 @@ export default {
     });
 
     const fetchDataForm = async (callback) => {
+      ready.setCustom = false;
       const { code, data, msg } = await getDataForm({ tid: Number(route.value.params.tid) });
       if (code === 200) {
         form.value = data.form;
         alias.value = data.alias;
         columns.value = data.columns.filter((column) => !column.tags.includes('hideInDataList'));
         records.value = data.records;
-        const res = await getCustomColumns({ tid: Number(route.value.params.tid) });
+        const res = await getCustomColumn({ tid: Number(route.value.params.tid) });
         customs.value = res.data;
         await setFormConfiguration();
         await setFormColumnDefs();
@@ -690,6 +694,13 @@ export default {
     const onGridReady = (params) => {
       gridApi = params.api;
       gridColumnApi = params.columnApi;
+      gridApi.getTheme = () => {
+        return theme.value;
+      };
+      gridApi.setTheme = (val) => {
+        theme.value = val;
+        gridApi.refreshServerSide({ purge: true });
+      };
     };
 
     let timer = null;
@@ -699,7 +710,7 @@ export default {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
         if (customs.value) {
-          updateCustomColumns({
+          updateCustomColumn({
             id: customs.value.id,
             tid,
             data: gridColumnApi.getColumnState(),
@@ -716,7 +727,7 @@ export default {
             }
           });
         } else {
-          createCustomColumns({
+          createCustomColumn({
             tid,
             data: gridColumnApi.getColumnState(),
           }).then(({ code, data, msg }) => {
@@ -1589,6 +1600,7 @@ export default {
     return {
       form,
       columns,
+      theme,
       records,
       resolveDataStateVariant,
 

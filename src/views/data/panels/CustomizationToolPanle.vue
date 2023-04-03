@@ -16,6 +16,62 @@
     </div>
     <div class="ag-filter-list-panel">
       <div class="ag-filter-toolpanel-group-wrapper">
+        <div class="ag-group ag-filter-toolpanel-group ag-filter-toolpanel-group-level-0">
+          <div
+            class="ag-group-title-bar ag-filter-toolpanel-group-level-0-header ag-filter-toolpanel-header"
+            @click="theme.visible = !theme.visible"
+          >
+            <span
+              class="ag-group-title-bar-icon ag-filter-toolpanel-group-title-bar-icon"
+              :class="!theme.visible && 'ag-hidden'"
+            >
+              <span class="ag-icon ag-icon-tree-open"></span>
+            </span>
+            <span
+              class="ag-group-title-bar-icon ag-filter-toolpanel-group-title-bar-icon"
+              :class="theme.visible && 'ag-hidden'"
+            >
+              <span class="ag-icon ag-icon-tree-closed"></span>
+            </span>
+            <span
+              class="ag-group-title ag-filter-toolpanel-group-title text-truncate"
+              style="cursor: pointer"
+            >
+              {{ $t('data.list.sideBar.toolPanels.customization.theme') }} [{{
+                theme.options.length
+              }}]
+            </span>
+          </div>
+          <div v-if="theme.visible" class="ag-filter-toolpanel-group-container">
+            <div
+              class="ag-filter-toolpanel-group-item"
+              v-for="(option, index) in theme.options"
+              :key="index"
+            >
+              <div class="ag-filter-toolpanel-header justify-content-between">
+                <span class="text-truncate w-100">
+                  <span
+                    class="ag-header-cell-text ms-3 text-capitalize"
+                    style="cursor: pointer"
+                    @click="handleSetTheme(option)"
+                  >
+                    {{ option }}
+                  </span>
+                  <span
+                    v-if="params.api.getTheme() === option"
+                    class="ag-filter-toolpanel-instance-header-icon"
+                  >
+                    <span class="ag-icon ag-icon-tick"></span>
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ag-filter-list-panel">
+      <div class="ag-filter-toolpanel-group-wrapper">
         <div
           class="ag-group ag-filter-toolpanel-group ag-filter-toolpanel-group-level-0"
           v-for="(item, index) in filters"
@@ -240,7 +296,14 @@
 <script>
 import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter, deepCompare, getUserInfo } from '@utils';
-import { getCustomFilters, createCustomFilter, updateCustomFilter } from '@api/custom';
+import {
+  getCustomFilter,
+  createCustomFilter,
+  updateCustomFilter,
+  getCustomTheme,
+  createCustomTheme,
+  updateCustomTheme,
+} from '@api/custom';
 import MonacoEditor from '@components/MonacoEditor';
 import store from '@store';
 import i18n from '@utils/i18n';
@@ -646,22 +709,50 @@ export default defineComponent({
       },
     ];
     const keyword = ref(null);
+    const theme = ref({
+      visible: false,
+      options: ['alpine', 'balham'],
+    });
     const _filters = ref([]);
     const filters = ref([]);
 
     onMounted(() => {
-      socket.on('refetchFilters', (res) => {
+      socket.on('refetchFilter', (res) => {
         if (res.tid === Number(route.value.params.tid)) fetchFormFilters();
       });
+      fetchFormTheme();
       fetchFormFilters();
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchFilters');
+      socket.removeListener('refetchFilter');
     });
 
+    const fetchFormTheme = () => {
+      getCustomTheme({ tid: Number(route.value.params.tid) }).then(({ code, data, msg }) => {
+        if (code === 200) {
+          theme.value = { ...theme.value, ...(data || {}) };
+          if (theme.value.id) {
+            if (props.params.api.getTheme() != theme.value.data)
+              props.params.api.setTheme(theme.value.data);
+          } else {
+            if (props.params.api.getTheme() != 'alpine') props.params.api.setTheme('alpine');
+          }
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    };
+
     const fetchFormFilters = () => {
-      getCustomFilters({ tid: Number(route.value.params.tid) }).then(({ code, data, msg }) => {
+      getCustomFilter({ tid: Number(route.value.params.tid) }).then(({ code, data, msg }) => {
         if (code === 200) {
           data = [...system, ...data];
           _filters.value = JSON.parse(JSON.stringify(data));
@@ -805,10 +896,54 @@ export default defineComponent({
       });
     };
 
+    const handleSetTheme = (value) => {
+      if (value != props.params.api.getTheme()) {
+        if (theme.value.id) {
+          updateCustomTheme({
+            id: theme.value.id,
+            data: value,
+          }).then(({ code, msg }) => {
+            if (code === 200) {
+              props.params.api.setTheme(value);
+              theme.value.data = value;
+            } else
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: msg,
+                },
+              });
+          });
+        } else {
+          createCustomTheme({
+            tid: Number(route.value.params.tid),
+            data: value,
+          }).then(({ code, data, msg }) => {
+            if (code === 200) {
+              props.params.api.setTheme(value);
+              theme.value = { ...theme.value, ...data };
+            } else {
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: msg,
+                },
+              });
+            }
+          });
+        }
+      }
+    };
+
     return {
       getUserInfo,
       keyword,
       filters,
+      theme,
       current_filter,
       handleSetCurrentFilter,
       handleSetFilterModel,
@@ -817,6 +952,7 @@ export default defineComponent({
       handleSubmitFilter,
       delete_filter,
       handleDeleteFilter,
+      handleSetTheme,
     };
   },
 });
