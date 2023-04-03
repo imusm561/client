@@ -104,7 +104,7 @@
           </div>
         </div>
         <AgGridVue
-          :key="`${$route.params.tid}_${theme}`"
+          :key="$route.params.tid"
           class="ag-height"
           :class="
             $store.state.sys.theme === 'dark' ? `ag-theme-${theme}-dark` : `ag-theme-${theme}`
@@ -697,8 +697,23 @@ export default {
       gridApi.getTheme = () => {
         return theme.value;
       };
-      gridApi.setTheme = (val) => {
+      gridApi.setTheme = async (val) => {
         theme.value = val;
+        await setFormColumnDefs();
+        ready.setCustom = false;
+        nextTick(() => {
+          if (customs.value) {
+            customs.value.data.forEach((custom, index) => {
+              gridColumnApi.moveColumn(custom.colId, index);
+            });
+            setTimeout(() => {
+              ready.setCustom = true;
+            }, 1000);
+          } else {
+            ready.setCustom = true;
+          }
+        });
+        gridApi.refreshServerSide({ purge: true });
       };
     };
 
@@ -706,15 +721,18 @@ export default {
     const handleColumnChange = () => {
       if (!ready.setCustom) return;
       const tid = Number(route.value.params.tid);
+      const data = gridColumnApi.getColumnState();
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
         if (customs.value) {
           updateCustomColumn({
             id: customs.value.id,
             tid,
-            data: gridColumnApi.getColumnState(),
+            data,
           }).then(({ code, msg }) => {
-            if (code != 200) {
+            if (code === 200) {
+              customs.value.data = data;
+            } else
               toast({
                 component: ToastificationContent,
                 props: {
@@ -723,15 +741,14 @@ export default {
                   text: msg,
                 },
               });
-            }
           });
         } else {
           createCustomColumn({
             tid,
-            data: gridColumnApi.getColumnState(),
-          }).then(({ code, data, msg }) => {
+            data,
+          }).then(({ code, data: customs, msg }) => {
             if (code === 200) {
-              customs.value = data;
+              customs.value = customs;
             } else {
               toast({
                 component: ToastificationContent,
