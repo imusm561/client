@@ -13,12 +13,12 @@
       <div class="d-flex align-items-center mb-2" v-for="file in files" :key="file.identifier">
         <div class="flex-shrink-0 me-2 mt-1">
           <img
-            v-if="file.category == 'image'"
+            v-if="file.category === 'image'"
             :src="`${BASE_URL}cor/file/load/${file.uuid}`"
             class="rounded avatar-xs cursor-pointer"
             @click="
               () => {
-                const images = files.filter((file) => file.category == 'image');
+                const images = files.filter((file) => file.category === 'image');
                 $viewerApi({
                   options: {
                     focus: false,

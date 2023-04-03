@@ -217,12 +217,12 @@
                     class="chat-list"
                   >
                     <div class="conversation-list">
-                      <div
+                      <!-- <div
                         class="chat-avatar"
                         v-if="data.sender != $store.state.user.data.username"
                       >
                         <Avatar :data="current_chat" />
-                      </div>
+                      </div> -->
                       <div class="user-chat-content">
                         <div class="ctext-wrap">
                           <div class="ctext-wrap-content">
@@ -244,10 +244,51 @@
                                   <span v-else>{{ $moment(data.created_at).format('HH:mm') }}</span>
                                 </small>
                               </span>
-                              <Message :item="data.quote" />
+                              <Message
+                                :item="data.quote"
+                                @viewImage="
+                                  () => {
+                                    const file = JSON.parse(decryptData(data.quote.message));
+                                    if (file.category === 'image')
+                                      $viewerApi({
+                                        options: {
+                                          focus: false,
+                                          movable: false,
+                                          initialViewIndex: 0,
+                                        },
+                                        images: [`${BASE_URL}cor/file/load/${file.uuid}`],
+                                      });
+                                  }
+                                "
+                              />
                               <hr />
                             </span>
-                            <Message :item="data" />
+                            <Message
+                              :item="data"
+                              @viewImage="
+                                () => {
+                                  const file = JSON.parse(decryptData(data.message));
+                                  const images = current_chat.chat_data
+                                    .filter((item) => item.type === 'file')
+                                    .map((item) => {
+                                      return JSON.parse(decryptData(item.message));
+                                    })
+                                    .filter((image) => image.category === 'image');
+                                  $viewerApi({
+                                    options: {
+                                      focus: false,
+                                      movable: false,
+                                      initialViewIndex: images.findIndex(
+                                        (image) => image.uuid == file.uuid,
+                                      ),
+                                    },
+                                    images: images.map((image) => {
+                                      return `${BASE_URL}cor/file/load/${image.uuid}`;
+                                    }),
+                                  });
+                                }
+                              "
+                            />
                           </div>
                           <div class="dropdown align-self-start message-box-drop">
                             <a

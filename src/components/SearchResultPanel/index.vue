@@ -185,7 +185,7 @@
       >
         <div class="flex-shrink-0 me-2 mt-1">
           <img
-            v-if="file.category == 'image'"
+            v-if="file.category === 'image'"
             :src="`${BASE_URL}cor/file/load/${file.uuid}`"
             class="rounded avatar-xs cursor-pointer"
             loading="lazy"

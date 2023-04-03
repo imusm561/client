@@ -382,12 +382,12 @@
                     <tr v-for="file in uploads" :key="file.uuid">
                       <td style="width: 40px">
                         <img
-                          v-if="file.category == 'image'"
+                          v-if="file.category === 'image'"
                           :src="`${BASE_URL}cor/file/load/${file.uuid}`"
                           class="rounded avatar-xs cursor-pointer"
                           @click="
                             () => {
-                              let images = uploads.filter((file) => file.category == 'image');
+                              let images = uploads.filter((file) => file.category === 'image');
                               $viewerApi({
                                 options: {
                                   focus: false,

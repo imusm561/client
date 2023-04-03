@@ -20,7 +20,7 @@
             <div class="card-body bg-light">
               <div class="d-flex mb-2">
                 <h6 class="fs-15 mb-1 flex-grow-1 text-truncate">
-                  <span class="cursor-pointer" @click="$emit('setRole', role)">
+                  <span class="cursor-pointer" @click="$emit('set-role', role)">
                     {{ role.name }}
                   </span>
                 </h6>

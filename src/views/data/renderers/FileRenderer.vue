@@ -8,13 +8,13 @@
         :title="file.name"
       >
         <img
-          v-if="file.category == 'image'"
+          v-if="file.category === 'image'"
           :src="`${BASE_URL}cor/file/load/${file.uuid}`"
           class="bg-light avatar-xs rounded cursor-pointer overflow-hidden"
           style="box-shadow: 0px 3px 5px 0px rgba(30, 32, 37, 0.3)"
           @click="
             handleClickImage(() => {
-              const images = params.value.filter((file) => file.category == 'image');
+              const images = params.value.filter((file) => file.category === 'image');
               $viewerApi({
                 options: {
                   focus: false,
