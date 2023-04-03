@@ -898,9 +898,11 @@ export default defineComponent({
 
     const handleSetTheme = (value) => {
       if (value != props.params.api.getTheme()) {
+        const tid = Number(route.value.params.tid);
         if (theme.value.id) {
           updateCustomTheme({
             id: theme.value.id,
+            tid,
             data: value,
           }).then(({ code, msg }) => {
             if (code === 200) {
@@ -918,7 +920,7 @@ export default defineComponent({
           });
         } else {
           createCustomTheme({
-            tid: Number(route.value.params.tid),
+            tid,
             data: value,
           }).then(({ code, data, msg }) => {
             if (code === 200) {
