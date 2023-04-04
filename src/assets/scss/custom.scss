@@ -48,6 +48,15 @@ input:-webkit-autofill {
     font-size: 32px;
   }
 
+  &.file-icon-md {
+    width: 20px;
+    height: 20px;
+
+    &:before {
+      font-size: 20px;
+    }
+  }
+
   &.file-icon-sm {
     width: 20px;
     height: 20px;

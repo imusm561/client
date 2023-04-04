@@ -1,7 +1,7 @@
 <template>
   <span v-if="params.value && params.value.length">
-    <div class="avatar-group" :style="{ 'margin-top': theme === 'alpine' ? '' : '-1px' }">
-      <div
+    <div class="avatar-group" style="margin-top: -2px">
+      <span
         v-for="(file, index) in params.value"
         :key="index"
         class="avatar-group-item"
@@ -13,8 +13,8 @@
           class="bg-light rounded cursor-pointer overflow-hidden"
           style="box-shadow: 0px 3px 5px 0px rgba(30, 32, 37, 0.3)"
           :style="{
-            height: theme === 'alpine' ? '2rem' : '1.3rem',
-            width: theme === 'alpine' ? '2rem' : '1.3rem',
+            height: theme === 'alpine' ? '32px' : '20px',
+            width: theme === 'alpine' ? '32px' : '20px',
           }"
           @click="
             handleClickImage(() => {
@@ -36,16 +36,15 @@
         />
         <i
           v-else
-          class="bg-light rounded cursor-pointer overflow-hidden file-icon"
-          :class="$fileIcons.getClassWithColor(file.name)"
+          class="bg-light rounded cursor-pointer overflow-hidden"
+          :class="[
+            theme === 'alpine' ? 'file-icon' : 'file-icon file-icon-md',
+            $fileIcons.getClassWithColor(file.name),
+          ]"
           style="box-shadow: 0px 3px 5px 0px rgba(30, 32, 37, 0.3)"
-          :style="{
-            height: theme === 'alpine' ? '2rem' : '1.3rem',
-            width: theme === 'alpine' ? '2rem' : '1.3rem',
-          }"
           @dblclick="handleDbclickFile(file)"
         />
-      </div>
+      </span>
     </div>
   </span>
 </template>
