@@ -661,9 +661,9 @@ export default {
         columns.value = data.columns.filter((column) => !column.tags.includes('hideInDataList'));
         records.value = data.records;
         const { data: _theme } = await getCustomTheme({ tid: Number(route.value.params.tid) });
-        if (_theme) theme.value = _theme;
+        theme.value = _theme || { data: 'alpine' };
         const { data: _customs } = await getCustomColumn({ tid: Number(route.value.params.tid) });
-        if (_customs) customs.value = _customs;
+        customs.value = _customs;
         await setFormConfiguration();
         await setFormColumnDefs();
         nextTick(() => {
