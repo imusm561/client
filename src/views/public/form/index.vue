@@ -433,7 +433,7 @@ export default {
               ? column.cfg.options
                   .filter((option) =>
                     data.value[column.field]
-                      .map((value) => {
+                      ?.map((value) => {
                         return isNaN(Number(value)) ? value : Number(value);
                       })
                       ?.includes(option.value),
