@@ -19,17 +19,17 @@
         <div class="ag-group ag-filter-toolpanel-group ag-filter-toolpanel-group-level-0">
           <div
             class="ag-group-title-bar ag-filter-toolpanel-group-level-0-header ag-filter-toolpanel-header"
-            @click="theme.visible = !theme.visible"
+            @click="visible.theme = !visible.theme"
           >
             <span
               class="ag-group-title-bar-icon ag-filter-toolpanel-group-title-bar-icon"
-              :class="!theme.visible && 'ag-hidden'"
+              :class="!visible.theme && 'ag-hidden'"
             >
               <span class="ag-icon ag-icon-tree-open"></span>
             </span>
             <span
               class="ag-group-title-bar-icon ag-filter-toolpanel-group-title-bar-icon"
-              :class="theme.visible && 'ag-hidden'"
+              :class="visible.theme && 'ag-hidden'"
             >
               <span class="ag-icon ag-icon-tree-closed"></span>
             </span>
@@ -38,14 +38,14 @@
               style="cursor: pointer"
             >
               {{ $t('data.list.sideBar.toolPanels.customization.theme') }} [{{
-                theme.options.length
+                ['alpine', 'balham'].length
               }}]
             </span>
           </div>
-          <div v-if="theme.visible" class="ag-filter-toolpanel-group-container">
+          <div v-if="visible.theme" class="ag-filter-toolpanel-group-container">
             <div
               class="ag-filter-toolpanel-group-item"
-              v-for="(option, index) in theme.options"
+              v-for="(theme, index) in ['alpine', 'balham']"
               :key="index"
             >
               <div class="ag-filter-toolpanel-header justify-content-between">
@@ -53,12 +53,12 @@
                   <span
                     class="ag-header-cell-text ms-3 text-capitalize"
                     style="cursor: pointer"
-                    @click="handleSetTheme(option)"
+                    @click="handleSetTheme(theme)"
                   >
-                    {{ option }}
+                    {{ theme }}
                   </span>
                   <span
-                    v-if="params.api.getTheme() === option"
+                    v-if="params.api.getTheme() === theme"
                     class="ag-filter-toolpanel-instance-header-icon"
                   >
                     <span class="ag-icon ag-icon-tick"></span>
@@ -294,16 +294,9 @@
 </template>
 
 <script>
-import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
+import { defineComponent, onMounted, onUnmounted, ref, reactive } from 'vue';
 import { useRouter, deepCompare, getUserInfo } from '@utils';
-import {
-  getCustomFilter,
-  createCustomFilter,
-  updateCustomFilter,
-  getCustomTheme,
-  createCustomTheme,
-  updateCustomTheme,
-} from '@api/custom';
+import { getCustomFilter, createCustomFilter, updateCustomFilter } from '@api/custom';
 import MonacoEditor from '@components/MonacoEditor';
 import store from '@store';
 import i18n from '@utils/i18n';
@@ -318,6 +311,12 @@ export default defineComponent({
     const moment = window.moment;
     const socket = window.socket;
     const { route } = useRouter();
+
+    const keyword = ref(null);
+    const visible = reactive({
+      theme: false,
+    });
+
     const system = [
       {
         id: 'created_by_me',
@@ -708,11 +707,6 @@ export default defineComponent({
         },
       },
     ];
-    const keyword = ref(null);
-    const theme = ref({
-      visible: false,
-      options: ['alpine', 'balham'],
-    });
     const _filters = ref([]);
     const filters = ref([]);
 
@@ -720,36 +714,12 @@ export default defineComponent({
       socket.on('refetchFilter', (res) => {
         if (res.tid === Number(route.value.params.tid)) fetchFormFilters();
       });
-      fetchFormTheme();
       fetchFormFilters();
     });
 
     onUnmounted(() => {
       socket.removeListener('refetchFilter');
     });
-
-    const fetchFormTheme = () => {
-      getCustomTheme({ tid: Number(route.value.params.tid) }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          theme.value = { ...theme.value, ...(data || {}) };
-          if (theme.value.id) {
-            if (props.params.api.getTheme() != theme.value.data)
-              props.params.api.setTheme(theme.value.data);
-          } else {
-            if (props.params.api.getTheme() != 'alpine') props.params.api.setTheme('alpine');
-          }
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
 
     const fetchFormFilters = () => {
       getCustomFilter({ tid: Number(route.value.params.tid) }).then(({ code, data, msg }) => {
@@ -896,56 +866,15 @@ export default defineComponent({
       });
     };
 
-    const handleSetTheme = (value) => {
-      if (value != props.params.api.getTheme()) {
-        const tid = Number(route.value.params.tid);
-        if (theme.value.id) {
-          updateCustomTheme({
-            id: theme.value.id,
-            tid,
-            data: value,
-          }).then(({ code, msg }) => {
-            if (code === 200) {
-              props.params.api.setTheme(value);
-              theme.value.data = value;
-            } else
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-          });
-        } else {
-          createCustomTheme({
-            tid,
-            data: value,
-          }).then(({ code, data, msg }) => {
-            if (code === 200) {
-              props.params.api.setTheme(value);
-              theme.value = { ...theme.value, ...data };
-            } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-            }
-          });
-        }
-      }
+    const handleSetTheme = (theme) => {
+      if (theme != props.params.api.getTheme()) props.params.api.setTheme(theme);
     };
 
     return {
       getUserInfo,
       keyword,
+      visible,
       filters,
-      theme,
       current_filter,
       handleSetCurrentFilter,
       handleSetFilterModel,

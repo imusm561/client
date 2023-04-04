@@ -107,7 +107,9 @@
           :key="$route.params.tid"
           class="ag-height"
           :class="
-            $store.state.sys.theme === 'dark' ? `ag-theme-${theme}-dark` : `ag-theme-${theme}`
+            $store.state.sys.theme === 'dark'
+              ? `ag-theme-${theme.data}-dark`
+              : `ag-theme-${theme.data}`
           "
           :columnDefs="columnDefs"
           multiSortKey="ctrl"
@@ -413,7 +415,14 @@ import {
   checkData,
   updateData,
 } from '@api/data';
-import { getCustomColumn, createCustomColumn, updateCustomColumn } from '@api/custom';
+import {
+  getCustomTheme,
+  createCustomTheme,
+  updateCustomTheme,
+  getCustomColumn,
+  createCustomColumn,
+  updateCustomColumn,
+} from '@api/custom';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Breadcrumb from '@layouts/breadcrumb';
@@ -529,8 +538,10 @@ export default {
     const form = ref({});
     const alias = ref({});
     const columns = ref([]);
+    const theme = ref({
+      data: 'alpine',
+    });
     const customs = ref(null);
-    const theme = ref('alpine');
     const records = ref({});
     const resolveDataStateVariant = computed(() => {
       return (state) => {
@@ -649,8 +660,10 @@ export default {
         alias.value = data.alias;
         columns.value = data.columns.filter((column) => !column.tags.includes('hideInDataList'));
         records.value = data.records;
-        const res = await getCustomColumn({ tid: Number(route.value.params.tid) });
-        customs.value = res.data;
+        const { data: _theme } = await getCustomTheme({ tid: Number(route.value.params.tid) });
+        if (_theme) theme.value = _theme;
+        const { data: _customs } = await getCustomColumn({ tid: Number(route.value.params.tid) });
+        if (_customs) customs.value = _customs;
         await setFormConfiguration();
         await setFormColumnDefs();
         nextTick(() => {
@@ -695,10 +708,24 @@ export default {
       gridApi = params.api;
       gridColumnApi = params.columnApi;
       gridApi.getTheme = () => {
-        return theme.value;
+        return theme.value.data;
       };
-      gridApi.setTheme = async (val) => {
-        theme.value = val;
+      gridApi.setTheme = async (data) => {
+        const tid = Number(route.value.params.tid);
+        if (theme.value.id) {
+          await updateCustomTheme({
+            id: theme.value.id,
+            tid,
+            data,
+          });
+          theme.value.data = data;
+        } else {
+          const { data: _theme } = await createCustomTheme({
+            tid,
+            data,
+          });
+          theme.value = _theme;
+        }
         await setFormColumnDefs();
         ready.setCustom = false;
         nextTick(() => {
@@ -723,43 +750,20 @@ export default {
       const tid = Number(route.value.params.tid);
       const data = gridColumnApi.getColumnState();
       if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
+      timer = setTimeout(async () => {
         if (customs.value) {
-          updateCustomColumn({
+          await updateCustomColumn({
             id: customs.value.id,
             tid,
             data,
-          }).then(({ code, msg }) => {
-            if (code === 200) {
-              customs.value.data = data;
-            } else
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
           });
+          customs.value.data = data;
         } else {
-          createCustomColumn({
+          const { data: _customs } = await createCustomColumn({
             tid,
             data,
-          }).then(({ code, data: customs, msg }) => {
-            if (code === 200) {
-              customs.value = customs;
-            } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-            }
           });
+          customs.value = _customs;
         }
       }, 500);
     };
