@@ -1,6 +1,6 @@
 <template>
   <span v-if="params.value && params.value.length">
-    <div class="avatar-group">
+    <div class="avatar-group" :style="{ 'margin-top': theme === 'alpine' ? '' : '-1px' }">
       <div
         v-for="(file, index) in params.value"
         :key="index"
@@ -10,8 +10,12 @@
         <img
           v-if="file.category === 'image'"
           :src="`${BASE_URL}cor/file/load/${file.uuid}`"
-          class="bg-light avatar-xs rounded cursor-pointer overflow-hidden"
+          class="bg-light rounded cursor-pointer overflow-hidden"
           style="box-shadow: 0px 3px 5px 0px rgba(30, 32, 37, 0.3)"
+          :style="{
+            height: theme === 'alpine' ? '2rem' : '1.3rem',
+            width: theme === 'alpine' ? '2rem' : '1.3rem',
+          }"
           @click="
             handleClickImage(() => {
               const images = params.value.filter((file) => file.category === 'image');
@@ -32,22 +36,29 @@
         />
         <i
           v-else
-          class="bg-light avatar-xs rounded cursor-pointer overflow-hidden file-icon"
-          style="box-shadow: 0px 3px 5px 0px rgba(30, 32, 37, 0.3)"
+          class="bg-light rounded cursor-pointer overflow-hidden file-icon"
           :class="$fileIcons.getClassWithColor(file.name)"
+          style="box-shadow: 0px 3px 5px 0px rgba(30, 32, 37, 0.3)"
+          :style="{
+            height: theme === 'alpine' ? '2rem' : '1.3rem',
+            width: theme === 'alpine' ? '2rem' : '1.3rem',
+          }"
           @dblclick="handleDbclickFile(file)"
         />
       </div>
     </div>
   </span>
-  <span v-else></span>
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 import router from '@/router';
 export default defineComponent({
-  setup() {
+  setup(props) {
+    const theme = computed(() => {
+      return props.params.api.getTheme();
+    });
+
     let timer = null;
     const handleClickImage = (cb) => {
       clearTimeout(timer);
@@ -61,6 +72,7 @@ export default defineComponent({
       window.open(href, '_blank');
     };
     return {
+      theme,
       handleClickImage,
       handleDbclickFile,
     };

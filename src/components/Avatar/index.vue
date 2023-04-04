@@ -130,7 +130,8 @@ export default defineComponent({
     const users = ref([]);
 
     const fs = ref({
-      xxs: 'fs-10',
+      xxxs: 'fs-10',
+      xxs: 'fs-12',
       xs: 'fs-16',
       sm: 'fs-20',
       md: 'fs-24',

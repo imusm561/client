@@ -1150,7 +1150,7 @@ export default {
         columnDef.cellRenderer = DateTimeRenderer;
       }
 
-      if (['color'].includes(column.type)) {
+      if (['color'].includes(column.cfg.type)) {
         columnDef.cellRenderer = ColorRenderer;
       }
 
