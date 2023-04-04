@@ -5,7 +5,7 @@
   <span v-else>
     <span
       v-if="params.value"
-      class="text-primary text-decoration-underline cursor-pointer fw-medium"
+      class="text-secondary text-decoration-underline cursor-pointer fw-medium"
       @click="handleViewData"
       @dblclick="handleEditData"
     >

@@ -971,7 +971,13 @@ export default {
           data.value[column.field] =
             column.component == 'SelectMultiple'
               ? column.cfg.options
-                  .filter((option) => data.value[column.field]?.includes(option.value))
+                  .filter((option) =>
+                    data.value[column.field]
+                      .map((value) => {
+                        return isNaN(Number(value)) ? value : Number(value);
+                      })
+                      ?.includes(option.value),
+                  )
                   .map((option) => {
                     return option.value;
                   })

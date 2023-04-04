@@ -5,7 +5,7 @@
       v-if="
         $store.state.sys.cfg.amap && $store.state.sys.cfg.amap.api_key && isLngLat(params.value)
       "
-      class="text-primary cursor-pointer text-decoration-underline"
+      class="text-secondary cursor-pointer text-decoration-underline"
       @dblclick="handleDblClickLngLat(params.value)"
     >
       {{ params.value }}

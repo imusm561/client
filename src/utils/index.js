@@ -479,7 +479,17 @@ export const getDataByFormula = (
             getDataSource(params).then(({ code, msg, data }) => {
               if (code === 200) {
                 if (typeof data === 'object' && Array.isArray(data))
-                  resolve([...data, ...existed_options]);
+                  resolve([
+                    ...data,
+                    ...existed_options.filter(
+                      (item) =>
+                        !data
+                          .map((i) => {
+                            return i.value;
+                          })
+                          .includes(item.value),
+                    ),
+                  ]);
                 else
                   resolve([
                     { text: `Error: expected array, got ${typeof data}.`, value: 'Error: ' },
