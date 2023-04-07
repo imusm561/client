@@ -70,7 +70,7 @@
                     :class="`col-sm-${column.col}`"
                   >
                     <component
-                      :key="hashData(JSON.stringify(column))"
+                      :key="column.key"
                       :is="column.component"
                       type="EDIT"
                       :column="column"
@@ -240,7 +240,7 @@
                       :class="`col-sm-${column.col}`"
                     >
                       <component
-                        :key="hashData(JSON.stringify(column))"
+                        :key="column.key"
                         :is="column.component"
                         type="EDIT"
                         :column="column"
@@ -909,6 +909,7 @@ export default {
 
       for (let tab of tabs.value) {
         for await (let column of tab.children) {
+          column.key = hashData(JSON.stringify(column));
           await replaceColumnVariables(column);
           await setColumnConfiguration(column);
           await setColumnRules(column);
@@ -995,11 +996,17 @@ export default {
 
       if (column.cfg?.min) {
         const minDate = await getDataByFormula(data.value, column.cfg.min);
-        if (isNaN(minDate) && !isNaN(Date.parse(minDate))) column.cfg.minDate = minDate;
+        if (isNaN(minDate) && !isNaN(Date.parse(minDate))) {
+          column.cfg.minDate = minDate;
+          column.key = hashData(JSON.stringify(column));
+        }
       }
       if (column.cfg?.max) {
         const maxDate = await getDataByFormula(data.value, column.cfg.max);
-        if (isNaN(maxDate) && !isNaN(Date.parse(maxDate))) column.cfg.maxDate = maxDate;
+        if (isNaN(maxDate) && !isNaN(Date.parse(maxDate))) {
+          column.cfg.maxDate = maxDate;
+          column.key = hashData(JSON.stringify(column));
+        }
       }
     };
 
@@ -1200,8 +1207,6 @@ export default {
       tabs,
       current_tab,
       titles,
-
-      hashData,
 
       fetchDataEdit,
       handleRefetchDataEdit,
