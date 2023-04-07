@@ -471,6 +471,13 @@ export default {
 
     const setColumnRules = async (column) => {
       const { visible, required, editable } = await getRulesByFormula(data.value, column);
+      if (
+        column._visible != visible ||
+        column._required != required ||
+        column._editable != editable
+      )
+        column.key = hashData(JSON.stringify(column));
+
       // column._visible = visible;
       column._required = required;
       column._editable = editable;
