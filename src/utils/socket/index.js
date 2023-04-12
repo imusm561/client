@@ -8,8 +8,19 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 const initSocket = (socket) => {
   const toast = useToast();
-
+  let connection = -1;
   socket.on('connect', () => {
+    if (connection === 0 && store.state.user.data?.config?.offlineNotify)
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          title: i18n.global.t('socket.connected.toast.title'),
+          text: i18n.global.t('socket.connected.toast.text'),
+        },
+      });
+    connection = 1;
     watch(
       () => store.state.user.data.username,
       (newVal, oldVal) => {
@@ -182,6 +193,7 @@ const initSocket = (socket) => {
   });
 
   socket.on('disconnect', () => {
+    connection = 0;
     if (store.state.user.data?.config?.offlineNotify)
       toast({
         component: ToastificationContent,

@@ -874,8 +874,10 @@
   "components.vs.generateMaska": "输入来生成一个规则",
   "components.vs.generateSkill": "输入来生成一个技能",
 
-  "socket.disconnect.toast.title": "与服务端断开连接...",
-  "socket.disconnect.toast.text": "可能由于网络原因或代码更新导致的服务端重启",
+  "socket.disconnect.toast.title": "与服务器的连接已断开...",
+  "socket.disconnect.toast.text": "请勿做任何操作, 若一分钟内未恢复连接, 请联系管理员!",
+  "socket.connected.toast.title": "与服务器的连接已恢复!",
+  "socket.connected.toast.text": "你可以继续进行你的操作",
 
   "vee.validate.required": "此字段必填",
   "vee.validate.between": "请输入{min}-{max}之间的数字",
