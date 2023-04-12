@@ -323,10 +323,6 @@ export default defineComponent({
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdByMe'),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           created_by: {
             filterType: 'set',
             values: [store.state.user.data.username],
@@ -338,10 +334,6 @@ export default defineComponent({
         created_by: '@system',
         name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedByMe'),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           updated_by: {
             filterType: 'set',
             values: [store.state.user.data.username],
@@ -355,10 +347,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.createdBeforeYesterday',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           created_at: {
             filterType: 'date',
             type: 'inRange',
@@ -374,10 +362,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.createdYesterday',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           created_at: {
             filterType: 'date',
             type: 'inRange',
@@ -393,10 +377,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.createdToday',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           created_at: {
             filterType: 'date',
             type: 'inRange',
@@ -412,10 +392,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.createdLastWeek',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           created_at: {
             filterType: 'date',
             type: 'inRange',
@@ -431,10 +407,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.createdThisWeek',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           created_at: {
             filterType: 'date',
             type: 'inRange',
@@ -450,10 +422,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.createdLastMonth',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           created_at: {
             filterType: 'date',
             type: 'inRange',
@@ -471,10 +439,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.createdThisMonth',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           created_at: {
             filterType: 'date',
             type: 'inRange',
@@ -492,10 +456,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.createdLastYear',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           created_at: {
             filterType: 'date',
             type: 'inRange',
@@ -513,10 +473,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.createdThisYear',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           created_at: {
             filterType: 'date',
             type: 'inRange',
@@ -534,10 +490,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.updatedBeforeYesterday',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           updated_at: {
             filterType: 'date',
             type: 'inRange',
@@ -553,10 +505,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.updatedYesterday',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           updated_at: {
             filterType: 'date',
             type: 'inRange',
@@ -572,10 +520,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.updatedToday',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           updated_at: {
             filterType: 'date',
             type: 'inRange',
@@ -591,10 +535,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.updatedLastWeek',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           updated_at: {
             filterType: 'date',
             type: 'inRange',
@@ -610,10 +550,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.updatedThisWeek',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           updated_at: {
             filterType: 'date',
             type: 'inRange',
@@ -629,10 +565,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.updatedLastMonth',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           updated_at: {
             filterType: 'date',
             type: 'inRange',
@@ -650,10 +582,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.updatedThisMonth',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           updated_at: {
             filterType: 'date',
             type: 'inRange',
@@ -671,10 +599,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.updatedLastYear',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           updated_at: {
             filterType: 'date',
             type: 'inRange',
@@ -692,10 +616,6 @@ export default defineComponent({
           'data.list.sideBar.toolPanels.customization.filter.system.updatedThisYear',
         ),
         data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
           updated_at: {
             filterType: 'date',
             type: 'inRange',
