@@ -48,6 +48,7 @@
                     >
                       <i
                         v-if="node.data.type === 'file'"
+                        style="margin-left: -3px"
                         class="file-icon file-icon-sm"
                         :class="$fileIcons.getClassWithColor(node.data.name)"
                       />
@@ -434,7 +435,23 @@ export default {
         return root;
       };
 
-      return pathToTree(list.value);
+      const sortTree = (tree) => {
+        tree
+          .sort((a, b) => {
+            return a.name.localeCompare(b.name);
+          })
+          .sort((a, b) => {
+            return a.type.localeCompare(b.type);
+          });
+        tree.forEach((item) => {
+          if (item.children) {
+            item.children = sortTree(item.children);
+          }
+        });
+        return tree;
+      };
+
+      return sortTree(pathToTree(list.value));
     });
 
     let timer = null;
