@@ -159,7 +159,7 @@
                     <Field
                       name="users"
                       v-model="current_event.users"
-                      :rules="`required|include:${$store.state.user.data.username}`"
+                      :rules="`required|users:${$store.state.user.data.username}`"
                       class="d-none"
                     />
                     <span class="invalid-feedback">{{ errors.users }}</span>

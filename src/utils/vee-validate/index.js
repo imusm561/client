@@ -58,26 +58,36 @@ defineRule('length', (value, length) => {
   return value.length === length || i18n.global.t('vee.validate.length', { length });
 });
 
+defineRule('users', (value, [target]) => {
+  if (isEmpty(value)) {
+    return true;
+  }
+  const users = target.split(';');
+  return (
+    users.every((user) => value.includes(user)) ||
+    i18n.global.t('vee.validate.include', {
+      target: store.state.org.users
+        .filter((user) => users.includes(user.username))
+        .map((user) => {
+          return user.fullname;
+        })
+        .join(', '),
+    })
+  );
+});
+
 defineRule('include', (value, [target]) => {
   if (isEmpty(value)) {
     return true;
   }
-  const user = store.state.org.users.find((user) => user.username === target);
-  return (
-    value.includes(target) ||
-    i18n.global.t('vee.validate.include', { target: user ? user.fullname : target })
-  );
+  return value.includes(target.trim()) || i18n.global.t('vee.validate.include', { target });
 });
 
 defineRule('exclude', (value, [target]) => {
   if (isEmpty(value)) {
     return true;
   }
-  const user = store.state.org.users.find((user) => user.username === target);
-  return (
-    !value.includes(target.trim()) ||
-    i18n.global.t('vee.validate.exclude', { target: user ? user.fullname : target })
-  );
+  return !value.includes(target.trim()) || i18n.global.t('vee.validate.exclude', { target });
 });
 
 defineRule('username', (value) => {
