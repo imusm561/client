@@ -23,7 +23,7 @@
               v-if="
                 ($store.state.user.data?.tags?.includes('ALL') ||
                   $store.state.user.data?.permissions?.[$route.params.tid]?.batch) &&
-                selectedRows.length > 1 &&
+                selectedRows.length &&
                 (!form.flow || form.flow?.length === 0) &&
                 selectedRows.every((row) => !['archived', 'approving'].includes(row.data_state))
               "
@@ -82,6 +82,15 @@
                   :key="index"
                 >
                   {{ column.name }}
+                </span>
+                <div v-if="form.batchActions.length" class="dropdown-divider"></div>
+                <span
+                  class="dropdown-item cursor-pointer"
+                  v-for="(item, index) in form.batchActions"
+                  :key="index"
+                  @click="handleSubmitBatchUpdate(item.action)"
+                >
+                  {{ item.title }}
                 </span>
                 <div class="dropdown-divider"></div>
                 <span class="dropdown-item cursor-pointer" @click="handleDeselectAllRows()">
@@ -189,7 +198,7 @@
               ></button>
             </div>
             <div class="modal-body p-3">
-              <Form v-slot="{ errors }" @submit="handleSubmitBatchUpdate">
+              <Form v-slot="{ errors }" @submit="handleSubmitBatchUpdate()">
                 <component
                   :is="batch.column.component"
                   type="EDIT"
@@ -1294,7 +1303,7 @@ export default {
       syntax_error: null,
     });
 
-    const handleSubmitBatchUpdate = () => {
+    const handleSubmitBatchUpdate = (action) => {
       const tid = Number(route.value.params.tid);
       const ids = selectedRows.value.map((row) => {
         return row.id;
@@ -1305,11 +1314,21 @@ export default {
             updateData({
               tid,
               ids,
-              field: batch.value.column.field,
-              value: batch.value.value,
+              ...(action
+                ? { action }
+                : { field: batch.value.column.field, value: batch.value.value }),
             }).then(({ code, msg }) => {
               if (code === 200) {
-                document.getElementById('hideBatchUpdateModalModalBtn').click();
+                if (action) {
+                  toast({
+                    component: ToastificationContent,
+                    props: {
+                      variant: 'success',
+                      icon: 'mdi-check-circle',
+                      text: msg,
+                    },
+                  });
+                } else document.getElementById('hideBatchUpdateModalModalBtn').click();
               } else {
                 toast({
                   component: ToastificationContent,
