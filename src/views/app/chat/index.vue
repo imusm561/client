@@ -180,14 +180,6 @@
                           <i class="mdi mdi-dots-vertical fs-22"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
-                          <span
-                            class="dropdown-item cursor-pointer d-block d-lg-none user-profile-show"
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#userProfileOffcanvas"
-                            aria-controls="userProfileOffcanvas"
-                          >
-                            <i class="mdi mdi-information align-bottom text-muted me-2"></i>
-                          </span>
                           <span class="dropdown-item cursor-pointer" @click="current_chat = {}">
                             <i class="mdi mdi-close align-bottom text-muted me-2"></i>
                             {{ $t('app.chat.close') }}
@@ -428,20 +420,10 @@
 
     <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="userProfileOffcanvas">
       <div v-if="current_chat.id" class="offcanvas-body profile-offcanvas p-0">
-        <div class="team-settings">
-          <div class="row g-0">
-            <div class="col">
-              <div class="btn nav-btn">
-                <button
-                  type="button"
-                  class="btn-close btn-close-dark"
-                  data-bs-dismiss="offcanvas"
-                  aria-label="Close"
-                ></button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <i
+          class="i-close mdi mdi-close-box fs-24 text-muted cursor-pointer"
+          data-bs-dismiss="offcanvas"
+        />
         <div class="p-3 text-center">
           <a class="d-flex justify-content-center align-items-center cursor-pointer">
             <div

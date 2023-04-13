@@ -346,12 +346,11 @@
     </div>
 
     <div v-if="flow" id="flowDataOffcanvas" class="offcanvas offcanvas-start">
-      <button
+      <i
         id="hideFlowDataOffcanvasBtn"
-        type="button"
-        class="d-none"
+        class="i-close mdi mdi-close-box fs-24 text-muted cursor-pointer"
         data-bs-dismiss="offcanvas"
-      ></button>
+      />
       <div class="offcanvas-body p-0 overflow-hidden">
         <div data-simplebar style="height: 100vh">
           <div class="timeline p-3">

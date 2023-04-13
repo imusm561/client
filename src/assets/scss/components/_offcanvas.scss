@@ -3,13 +3,27 @@
 //
 
 .offcanvas {
-  &.form {
+  &.w-resp {
+    width: 50vw;
     @media (max-width: 1100px) {
       width: 75vw !important;
     }
 
     @media (max-width: 768px) {
       width: 100vw !important;
+    }
+  }
+
+  .i-close {
+    position: absolute;
+    z-index: 1;
+    right: 5px;
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .i-close {
+      display: block;
     }
   }
 }

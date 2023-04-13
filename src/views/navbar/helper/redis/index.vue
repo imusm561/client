@@ -66,14 +66,13 @@
       data-bs-target="#keyDataOffcanvas"
     />
     <div
-      class="offcanvas form offcanvas-end w-50 d-md-none"
+      class="offcanvas offcanvas-end w-resp d-md-none"
       :data-bs-backdrop="false"
       id="keyDataOffcanvas"
     >
       <div class="offcanvas-body p-0 overflow-hidden">
         <i
-          class="cursor-pointer d-md-none fs-36 mdi mdi-exit-to-app position-absolute"
-          style="z-index: 1; right: 10px; bottom: 0"
+          class="i-close mdi mdi-close-box fs-24 text-muted cursor-pointer"
           data-bs-dismiss="offcanvas"
         />
         <MonacoEditor
