@@ -214,10 +214,36 @@
       </div>
     </div>
 
+    <!-- Icon-->
+    <div v-if="result.icon?.length">
+      <div class="dropdown-header">
+        <h6 class="text-overflow text-muted mb-0 text-uppercase">
+          {{ $t('layout.navbar.search.icon') }}
+        </h6>
+      </div>
+      <div
+        class="dropdown-item notify-item cursor-pointer"
+        v-for="icon in result.icon"
+        :key="icon.name"
+        @click.stop="handleClickIcon(icon)"
+      >
+        <span class="text-truncate">
+          <i class="align-middle text-muted me-2" :class="`mdi mdi-${icon.name}`"></i>
+          <span>{{ icon.name }}</span>
+        </span>
+      </div>
+    </div>
+
     <Empty
       :text="$t('layout.navbar.search.empty', { keyword })"
       v-if="
-        !(result.user?.length || result.form?.length || result.data?.length || result.file?.length)
+        !(
+          result.user?.length ||
+          result.form?.length ||
+          result.data?.length ||
+          result.file?.length ||
+          result.icon?.length
+        )
       "
     />
   </div>
@@ -225,7 +251,10 @@
 
 <script>
 import { defineComponent } from 'vue';
-import { useRouter, size2Str, replaceHtml } from '@utils';
+import i18n from '@utils/i18n';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+import { useRouter, size2Str, replaceHtml, copyToClipboard } from '@utils';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
 export default defineComponent({
@@ -249,6 +278,7 @@ export default defineComponent({
   },
   setup() {
     const { router } = useRouter();
+    const toast = useToast();
 
     const handlePreviewFile = (file) => {
       const { href } = router.resolve({ name: 'preview', params: { uuid: file.uuid } });
@@ -269,12 +299,37 @@ export default defineComponent({
       document.body.removeChild(downloadElement);
     };
 
+    const handleClickIcon = (icon) => {
+      copyToClipboard(`mdi mdi-${icon.name}`)
+        .then(() => {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'success',
+              icon: 'mdi-check-circle',
+              text: i18n.global.t('layout.navbar.search.icon.copy.success'),
+            },
+          });
+        })
+        .catch((error) => {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: error.message,
+            },
+          });
+        });
+    };
+
     return {
       handlePreviewFile,
       handleViewFileSource,
       handleDownloadFile,
       size2Str,
       replaceHtml,
+      handleClickIcon,
     };
   },
 });

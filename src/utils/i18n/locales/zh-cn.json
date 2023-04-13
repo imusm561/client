@@ -63,6 +63,8 @@
 
   "layout.navbar.search.placeholder": "搜索...",
   "layout.navbar.search.recentSearches": "最近搜索",
+  "layout.navbar.search.icon": "图标",
+  "layout.navbar.search.icon.copy.success": "复制成功",
   "layout.navbar.search.user": "用户",
   "layout.navbar.search.form": "表单",
   "layout.navbar.search.data": "数据",

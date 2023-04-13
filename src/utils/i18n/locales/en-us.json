@@ -63,6 +63,8 @@
 
   "layout.navbar.search.placeholder": "Search...",
   "layout.navbar.search.recentSearches": "Recent Searches",
+  "layout.navbar.search.icon": "Icon",
+  "layout.navbar.search.icon.copy.success": "Copied!",
   "layout.navbar.search.user": "User",
   "layout.navbar.search.form": "Form",
   "layout.navbar.search.data": "Data",

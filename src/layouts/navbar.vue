@@ -552,9 +552,18 @@ import { ref, reactive, computed, onMounted, inject } from 'vue';
 import store from '@store';
 import { userLogout } from '@api/user';
 import { getSearchResult } from '@api/com/search';
+import { icons } from '@utils/icons';
+import i18n from '@utils/i18n';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import { useRouter, clearUserData, getUserInfo, replaceHtml, decryptData } from '@utils';
+import {
+  useRouter,
+  clearUserData,
+  getUserInfo,
+  replaceHtml,
+  decryptData,
+  copyToClipboard,
+} from '@utils';
 import { setWatermark, removeWatermark } from '@utils/watermark';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
@@ -643,10 +652,39 @@ export default {
           (user.username?.toLowerCase().includes(search.keyword?.toLowerCase()) ||
             user.fullname?.toLowerCase().includes(search.keyword?.toLowerCase())),
       );
+
+      search.result.icon = icons.filter((icon) =>
+        icon.name?.toLowerCase().includes(search.keyword?.toLowerCase()),
+      );
     };
 
     const handleEnter = () => {
       if (!search.keyword) return;
+      if (search.result.icon.length) {
+        copyToClipboard(`mdi mdi-${search.result.icon[0].name}`)
+          .then(() => {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'success',
+                icon: 'mdi-check-circle',
+                text: i18n.global.t('layout.navbar.search.icon.copy.success'),
+              },
+            });
+          })
+          .catch((error) => {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: error.message,
+              },
+            });
+          });
+        return;
+      }
+
       if (search.result.user.length) {
         router.push({
           name: 'chat',
