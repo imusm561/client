@@ -15,7 +15,7 @@ const initSocket = (socket) => {
         component: ToastificationContent,
         props: {
           variant: 'success',
-          icon: 'mdi-check-circle',
+          icon: 'mdi-lan-connect',
           title: i18n.global.t('socket.connected.toast.title'),
           text: i18n.global.t('socket.connected.toast.text'),
         },
@@ -199,7 +199,7 @@ const initSocket = (socket) => {
         component: ToastificationContent,
         props: {
           variant: 'danger',
-          icon: 'mdi-alert',
+          icon: 'mdi-lan-disconnect',
           title: i18n.global.t('socket.disconnect.toast.title'),
           text: i18n.global.t('socket.disconnect.toast.text'),
         },
