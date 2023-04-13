@@ -22,7 +22,7 @@
     <div class="offcanvas offcanvas-top" :id="`amapOffcanvas_${id}`" style="height: 100vh">
       <i
         :id="`hideAmapOffcanvas_${id}Btn`"
-        class="i-close mdi mdi-close-box fs-24 text-muted cursor-pointer"
+        class="i-close d-block mdi mdi-close-box fs-24 text-muted cursor-pointer"
         data-bs-dismiss="offcanvas"
       />
       <div class="position-absolute p-2 search" style="z-index: 1">
