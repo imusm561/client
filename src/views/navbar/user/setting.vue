@@ -599,27 +599,6 @@
                       </div>
                     </div>
                   </li>
-                  <li class="d-flex mt-2">
-                    <div class="flex-grow-1">
-                      <label class="form-check-label fs-14" for="offlineNotify">
-                        {{ $t('layout.navbar.user.dropdown.setting.appNotification.offline') }}
-                      </label>
-                      <p class="text-muted">
-                        {{ $t('layout.navbar.user.dropdown.setting.appNotification.offline.desc') }}
-                      </p>
-                    </div>
-                    <div class="flex-shrink-0">
-                      <div class="form-check form-switch">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="offlineNotify"
-                          v-model="user.config.offlineNotify"
-                        />
-                      </div>
-                    </div>
-                  </li>
                 </ul>
                 <div class="col-lg-12">
                   <div class="hstack gap-2 justify-content-end">

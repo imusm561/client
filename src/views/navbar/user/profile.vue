@@ -242,23 +242,6 @@
                               />
                             </td>
                           </tr>
-                          <tr>
-                            <th class="ps-0" scope="row">
-                              {{
-                                $t(
-                                  'layout.navbar.user.dropdown.profil.overview.notifications.offline',
-                                )
-                              }}:
-                            </th>
-                            <td class="form-check form-switch">
-                              <input
-                                class="form-check-input"
-                                type="checkbox"
-                                disabled
-                                :checked="$store.state.user.data.config.offlineNotify"
-                              />
-                            </td>
-                          </tr>
                         </tbody>
                       </table>
                     </div>
