@@ -592,10 +592,13 @@ export default {
         form: [],
         data: [],
         file: [],
+        icon: [],
       },
     });
     const handleSearch = () => {
       if (!search.keyword) return;
+      search.keyword = search.keyword.trim();
+
       getSearchResult({
         keyword: search.keyword,
       }).then(({ code, data, msg }) => {
@@ -653,9 +656,10 @@ export default {
             user.fullname?.toLowerCase().includes(search.keyword?.toLowerCase())),
       );
 
-      search.result.icon = icons.filter((icon) =>
-        icon.name?.toLowerCase().includes(search.keyword?.toLowerCase()),
-      );
+      if (search.keyword.length > 2)
+        search.result.icon = icons.filter((icon) =>
+          icon.name?.toLowerCase().includes(search.keyword?.toLowerCase()),
+        );
     };
 
     const handleEnter = () => {
