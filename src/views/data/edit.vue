@@ -136,14 +136,18 @@
                 <Field
                   name="acl_view"
                   v-model="data.acl_view"
-                  :rules="`required|users:${form.flow
-                    .map((item) => {
-                      return item.users.map((user) => {
-                        return user.username;
-                      });
-                    })
-                    .flat()
-                    .join(';')}`"
+                  :rules="
+                    !!form.flow?.length
+                      ? `required|users:${form.flow
+                          .map((item) => {
+                            return item.users.map((user) => {
+                              return user.username;
+                            });
+                          })
+                          .flat()
+                          .join(';')}`
+                      : ''
+                  "
                   class="d-none"
                 />
                 <span class="invalid-feedback">{{ errors.acl_view }}</span>
@@ -323,14 +327,18 @@
                       <Field
                         name="acl_view"
                         v-model="data.acl_view"
-                        :rules="`required|users:${form.flow
-                          .map((item) => {
-                            return item.users.map((user) => {
-                              return user.username;
-                            });
-                          })
-                          .flat()
-                          .join(';')}`"
+                        :rules="
+                          !!form.flow?.length
+                            ? `required|users:${form.flow
+                                .map((item) => {
+                                  return item.users.map((user) => {
+                                    return user.username;
+                                  });
+                                })
+                                .flat()
+                                .join(';')}`
+                            : ''
+                        "
                         class="d-none"
                       />
                       <span class="invalid-feedback">{{ errors.acl_view }}</span>
