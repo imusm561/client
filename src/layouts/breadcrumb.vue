@@ -21,7 +21,18 @@
             >
               <a :class="{ active: index === items.length - 1 }">
                 <i v-if="item.icon" :class="`mdi ${item.icon} me-1`"></i>
-                <span :title="$t(item.title)">{{ $t(item.title) }}</span>
+                <span :title="$t(item.title)">
+                  <span
+                    v-if="$route.name === 'list'"
+                    class="cursor-pointer"
+                    @click="$emit('form-info')"
+                  >
+                    {{ $t(item.title) }}
+                  </span>
+                  <span v-else>
+                    {{ $t(item.title) }}
+                  </span>
+                </span>
               </a>
             </li>
           </ol>

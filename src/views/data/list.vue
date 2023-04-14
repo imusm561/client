@@ -1,22 +1,9 @@
 <template>
   <div>
-    <Breadcrumb :key="$route" />
-    <div class="card">
-      <div class="card-header border-0 p-2 pb-0">
-        <span class="float-end">
-          <i
-            class="mdi mdi-table-eye fs-16 cursor-pointer text-muted pe-2"
-            data-bs-toggle="modal"
-            data-bs-target="#formInfoModal"
-          ></i>
-          <i
-            class="mdi mdi-refresh fs-16 cursor-pointer text-muted pe-2"
-            @click="handleRefetchDataList"
-          ></i>
-        </span>
-      </div>
+    <Breadcrumb :key="$route" @form-info="handleOpenFormInfoModal" />
+    <div class="card adaptive">
       <div class="card-body d-flex flex-column pt-0" style="height: fit-content">
-        <div class="mb-2">
+        <div class="mt-2 mb-2">
           <div v-if="form.description" class="ck ck-content p-0" v-html="form.description" />
           <div class="d-flex justify-content-end gap-2">
             <div
@@ -107,7 +94,7 @@
               class="btn btn-sm btn-primary"
               @click="$router.push({ name: 'edit', params: { tid: $route.params.tid, rid: 0 } })"
             >
-              <i class="mdi mdi-plus"></i>
+              <!-- <i class="mdi mdi-plus"></i> -->
               {{ $t('data.list.data.create') }}
             </button>
           </div>
@@ -229,11 +216,24 @@
         </div>
       </div>
 
+      <button
+        id="showFormInfoModalBtn"
+        type="button"
+        class="d-none"
+        data-bs-toggle="modal"
+        data-bs-target="#formInfoModal"
+      ></button>
       <div class="modal fade" id="formInfoModal">
         <div class="modal-dialog modal-lg modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header p-2 bg-light">
-              <h5 class="modal-title">#{{ form.id }} {{ form.title }}</h5>
+              <h5 class="modal-title">
+                #{{ form.id }} {{ form.title }}
+                <i
+                  class="mdi mdi-refresh cursor-pointer text-info"
+                  @click="handleRefetchDataList"
+                ></i>
+              </h5>
               <button
                 type="button"
                 class="btn-close"
@@ -309,7 +309,7 @@
                         "
                         data-simplebar
                         class="p-0"
-                        style="max-height: 40vh"
+                        style="height: 40vh"
                       >
                         <table
                           class="table table-hover table-striped table-bordered table-nowrap align-middle mb-0"
@@ -1455,6 +1455,10 @@ export default {
       },
     };
 
+    const handleOpenFormInfoModal = () => {
+      document.getElementById('showFormInfoModalBtn').click();
+    };
+
     const handleRefetchDataList = () => {
       fetchDataForm(() => {
         gridApi.refreshServerSide({ purge: true });
@@ -1661,6 +1665,7 @@ export default {
       handleColumnChange,
       getRowId,
       serverSideDatasource,
+      handleOpenFormInfoModal,
       handleRefetchDataList,
 
       setColumnConfiguration,
