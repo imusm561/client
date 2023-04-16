@@ -1,7 +1,7 @@
 <template>
   <div>
     <Breadcrumb :key="$route" @form-info="handleOpenFormInfoModal" />
-    <div class="card adaptive">
+    <div class="card">
       <div class="card-body d-flex flex-column pt-0" style="height: fit-content">
         <div class="mt-2 mb-2">
           <div v-if="form.description" class="ck ck-content p-0" v-html="form.description" />
