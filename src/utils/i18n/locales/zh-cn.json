@@ -203,6 +203,8 @@
   "layout.navbar.helper.form.tab.basicInfo.status.enable": "启用",
   "layout.navbar.helper.form.tab.basicInfo.status.disabled": "禁用",
   "layout.navbar.helper.form.tab.basicInfo.redirect": "重定向",
+  "layout.navbar.helper.form.tab.basicInfo.alias": "别名",
+  "layout.navbar.helper.form.tab.basicInfo.alias.duplicate": "别名【{alias}】已存在!",
   "layout.navbar.helper.form.tab.basicInfo.tags": "标签",
   "layout.navbar.helper.form.tab.basicInfo.aclView": "默认可查看数据的用户",
   "layout.navbar.helper.form.tab.basicInfo.aclView.placeholder": "创建数据时，数据的查看权限默认为所选的用户",

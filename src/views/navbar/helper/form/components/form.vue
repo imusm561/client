@@ -287,7 +287,21 @@
                       />
                     </div>
                   </div>
-                  <div class="col-12">
+                  <div class="col-3">
+                    <div class="mb-3">
+                      <label class="form-label">
+                        {{ $t('layout.navbar.helper.form.tab.basicInfo.alias') }}
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        :disabled="!!current_form.is_parent"
+                        :placeholder="$t('layout.navbar.helper.form.tab.basicInfo.alias')"
+                        v-model="current_form.alias"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-9">
                     <div class="mb-3">
                       <label class="form-label">
                         {{ $t('layout.navbar.helper.form.tab.basicInfo.tags') }}
@@ -1547,6 +1561,22 @@ export default {
     });
 
     const handleSaveFormInfo = () => {
+      if (changes.value.alias) {
+        changes.value.alias = changes.value.alias.trim();
+        if (forms.value.find((form) => form.alias === changes.value.alias)) {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: i18n.global.t('layout.navbar.helper.form.tab.basicInfo.alias.duplicate', {
+                alias: changes.value.alias,
+              }),
+            },
+          });
+          return;
+        }
+      }
       const flow_error = changes.value.flow
         ? changes.value.flow.find((item) => !item.title || item.users.length === 0)
         : null;

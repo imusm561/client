@@ -203,6 +203,8 @@
   "layout.navbar.helper.form.tab.basicInfo.status.enable": "Enable",
   "layout.navbar.helper.form.tab.basicInfo.status.disabled": "Disabled",
   "layout.navbar.helper.form.tab.basicInfo.redirect": "Redirect",
+  "layout.navbar.helper.form.tab.basicInfo.alias": "Alias",
+  "layout.navbar.helper.form.tab.basicInfo.alias.duplicate": "Alias [{alias}] is exists!",
   "layout.navbar.helper.form.tab.basicInfo.tags": "Tags",
   "layout.navbar.helper.form.tab.basicInfo.aclView": "Acl View Default",
   "layout.navbar.helper.form.tab.basicInfo.aclView.placeholder": "When creating data, the data is viewed by the selected user by default",
