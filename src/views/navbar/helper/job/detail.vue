@@ -134,6 +134,7 @@
             <Comment
               :key="$route.path"
               :source="$route.path"
+              :data="job"
               @fetch="($event) => (comments = $event)"
             />
           </div>

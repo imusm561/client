@@ -331,7 +331,7 @@
             :class="{ active: !$route.query.tab || $route.query.tab === 'comment' }"
             id="tab_comments"
           >
-            <Comment v-if="data.id" :key="$route.path" :source="$route.path" />
+            <Comment v-if="data.id" :key="$route.path" :source="$route.path" :data="data" />
           </div>
           <div class="tab-pane" :class="{ active: $route.query.tab === 'log' }" id="tab_logs">
             <Log

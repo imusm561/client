@@ -815,18 +815,18 @@ export default {
       return store.getters['user/chat_notices'];
     });
 
-    const handleClickChatNotice = (item) => {
+    const handleClickChatNotice = (chat) => {
       router
         .replace({
           name: 'chat',
           query: {
-            contact: item.username,
+            contact: chat.username,
           },
         })
         .then(() => {
           store.commit('user/DEL_NOTICE', {
             app: 'chat',
-            data: item,
+            data: chat,
           });
         });
     };
@@ -856,14 +856,13 @@ export default {
     });
 
     const handleClickCommentNotice = (comment) => {
-      router
-        .replace({ path: comment.source, query: { tab: 'comment', id: comment.id } })
-        .then(() => {
-          store.commit('user/DEL_NOTICE', {
-            app: 'comment',
-            data: comment,
-          });
-        });
+      router.replace({ path: comment.source, query: { tab: 'comment', id: comment.id } });
+      // .then(() => {
+      //   store.commit('user/DEL_NOTICE', {
+      //     app: 'comment',
+      //     data: comment,
+      //   });
+      // });
     };
 
     const flow_notices = computed(() => {

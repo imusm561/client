@@ -114,6 +114,11 @@ export default defineComponent({
       default: () => '',
       requried: true,
     },
+    data: {
+      type: Object,
+      default: () => {},
+      requried: false,
+    },
   },
   components: {
     Empty,
@@ -222,7 +227,11 @@ export default defineComponent({
         source: props.source,
         content: comment.value.content,
         pid: comment.value.reply ? comment.value.reply.id : 0,
-        to: comment.value.reply ? comment.value.reply.created_by : null,
+        to: comment.value.reply
+          ? comment.value.reply.created_by
+          : props.data?.created_by && store.state.user.data.username != props.data?.created_by
+          ? props.data.created_by
+          : null,
         read: false,
       }).then(({ code, data, msg }) => {
         if (code === 200) {
