@@ -22,7 +22,7 @@
       :field-class="error ? 'btn-outline-danger' : column.cfg.style || 'btn-primary'"
       :placeholder="column.cfg.placeholder"
       :accept="column.cfg.accept"
-      :prefix="column.cfg.__prefix"
+      :prefix="column.cfg.__prefix || ''"
       :multiple="column.cfg.multiple"
       :qrable="column.cfg.qrable"
       :disabled="!editable"
