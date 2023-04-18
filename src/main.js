@@ -4,7 +4,7 @@ const app = createApp(App);
 
 app.config.globalProperties.BASE_URL = process.env.BASE_URL;
 
-import router from '@/router';
+import router from '@router';
 import store from '@store';
 
 import 'simplebar';

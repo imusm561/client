@@ -1482,7 +1482,17 @@ export default {
           icon: '<i class="mdi mdi-eye-outline fs-14" style="margin-left: 2px;" />',
         });
 
-        if (!form.value.flow?.length || params.node?.data?.data_state === 'drafted') {
+        if (
+          (!form.value.flow?.length || params.node?.data?.data_state === 'drafted') &&
+          (store.state.user.data?.tags?.includes('ALL') ||
+            store.state.user.data?.permissions?.[route.value.params.tid]?.all ||
+            params.node?.data?.created_by === store.state.user.data.username ||
+            params.node?.data?.updated_by === store.state.user.data.username ||
+            params.node?.data?.acl_edit.includes(store.state.user.data.username) ||
+            (params.node?.data?.acl_edit.length === 0 &&
+              params.node?.data?.acl_view.includes(store.state.user.data.username)) ||
+            (params.node?.data?.acl_view.length === 0 && params.node?.data?.acl_edit.length === 0))
+        ) {
           menu.push({
             name: i18n.global.t('data.list.contextMenu.edit', {
               data: `${form.value.id}/${params.node?.data?.id}`,

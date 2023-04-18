@@ -51,7 +51,7 @@
 
 <script>
 import { defineComponent, computed } from 'vue';
-import router from '@/router';
+import router from '@router';
 export default defineComponent({
   setup(props) {
     const theme = computed(() => {
