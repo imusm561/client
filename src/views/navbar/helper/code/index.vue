@@ -71,6 +71,11 @@
                       @click.stop="handleCreate('file', node)"
                     ></i>
                     <i
+                      v-if="node.data.type === 'directory'"
+                      class="cursor-pointer fs-16 text-primary mdi mdi-cloud-upload-outline ms-1"
+                      @click.stop="handleUpload(node)"
+                    ></i>
+                    <i
                       v-if="!dirs.includes(node.data.path)"
                       class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline ms-1"
                       @click.stop="handleDeleteConfirm(node)"
@@ -103,7 +108,7 @@
                   </h5>
                   <div
                     class="d-none d-md-inline"
-                    v-if="current.type === 'file' && current.data != current._data"
+                    v-if="editable(current) && current.data != current.file"
                   >
                     <button
                       class="btn btn-sm btn-primary btn-icon waves-effect waves-light"
@@ -120,7 +125,7 @@
                 v-model="current.data"
                 :language="current.language"
                 :options="{
-                  readOnly: current.type === 'directory' || current.language === 'log',
+                  readOnly: !editable(current),
                 }"
                 height="100%"
               />
@@ -129,6 +134,19 @@
         </div>
       </div>
     </div>
+
+    <input
+      id="code-file-input"
+      class="d-none"
+      type="file"
+      @click="
+        (e) => {
+          e.target.value = '';
+        }
+      "
+      @change="handleFileInput"
+      accept="application/zip"
+    />
 
     <div class="modal fade" id="codeDiffModal" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered modal-xl">
@@ -159,7 +177,7 @@
             <button
               class="btn btn-sm btn-danger"
               data-bs-dismiss="modal"
-              @click="current.data = current._data"
+              @click="current.data = current.file"
             >
               <i class="mdi mdi-restore"></i>
               {{ $t('layout.navbar.helper.code.codeDiffModal.footer.restore') }}
@@ -277,7 +295,15 @@ import i18n from '@utils/i18n';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getFileSuffix, getUserInfo } from '@utils';
-import { getCodeDirs, getCodeData, createCode, deleteCode, renameCode, saveCode } from '@api/code';
+import {
+  getCodeDirs,
+  getCodeData,
+  createCode,
+  uploadCode,
+  deleteCode,
+  renameCode,
+  saveCode,
+} from '@api/code';
 export default {
   components: {
     Breadcrumb,
@@ -293,16 +319,26 @@ export default {
     const current = ref({});
     const confirm = ref({});
 
-    const isModified = () => {
-      if (current.value.type === 'file' && current.value.data != current.value._data) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.code.modified'),
-          },
-        });
+    const editable = computed(() => {
+      return (item) => {
+        return (
+          item.type === 'file' &&
+          ['txt', 'json', 'html', 'css', 'js'].includes(getFileSuffix(item.name))
+        );
+      };
+    });
+
+    const isModified = (option) => {
+      if (editable.value(current.value) && current.value.data != current.value.file) {
+        if (option.toast)
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: i18n.global.t('layout.navbar.helper.code.modified'),
+            },
+          });
         return true;
       }
       return false;
@@ -312,15 +348,14 @@ export default {
       handleGetCodeDirs();
       document.onkeydown = (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-          if (current.value.type === 'file' && current.value.data != current.value._data)
-            handleSaveCode();
+          if (isModified({ toast: false })) handleSaveCode();
           e.preventDefault();
         }
       };
     });
 
     const handleGetCodeDirs = () => {
-      if (isModified()) return;
+      if (isModified({ toast: true })) return;
       current.value = {};
       getCodeDirs().then(({ code, data, msg }) => {
         if (code === 200) {
@@ -458,17 +493,7 @@ export default {
       if (!e?.edit) {
         clearTimeout(timer);
         timer = setTimeout(() => {
-          if (current.value.type === 'file' && current.value.data != current.value._data) {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: i18n.global.t('layout.navbar.helper.code.modified'),
-              },
-            });
-            return;
-          }
+          if (isModified({ toast: true })) return;
           if (e.type === 'directory') {
             current.value = JSON.parse(JSON.stringify(e));
             current.value.data = JSON.stringify(
@@ -482,8 +507,6 @@ export default {
             getCodeData({ path: e.path }).then(({ code, data, msg }) => {
               if (code === 200) {
                 current.value = { ...data, ...JSON.parse(JSON.stringify(e)) };
-                if (current.value.language === 'log') current.value.data = current.value.file;
-                current.value._data = current.value.data || '';
                 document.getElementById('showCodeDataOffcanvasBtn').click();
               } else {
                 toast({
@@ -508,7 +531,7 @@ export default {
     };
 
     const handleEditFileName = (node) => {
-      if (isModified()) return;
+      if (isModified({ toast: true })) return;
       clearTimeout(timer);
       node.data.name_old = node.data.name;
       node.data.edit = true;
@@ -595,7 +618,7 @@ export default {
     };
 
     const handleCreate = (type, node = null) => {
-      if (isModified()) return;
+      if (isModified({ toast: true })) return;
       const name = `${Math.random().toString(36).slice(-6)}${type === 'file' ? '.txt' : ''}`;
       if (node) {
         const child = { name: '', name_old: name, type, path: node.data.path, edit: true };
@@ -616,8 +639,35 @@ export default {
       }
     };
 
+    const folder = ref(null);
+    const handleUpload = (node) => {
+      folder.value = node.data.path;
+      default_expanded_keys.value = [node.key];
+      document.getElementById('code-file-input').click();
+    };
+    const handleFileInput = (e) => {
+      const formData = new FormData();
+      formData.append('file', e.target.files[0], e.target.files[0].name);
+      formData.append('folder', folder.value);
+      uploadCode(formData).then(async ({ code, msg }) => {
+        if (code === 200) {
+          e.target.value = null;
+          handleGetCodeDirs();
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    };
+
     const handleDeleteConfirm = (node) => {
-      if (isModified()) return;
+      if (isModified({ toast: true })) return;
       confirm.value = node.data;
       document.getElementById('showConfirmDeleteFileOrDirectoryModalBtn').click();
     };
@@ -645,7 +695,7 @@ export default {
       saveCode({ path: current.value.path, data: current.value.data }).then(({ code, msg }) => {
         if (code === 200) {
           document.getElementById('hideCodeDiffModalBtn').click();
-          current.value.file = current.value._data = current.value.data || '';
+          current.value.file = current.value.data;
           toast({
             component: ToastificationContent,
             props: {
@@ -671,6 +721,7 @@ export default {
       reftree,
       dirs,
       tree,
+      editable,
       default_expanded_keys,
       current,
       confirm,
@@ -680,6 +731,8 @@ export default {
       handleEditFileName,
       handleSaveFileName,
       handleCreate,
+      handleUpload,
+      handleFileInput,
       handleDeleteConfirm,
       handleDelete,
       handleSaveCode,

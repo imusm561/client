@@ -13,6 +13,10 @@ export const createCode = (data) => {
   return axios.post('/cor/code/create', data);
 };
 
+export const uploadCode = (data) => {
+  return axios.post('/cor/code/upload', data);
+};
+
 export const deleteCode = (data) => {
   return axios.post('/cor/code/delete', data);
 };
