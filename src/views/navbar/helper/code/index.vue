@@ -53,7 +53,7 @@
                         :class="$fileIcons.getClassWithColor(node.data.name)"
                       />
                       <i v-else class="mdi mdi-folder-outline" />
-                      {{ node.data.name }} {{ node.data.rename }}
+                      {{ node.data.name }}
                     </span>
                   </span>
                   <span
@@ -533,21 +533,32 @@ export default {
     const handleEditFileName = (node) => {
       if (isModified({ toast: true })) return;
       clearTimeout(timer);
-      node.data.name_old = node.data.name;
+      node.data._name = node.data.name;
       node.data.edit = true;
-      node.data.rename = true;
       focusInputEl();
     };
 
     const handleSaveFileName = (node) => {
       node.data.name = node.data.name.trim();
-      if (!node.data.name) node.data.name = node.data.name_old;
+
+      if (!node.data.name && !node.data._name) {
+        node.parent.data.children.splice(
+          node.parent.data.children.findIndex((item) => !item.name),
+          1,
+        );
+        return;
+      }
+
+      if (node.data._name && (!node.data.name || node.data.name === node.data._name)) {
+        node.data.name = node.data._name;
+        delete node.data._name;
+        node.data.edit = false;
+        return;
+      }
+
       if (
-        node.parent.childNodes?.some(
-          (item) =>
-            !item.data.edit &&
-            item.data.name === node.data.name &&
-            item.data.type === node.data.type,
+        node.parent.data.children?.some(
+          (item) => !item.edit && item.name === node.data.name && item.type === node.data.type,
         )
       ) {
         toast({
@@ -558,33 +569,29 @@ export default {
             text: i18n.global.t('layout.navbar.helper.code.create.error'),
           },
         });
+        focusInputEl();
       } else {
-        if (node.data.rename) {
-          if (node.data.name != node.data.name_old) {
-            renameCode({
-              old: node.data.path,
-              new: node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name,
-            }).then(({ code, msg }) => {
-              if (code === 200) {
-                delete node.data.rename;
-                node.data.edit = false;
-                handleGetCodeDirs();
-                default_expanded_keys.value = [node.parent.key, node.key];
-              } else {
-                toast({
-                  component: ToastificationContent,
-                  props: {
-                    variant: 'danger',
-                    icon: 'mdi-alert',
-                    text: msg,
-                  },
-                });
-              }
-            });
-          } else {
-            delete node.data.rename;
-            node.data.edit = false;
-          }
+        if (node.data._name) {
+          renameCode({
+            old: node.data.path,
+            new: node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name,
+          }).then(({ code, msg }) => {
+            if (code === 200) {
+              delete node.data._name;
+              node.data.edit = false;
+              handleGetCodeDirs();
+              default_expanded_keys.value = [node.parent.key, node.key];
+            } else {
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: msg,
+                },
+              });
+            }
+          });
         } else {
           createCode({ type: node.data.type, name: node.data.name, path: node.data.path }).then(
             ({ code, data, msg }) => {
@@ -621,7 +628,7 @@ export default {
       if (isModified({ toast: true })) return;
       const name = `${Math.random().toString(36).slice(-6)}${type === 'file' ? '.txt' : ''}`;
       if (node) {
-        const child = { name: '', name_old: name, type, path: node.data.path, edit: true };
+        const child = { name: '', type, path: node.data.path, edit: true };
         if (!node.data.children) node.data.children = [];
         node.data.children.push(child);
         node.expanded = true;
@@ -631,7 +638,6 @@ export default {
         setTimeout(() => {
           const node = reftree.value.getNode(name);
           node.data.name = '';
-          node.data.name_old = name;
           node.data.path = '';
           node.data.edit = true;
           focusInputEl();
