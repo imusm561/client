@@ -6,7 +6,9 @@
         <div class="row h-100">
           <div class="col-md-3">
             <div class="d-flex">
-              <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.code.files') }}</h4>
+              <h4 class="flex-grow-1">
+                {{ $t('layout.navbar.helper.code.files') }}
+              </h4>
               <i
                 class="mdi mdi-refresh text-secondary float-end fs-16 cursor-pointer ms-1"
                 @click.stop="handleGetCodeDirs"
@@ -18,7 +20,9 @@
               class="scroll"
               :data="tree"
               :empty-text="$t('layout.navbar.helper.code.files.empty')"
-              :default-expanded-keys="default_expanded_keys"
+              :default-expanded-keys="defaultExpandKeys"
+              @node-expand="(data) => handleNodeToggle(data, true)"
+              @node-collapse="(data) => handleNodeToggle(data, false)"
               node-key="path"
               :draggable="false"
               :expand-on-click-node="false"
@@ -57,7 +61,7 @@
                     </span>
                   </span>
                   <span
-                    v-if="!node.data.edit && dirs.some((dir) => node.data.path.includes(dir))"
+                    v-if="!isEditing && dirs.some((dir) => node.data.path.includes(dir))"
                     class="tree-node-actions ms-3"
                   >
                     <i
@@ -74,6 +78,14 @@
                       v-if="node.data.type === 'directory'"
                       class="cursor-pointer fs-16 text-primary mdi mdi-cloud-upload-outline ms-1"
                       @click.stop="handleUpload(node)"
+                    ></i>
+                    <i
+                      v-if="node.data.type === 'file' && node.data.name === 'package.json'"
+                      class="cursor-pointer fs-16 text-info mdi ms-1"
+                      :class="
+                        installing === node.key ? 'mdi-loading mdi-spin' : 'mdi-package-down '
+                      "
+                      @click.stop="handleInstallPackage(node)"
                     ></i>
                     <i
                       v-if="!dirs.includes(node.data.path)"
@@ -300,6 +312,7 @@ import {
   getCodeData,
   createCode,
   uploadCode,
+  installPackage,
   deleteCode,
   renameCode,
   saveCode,
@@ -313,7 +326,6 @@ export default {
   setup() {
     const reftree = ref(null);
     const toast = useToast();
-    const default_expanded_keys = ref([]);
     const dirs = ref([]);
     const list = ref([]);
     const current = ref({});
@@ -328,6 +340,7 @@ export default {
       };
     });
 
+    const isEditing = ref(false);
     const isModified = (option) => {
       if (editable.value(current.value) && current.value.data != current.value.file) {
         if (option.toast)
@@ -356,22 +369,23 @@ export default {
 
     const handleGetCodeDirs = () => {
       if (isModified({ toast: true })) return;
-      current.value = {};
       getCodeDirs().then(({ code, data, msg }) => {
         if (code === 200) {
           dirs.value = data.dirs;
           list.value = data.list;
-          current.value.name = '';
-          current.value.path = '/';
-          current.value.type = 'directory';
-          current.value.children = tree.value;
-          current.value.data = JSON.stringify(
-            tree.value.map((i) => {
-              return `${i.type}:${i.path}`;
-            }),
-            null,
-            2,
-          );
+          if (!current.value.path) {
+            current.value.name = '';
+            current.value.path = '/';
+            current.value.type = 'directory';
+            current.value.children = tree.value;
+            current.value.data = JSON.stringify(
+              tree.value.map((i) => {
+                return `${i.type}:${i.path}`;
+              }),
+              null,
+              2,
+            );
+          }
         } else {
           toast({
             component: ToastificationContent,
@@ -488,6 +502,26 @@ export default {
       return sortTree(pathToTree(list.value));
     });
 
+    const defaultExpandKeys = ref([]);
+    const removeChildrenKeys = (data) => {
+      if (data.children) {
+        data.children.forEach((item) => {
+          const index = defaultExpandKeys.value.indexOf(item.path);
+          if (index != -1) defaultExpandKeys.value.splice(index, 1);
+          removeChildrenKeys(item);
+        });
+      }
+    };
+    const handleNodeToggle = (data, expanded) => {
+      if (expanded) {
+        if (!defaultExpandKeys.value.includes(data.path)) defaultExpandKeys.value.push(data.path);
+      } else {
+        const index = defaultExpandKeys.value.indexOf(data.path);
+        if (index != -1) defaultExpandKeys.value.splice(index, 1);
+      }
+      removeChildrenKeys(data);
+    };
+
     let timer = null;
     const handleClickPath = (e) => {
       if (!e?.edit) {
@@ -525,6 +559,7 @@ export default {
     };
 
     const focusInputEl = () => {
+      isEditing.value = true;
       setTimeout(() => {
         document.getElementById('node_edit').focus();
       }, 50);
@@ -541,26 +576,39 @@ export default {
     const handleSaveFileName = (node) => {
       node.data.name = node.data.name.trim();
 
-      if (!node.data.name && !node.data._name) {
+      if (
+        !node.data._name &&
+        (!node.data.name ||
+          (node.data.type === 'directory' &&
+            (node.data.name === 'node_modules' ||
+              (node.parent.data.name === 'logs' &&
+                (node.data.name === 'pm2' || node.data.name === 'mysqldump')))))
+      ) {
         node.parent.data.children.splice(
           node.parent.data.children.findIndex((item) => !item.name),
           1,
         );
-        return;
-      }
-
-      if (node.data._name && (!node.data.name || node.data.name === node.data._name)) {
-        node.data.name = node.data._name;
-        delete node.data._name;
-        node.data.edit = false;
+        isEditing.value = false;
         return;
       }
 
       if (
-        node.parent.data.children?.some(
-          (item) => !item.edit && item.name === node.data.name && item.type === node.data.type,
-        )
+        node.data._name &&
+        (!node.data.name ||
+          node.data.name === node.data._name ||
+          (node.data.type === 'directory' &&
+            (node.data.name === 'node_modules' ||
+              (node.parent.data.name === 'logs' &&
+                (node.data.name === 'pm2' || node.data.name === 'mysqldump')))))
       ) {
+        node.data.name = node.data._name;
+        delete node.data._name;
+        delete node.data.edit;
+        isEditing.value = false;
+        return;
+      }
+
+      if (node.parent.data.children?.some((item) => !item.edit && item.name === node.data.name)) {
         toast({
           component: ToastificationContent,
           props: {
@@ -578,9 +626,9 @@ export default {
           }).then(({ code, msg }) => {
             if (code === 200) {
               delete node.data._name;
-              node.data.edit = false;
+              delete node.data.edit;
+              isEditing.value = false;
               handleGetCodeDirs();
-              default_expanded_keys.value = [node.parent.key, node.key];
             } else {
               toast({
                 component: ToastificationContent,
@@ -596,9 +644,9 @@ export default {
           createCode({ type: node.data.type, name: node.data.name, path: node.data.path }).then(
             ({ code, data, msg }) => {
               if (code === 200) {
-                node.data.edit = false;
+                delete node.data.edit;
+                isEditing.value = false;
                 handleGetCodeDirs();
-                default_expanded_keys.value = [node.parent.key, node.key];
                 if (node.data.type === 'file') {
                   const interval = setInterval(() => {
                     const node = reftree.value.getNode(data.path);
@@ -648,7 +696,6 @@ export default {
     const folder = ref(null);
     const handleUpload = (node) => {
       folder.value = node.data.path;
-      default_expanded_keys.value = [node.key];
       document.getElementById('code-file-input').click();
     };
     const handleFileInput = (e) => {
@@ -672,6 +719,35 @@ export default {
       });
     };
 
+    const installing = ref(null);
+    const handleInstallPackage = (node) => {
+      if (installing.value) return;
+      installing.value = node.key;
+      installPackage({ path: node.parent.data.path }).then(async ({ code, msg }) => {
+        installing.value = null;
+        handleGetCodeDirs();
+        if (code === 200) {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'success',
+              icon: 'mdi-check-circle',
+              text: msg,
+            },
+          });
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    };
+
     const handleDeleteConfirm = (node) => {
       if (isModified({ toast: true })) return;
       confirm.value = node.data;
@@ -679,8 +755,6 @@ export default {
     };
 
     const handleDelete = () => {
-      const node = reftree.value.getNode(confirm.value.path);
-      default_expanded_keys.value = [node.parent.key];
       deleteCode({ type: confirm.value.type, path: confirm.value.path }).then(({ code, msg }) => {
         if (code === 200) {
           handleGetCodeDirs();
@@ -728,10 +802,12 @@ export default {
       dirs,
       tree,
       editable,
-      default_expanded_keys,
+      isEditing,
       current,
       confirm,
       handleGetCodeDirs,
+      defaultExpandKeys,
+      handleNodeToggle,
       handleClickPath,
       getUserInfo,
       handleEditFileName,
@@ -739,6 +815,8 @@ export default {
       handleCreate,
       handleUpload,
       handleFileInput,
+      installing,
+      handleInstallPackage,
       handleDeleteConfirm,
       handleDelete,
       handleSaveCode,

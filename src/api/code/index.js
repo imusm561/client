@@ -17,6 +17,10 @@ export const uploadCode = (data) => {
   return axios.post('/cor/code/upload', data);
 };
 
+export const installPackage = (data) => {
+  return axios.post('/cor/code/install', data);
+};
+
 export const deleteCode = (data) => {
   return axios.post('/cor/code/delete', data);
 };
