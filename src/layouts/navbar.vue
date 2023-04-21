@@ -656,10 +656,10 @@ export default {
             user.fullname?.toLowerCase().includes(search.keyword?.toLowerCase())),
       );
 
-      if (search.keyword.length > 2)
-        search.result.icon = icons.filter((icon) =>
-          icon.name?.toLowerCase().includes(search.keyword?.toLowerCase()),
-        );
+      search.result.icon =
+        search.keyword.length > 2
+          ? icons.filter((icon) => icon.name?.toLowerCase().includes(search.keyword?.toLowerCase()))
+          : [];
     };
 
     const handleEnter = () => {
