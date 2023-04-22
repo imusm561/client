@@ -97,48 +97,38 @@
 
     <div class="card">
       <div class="card-header">
-        <div>
-          <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0">
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                :class="{ active: !$route.query.tab || $route.query.tab === 'comment' }"
-                data-bs-toggle="tab"
-                href="#tab_comment"
-              >
-                {{ $t('layout.navbar.helper.jobDetail.comments') }}
-                <small v-if="comments.length">({{ comments.length }})</small>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                :class="{ active: $route.query.tab === 'log' }"
-                data-bs-toggle="tab"
-                href="#tab_log"
-              >
-                {{ $t('layout.navbar.helper.jobDetail.logs') }}
-                <small v-if="pagination.totalCount">({{ pagination.totalCount }})</small>
-              </a>
-            </li>
-          </ul>
-        </div>
+        <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              :class="{ active: !$route.query.tab || $route.query.tab === 'log' }"
+              data-bs-toggle="tab"
+              href="#tab_log"
+            >
+              {{ $t('layout.navbar.helper.jobDetail.logs') }}
+              <small v-if="pagination.totalCount">({{ pagination.totalCount }})</small>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              :class="{ active: $route.query.tab === 'comment' }"
+              data-bs-toggle="tab"
+              href="#tab_comment"
+            >
+              {{ $t('layout.navbar.helper.jobDetail.comments') }}
+              <small v-if="comments.length">({{ comments.length }})</small>
+            </a>
+          </li>
+        </ul>
       </div>
       <div class="card-body p-0">
         <div class="tab-content">
           <div
-            class="tab-pane"
-            :class="{ active: !$route.query.tab || $route.query.tab === 'comment' }"
-            id="tab_comment"
+            class="tab-pane p-3"
+            :class="{ active: !$route.query.tab || $route.query.tab === 'log' }"
+            id="tab_log"
           >
-            <Comment
-              :key="$route.path"
-              :source="$route.path"
-              :data="job"
-              @fetch="($event) => (comments = $event)"
-            />
-          </div>
-          <div class="tab-pane p-3" :class="{ active: $route.query.tab === 'log' }" id="tab_log">
             <div v-if="logs.length">
               <apexchart
                 :key="chart.key"
@@ -197,6 +187,18 @@
               </div>
             </div>
             <Empty :text="$t('layout.navbar.helper.jobDetail.logs.empty')" v-else />
+          </div>
+          <div
+            class="tab-pane"
+            :class="{ active: $route.query.tab === 'comment' }"
+            id="tab_comment"
+          >
+            <Comment
+              :key="$route.path"
+              :source="$route.path"
+              :data="job"
+              @fetch="($event) => (comments = $event)"
+            />
           </div>
         </div>
       </div>
