@@ -16,7 +16,7 @@
       </ul>
     </div>
     <span
-      v-if="layout.includes('prev') && pager.length > 1"
+      v-if="layout.includes('prev') && pager.length > 1 && currentPage > 1"
       class="page-item pagination-prev cursor-pointer d-none d-xl-flex"
       @click="prev"
     >
@@ -34,7 +34,7 @@
       </li>
     </ul>
     <span
-      v-if="layout.includes('next') && pager.length > 1"
+      v-if="layout.includes('next') && pager.length > 1 && currentPage < pagerCount"
       class="page-item pagination-next cursor-pointer d-none d-xl-flex"
       @click="next"
     >
@@ -165,6 +165,7 @@ export default defineComponent({
       jumper,
       currentPage,
       currentSize,
+      pagerCount,
       pager,
       prev,
       next,
