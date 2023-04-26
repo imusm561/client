@@ -183,7 +183,6 @@
                       </template>
                     </VueSelect>
                   </div>
-
                   <div class="col-lg-12">
                     <label class="form-label">
                       {{

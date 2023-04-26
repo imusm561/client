@@ -6,11 +6,8 @@
         <div class="card card-height-100">
           <div class="card-body">
             <div class="align-items-center d-flex justify-content-between">
-              <h5>{{ $t('layout.navbar.helper.jobDetail.header') }}</h5>
+              <h5>{{ $t('layout.navbar.helper.job.detail.header') }}</h5>
               <div>
-                <button class="btn btn-sm" @click="$router.push({ name: 'job' })">
-                  <i class="fs-16 mdi mdi-view-grid-outline text-primary"></i>
-                </button>
                 <button class="btn btn-sm" :disabled="isJobExecuting" @click="handleExecuteJob">
                   <i
                     class="fs-16 mdi text-warning"
@@ -31,23 +28,23 @@
                   <dt class="col-sm-4 text-uppercase mb-3">id</dt>
                   <dd class="col-sm-8">#{{ job.id }}</dd>
                   <dt class="col-sm-4 text-uppercase mb-3">
-                    {{ $t('layout.navbar.helper.jobDetail.title') }}
+                    {{ $t('layout.navbar.helper.job.detail.title') }}
                   </dt>
                   <dd class="col-sm-8">{{ job.title }}</dd>
                   <dt class="col-sm-4 text-uppercase mb-3">
-                    {{ $t('layout.navbar.helper.jobDetail.rule') }}
+                    {{ $t('layout.navbar.helper.job.detail.rule') }}
                   </dt>
                   <dd class="col-sm-8">{{ job.rule }}</dd>
                   <dt class="col-sm-4 text-uppercase mb-3">
-                    {{ $t('layout.navbar.helper.jobDetail.start') }}
+                    {{ $t('layout.navbar.helper.job.detail.start') }}
                   </dt>
                   <dd class="col-sm-8">{{ job.start }}</dd>
                   <dt class="col-sm-4 text-uppercase mb-3">
-                    {{ $t('layout.navbar.helper.jobDetail.end') }}
+                    {{ $t('layout.navbar.helper.job.detail.end') }}
                   </dt>
                   <dd class="col-sm-8">{{ job.end }}</dd>
                   <dt class="col-sm-4 text-uppercase">
-                    {{ $t('layout.navbar.helper.jobDetail.status') }}
+                    {{ $t('layout.navbar.helper.job.detail.status') }}
                   </dt>
                   <dd class="col-sm-8">
                     <span class="badge text-uppercase badge-soft-primary">
@@ -59,7 +56,7 @@
               <div class="col-lg-7">
                 <div class="text-muted">
                   <h6 class="mb-3 fw-semibold text-uppercase">
-                    {{ $t('layout.navbar.helper.jobDetail.description') }}
+                    {{ $t('layout.navbar.helper.job.detail.description') }}
                   </h6>
                   <div class="ck ck-content" v-html="job.description"></div>
                 </div>
@@ -67,7 +64,7 @@
               <div class="col-12 mt-0" v-if="job.tags.length">
                 <div class="pt-3 border-top border-top-dashed">
                   <h6 class="mb-3 fw-semibold text-uppercase">
-                    {{ $t('layout.navbar.helper.jobDetail.tags') }}
+                    {{ $t('layout.navbar.helper.job.detail.tags') }}
                   </h6>
                   <div class="hstack flex-wrap gap-2 fs-15">
                     <div class="badge fw-medium badge-soft-info" v-for="tag in job.tags" :key="tag">
@@ -83,7 +80,7 @@
       <div class="col-xl-5">
         <div class="card card-height-100">
           <div class="card-body">
-            <h5>{{ $t('layout.navbar.helper.jobDetail.config') }}</h5>
+            <h5>{{ $t('layout.navbar.helper.job.detail.config') }}</h5>
             <MonacoEditor
               v-model="job.config"
               :options="{
@@ -105,7 +102,7 @@
               data-bs-toggle="tab"
               href="#tab_log"
             >
-              {{ $t('layout.navbar.helper.jobDetail.logs') }}
+              {{ $t('layout.navbar.helper.job.detail.logs') }}
               <small v-if="pagination.totalCount">({{ pagination.totalCount }})</small>
             </a>
           </li>
@@ -116,7 +113,7 @@
               data-bs-toggle="tab"
               href="#tab_comment"
             >
-              {{ $t('layout.navbar.helper.jobDetail.comments') }}
+              {{ $t('layout.navbar.helper.job.detail.comments') }}
               <small v-if="comments.length">({{ comments.length }})</small>
             </a>
           </li>
@@ -125,35 +122,34 @@
       <div class="card-body p-0">
         <div class="tab-content">
           <div
-            class="tab-pane p-3"
+            class="tab-pane"
             :class="{ active: !$route.query.tab || $route.query.tab === 'log' }"
             id="tab_log"
           >
             <div v-if="logs.length">
               <apexchart
                 :key="chart.key"
-                class="mb-3"
                 height="300"
                 :series="chart.series"
                 :options="chart.options"
               ></apexchart>
-              <div class="table-responsive table-card" data-simplebar style="max-height: 40vh">
+              <div class="table-responsive" data-simplebar style="max-height: 40vh">
                 <table class="table align-middle table-striped mb-0 table-hover">
                   <thead class="table-light">
                     <tr>
-                      <th class="text-capitalize" style="white-space: nowrap">id</th>
+                      <th class="text-capitalize" style="white-space: nowrap">ID</th>
                       <th class="text-capitalize" style="white-space: nowrap">UUID</th>
                       <th class="text-capitalize" style="white-space: nowrap">
-                        {{ $t('layout.navbar.helper.jobDetail.logs.executor') }}
+                        {{ $t('layout.navbar.helper.job.detail.logs.executor') }}
                       </th>
                       <th class="text-capitalize" style="white-space: nowrap">
-                        {{ $t('layout.navbar.helper.jobDetail.logs.executedAt') }}
+                        {{ $t('layout.navbar.helper.job.detail.logs.executedAt') }}
                       </th>
                       <th class="text-capitalize" style="white-space: nowrap">
-                        {{ $t('layout.navbar.helper.jobDetail.logs.timeConsuming') }}
+                        {{ $t('layout.navbar.helper.job.detail.logs.timeConsuming') }}
                       </th>
                       <th class="text-capitalize" style="white-space: nowrap">
-                        {{ $t('layout.navbar.helper.jobDetail.logs.data') }}
+                        {{ $t('layout.navbar.helper.job.detail.logs.data') }}
                       </th>
                     </tr>
                   </thead>
@@ -177,7 +173,7 @@
                   </tbody>
                 </table>
               </div>
-              <div class="pb-2 pt-4">
+              <div class="p-2">
                 <Pagination
                   :total="pagination.totalCount"
                   :page-num="pagination.pageNum"
@@ -186,7 +182,7 @@
                 />
               </div>
             </div>
-            <Empty :text="$t('layout.navbar.helper.jobDetail.logs.empty')" v-else />
+            <Empty :text="$t('layout.navbar.helper.job.detail.logs.empty')" v-else />
           </div>
           <div
             class="tab-pane"
@@ -239,7 +235,7 @@ import Comment from '@components/Comment';
 import i18n from '@utils/i18n';
 import { onMounted, onUnmounted, ref, watch, reactive } from 'vue';
 import { useRouter, getChartColorsArray, getUserInfo } from '@utils';
-import { getJobInfo, getJobLog, executeJob } from '@api/job';
+import { getJobDetail, getJobLog, executeJob } from '@api/job';
 import useJob from './useJob';
 import MonacoEditor from '@components/MonacoEditor';
 import { useToast } from 'vue-toastification';
@@ -265,7 +261,7 @@ export default {
     const job = ref({});
 
     const fetchJobInfo = () => {
-      getJobInfo({ id: route.value.params.id }).then(({ code, data, msg }) => {
+      getJobDetail({ id: route.value.params.id }).then(({ code, data, msg }) => {
         if (code === 200) {
           job.value = data;
         } else {

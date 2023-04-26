@@ -21,7 +21,7 @@ export default [
   {
     path: '/helper/job/:id',
     name: 'jobDetail',
-    meta: { title: 'layout.navbar.helper.jobDetail', auth: ['DBA', 'OE'] },
+    meta: { title: 'layout.navbar.helper.job.detail', auth: ['DBA', 'OE'] },
     component: () => import('@/views/navbar/helper/job/detail'),
   },
   {
@@ -41,6 +41,18 @@ export default [
     name: 'redis',
     meta: { title: 'layout.navbar.helper.redis', auth: ['DBA'] },
     component: () => import('@/views/navbar/helper/redis'),
+  },
+  {
+    path: '/helper/weixin',
+    name: 'weixin',
+    meta: { title: 'layout.navbar.helper.weixin', auth: ['OE'] },
+    component: () => import('@/views/navbar/helper/weixin'),
+  },
+  {
+    path: '/helper/weixin/:soid',
+    name: 'weixinDetail',
+    meta: { title: 'layout.navbar.helper.weixin.detail', auth: ['OE'] },
+    component: () => import('@/views/navbar/helper/weixin/detail'),
   },
   {
     path: '/helper/log',

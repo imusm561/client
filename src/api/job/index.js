@@ -13,8 +13,8 @@ export const updateJob = (data) => {
   return axios.post('/cor/job/update', data);
 };
 
-export const getJobInfo = (params) => {
-  return axios.get('/cor/job/info' + generateApiQuery(params));
+export const getJobDetail = (params) => {
+  return axios.get('/cor/job/detail' + generateApiQuery(params));
 };
 
 export const getJobLog = (params) => {

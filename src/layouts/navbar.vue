@@ -138,6 +138,18 @@
                       <span>{{ $t('layout.navbar.helper.code') }}</span>
                     </router-link>
                   </div>
+                  <div v-permission="'weixin'" class="col-4">
+                    <router-link class="dropdown-icon-item" :to="{ name: 'weixin' }">
+                      <img src="@/assets/images/navbar/helper/weixin.png" loading="lazy" />
+                      <span>{{ $t('layout.navbar.helper.weixin') }}</span>
+                    </router-link>
+                  </div>
+                  <div v-permission="'log'" class="col-4">
+                    <router-link class="dropdown-icon-item" :to="{ name: 'log' }">
+                      <img src="@/assets/images/navbar/helper/log.png" loading="lazy" />
+                      <span>{{ $t('layout.navbar.helper.log') }}</span>
+                    </router-link>
+                  </div>
                   <div v-permission="'sql'" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'sql' }">
                       <img src="@/assets/images/navbar/helper/sql.png" loading="lazy" />
@@ -148,12 +160,6 @@
                     <router-link class="dropdown-icon-item" :to="{ name: 'redis' }">
                       <img src="@/assets/images/navbar/helper/redis.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.redis') }}</span>
-                    </router-link>
-                  </div>
-                  <div v-permission="'log'" class="col-4">
-                    <router-link class="dropdown-icon-item" :to="{ name: 'log' }">
-                      <img src="@/assets/images/navbar/helper/log.png" loading="lazy" />
-                      <span>{{ $t('layout.navbar.helper.log') }}</span>
                     </router-link>
                   </div>
                 </div>

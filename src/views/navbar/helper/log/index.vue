@@ -89,7 +89,7 @@
           <table class="table table-hover table-striped align-middle mb-0">
             <thead class="table-light">
               <tr>
-                <th class="text-capitalize" style="white-space: nowrap">id</th>
+                <th class="text-capitalize" style="white-space: nowrap">ID</th>
                 <th class="text-capitalize" style="white-space: nowrap">
                   {{ $t('layout.navbar.helper.log.user') }}
                 </th>

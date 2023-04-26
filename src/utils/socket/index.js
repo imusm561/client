@@ -211,6 +211,7 @@ const initSocket = (socket) => {
       text: i18n.global.t('socket.disconnect.loading'),
       background: 'rgba(0, 0, 0, 0.7)',
     });
+    document.body.classList.remove('el-loading-parent--relative');
     loading.count = 0;
     loading.interval = setInterval(() => {
       loading.count += 1;

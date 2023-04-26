@@ -81,15 +81,13 @@ export default defineComponent({
           const editorValue = props.options?.diff
             ? monacoEditor?.getModel()?.modified?.getValue()
             : getEditor()?.getValue();
-          if (value !== editorValue) {
-            updateMonacoValue(monacoEditor, value);
-            if (!props.options?.readOnly && props.language === 'json' && value) {
-              try {
-                JSON.parse(value);
-                emit('error', null);
-              } catch (error) {
-                emit('error', error.message);
-              }
+          if (value !== editorValue) updateMonacoValue(monacoEditor, value);
+          if (!props.options?.readOnly && props.language === 'json') {
+            try {
+              if (value) JSON.parse(value);
+              emit('error', null);
+            } catch (error) {
+              emit('error', error.message);
             }
           }
         },
