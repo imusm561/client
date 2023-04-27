@@ -23,22 +23,26 @@ export const getAccountDetail = (params) => {
   return axios.get('/cor/weixin/detail' + generateApiQuery(params));
 };
 
-export const getBindUsers = (params) => {
-  return axios.get('/cor/weixin/users' + generateApiQuery(params));
+export const getBinds = (params) => {
+  return axios.get('/cor/weixin/binds' + generateApiQuery(params));
 };
 
-export const unBindUser = (data) => {
-  return axios.post('/cor/weixin/user/unbind', data);
+export const unbindUser = (data) => {
+  return axios.post('/cor/weixin/unbind', data);
 };
 
-export const getReplyScripts = (params) => {
-  return axios.get('/cor/weixin/scripts' + generateApiQuery(params));
+export const getStrategies = (params) => {
+  return axios.get('/cor/weixin/strategies' + generateApiQuery(params));
 };
 
-export const createReplyScript = (data) => {
-  return axios.post('/cor/weixin/script/create', data);
+export const createStrategy = (data) => {
+  return axios.post('/cor/weixin/strategy/create', data);
 };
 
-export const updateReplyScript = (data) => {
-  return axios.post('/cor/weixin/script/update', data);
+export const updateStrategy = (data) => {
+  return axios.post('/cor/weixin/strategy/update', data);
+};
+
+export const refreshAccount = (data) => {
+  return axios.post('/cor/weixin/refresh', data);
 };

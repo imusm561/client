@@ -8,67 +8,77 @@
             <div class="align-items-center d-flex justify-content-between">
               <h5>{{ $t('layout.navbar.helper.job.detail.header') }}</h5>
               <div>
-                <button class="btn btn-sm" :disabled="isJobExecuting" @click="handleExecuteJob">
+                <button
+                  class="btn btn-sm p-0 ms-2"
+                  :disabled="isJobExecuting"
+                  @click="handleExecuteJob"
+                >
                   <i
                     class="fs-16 mdi text-warning"
                     :class="isJobExecuting ? 'mdi-spin mdi-loading' : 'mdi-motion-play-outline'"
                   ></i>
                 </button>
-                <button class="btn btn-sm" @click="handleEditJob">
+                <button class="btn btn-sm p-0 ms-2" @click="handleEditJob">
                   <i class="fs-16 mdi mdi-square-edit-outline text-info"></i>
                 </button>
-                <button class="btn btn-sm" @click="handleDelJob">
+                <button class="btn btn-sm p-0 ms-2" @click="handleDelJob">
                   <i class="fs-16 mdi mdi-trash-can-outline text-danger"></i>
                 </button>
               </div>
             </div>
-            <div class="row">
-              <div class="col-lg-5">
-                <dl class="row mb-2">
-                  <dt class="col-sm-4 text-uppercase mb-3">id</dt>
-                  <dd class="col-sm-8">#{{ job.id }}</dd>
-                  <dt class="col-sm-4 text-uppercase mb-3">
-                    {{ $t('layout.navbar.helper.job.detail.title') }}
-                  </dt>
-                  <dd class="col-sm-8">{{ job.title }}</dd>
-                  <dt class="col-sm-4 text-uppercase mb-3">
-                    {{ $t('layout.navbar.helper.job.detail.rule') }}
-                  </dt>
-                  <dd class="col-sm-8">{{ job.rule }}</dd>
-                  <dt class="col-sm-4 text-uppercase mb-3">
-                    {{ $t('layout.navbar.helper.job.detail.start') }}
-                  </dt>
-                  <dd class="col-sm-8">{{ job.start }}</dd>
-                  <dt class="col-sm-4 text-uppercase mb-3">
-                    {{ $t('layout.navbar.helper.job.detail.end') }}
-                  </dt>
-                  <dd class="col-sm-8">{{ job.end }}</dd>
-                  <dt class="col-sm-4 text-uppercase">
-                    {{ $t('layout.navbar.helper.job.detail.status') }}
-                  </dt>
-                  <dd class="col-sm-8">
-                    <span class="badge text-uppercase badge-soft-primary">
-                      {{ resolveJobStatus(job).text }}
-                    </span>
-                  </dd>
-                </dl>
-              </div>
-              <div class="col-lg-7">
-                <div class="text-muted">
-                  <h6 class="mb-3 fw-semibold text-uppercase">
-                    {{ $t('layout.navbar.helper.job.detail.description') }}
-                  </h6>
-                  <div class="ck ck-content" v-html="job.description"></div>
+            <div class="pt-2 border-top border-top">
+              <div class="row">
+                <div class="col-lg-5">
+                  <dl class="row mb-1">
+                    <dt class="col-sm-4 text-uppercase">id</dt>
+                    <dd class="col-sm-8 mb-3">#{{ job.id }}</dd>
+                    <dt class="col-sm-4 text-uppercase">
+                      {{ $t('layout.navbar.helper.job.detail.title') }}
+                    </dt>
+                    <dd class="col-sm-8 mb-3">{{ job.title }}</dd>
+                    <dt class="col-sm-4 text-uppercase">
+                      {{ $t('layout.navbar.helper.job.detail.rule') }}
+                    </dt>
+                    <dd class="col-sm-8 mb-3">{{ job.rule }}</dd>
+                    <dt class="col-sm-4 text-uppercase">
+                      {{ $t('layout.navbar.helper.job.detail.start') }}
+                    </dt>
+                    <dd class="col-sm-8 mb-3">{{ job.start }}</dd>
+                    <dt class="col-sm-4 text-uppercase">
+                      {{ $t('layout.navbar.helper.job.detail.end') }}
+                    </dt>
+                    <dd class="col-sm-8 mb-3">{{ job.end }}</dd>
+                    <dt class="col-sm-4 text-uppercase">
+                      {{ $t('layout.navbar.helper.job.detail.status') }}
+                    </dt>
+                    <dd class="col-sm-8 mb-3">
+                      <span class="badge text-uppercase badge-soft-primary">
+                        {{ resolveJobStatus(job).text }}
+                      </span>
+                    </dd>
+                  </dl>
                 </div>
-              </div>
-              <div class="col-12 mt-0" v-if="job.tags.length">
-                <div class="pt-3 border-top border-top-dashed">
-                  <h6 class="mb-3 fw-semibold text-uppercase">
-                    {{ $t('layout.navbar.helper.job.detail.tags') }}
-                  </h6>
-                  <div class="hstack flex-wrap gap-2 fs-15">
-                    <div class="badge fw-medium badge-soft-info" v-for="tag in job.tags" :key="tag">
-                      {{ tag }}
+                <div class="col-lg-7">
+                  <div class="text-muted">
+                    <h6 class="mb-1 fw-semibold text-uppercase">
+                      {{ $t('layout.navbar.helper.job.detail.description') }}
+                    </h6>
+                    <div class="ck ck-content" v-html="job.description"></div>
+                  </div>
+                </div>
+                <div class="col-12 mt-0" v-if="job.tags.length">
+                  <div class="pt-3 border-top border-top-dashed">
+                    <h6 class="mb-1 fw-semibold text-uppercase">
+                      {{ $t('layout.navbar.helper.job.detail.tags') }}
+                    </h6>
+                    <div class="hstack flex-wrap gap-2 fs-15">
+                      <div
+                        class="badge fw-medium badge-soft-info"
+                        v-for="tag in job.tags"
+                        :key="tag"
+                      >
+                        {{ tag }}
+                      </div>
                     </div>
                   </div>
                 </div>

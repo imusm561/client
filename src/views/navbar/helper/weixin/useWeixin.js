@@ -21,67 +21,67 @@ export default function useWeixin() {
 
   const msgTypeOptions = [
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.text'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.text'),
       value: 'text',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.image'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.image'),
       value: 'image',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.voice'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.voice'),
       value: 'voice',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.video'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.video'),
       value: 'video',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.shortvideo'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.shortvideo'),
       value: 'shortvideo',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.location'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.location'),
       value: 'location',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.link'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.link'),
       value: 'link',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.subscribe'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.subscribe'),
       value: 'subscribe',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.scan'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.scan'),
       value: 'scan',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.unsubscribe'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.unsubscribe'),
       value: 'unsubscribe',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.LOCATION'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.LOCATION'),
       value: 'LOCATION',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.CLICK'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.CLICK'),
       value: 'CLICK',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.msgType.SCAN'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.SCAN'),
       value: 'SCAN',
       for: ['miniProgram'],
     },
@@ -89,37 +89,37 @@ export default function useWeixin() {
 
   const replyTypeOptions = [
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.replyType.text'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.replyType.text'),
       value: 'text',
-      for: ['serviceAccount', 'subscriptionAccount'],
+      for: ['serviceAccount', 'subscriptionAccount', 'miniProgram'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.replyType.image'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.replyType.image'),
       value: 'image',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.replyType.voice'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.replyType.voice'),
       value: 'voice',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.replyType.video'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.replyType.video'),
       value: 'video',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.replyType.music'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.replyType.music'),
       value: 'music',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.replyType.news'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.replyType.news'),
       value: 'news',
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.scripts.replyType.script'),
+      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.replyType.script'),
       value: 'script',
       for: ['serviceAccount', 'subscriptionAccount', 'miniProgram'],
     },

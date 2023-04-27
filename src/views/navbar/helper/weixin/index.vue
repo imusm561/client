@@ -124,11 +124,11 @@
             <div class="d-flex justify-content-between">
               <div class="text-muted">
                 <i class="mdi mdi-script-text-outline"></i>
-                {{ account.scripts.length }}
+                {{ account.strategies.length }}
               </div>
               <div class="text-muted">
                 <i class="mdi mdi-shield-account-outline"></i>
-                {{ account.users.length }}
+                {{ account.binds.length }}
               </div>
             </div>
           </div>

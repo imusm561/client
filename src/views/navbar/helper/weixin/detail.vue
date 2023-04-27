@@ -8,38 +8,38 @@
             <div class="align-items-center d-flex justify-content-between">
               <h5>{{ $t('layout.navbar.helper.weixin.detail.header') }}</h5>
               <div>
-                <button class="btn btn-sm" @click="handleEditAccount">
+                <button class="btn btn-sm p-0 ms-2" @click="handleEditAccount">
                   <i class="fs-16 mdi mdi-square-edit-outline text-info"></i>
                 </button>
-                <button class="btn btn-sm" @click="handleDeleteAccount">
+                <button class="btn btn-sm p-0 ms-2" @click="handleDeleteAccount">
                   <i class="fs-16 mdi mdi-trash-can-outline text-danger"></i>
                 </button>
               </div>
             </div>
-            <div class="pt-2 border-top border-top-dashed">
+            <div class="pt-2 border-top border-top">
               <div class="row">
                 <div class="col-lg-6">
                   <dl class="row mb-0">
-                    <dt class="col-sm-4 text-uppercase mb-3">
+                    <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.title') }}
                     </dt>
-                    <dd class="col-sm-8">{{ account.title }}</dd>
-                    <dt class="col-sm-4 text-uppercase mb-3">
+                    <dd class="col-sm-8 mb-3">{{ account.title }}</dd>
+                    <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.serviceType') }}
                     </dt>
-                    <dd class="col-sm-8">
+                    <dd class="col-sm-8 mb-3">
                       {{
                         $t(`layout.navbar.helper.weixin.detail.serviceType.${account.service_type}`)
                       }}
                     </dd>
-                    <dt class="col-sm-4 text-uppercase mb-3">
+                    <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.soid') }}
                     </dt>
-                    <dd class="col-sm-8">{{ account.soid }}</dd>
-                    <dt class="col-sm-4 text-uppercase mb-3">
+                    <dd class="col-sm-8 mb-3">{{ account.soid }}</dd>
+                    <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.email') }}
                     </dt>
-                    <dd class="col-sm-8">{{ account.email }}</dd>
+                    <dd class="col-sm-8 mb-3">{{ account.email }}</dd>
                   </dl>
                 </div>
                 <div class="col-lg-6">
@@ -49,36 +49,36 @@
                         ['serviceAccount', 'subscriptionAccount'].includes(account.service_type)
                       "
                     >
-                      <dt class="col-sm-4 text-uppercase mb-3">
+                      <dt class="col-sm-4 text-uppercase">
                         {{ $t('layout.navbar.helper.weixin.detail.token') }}
                       </dt>
-                      <dd class="col-sm-8">{{ account.token }}</dd>
-                      <dt class="col-sm-4 text-uppercase mb-3">
+                      <dd class="col-sm-8 mb-3">{{ account.token }}</dd>
+                      <dt class="col-sm-4 text-uppercase">
                         {{ $t('layout.navbar.helper.weixin.detail.encodingAESKey') }}
                       </dt>
-                      <dd class="col-sm-8">{{ account.encoding_aes_key }}</dd>
+                      <dd class="col-sm-8 mb-3">{{ account.encoding_aes_key }}</dd>
                     </span>
-                    <dt class="col-sm-4 text-uppercase mb-3">
+                    <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.appId') }}
                     </dt>
-                    <dd class="col-sm-8">{{ account.app_id }}</dd>
-                    <dt class="col-sm-4 text-uppercase mb-3">
+                    <dd class="col-sm-8 mb-3">{{ account.app_id }}</dd>
+                    <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.appSecret') }}
                     </dt>
-                    <dd class="col-sm-8">{{ account.app_secret }}</dd>
+                    <dd class="col-sm-8 mb-3">{{ account.app_secret }}</dd>
                     <span
                       v-if="
                         ['serviceAccount', 'subscriptionAccount'].includes(account.service_type)
                       "
                     >
-                      <dt class="col-sm-4 text-uppercase mb-3">
+                      <dt class="col-sm-4 text-uppercase">
                         {{ $t('layout.navbar.helper.weixin.detail.mchId') }}
                       </dt>
-                      <dd class="col-sm-8">{{ account.mch_id }}</dd>
-                      <dt class="col-sm-4 text-uppercase mb-3">
+                      <dd class="col-sm-8 mb-3">{{ account.mch_id }}</dd>
+                      <dt class="col-sm-4 text-uppercase">
                         {{ $t('layout.navbar.helper.weixin.detail.apiKey') }}
                       </dt>
-                      <dd class="col-sm-8">{{ account.api_key }}</dd>
+                      <dd class="col-sm-8 mb-3">{{ account.api_key }}</dd>
                     </span>
                   </dl>
                 </div>
@@ -86,34 +86,50 @@
             </div>
             <div
               class="pt-2 border-top border-top-dashed"
-              v-if="account.access_token || account.js_api_ticket"
+              v-if="account.access_token || account.jsapi_ticket"
             >
               <div class="col-12">
                 <dl class="row mb-0" v-if="account.access_token">
-                  <dt class="col-sm-3 text-uppercase mb-3">
+                  <dt class="col-sm-3 text-uppercase">
                     {{ $t('layout.navbar.helper.weixin.detail.accessToken') }}
+                    <i
+                      class="mdi mdi-refresh text-info cursor-pointer"
+                      @click="handleRefreshAccount('access_token')"
+                    ></i>
                   </dt>
-                  <dd class="col-sm-9">{{ account.access_token }}</dd>
-                  <dt class="col-sm-3 text-uppercase mb-3">
+                  <dd class="col-sm-9 mb-3" style="word-break: break-all">
+                    {{ account.access_token }}
+                  </dd>
+                  <dt class="col-sm-3 text-uppercase">
                     {{ $t('layout.navbar.helper.weixin.detail.accessTokenTme') }}
                   </dt>
-                  <dd class="col-sm-9">{{ $moment(account.access_token_time).fromNow() }}</dd>
+                  <dd class="col-sm-9 mb-3">
+                    {{ $moment(account.access_token_time).format('llll') }}
+                  </dd>
                 </dl>
-                <dl class="row mb-0" v-if="account.js_api_ticket">
-                  <dt class="col-sm-3 text-uppercase mb-3">
-                    {{ $t('layout.navbar.helper.weixin.detail.jsApiTicket') }}
+                <dl class="row mb-0" v-if="account.jsapi_ticket">
+                  <dt class="col-sm-3 text-uppercase">
+                    {{ $t('layout.navbar.helper.weixin.detail.jsapiTicket') }}
+                    <i
+                      class="mdi mdi-refresh text-info cursor-pointer"
+                      @click="handleRefreshAccount('jsapi_ticket')"
+                    ></i>
                   </dt>
-                  <dd class="col-sm-9">{{ account.js_api_ticket }}</dd>
-                  <dt class="col-sm-3 text-uppercase mb-3">
-                    {{ $t('layout.navbar.helper.weixin.detail.jsApiTicketTime') }}
+                  <dd class="col-sm-9 mb-3" style="word-break: break-all">
+                    {{ account.jsapi_ticket }}
+                  </dd>
+                  <dt class="col-sm-3 text-uppercase">
+                    {{ $t('layout.navbar.helper.weixin.detail.jsapiTicketTime') }}
                   </dt>
-                  <dd class="col-sm-9">{{ $moment(account.js_api_ticket_time).fromNow() }}</dd>
+                  <dd class="col-sm-9 mb-3">
+                    {{ $moment(account.jsapi_ticket_time).format('llll') }}
+                  </dd>
                 </dl>
               </div>
             </div>
             <div class="pt-2 border-top border-top-dashed" v-if="account.description">
               <div class="col-12 mt-0 mb-3">
-                <h6 class="text-black">
+                <h6 class="text-dark">
                   {{ $t('layout.navbar.helper.weixin.detail.description') }}
                 </h6>
                 <div class="ck ck-content" v-html="account.description"></div>
@@ -121,7 +137,7 @@
             </div>
             <div class="pt-2 border-top border-top-dashed" v-if="account.tags.length">
               <div class="col-12 mt-0 mb-3">
-                <h6 class="text-black">
+                <h6 class="text-dark">
                   {{ $t('layout.navbar.helper.weixin.detail.tags') }}
                 </h6>
                 <div class="hstack flex-wrap gap-2 fs-15">
@@ -142,18 +158,27 @@
         <div class="card card-height-100" style="min-height: 40vh">
           <div class="card-body">
             <div class="align-items-center d-flex justify-content-between">
-              <h5>{{ $t('layout.navbar.helper.weixin.detail.config') }}</h5>
+              <h5>
+                {{ $t('layout.navbar.helper.weixin.detail.config') }}
+              </h5>
               <div>
-                <!-- <button class="btn btn-sm">
-                  <i class="fs-16 mdi mdi-square-edit-outline text-info"></i>
+                <button
+                  class="btn btn-sm p-0 ms-2"
+                  v-if="['serviceAccount', 'subscriptionAccount'].includes(account.service_type)"
+                >
+                  <i
+                    class="fs-16 mdi mdi-refresh text-info"
+                    @click="handleRefreshAccount('menu')"
+                  ></i>
                 </button>
-                <button class="btn btn-sm">
-                  <i class="fs-16 mdi mdi-trash-can-outline text-danger"></i>
-                </button> -->
               </div>
             </div>
             <MonacoEditor
-              style="position: absolute; height: calc(100% - 66.5px); width: calc(100% - 32px)"
+              style="
+                position: absolute;
+                height: calc(100% - 2rem - 27.5px);
+                width: calc(100% - 32px);
+              "
               v-model="account.config"
               :options="{
                 readOnly: true,
@@ -168,89 +193,89 @@
       <div class="card-header">
         <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0">
           <li class="nav-item">
-            <a class="nav-link active" data-bs-toggle="tab" href="#tab_scripts">
-              {{ $t('layout.navbar.helper.weixin.detail.scripts') }}
+            <a class="nav-link active" data-bs-toggle="tab" href="#tab_strategies">
+              {{ $t('layout.navbar.helper.weixin.detail.strategies') }}
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#tab_users">
-              {{ $t('layout.navbar.helper.weixin.detail.users') }}
+            <a class="nav-link" data-bs-toggle="tab" href="#tab_binds">
+              {{ $t('layout.navbar.helper.weixin.detail.binds') }}
             </a>
           </li>
         </ul>
       </div>
       <div class="card-body p-0">
         <div class="tab-content">
-          <div class="tab-pane active" id="tab_scripts">
-            <div v-if="scripts.length">
+          <div class="tab-pane active" id="tab_strategies">
+            <div v-if="strategies.length">
               <div class="table-responsive" data-simplebar style="max-height: 40vh">
                 <table class="table align-middle table-striped mb-0 table-hover">
                   <thead class="table-light">
                     <tr>
                       <th class="text-capitalize">ID</th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.scripts.createdBy') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.strategies.createdBy') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.scripts.createdAt') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.strategies.createdAt') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.scripts.msgType') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.strategies.msgType') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.scripts.msgKeyword') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.strategies.msgKeyword') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.scripts.instrPre') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.strategies.instrPre') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.scripts.instrExp') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.strategies.instrExp') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.scripts.replyType') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.strategies.replyType') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.scripts.replyContent') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.strategies.replyContent') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.scripts.replyScope') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.strategies.replyScope') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.scripts.description') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.strategies.description') }}
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="script in scripts" :key="script.id">
+                    <tr v-for="strategy in strategies" :key="strategy.id">
                       <td class="text-secondary text-decoration-underline cursor-pointer fw-medium">
-                        <span @click="handleClickScriptId(script)">#{{ script.id }}</span>
+                        <span @click="handleClickStrategyId(strategy)">#{{ strategy.id }}</span>
                       </td>
                       <td>
-                        {{ getUserInfo(script.created_by).fullname }}
+                        {{ getUserInfo(strategy.created_by).fullname }}
                       </td>
                       <td>
-                        {{ $moment(script.created_at).format('llll') }}
+                        {{ $moment(strategy.created_at).format('llll') }}
                       </td>
-                      <td>
-                        {{
-                          $t(
-                            `layout.navbar.helper.weixin.detail.scripts.msgType.${script.msg_type}`,
-                          )
-                        }}
-                      </td>
-                      <td>{{ script.msg_keyword }}</td>
-                      <td>{{ script.instr_pre }}</td>
-                      <td>{{ script.instr_exp }}</td>
                       <td>
                         {{
                           $t(
-                            `layout.navbar.helper.weixin.detail.scripts.replyType.${script.reply_type}`,
+                            `layout.navbar.helper.weixin.detail.strategies.msgType.${strategy.msg_type}`,
                           )
                         }}
                       </td>
-                      <td>{{ script.reply_content }}</td>
-                      <td>{{ script.reply_scope.toString() }}</td>
-                      <td>{{ replaceHtml(script.description) }}</td>
+                      <td>{{ strategy.msg_keyword }}</td>
+                      <td>{{ strategy.instr_pre }}</td>
+                      <td>{{ strategy.instr_exp }}</td>
+                      <td>
+                        {{
+                          $t(
+                            `layout.navbar.helper.weixin.detail.strategies.replyType.${strategy.reply_type}`,
+                          )
+                        }}
+                      </td>
+                      <td>{{ strategy.reply_content }}</td>
+                      <td>{{ strategy.reply_scope.toString() }}</td>
+                      <td>{{ replaceHtml(strategy.description) }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -259,68 +284,68 @@
                 <button
                   class="btn btn-soft-secondary btn-sm"
                   type="button"
-                  @click="handleCreateScript"
+                  @click="handleCreateStrategy"
                 >
-                  {{ $t('layout.navbar.helper.weixin.detail.scripts.create') }}
+                  {{ $t('layout.navbar.helper.weixin.detail.strategies.create') }}
                 </button>
                 <Pagination
-                  :total="pagination.scripts.totalCount"
-                  :page-num="pagination.scripts.pageNum"
-                  :page-size="pagination.scripts.pageSize"
-                  @changed="($event) => handlePaginationChange({ tab: 'scripts', ...$event })"
+                  :total="pagination.strategies.totalCount"
+                  :page-num="pagination.strategies.pageNum"
+                  :page-size="pagination.strategies.pageSize"
+                  @changed="($event) => handlePaginationChange({ tab: 'strategies', ...$event })"
                 />
               </div>
             </div>
-            <Empty v-else :text="$t('layout.navbar.helper.weixin.detail.scripts.empty')">
+            <Empty v-else :text="$t('layout.navbar.helper.weixin.detail.strategies.empty')">
               <span
                 class="mt-n3 text-secondary text-center cursor-pointer text-decoration-underline"
-                @click="handleCreateScript"
+                @click="handleCreateStrategy"
               >
-                {{ $t('layout.navbar.helper.weixin.detail.scripts.create') }}
+                {{ $t('layout.navbar.helper.weixin.detail.strategies.create') }}
               </span>
             </Empty>
           </div>
-          <div class="tab-pane" id="tab_users">
-            <div v-if="users.length">
+          <div class="tab-pane" id="tab_binds">
+            <div v-if="binds.length">
               <div class="table-responsive" data-simplebar style="max-height: 40vh">
                 <table class="table align-middle table-striped mb-0 table-hover">
                   <thead class="table-light">
                     <tr>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.users.title') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.binds.title') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.users.createdAt') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.binds.createdAt') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.users.openid') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.binds.openid') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.users.userinfo') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.binds.data') }}
                       </th>
                       <th class="text-capitalize"></th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="user in users" :key="user.id">
-                      <td>{{ user.title }}</td>
+                    <tr v-for="bind in binds" :key="bind.id">
+                      <td>{{ bind.title }}</td>
                       <td>
-                        {{ $moment(user.created_at).format('llll') }}
+                        {{ $moment(bind.created_at).format('llll') }}
                       </td>
                       <td
                         class="openid cursor-pointer"
-                        @click="current_user = user"
+                        @click="current_bind = bind"
                         data-bs-toggle="modal"
-                        href="#unbindUserModal"
-                        :title="$t('layout.navbar.helper.weixin.detail.users.unbind')"
+                        href="#unbindModal"
+                        :title="$t('layout.navbar.helper.weixin.detail.binds.unbind')"
                       >
-                        {{ user.openid }}
+                        {{ bind.openid }}
                       </td>
                       <td
                         class="text-secondary text-decoration-underline cursor-pointer fw-medium"
-                        @click="handleViewBindUserInfo(user)"
+                        @click="handleViewBindData(bind)"
                       >
-                        {{ user.userinfo }}
+                        {{ bind.data }}
                       </td>
                     </tr>
                   </tbody>
@@ -328,14 +353,14 @@
               </div>
               <div class="p-2">
                 <Pagination
-                  :total="pagination.users.totalCount"
-                  :page-num="pagination.users.pageNum"
-                  :page-size="pagination.users.pageSize"
-                  @changed="($event) => handlePaginationChange({ tab: 'users', ...$event })"
+                  :total="pagination.binds.totalCount"
+                  :page-num="pagination.binds.pageNum"
+                  :page-size="pagination.binds.pageSize"
+                  @changed="($event) => handlePaginationChange({ tab: 'binds', ...$event })"
                 />
               </div>
             </div>
-            <Empty :text="$t('layout.navbar.helper.weixin.detail.users.empty')" v-else />
+            <Empty :text="$t('layout.navbar.helper.weixin.detail.binds.empty')" v-else />
           </div>
         </div>
       </div>
@@ -354,7 +379,7 @@
           data-bs-dismiss="offcanvas"
         />
         <MonacoEditor
-          v-model="current_user.userinfo"
+          v-model="current_bind.data"
           language="json"
           :options="{
             readOnly: true,
@@ -364,12 +389,12 @@
       </div>
     </div>
 
-    <div class="modal fade" id="unbindUserModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="unbindModal" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
             <button
-              id="hideUnbindUserModalBtn"
+              id="hideUnbindModalBtn"
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
@@ -379,19 +404,19 @@
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
                 <h4>
-                  {{ current_user.openid }}
+                  {{ current_bind.openid }}
                 </h4>
                 <p class="text-muted mx-4 mb-0">
-                  {{ $t('layout.navbar.helper.weixin.detail.users.unbindUserModal.confirm') }}
+                  {{ $t('layout.navbar.helper.weixin.detail.binds.unbindModal.confirm') }}
                 </p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
               <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">
-                {{ $t('layout.navbar.helper.weixin.detail.users.unbindUserModal.cancel') }}
+                {{ $t('layout.navbar.helper.weixin.detail.binds.unbindModal.cancel') }}
               </button>
-              <button type="button" class="btn w-sm btn-danger" @click="handleUnbindUser">
-                {{ $t('layout.navbar.helper.weixin.detail.users.unbindUserModal.confirmed') }}
+              <button type="button" class="btn w-sm btn-danger" @click="handleUnbind">
+                {{ $t('layout.navbar.helper.weixin.detail.binds.unbindModal.confirmed') }}
               </button>
             </div>
           </div>
@@ -400,14 +425,14 @@
     </div>
 
     <button
-      id="showViewAndEditScriptModalBtn"
+      id="showviewAndEditStrategyModalBtn"
       class="d-none"
       data-bs-toggle="modal"
-      data-bs-target="#viewAndEditScriptModal"
+      data-bs-target="#viewAndEditStrategyModal"
     />
     <div
       class="modal fade"
-      id="viewAndEditScriptModal"
+      id="viewAndEditStrategyModal"
       data-bs-backdrop="static"
       data-bs-keyboard="false"
     >
@@ -416,21 +441,25 @@
           <div class="modal-header p-2 bg-soft-info">
             <h5 class="modal-title">
               {{
-                current_script.id
-                  ? `#${current_script.id}`
+                current_strategy.id
+                  ? `#${current_strategy.id}`
                   : $t(
-                      'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.newScript',
+                      'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.newStrategy',
                     )
               }}
             </h5>
             <button
               type="button"
-              id="hideViewAndEditScriptModalBtn"
+              id="hideviewAndEditStrategyModalBtn"
               class="btn-close"
               data-bs-dismiss="modal"
             ></button>
           </div>
-          <Form v-slot="{ errors }" @submit="handleSubmitScript" :key="viewAndEditScriptModalKey">
+          <Form
+            v-slot="{ errors }"
+            @submit="handleSubmitStrategy"
+            :key="viewAndEditStrategyModalKey"
+          >
             <div class="modal-body p-0">
               <div
                 v-if="is_editing"
@@ -443,18 +472,18 @@
                     <label class="form-label">
                       {{
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.soid',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.soid',
                         )
                       }}
                     </label>
                     <Field
                       name="soid"
-                      v-model="current_script.soid"
+                      v-model="current_strategy.soid"
                       type="text"
                       disabled
                       :placeholder="
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.soid',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.soid',
                         )
                       "
                       :class="['form-control', errors.soid && 'is-invalid']"
@@ -467,15 +496,15 @@
                     <label class="form-label">
                       {{
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.msgType',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.msgType',
                         )
                       }}
                     </label>
                     <VueSelect
-                      v-model="current_script.msg_type"
+                      v-model="current_strategy.msg_type"
                       :placeholder="
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.msgType',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.msgType',
                         )
                       "
                       :class="errors.msg_type && 'is-invalid'"
@@ -497,7 +526,7 @@
                     </VueSelect>
                     <Field
                       name="msg_type"
-                      v-model="current_script.msg_type"
+                      v-model="current_strategy.msg_type"
                       rules="required"
                       class="d-none"
                     />
@@ -507,17 +536,17 @@
                     <label class="form-label">
                       {{
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.msgKeyword',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.msgKeyword',
                         )
                       }}
                     </label>
                     <Field
                       name="msg_keyword"
-                      v-model="current_script.msg_keyword"
+                      v-model="current_strategy.msg_keyword"
                       type="text"
                       :placeholder="
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.msgKeyword',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.msgKeyword',
                         )
                       "
                       :class="['form-control', errors.msg_keyword && 'is-invalid']"
@@ -532,17 +561,17 @@
                     <label class="form-label">
                       {{
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.instrPre',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.instrPre',
                         )
                       }}
                     </label>
                     <Field
                       name="instr_pre"
-                      v-model="current_script.instr_pre"
+                      v-model="current_strategy.instr_pre"
                       type="text"
                       :placeholder="
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.instrPre',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.instrPre',
                         )
                       "
                       :class="['form-control', errors.instr_pre && 'is-invalid']"
@@ -557,21 +586,21 @@
                     <label class="form-label">
                       {{
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.instrExp',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.instrExp',
                         )
                       }}
                     </label>
                     <Field
                       name="instr_exp"
-                      v-model="current_script.instr_exp"
+                      v-model="current_strategy.instr_exp"
                       type="number"
                       :placeholder="
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.instrExp',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.instrExp',
                         )
                       "
                       :class="['form-control', errors.instr_exp && 'is-invalid']"
-                      :rules="current_script.instr_pre ? 'required' : ''"
+                      :rules="current_strategy.instr_pre ? 'required' : ''"
                     />
                     <span class="invalid-feedback">{{ errors.instr_exp }}</span>
                   </div>
@@ -580,16 +609,16 @@
                     <label class="form-label">
                       {{
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.replyType',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.replyType',
                         )
                       }}
                     </label>
 
                     <VueSelect
-                      v-model="current_script.reply_type"
+                      v-model="current_strategy.reply_type"
                       :placeholder="
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.replyType',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.replyType',
                         )
                       "
                       :class="errors.reply_type && 'is-invalid'"
@@ -613,7 +642,7 @@
                     </VueSelect>
                     <Field
                       name="reply_type"
-                      v-model="current_script.reply_type"
+                      v-model="current_strategy.reply_type"
                       rules="required"
                       class="d-none"
                     />
@@ -624,16 +653,16 @@
                     <label class="form-label">
                       {{
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.replyScope',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.replyScope',
                         )
                       }}
                     </label>
 
                     <VueSelect
-                      v-model="current_script.reply_scope"
+                      v-model="current_strategy.reply_scope"
                       :placeholder="
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.replyScope',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.replyScope',
                         )
                       "
                       multiple
@@ -657,7 +686,7 @@
                     </VueSelect>
                     <Field
                       name="reply_scope"
-                      v-model="current_script.reply_scope"
+                      v-model="current_strategy.reply_scope"
                       rules=""
                       class="d-none"
                     />
@@ -668,7 +697,7 @@
                     <label class="form-label">
                       {{
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.replyContent',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.replyContent',
                         )
                       }}
                     </label>
@@ -676,11 +705,11 @@
                       as="textarea"
                       rows="6"
                       name="reply_content"
-                      v-model="current_script.reply_content"
+                      v-model="current_strategy.reply_content"
                       type="text"
                       :placeholder="
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.replyContent',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.replyContent',
                         )
                       "
                       :class="['form-control', errors.reply_content && 'is-invalid']"
@@ -693,19 +722,19 @@
                     <label class="form-label">
                       {{
                         $t(
-                          'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.description',
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.description',
                         )
                       }}
                     </label>
                     <CKEditor
-                      v-model="current_script.description"
+                      v-model="current_strategy.description"
                       id="ck_job_description"
                       :error="{ id: 'ck_job_description', error: errors.description }"
                       :class="errors.description && 'is-invalid'"
                     />
                     <Field
                       name="description"
-                      v-model="current_script.description"
+                      v-model="current_strategy.description"
                       rules=""
                       class="d-none"
                     />
@@ -714,100 +743,100 @@
                 </div>
               </div>
               <div v-else class="p-3">
-                <div class="row mb-2" v-if="current_script.msg_type">
+                <div class="row mb-2" v-if="current_strategy.msg_type">
                   <span class="col-4 fw-bold">
-                    {{ $t('layout.navbar.helper.weixin.detail.scripts.msgType') }}
+                    {{ $t('layout.navbar.helper.weixin.detail.strategies.msgType') }}
                   </span>
                   <span class="col-8 text-end">
                     {{
                       $t(
-                        `layout.navbar.helper.weixin.detail.scripts.msgType.${current_script.msg_type}`,
+                        `layout.navbar.helper.weixin.detail.strategies.msgType.${current_strategy.msg_type}`,
                       )
                     }}
                   </span>
                 </div>
 
-                <div class="row mb-2" v-if="current_script.msg_keyword">
+                <div class="row mb-2" v-if="current_strategy.msg_keyword">
                   <span class="col-4 fw-bold">
-                    {{ $t('layout.navbar.helper.weixin.detail.scripts.msgKeyword') }}
+                    {{ $t('layout.navbar.helper.weixin.detail.strategies.msgKeyword') }}
                   </span>
                   <span class="col-8 text-end">
-                    {{ current_script.msg_keyword }}
+                    {{ current_strategy.msg_keyword }}
                   </span>
                 </div>
 
                 <div
                   class="row mb-2"
                   v-if="
-                    current_script.instr_pre &&
+                    current_strategy.instr_pre &&
                     ['serviceAccount', 'subscriptionAccount'].includes(account.service_type)
                   "
                 >
                   <span class="col-4 fw-bold">
-                    {{ $t('layout.navbar.helper.weixin.detail.scripts.instrPre') }}
+                    {{ $t('layout.navbar.helper.weixin.detail.strategies.instrPre') }}
                   </span>
                   <span class="col-8 text-end">
-                    {{ current_script.instr_pre }}
+                    {{ current_strategy.instr_pre }}
                   </span>
                 </div>
 
                 <div
                   class="row mb-2"
                   v-if="
-                    current_script.instr_exp &&
+                    current_strategy.instr_exp &&
                     ['serviceAccount', 'subscriptionAccount'].includes(account.service_type)
                   "
                 >
                   <span class="col-4 fw-bold">
-                    {{ $t('layout.navbar.helper.weixin.detail.scripts.instrExp') }}
+                    {{ $t('layout.navbar.helper.weixin.detail.strategies.instrExp') }}
                   </span>
                   <span class="col-8 text-end">
-                    {{ current_script.instr_exp }}
+                    {{ current_strategy.instr_exp }}
                   </span>
                 </div>
 
-                <div class="row mb-2" v-if="current_script.reply_type">
+                <div class="row mb-2" v-if="current_strategy.reply_type">
                   <span class="col-4 fw-bold">
-                    {{ $t('layout.navbar.helper.weixin.detail.scripts.replyType') }}
+                    {{ $t('layout.navbar.helper.weixin.detail.strategies.replyType') }}
                   </span>
                   <span class="col-8 text-end">
                     {{
                       $t(
-                        `layout.navbar.helper.weixin.detail.scripts.replyType.${current_script.reply_type}`,
+                        `layout.navbar.helper.weixin.detail.strategies.replyType.${current_strategy.reply_type}`,
                       )
                     }}
                   </span>
                 </div>
 
-                <div class="row mb-2" v-if="current_script.reply_scope">
+                <div class="row mb-2" v-if="current_strategy.reply_scope">
                   <span class="col-4 fw-bold">
-                    {{ $t('layout.navbar.helper.weixin.detail.scripts.replyScope') }}
+                    {{ $t('layout.navbar.helper.weixin.detail.strategies.replyScope') }}
                   </span>
                   <span class="col-8 text-end">
-                    {{ current_script.reply_scope.toString() }}
+                    {{ current_strategy.reply_scope.toString() }}
                   </span>
                 </div>
 
-                <div class="row mb-2" v-if="current_script.reply_content">
+                <div class="row mb-2" v-if="current_strategy.reply_content">
                   <span class="col-4 fw-bold">
-                    {{ $t('layout.navbar.helper.weixin.detail.scripts.replyContent') }}
+                    {{ $t('layout.navbar.helper.weixin.detail.strategies.replyContent') }}
                   </span>
                   <span class="col-8 text-end">
-                    {{ current_script.reply_content }}
+                    {{ current_strategy.reply_content }}
                   </span>
                 </div>
 
-                <div class="row mb-2" v-if="current_script.description">
+                <div class="row mb-2" v-if="current_strategy.description">
                   <span class="col-4 fw-bold">
-                    {{ $t('layout.navbar.helper.weixin.detail.scripts.description') }}
+                    {{ $t('layout.navbar.helper.weixin.detail.strategies.description') }}
                   </span>
-                  <div class="col-8 ck ck-content" v-html="current_script.description"></div>
+                  <div class="col-8 ck ck-content" v-html="current_strategy.description"></div>
                 </div>
               </div>
             </div>
             <div class="modal-footer p-3 pt-1 pb-1">
               <span
-                v-if="current_script.id"
+                v-if="current_strategy.id"
                 class="btn btn-sm btn-primary"
                 @click="is_editing = !is_editing"
               >
@@ -818,23 +847,23 @@
                 {{
                   is_editing
                     ? $t(
-                        'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.footer.cancel',
+                        'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.footer.cancel',
                       )
                     : $t(
-                        'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.footer.edit',
+                        'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.footer.edit',
                       )
                 }}
               </span>
               <span
-                v-if="!is_editing && current_script.id"
+                v-if="!is_editing && current_strategy.id"
                 class="btn btn-sm btn-danger"
                 data-bs-toggle="modal"
-                href="#deleteScriptModal"
+                href="#deleteStrategyModal"
               >
                 <i class="mdi mdi-delete-outline"></i>
                 {{
                   $t(
-                    'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.footer.delete',
+                    'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.footer.delete',
                   )
                 }}
               </span>
@@ -846,12 +875,12 @@
               >
                 <i class="mdi mdi-content-save-outline"></i>
                 {{
-                  current_script.id
+                  current_strategy.id
                     ? $t(
-                        'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.footer.save',
+                        'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.footer.save',
                       )
                     : $t(
-                        'layout.navbar.helper.weixin.detail.scripts.viewAndEditScriptModal.form.footer.create',
+                        'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.footer.create',
                       )
                 }}
               </button>
@@ -863,7 +892,7 @@
 
     <div
       class="modal fade"
-      id="deleteScriptModal"
+      id="deleteStrategyModal"
       data-bs-backdrop="static"
       data-bs-keyboard="false"
     >
@@ -873,14 +902,14 @@
             <button
               type="button"
               class="btn-close d-none"
-              id="hideDeleteScriptModalBtn"
+              id="hidedeleteStrategyModalBtn"
               data-bs-dismiss="modal"
             ></button>
             <button
               type="button"
               class="btn-close"
               data-bs-toggle="modal"
-              href="#viewAndEditScriptModal"
+              href="#viewAndEditStrategyModal"
             ></button>
           </div>
           <div class="modal-body">
@@ -888,13 +917,15 @@
               <div class="fs-15 mx-4 mx-sm-5">
                 <h4>
                   {{
-                    $t('layout.navbar.helper.weixin.detail.scripts.deleteScriptModal.title', {
-                      id: current_script.id,
+                    $t('layout.navbar.helper.weixin.detail.strategies.deleteStrategyModal.title', {
+                      id: current_strategy.id,
                     })
                   }}
                 </h4>
                 <p class="text-muted mx-4 mb-0">
-                  {{ $t('layout.navbar.helper.weixin.detail.scripts.deleteScriptModal.confirm') }}
+                  {{
+                    $t('layout.navbar.helper.weixin.detail.strategies.deleteStrategyModal.confirm')
+                  }}
                 </p>
               </div>
             </div>
@@ -903,12 +934,14 @@
                 type="button"
                 class="btn w-sm btn-light"
                 data-bs-toggle="modal"
-                href="#viewAndEditScriptModal"
+                href="#viewAndEditStrategyModal"
               >
-                {{ $t('layout.navbar.helper.weixin.detail.scripts.deleteScriptModal.cancel') }}
+                {{ $t('layout.navbar.helper.weixin.detail.strategies.deleteStrategyModal.cancel') }}
               </button>
-              <button type="button" class="btn w-sm btn-danger" @click="handleDelScript">
-                {{ $t('layout.navbar.helper.weixin.detail.scripts.deleteScriptModal.confirmed') }}
+              <button type="button" class="btn w-sm btn-danger" @click="handleDelStrategy">
+                {{
+                  $t('layout.navbar.helper.weixin.detail.strategies.deleteStrategyModal.confirmed')
+                }}
               </button>
             </div>
           </div>
@@ -926,11 +959,12 @@ import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { useRouter, getUserInfo, replaceHtml } from '@utils';
 import {
   getAccountDetail,
-  getBindUsers,
-  unBindUser,
-  getReplyScripts,
-  createReplyScript,
-  updateReplyScript,
+  getBinds,
+  unbindUser,
+  getStrategies,
+  createStrategy,
+  updateStrategy,
+  refreshAccount,
 } from '@api/weixin';
 import { useToast } from 'vue-toastification';
 import useWeixin from './useWeixin';
@@ -977,12 +1011,12 @@ export default {
     };
 
     const pagination = reactive({
-      users: {
+      binds: {
         pageNum: 1,
         pageSize: 200,
         totalCount: 0,
       },
-      scripts: {
+      strategies: {
         pageNum: 1,
         pageSize: 200,
         totalCount: 0,
@@ -992,20 +1026,20 @@ export default {
     const handlePaginationChange = ({ tab, pageNum, pageSize }) => {
       pagination[tab].pageNum = pageNum;
       pagination[tab].pageSize = pageSize;
-      if (tab === 'users') fetchBindUsers();
-      if (tab === 'scripts') fetchReplyScripts();
+      if (tab === 'binds') fetchBindBinds();
+      if (tab === 'strategies') fetchStrategies();
     };
 
-    const users = ref([]);
-    const fetchBindUsers = () => {
-      getBindUsers({
+    const binds = ref([]);
+    const fetchBindBinds = () => {
+      getBinds({
         soid: route.value.params.soid,
-        pageNum: pagination.users.pageNum,
-        pageSize: pagination.users.pageSize,
+        pageNum: pagination.binds.pageNum,
+        pageSize: pagination.binds.pageSize,
       }).then(({ code, data, msg }) => {
         if (code === 200) {
-          users.value = data.rows;
-          pagination.users.totalCount = data.count;
+          binds.value = data.rows;
+          pagination.binds.totalCount = data.count;
         } else {
           toast({
             component: ToastificationContent,
@@ -1019,16 +1053,16 @@ export default {
       });
     };
 
-    const scripts = ref([]);
-    const fetchReplyScripts = () => {
-      getReplyScripts({
+    const strategies = ref([]);
+    const fetchStrategies = () => {
+      getStrategies({
         soid: route.value.params.soid,
-        pageNum: pagination.scripts.pageNum,
-        pageSize: pagination.scripts.pageSize,
+        pageNum: pagination.strategies.pageNum,
+        pageSize: pagination.strategies.pageSize,
       }).then(({ code, data, msg }) => {
         if (code === 200) {
-          scripts.value = data.rows;
-          pagination.scripts.totalCount = data.count;
+          strategies.value = data.rows;
+          pagination.strategies.totalCount = data.count;
         } else {
           toast({
             component: ToastificationContent,
@@ -1044,20 +1078,20 @@ export default {
 
     onMounted(() => {
       fetchAccountInfo();
-      fetchBindUsers();
-      fetchReplyScripts();
+      fetchBindBinds();
+      fetchStrategies();
 
-      const viewAndEditScriptModal = document.getElementById('viewAndEditScriptModal');
-      if (viewAndEditScriptModal)
-        viewAndEditScriptModal.addEventListener('hidden.bs.modal', () => {
+      const viewAndEditStrategyModal = document.getElementById('viewAndEditStrategyModal');
+      if (viewAndEditStrategyModal)
+        viewAndEditStrategyModal.addEventListener('hidden.bs.modal', () => {
           is_editing.value = false;
         });
     });
 
     onUnmounted(() => {
-      const viewAndEditScriptModal = document.getElementById('viewAndEditScriptModal');
-      if (viewAndEditScriptModal)
-        viewAndEditScriptModal.removeEventListener('hidden.bs.modal', () => {});
+      const viewAndEditStrategyModal = document.getElementById('viewAndEditStrategyModal');
+      if (viewAndEditStrategyModal)
+        viewAndEditStrategyModal.removeEventListener('hidden.bs.modal', () => {});
     });
 
     const handleEditAccount = () => {
@@ -1073,20 +1107,20 @@ export default {
       document.getElementById('showDeleteAccountModalBtn').click();
     };
 
-    const current_user = ref({});
+    const current_bind = ref({});
 
-    const handleViewBindUserInfo = (user) => {
-      current_user.value = JSON.parse(JSON.stringify(user));
-      current_user.value.userinfo = JSON.stringify(current_user.value.userinfo, null, 2);
+    const handleViewBindData = (bind) => {
+      current_bind.value = JSON.parse(JSON.stringify(bind));
+      current_bind.value.data = JSON.stringify(current_bind.value.data, null, 2);
       document.getElementById('showBindDataOffcanvasBtn').click();
     };
 
-    const handleUnbindUser = () => {
-      current_user.value.data_state = 'deleted';
-      unBindUser(current_user.value).then(({ code, msg }) => {
+    const handleUnbind = () => {
+      current_bind.value.data_state = 'deleted';
+      unbindUser(current_bind.value).then(({ code, msg }) => {
         if (code === 200) {
-          fetchBindUsers();
-          document.getElementById('hideUnbindUserModalBtn').click();
+          fetchBindBinds();
+          document.getElementById('hideUnbindModalBtn').click();
         } else {
           toast({
             component: ToastificationContent,
@@ -1101,21 +1135,21 @@ export default {
     };
 
     const is_editing = ref(false);
-    const current_script = ref({});
-    const viewAndEditScriptModalKey = ref(null);
-    const handleClickScriptId = (script) => {
+    const current_strategy = ref({});
+    const viewAndEditStrategyModalKey = ref(null);
+    const handleClickStrategyId = (strategy) => {
       is_editing.value = false;
-      current_script.value = JSON.parse(JSON.stringify(script));
-      viewAndEditScriptModalKey.value = Math.random().toString(36).slice(-6);
-      document.getElementById('showViewAndEditScriptModalBtn').click();
+      current_strategy.value = JSON.parse(JSON.stringify(strategy));
+      viewAndEditStrategyModalKey.value = Math.random().toString(36).slice(-6);
+      document.getElementById('showviewAndEditStrategyModalBtn').click();
     };
 
-    const handleDelScript = () => {
-      current_script.value.data_state = 'deleted';
-      updateReplyScript(current_script.value).then(({ code, msg }) => {
+    const handleDelStrategy = () => {
+      current_strategy.value.data_state = 'deleted';
+      updateStrategy(current_strategy.value).then(({ code, msg }) => {
         if (code === 200) {
-          document.getElementById('hideDeleteScriptModalBtn').click();
-          fetchReplyScripts();
+          document.getElementById('hidedeleteStrategyModalBtn').click();
+          fetchStrategies();
         } else {
           toast({
             component: ToastificationContent,
@@ -1129,19 +1163,19 @@ export default {
       });
     };
 
-    const handleCreateScript = () => {
-      current_script.value = { soid: account.value.soid };
+    const handleCreateStrategy = () => {
+      current_strategy.value = { soid: account.value.soid };
       is_editing.value = true;
-      viewAndEditScriptModalKey.value = Math.random().toString(36).slice(-6);
-      document.getElementById('showViewAndEditScriptModalBtn').click();
+      viewAndEditStrategyModalKey.value = Math.random().toString(36).slice(-6);
+      document.getElementById('showviewAndEditStrategyModalBtn').click();
     };
 
-    const handleSubmitScript = () => {
-      if (current_script.value.id) {
-        updateReplyScript(current_script.value).then(({ code, msg }) => {
+    const handleSubmitStrategy = () => {
+      if (current_strategy.value.id) {
+        updateStrategy(current_strategy.value).then(({ code, msg }) => {
           if (code === 200) {
-            document.getElementById('hideViewAndEditScriptModalBtn').click();
-            fetchReplyScripts();
+            document.getElementById('hideviewAndEditStrategyModalBtn').click();
+            fetchStrategies();
           } else {
             toast({
               component: ToastificationContent,
@@ -1154,10 +1188,10 @@ export default {
           }
         });
       } else {
-        createReplyScript(current_script.value).then(({ code, msg }) => {
+        createStrategy(current_strategy.value).then(({ code, msg }) => {
           if (code === 200) {
-            document.getElementById('hideViewAndEditScriptModalBtn').click();
-            fetchReplyScripts();
+            document.getElementById('hideviewAndEditStrategyModalBtn').click();
+            fetchStrategies();
           } else {
             toast({
               component: ToastificationContent,
@@ -1170,6 +1204,25 @@ export default {
           }
         });
       }
+    };
+
+    const handleRefreshAccount = (key) => {
+      refreshAccount({ key, soid: account.value.soid }).then((res) => {
+        if (res.code === 200) {
+          // fetchAccountInfo();
+          if (res?.data?.data) account.value[key] = res.data.data;
+          if (res?.data?.time) account.value[`${key}_time`] = res.data.time;
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: res.msg,
+            },
+          });
+        }
+      });
     };
 
     return {
@@ -1185,23 +1238,25 @@ export default {
       pagination,
       handlePaginationChange,
 
-      users,
-      current_user,
-      handleViewBindUserInfo,
-      handleUnbindUser,
+      binds,
+      current_bind,
+      handleViewBindData,
+      handleUnbind,
 
-      scripts,
-      current_script,
+      strategies,
+      current_strategy,
 
       is_editing,
       msgTypeOptions,
       replyTypeOptions,
 
-      handleCreateScript,
-      handleClickScriptId,
-      viewAndEditScriptModalKey,
-      handleDelScript,
-      handleSubmitScript,
+      handleCreateStrategy,
+      handleClickStrategyId,
+      viewAndEditStrategyModalKey,
+      handleDelStrategy,
+      handleSubmitStrategy,
+
+      handleRefreshAccount,
     };
   },
 };

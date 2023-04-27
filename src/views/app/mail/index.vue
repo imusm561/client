@@ -720,9 +720,9 @@
       class="d-none"
       id="showReply2AllConfirmModalBtn"
       data-bs-toggle="modal"
-      data-bs-target="#reply2AllConfirmModal"
+      data-bs-target="#replyToAllConfirmModal"
     ></button>
-    <div id="reply2AllConfirmModal" class="modal fade zoomIn">
+    <div id="replyToAllConfirmModal" class="modal fade zoomIn">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
@@ -736,22 +736,22 @@
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
-                <h4>{{ $t('app.mail.reply2AllConfirmModal.title') }}</h4>
+                <h4>{{ $t('app.mail.replyToAllConfirmModal.title') }}</h4>
                 <p class="text-muted mx-4 mb-0">
-                  {{ $t('app.mail.reply2AllConfirmModal.confirm') }}
+                  {{ $t('app.mail.replyToAllConfirmModal.confirm') }}
                 </p>
               </div>
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
               <button type="button" class="btn w-sm btn-primary" @click="handleReply(current_mail)">
-                {{ $t('app.mail.reply2AllConfirmModal.replyToSender') }}
+                {{ $t('app.mail.replyToAllConfirmModal.replyToSender') }}
               </button>
               <button
                 type="button"
                 class="btn w-sm btn-danger"
                 @click="handleReply2All(current_mail, true)"
               >
-                {{ $t('app.mail.reply2AllConfirmModal.replyToAll') }}
+                {{ $t('app.mail.replyToAllConfirmModal.replyToAll') }}
               </button>
             </div>
           </div>

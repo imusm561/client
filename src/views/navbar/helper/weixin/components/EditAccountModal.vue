@@ -106,6 +106,7 @@
                       type="text"
                       :placeholder="$t('layout.navbar.helper.weixin.EditAccountModal.form.soid')"
                       :class="['form-control', errors.soid && 'is-invalid']"
+                      :disabled="!!account.id"
                       rules="required"
                     />
                     <span class="invalid-feedback">{{ errors.soid }}</span>
