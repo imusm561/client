@@ -8,6 +8,77 @@
             <div class="align-items-center d-flex justify-content-between">
               <h5>{{ $t('layout.navbar.helper.weixin.detail.header') }}</h5>
               <div>
+                <div class="d-inline dropdown">
+                  <button
+                    type="button"
+                    class="btn btn-sm p-0 ms-2"
+                    data-bs-toggle="dropdown"
+                    data-bs-auto-close="outside"
+                  >
+                    <i class="fs-16 mdi mdi-qrcode text-secondary"></i>
+                  </button>
+                  <Form class="dropdown-menu p-2" v-slot="{ errors }" @submit="handleGenerateQr">
+                    <img v-if="qr.src" :key="qr.scene" :src="qr.src" class="w-100 h-100" />
+                    <div v-else class="row g-2">
+                      <div class="col-12">
+                        <label class="form-label">
+                          {{ $t('layout.navbar.helper.weixin.detail.qr.form.scene') }}
+                        </label>
+                        <Field
+                          name="scene"
+                          v-model="qr.scene"
+                          type="text"
+                          :placeholder="$t('layout.navbar.helper.weixin.detail.qr.form.scene')"
+                          :class="['form-control', errors.scene && 'is-invalid']"
+                          rules="required"
+                        />
+                        <span class="invalid-feedback">{{ errors.scene }}</span>
+                      </div>
+                      <div class="col-12">
+                        <label class="form-label">
+                          {{ $t('layout.navbar.helper.weixin.detail.qr.form.expire') }}
+                        </label>
+                        <Field
+                          name="expire"
+                          v-model="qr.expire"
+                          type="number"
+                          :placeholder="
+                            $t('layout.navbar.helper.weixin.detail.qr.form.expire.placeholder')
+                          "
+                          :class="['form-control', errors.expire && 'is-invalid']"
+                          rules="required"
+                        />
+                        <span class="invalid-feedback">{{ errors.expire }}</span>
+                      </div>
+                      <div class="col-12">
+                        <label class="form-label">
+                          {{ $t('layout.navbar.helper.weixin.detail.qr.form.count') }}
+                        </label>
+                        <Field
+                          name="count"
+                          v-model="qr.count"
+                          type="number"
+                          :placeholder="$t('layout.navbar.helper.weixin.detail.qr.form.count')"
+                          :class="['form-control', errors.count && 'is-invalid']"
+                          rules="required"
+                        />
+                        <span class="invalid-feedback">{{ errors.count }}</span>
+                      </div>
+                    </div>
+                    <button
+                      type="submit"
+                      class="btn btn-sm btn-secondary float-end mt-2"
+                      :disabled="Object.keys(errors).length"
+                    >
+                      {{
+                        qr.src
+                          ? $t('layout.navbar.helper.weixin.detail.qr.form.footer.regenerate')
+                          : $t('layout.navbar.helper.weixin.detail.qr.form.footer.generate')
+                      }}
+                    </button>
+                  </Form>
+                </div>
+
                 <button class="btn btn-sm p-0 ms-2" @click="handleEditAccount">
                   <i class="fs-16 mdi mdi-square-edit-outline text-info"></i>
                 </button>
@@ -965,6 +1036,7 @@ import {
   createStrategy,
   updateStrategy,
   refreshAccount,
+  getQRCode,
 } from '@api/weixin';
 import { useToast } from 'vue-toastification';
 import useWeixin from './useWeixin';
@@ -1225,6 +1297,32 @@ export default {
       });
     };
 
+    const qr = reactive({
+      src: null,
+      scene: '',
+      expire: 1800,
+      count: 1,
+    });
+
+    const handleGenerateQr = () => {
+      if (qr.src) {
+        qr.src = null;
+        qr.scene = '';
+        qr.expire = 1800;
+        qr.count = 1;
+        return;
+      }
+      const params = {
+        soid: account.value.soid,
+        scene: qr.scene,
+        expire: qr.expire,
+        count: qr.count,
+      };
+      getQRCode(params).then(({ code, data }) => {
+        if (code === 200) qr.src = data.src;
+      });
+    };
+
     return {
       account,
       _account,
@@ -1257,6 +1355,9 @@ export default {
       handleSubmitStrategy,
 
       handleRefreshAccount,
+
+      qr,
+      handleGenerateQr,
     };
   },
 };
