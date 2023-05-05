@@ -59,7 +59,7 @@
         <div class="modal-body p-0">
           <ul class="list-group list-group-flush">
             <li class="list-group-item d-flex justify-content-between align-items-center">
-              <span class="fw-medium">{{ $t('data.list.formInfoModal.creation') }}</span>
+              <span class="fw-medium">{{ $t('layout.breadcrumb.formInfoModal.creation') }}</span>
               <span class="badge bg-primary">
                 {{ getUserInfo(form.created_by).fullname }} @
                 {{ $moment(form.created_at).format('llll') }}
@@ -69,7 +69,7 @@
               v-if="form.updated_by"
               class="list-group-item d-flex justify-content-between align-items-center"
             >
-              <span class="fw-medium">{{ $t('data.list.formInfoModal.lastUpdate') }}</span>
+              <span class="fw-medium">{{ $t('layout.breadcrumb.formInfoModal.lastUpdate') }}</span>
               <span class="badge bg-secondary">
                 {{ getUserInfo(form.updated_by).fullname }} @
                 {{ $moment(form.updated_at).format('llll') }}
@@ -79,7 +79,7 @@
               v-if="form.flow?.length"
               class="list-group-item d-flex justify-content-between align-items-center"
             >
-              <span class="fw-medium">{{ $t('data.list.formInfoModal.approval') }}</span>
+              <span class="fw-medium">{{ $t('layout.breadcrumb.formInfoModal.approval') }}</span>
               <span>
                 <span v-for="(flow, index) in form.flow" :key="index">
                   <span class="badge bg-info">{{ flow.title }}</span>
@@ -88,7 +88,9 @@
               </span>
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-center">
-              <span class="fw-medium">{{ $t('data.list.formInfoModal.totalRecords') }}</span>
+              <span class="fw-medium">
+                {{ $t('layout.breadcrumb.formInfoModal.totalRecords') }}
+              </span>
               <span>
                 <span v-for="(val, key) in records" :key="key">
                   <span class="badge ms-2" :class="resolveDataStateVariant(key)">
@@ -102,20 +104,20 @@
             <div class="card-header">
               <ul class="nav nav-tabs-custom rounded card-header-tabs nav-justified">
                 <li class="nav-item">
-                  <a class="nav-link p-2 active" data-bs-toggle="tab" href="#tab_columns">
-                    {{ $t('data.list.formInfoModal.tab.columns') }}
+                  <a class="nav-link p-2 active" data-bs-toggle="tab" href="#tab_form_columns">
+                    {{ $t('layout.breadcrumb.formInfoModal.tab.columns') }}
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link p-2" data-bs-toggle="tab" href="#tab_logs">
-                    {{ $t('data.list.formInfoModal.tab.logs') }}
+                  <a class="nav-link p-2" data-bs-toggle="tab" href="#tab_form_logs">
+                    {{ $t('layout.breadcrumb.formInfoModal.tab.logs') }}
                   </a>
                 </li>
               </ul>
             </div>
             <div class="card-body p-0">
               <div class="tab-content">
-                <div class="tab-pane active" id="tab_columns">
+                <div class="tab-pane active" id="tab_form_columns">
                   <div
                     v-if="
                       columns.filter((column) => column.type && !column.component.includes('Basic'))
@@ -132,28 +134,28 @@
                         <tr>
                           <th class="text-capitalize">id</th>
                           <th class="text-capitalize">
-                            {{ $t('data.list.formInfoModal.tab.columns.component') }}
+                            {{ $t('layout.breadcrumb.formInfoModal.tab.columns.component') }}
                           </th>
                           <th class="text-capitalize">
-                            {{ $t('data.list.formInfoModal.tab.columns.name') }}
+                            {{ $t('layout.breadcrumb.formInfoModal.tab.columns.name') }}
                           </th>
                           <th class="text-capitalize">
-                            {{ $t('data.list.formInfoModal.tab.columns.alias') }}
+                            {{ $t('layout.breadcrumb.formInfoModal.tab.columns.alias') }}
                           </th>
                           <th class="text-capitalize">
-                            {{ $t('data.list.formInfoModal.tab.columns.type') }}
+                            {{ $t('layout.breadcrumb.formInfoModal.tab.columns.type') }}
                           </th>
                           <th class="text-capitalize">
-                            {{ $t('data.list.formInfoModal.tab.columns.length') }}
+                            {{ $t('layout.breadcrumb.formInfoModal.tab.columns.length') }}
                           </th>
                           <th class="text-capitalize">
-                            {{ $t('data.list.formInfoModal.tab.columns.tags') }}
+                            {{ $t('layout.breadcrumb.formInfoModal.tab.columns.tags') }}
                           </th>
                           <th class="text-capitalize">
-                            {{ $t('data.list.formInfoModal.tab.columns.default') }}
+                            {{ $t('layout.breadcrumb.formInfoModal.tab.columns.default') }}
                           </th>
                           <th class="text-capitalize">
-                            {{ $t('data.list.formInfoModal.tab.columns.source') }}
+                            {{ $t('layout.breadcrumb.formInfoModal.tab.columns.source') }}
                           </th>
                         </tr>
                       </thead>
@@ -168,7 +170,7 @@
                           <td class="fw-medium">
                             {{
                               $t(
-                                `data.list.formInfoModal.tab.columns.component.${column.component}`,
+                                `layout.breadcrumb.formInfoModal.tab.columns.component.${column.component}`,
                               )
                             }}
                           </td>
@@ -191,10 +193,10 @@
                       </tbody>
                     </table>
                   </div>
-                  <Empty v-else :text="$t('data.list.formInfoModal.tab.columns.empty')" />
+                  <Empty v-else :text="$t('layout.breadcrumb.formInfoModal.tab.columns.empty')" />
                 </div>
-                <div class="tab-pane" id="tab_logs">
-                  <Log :key="$route.path" :tid="Number($route.params.tid)" />
+                <div class="tab-pane" id="tab_form_logs">
+                  <Log :key="$route.path" type="form" :tid="Number($route.params.tid)" />
                 </div>
               </div>
             </div>

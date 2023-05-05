@@ -24,12 +24,12 @@
                   </span>
                 </span>
               </span>
-              <code
-                class="text-decoration-underline text-primary cursor-pointer"
+              <span
+                class="fs-12 text-decoration-underline text-primary cursor-pointer"
                 @click="handleViewLogData(log)"
               >
                 {{ log_types[log.type] }}
-              </code>
+              </span>
             </div>
           </div>
           <div class="text-center" v-if="loading.enable && loading.show">
@@ -43,12 +43,12 @@
     </div>
     <Empty :text="$t('components.log.empty')" v-else />
     <button
-      id="showLogDataOffcanvasBtn"
+      :id="`show${type}LogDataOffcanvasBtn`"
       class="d-none"
       data-bs-toggle="offcanvas"
-      data-bs-target="#logDataOffcanvas"
+      :data-bs-target="`#${type}logDataOffcanvas`"
     />
-    <div class="offcanvas offcanvas-end w-resp" id="logDataOffcanvas">
+    <div class="offcanvas offcanvas-end w-resp" :id="`${type}logDataOffcanvas`">
       <div class="offcanvas-body p-0 overflow-hidden">
         <i
           class="i-close mdi mdi-close-box fs-24 text-muted cursor-pointer"
@@ -79,6 +79,10 @@ import ToastificationContent from '@components/ToastificationContent';
 import i18n from '@utils/i18n';
 export default defineComponent({
   props: {
+    type: {
+      type: String,
+      default: () => '',
+    },
     tid: {
       type: Number,
       default: () => 0,
@@ -160,7 +164,7 @@ export default defineComponent({
     const current_log = ref({});
     const handleViewLogData = (log) => {
       current_log.value = log;
-      document.getElementById('showLogDataOffcanvasBtn').click();
+      document.getElementById(`show${props.type}LogDataOffcanvasBtn`).click();
     };
 
     return {

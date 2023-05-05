@@ -343,6 +343,7 @@
             <Log
               v-if="data.id"
               :key="$route.path"
+              type="data"
               :tid="Number($route.params.tid)"
               :rid="Number($route.params.rid)"
             />
