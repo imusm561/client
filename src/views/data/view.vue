@@ -31,16 +31,21 @@
       <div class="card-header border-0 p-2 pb-0">
         <span class="float-end">
           <i
-            class="mdi mdi-format-list-numbered fs-16 cursor-pointer text-muted pe-2"
+            class="mdi mdi-format-list-text fs-16 cursor-pointer text-muted pe-2"
             @click="$router.push({ name: 'list', params: { tid: $route.params.tid } })"
           ></i>
           <i
             v-if="tabs.length > 1"
             class="mdi fs-16 cursor-pointer text-muted pe-2"
-            :class="no_tabs ? 'mdi-tab' : 'mdi-view-dashboard-outline'"
-            @click="no_tabs = !no_tabs"
+            :class="ribbon_mode ? 'mdi-tab' : 'mdi-ribbon'"
+            @click="ribbon_mode = !ribbon_mode"
           ></i>
           <i
+            v-if="
+              tabs.some((tab) =>
+                tab.columns.some((column) => column.type && isEmpty(data[column.field])),
+              )
+            "
             class="mdi fs-16 cursor-pointer text-muted pe-2"
             :class="show_empty_value_columns ? 'mdi-chevron-double-up' : 'mdi-chevron-double-down'"
             @click="show_empty_value_columns = !show_empty_value_columns"
@@ -146,7 +151,7 @@
             </div>
           </div>
 
-          <div v-if="tabs.length > 1 && no_tabs">
+          <div v-if="tabs.length > 1 && ribbon_mode">
             <div
               :id="tab.field"
               class="p-3 mt-2 border-top border-top-dashed ribbon-box right"
@@ -628,7 +633,7 @@ export default {
 
     const form = ref([]);
     const columns = ref([]);
-    const no_tabs = ref(true);
+    const ribbon_mode = ref(true);
     const tabs = ref([]);
     const current_tab = ref(0);
     const alias = ref({});
@@ -792,7 +797,7 @@ export default {
       form,
       data,
       flow,
-      no_tabs,
+      ribbon_mode,
       tabs,
       current_tab,
       show_empty_value_columns,

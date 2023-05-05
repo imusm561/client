@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Breadcrumb :key="$route" @form-info="handleOpenFormInfoModal" />
+    <Breadcrumb :key="$route" @refresh="handleRefetchDataList" />
     <div class="card">
       <div class="card-body d-flex flex-column pt-0" style="height: fit-content">
         <div class="mt-2 mb-2">
@@ -215,188 +215,6 @@
           </div>
         </div>
       </div>
-
-      <button
-        id="showFormInfoModalBtn"
-        type="button"
-        class="d-none"
-        data-bs-toggle="modal"
-        data-bs-target="#formInfoModal"
-      ></button>
-      <div class="modal fade" id="formInfoModal">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header p-2 bg-light">
-              <h5 class="modal-title">
-                #{{ form.id }} {{ form.title }}
-                <i
-                  class="mdi mdi-refresh cursor-pointer text-info"
-                  @click="handleRefetchDataList"
-                ></i>
-              </h5>
-              <button
-                type="button"
-                class="btn-close"
-                id="hideFormInfoModalBtn"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-            <div class="modal-body p-0">
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span class="fw-medium">{{ $t('data.list.formInfoModal.creation') }}</span>
-                  <span class="badge bg-primary">
-                    {{ getUserInfo(form.created_by).fullname }} @
-                    {{ $moment(form.created_at).format('llll') }}
-                  </span>
-                </li>
-                <li
-                  v-if="form.updated_by"
-                  class="list-group-item d-flex justify-content-between align-items-center"
-                >
-                  <span class="fw-medium">{{ $t('data.list.formInfoModal.lastUpdate') }}</span>
-                  <span class="badge bg-secondary">
-                    {{ getUserInfo(form.updated_by).fullname }} @
-                    {{ $moment(form.updated_at).format('llll') }}
-                  </span>
-                </li>
-                <li
-                  v-if="form.flow?.length"
-                  class="list-group-item d-flex justify-content-between align-items-center"
-                >
-                  <span class="fw-medium">{{ $t('data.list.formInfoModal.approval') }}</span>
-                  <span>
-                    <span v-for="(flow, index) in form.flow" :key="index">
-                      <span class="badge bg-info">{{ flow.title }}</span>
-                      <span v-if="index < form.flow.length - 1">&nbsp;>>&nbsp;</span>
-                    </span>
-                  </span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span class="fw-medium">{{ $t('data.list.formInfoModal.totalRecords') }}</span>
-                  <span>
-                    <span v-for="(val, key) in records" :key="key">
-                      <span class="badge ms-2" :class="resolveDataStateVariant(key)">
-                        {{ $t(`data.column.BasicDataState.${key}`) }}: {{ val }}
-                      </span>
-                    </span>
-                  </span>
-                </li>
-              </ul>
-              <div class="card mb-0 border-top">
-                <div class="card-header">
-                  <ul class="nav nav-tabs-custom rounded card-header-tabs nav-justified">
-                    <li class="nav-item">
-                      <a class="nav-link p-2 active" data-bs-toggle="tab" href="#tab_columns">
-                        {{ $t('data.list.formInfoModal.tab.columns') }}
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link p-2" data-bs-toggle="tab" href="#tab_logs">
-                        {{ $t('data.list.formInfoModal.tab.logs') }}
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                <div class="card-body p-0">
-                  <div class="tab-content">
-                    <div class="tab-pane active" id="tab_columns">
-                      <div
-                        v-if="
-                          columns.filter(
-                            (column) => column.type && !column.component.includes('Basic'),
-                          ).length
-                        "
-                        data-simplebar
-                        class="p-0"
-                        style="height: 40vh"
-                      >
-                        <table
-                          class="table table-hover table-striped table-bordered table-nowrap align-middle mb-0"
-                        >
-                          <thead class="table-light">
-                            <tr>
-                              <th class="text-capitalize">id</th>
-                              <th class="text-capitalize">
-                                {{ $t('data.list.formInfoModal.tab.columns.component') }}
-                              </th>
-                              <th class="text-capitalize">
-                                {{ $t('data.list.formInfoModal.tab.columns.name') }}
-                              </th>
-                              <th class="text-capitalize">
-                                {{ $t('data.list.formInfoModal.tab.columns.alias') }}
-                              </th>
-                              <th class="text-capitalize">
-                                {{ $t('data.list.formInfoModal.tab.columns.type') }}
-                              </th>
-                              <th class="text-capitalize">
-                                {{ $t('data.list.formInfoModal.tab.columns.length') }}
-                              </th>
-                              <th class="text-capitalize">
-                                {{ $t('data.list.formInfoModal.tab.columns.tags') }}
-                              </th>
-                              <th class="text-capitalize">
-                                {{ $t('data.list.formInfoModal.tab.columns.default') }}
-                              </th>
-                              <th class="text-capitalize">
-                                {{ $t('data.list.formInfoModal.tab.columns.source') }}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr
-                              v-for="column in columns.filter(
-                                (column) => column.type && !column.component.includes('Basic'),
-                              )"
-                              :key="column.id"
-                            >
-                              <td class="fw-medium text-primary">#{{ column.id }}</td>
-                              <td class="fw-medium">
-                                {{
-                                  $t(
-                                    `data.list.formInfoModal.tab.columns.component.${column.component}`,
-                                  )
-                                }}
-                              </td>
-                              <td
-                                style="max-width: 200px"
-                                class="text-truncate"
-                                :title="column.name"
-                              >
-                                {{ column.name }}
-                              </td>
-                              <td>
-                                <span class="badge bg-secondary">{{ column.alias }}</span>
-                              </td>
-                              <td>{{ column.type }}</td>
-                              <td>{{ column.length }}</td>
-                              <td>
-                                <span
-                                  class="badge bg-info me-1"
-                                  v-for="tag in column.tags"
-                                  :key="tag"
-                                >
-                                  {{ tag }}
-                                </span>
-                              </td>
-                              <td>{{ column.default }}</td>
-                              <td>{{ column.cfg?.source }}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <Empty v-else :text="$t('data.list.formInfoModal.tab.columns.empty')" />
-                    </div>
-                    <div class="tab-pane" id="tab_logs">
-                      <Log :key="$route.path" :tid="Number($route.params.tid)" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -445,8 +263,6 @@ if (store.state.sys.cfg?.ag_grid?.license)
   LicenseManager.setLicenseKey(store.state.sys.cfg.ag_grid.license);
 import AG_GRID_LOCALE_EN_US from '@utils/i18n/ag-gird/en-us.json';
 import AG_GRID_LOCALE_ZH_CN from '@utils/i18n/ag-gird/zh-cn.json';
-import Empty from '@components/Empty';
-import Log from '@components/Log';
 import CustomizationToolPanle from './panels/CustomizationToolPanle.vue';
 import IdRenderer from './renderers/IdRenderer.vue';
 import DataStateRenderer from './renderers/DataStateRenderer.vue';
@@ -500,8 +316,6 @@ export default {
   components: {
     Breadcrumb,
     AgGridVue,
-    Empty,
-    Log,
     CustomizationToolPanle,
     agDateInput: DateTimeFilter,
 
@@ -551,7 +365,6 @@ export default {
       data: 'alpine',
     });
     const customs = ref(null);
-    const records = ref({});
     const resolveDataStateVariant = computed(() => {
       return (state) => {
         switch (state) {
@@ -668,7 +481,6 @@ export default {
         form.value = data.form;
         alias.value = data.alias;
         columns.value = data.columns.filter((column) => !column.tags.includes('hideInDataList'));
-        records.value = data.records;
         const { data: _theme } = await getCustomTheme({ tid: Number(route.value.params.tid) });
         theme.value = _theme || { data: 'alpine' };
         const { data: _customs } = await getCustomColumn({ tid: Number(route.value.params.tid) });
@@ -1456,10 +1268,6 @@ export default {
       },
     };
 
-    const handleOpenFormInfoModal = () => {
-      document.getElementById('showFormInfoModalBtn').click();
-    };
-
     const handleRefetchDataList = () => {
       fetchDataForm(() => {
         gridApi.refreshServerSide({ purge: true });
@@ -1657,7 +1465,6 @@ export default {
       form,
       columns,
       theme,
-      records,
       resolveDataStateVariant,
 
       handleSelecterSearch,
@@ -1678,7 +1485,6 @@ export default {
       handleColumnChange,
       getRowId,
       serverSideDatasource,
-      handleOpenFormInfoModal,
       handleRefetchDataList,
 
       setColumnConfiguration,
@@ -1690,8 +1496,6 @@ export default {
       handleDeselectAllRows,
 
       handleFileInput,
-
-      getUserInfo,
     };
   },
 };

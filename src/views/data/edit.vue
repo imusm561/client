@@ -5,12 +5,12 @@
       <div class="card-header border-0 p-2 pb-0">
         <span class="float-end">
           <i
-            class="mdi mdi-format-list-numbered fs-16 cursor-pointer text-muted pe-2"
+            class="mdi mdi-format-list-text fs-16 cursor-pointer text-muted pe-2"
             @click="$router.push({ name: 'list', params: { tid: $route.params.tid } })"
           ></i>
           <i
             v-if="$route.params.rid != 0"
-            class="mdi mdi-eye-outline fs-16 cursor-pointer text-muted pe-2"
+            class="mdi mdi-view-grid-outline fs-16 cursor-pointer text-muted pe-2"
             @click="
               $router.push({
                 name: 'view',
@@ -19,14 +19,14 @@
             "
           ></i>
           <i
-            class="mdi mdi-refresh fs-16 cursor-pointer text-muted pe-2"
-            @click="handleRefetchDataEdit"
-          ></i>
-          <i
             v-if="tabs.length > 1"
             class="mdi fs-16 cursor-pointer text-muted pe-2"
-            :class="no_tabs ? 'mdi-tab' : 'mdi-view-dashboard-outline'"
-            @click="no_tabs = !no_tabs"
+            :class="ribbon_mode ? 'mdi-tab' : 'mdi-ribbon'"
+            @click="ribbon_mode = !ribbon_mode"
+          ></i>
+          <i
+            class="mdi mdi-refresh fs-16 cursor-pointer text-muted pe-2"
+            @click="handleRefetchDataEdit"
           ></i>
         </span>
       </div>
@@ -49,7 +49,7 @@
           </template>
         </VueSelect>
         <Form :id="`zz_${form.id}`" v-slot="{ errors }" @submit="handleSubmitFormData()">
-          <div v-if="tabs.length > 1 && no_tabs">
+          <div v-if="tabs.length > 1 && ribbon_mode">
             <div
               :id="tab.field"
               class="p-3 mt-2 border-bottom border-bottom-dashed ribbon-box right"
@@ -717,7 +717,7 @@ export default {
     const form = ref({});
     const columns = ref([]);
     const flow = ref({});
-    const no_tabs = ref(false);
+    const ribbon_mode = ref(false);
     const tabs = ref([]);
     const current_tab = ref(0);
     const alias = ref({});
@@ -1248,7 +1248,7 @@ export default {
       flow,
       syntax_error,
 
-      no_tabs,
+      ribbon_mode,
       tabs,
       current_tab,
       titles,
