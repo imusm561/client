@@ -868,6 +868,7 @@
   "data.list.cellEdit.error": "此类型字段不支持列表编辑",
   "data.list.cellEdit.conflicts": "更新冲突：{user}正在编辑这条数据",
   "data.list.batchUpdate.conflicts": "批量更新冲突：{count}条数据【{ids}】正在被其他用户编辑中",
+  "data.list.importing": "导入中...",
   "data.list.import.success": "成功导入 {count} 条数据",
   "data.list.sideBar.toolPanels.customization": "个性化",
   "data.list.sideBar.toolPanels.customization.search": "搜索...",

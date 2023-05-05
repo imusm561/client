@@ -1436,6 +1436,14 @@ export default {
       const formData = new FormData();
       formData.append('file', e.target.files[0], e.target.files[0].name);
       formData.append('tid', form.value.id);
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          text: i18n.global.t('data.list.importing'),
+        },
+      });
       importData(formData).then(({ code, msg, data }) => {
         if (code === 200) {
           gridApi.refreshServerSide({ purge: true });
