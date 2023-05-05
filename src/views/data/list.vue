@@ -919,12 +919,13 @@ export default {
             ['BasicDataState', 'BasicAclView', 'BasicAclEdit'].includes(column.component)) &&
           (store.state.user.data?.tags?.includes('ALL') ||
             store.state.user.data?.permissions?.[route.value.params.tid]?.all ||
-            params.data.created_by === store.state.user.data.username ||
-            params.data.updated_by === store.state.user.data.username ||
-            params.data.acl_edit.includes(store.state.user.data.username) ||
-            (params.data.acl_edit.length === 0 &&
-              params.data.acl_view.includes(store.state.user.data.username)) ||
-            (params.data.acl_view.length === 0 && params.data.acl_edit.length === 0))
+            (store.state.user.data?.permissions?.[route.value.params.tid]?.edit &&
+              (params.data.created_by === store.state.user.data.username ||
+                params.data.updated_by === store.state.user.data.username ||
+                params.data.acl_edit.includes(store.state.user.data.username) ||
+                (params.data.acl_edit.length === 0 &&
+                  params.data.acl_view.includes(store.state.user.data.username)) ||
+                (params.data.acl_view.length === 0 && params.data.acl_edit.length === 0))))
         ) {
           if (['InputRichtext', 'InputCode', 'SelectFile'].includes(column.component)) {
             toast({
@@ -1486,12 +1487,14 @@ export default {
           (!form.value.flow?.length || params.node?.data?.data_state === 'drafted') &&
           (store.state.user.data?.tags?.includes('ALL') ||
             store.state.user.data?.permissions?.[route.value.params.tid]?.all ||
-            params.node?.data?.created_by === store.state.user.data.username ||
-            params.node?.data?.updated_by === store.state.user.data.username ||
-            params.node?.data?.acl_edit.includes(store.state.user.data.username) ||
-            (params.node?.data?.acl_edit.length === 0 &&
-              params.node?.data?.acl_view.includes(store.state.user.data.username)) ||
-            (params.node?.data?.acl_view.length === 0 && params.node?.data?.acl_edit.length === 0))
+            (store.state.user.data?.permissions?.[route.value.params.tid]?.edit &&
+              (params.node?.data?.created_by === store.state.user.data.username ||
+                params.node?.data?.updated_by === store.state.user.data.username ||
+                params.node?.data?.acl_edit.includes(store.state.user.data.username) ||
+                (params.node?.data?.acl_edit.length === 0 &&
+                  params.node?.data?.acl_view.includes(store.state.user.data.username)) ||
+                (params.node?.data?.acl_view.length === 0 &&
+                  params.node?.data?.acl_edit.length === 0))))
         ) {
           menu.push({
             name: i18n.global.t('data.list.contextMenu.edit', {

@@ -89,7 +89,7 @@ router.beforeEach((to, from, next) => {
               Number(to.params?.rid) !== 0 &&
               !(
                 store.state.user.data.tags.includes('ALL') ||
-                store.state.user.data.permissions?.[Number(to.params?.tid)]?.modify
+                store.state.user.data.permissions?.[Number(to.params?.tid)]?.edit
               )) ||
             (to?.meta?.auth &&
               !(

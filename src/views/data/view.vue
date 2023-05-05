@@ -281,12 +281,13 @@
             v-if="
               $store.state.user.data?.tags?.includes('ALL') ||
               $store.state.user.data?.permissions?.[$route.params.tid]?.all ||
-              data.created_by === $store.state.user.data.username ||
-              data.updated_by === $store.state.user.data.username ||
-              data.acl_edit.includes($store.state.user.data.username) ||
-              (data.acl_edit.length === 0 &&
-                data.acl_view.includes($store.state.user.data.username)) ||
-              (data.acl_view.length === 0 && data.acl_edit.length === 0)
+              ($store.state.user.data?.permissions?.[$route.params.tid]?.edit &&
+                (data.created_by === $store.state.user.data.username ||
+                  data.updated_by === $store.state.user.data.username ||
+                  data.acl_edit.includes($store.state.user.data.username) ||
+                  (data.acl_edit.length === 0 &&
+                    data.acl_view.includes($store.state.user.data.username)) ||
+                  (data.acl_view.length === 0 && data.acl_edit.length === 0)))
             "
             class="btn btn-sm btn-primary"
             @click="

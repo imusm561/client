@@ -305,12 +305,12 @@
                                 <input
                                   class="form-check-input"
                                   type="checkbox"
-                                  v-model="current_role.permissions[node.data.id].modify"
+                                  v-model="current_role.permissions[node.data.id].edit"
                                 />
                                 <label class="form-check-label">
                                   {{
                                     $t(
-                                      'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.modify',
+                                      'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.edit',
                                     )
                                   }}
                                 </label>
@@ -533,7 +533,7 @@ export default {
             half_checked: state.halfCheckedKeys.includes(form.id),
             checked: state.checkedKeys.includes(form.id),
             create: current_role.value.permissions[form.id]?.create || false,
-            modify: current_role.value.permissions[form.id]?.modify || false,
+            edit: current_role.value.permissions[form.id]?.edit || false,
             batch: current_role.value.permissions[form.id]?.batch || false,
             all: current_role.value.permissions[form.id]?.all || false,
             export: current_role.value.permissions[form.id]?.export || false,

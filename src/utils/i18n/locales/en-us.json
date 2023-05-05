@@ -100,7 +100,7 @@
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.status.enable": "Enable",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.status.disabled": "Disabled",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.create": "Create",
-  "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.modify": "Modify",
+  "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.edit": "Edit",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.batch": "Batch",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.all": "All",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.export": "Export",

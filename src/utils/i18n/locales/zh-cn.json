@@ -100,7 +100,7 @@
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.status.enable": "启用",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.status.disabled": "禁用",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.create": "创建",
-  "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.modify": "编辑",
+  "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.edit": "编辑",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.batch": "批量",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.all": "全部",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.export": "导出",
