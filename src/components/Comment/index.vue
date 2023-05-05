@@ -18,16 +18,7 @@
       />
     </div>
     <Empty :text="$t('component.comment.empty')" v-else />
-    <Form class="mt-1" v-slot="{ errors }" @submit="handleCreateComment" :key="comment.key">
-      <label v-if="comment.reply">
-        {{
-          $t('component.comment.replyTo', {
-            user: getUserInfo(comment.reply.created_by).fullname,
-          })
-        }}
-        <i class="mdi mdi-close-circle text-danger cursor-pointer" @click="comment.reply = null" />
-      </label>
-      <label v-else>{{ $t('component.comment') }}:</label>
+    <Form v-slot="{ errors }" @submit="handleCreateComment" :key="comment.key">
       <CKEditor
         v-model="comment.content"
         id="ck_comment"
@@ -35,6 +26,19 @@
         :class="errors.comment && 'is-invalid'"
       />
       <Field name="comment" v-model="comment.content" rules="required" class="d-none" />
+      <span
+        v-if="comment.reply && !comment.content"
+        style="position: absolute; margin: calc(-30vh + 11px) 0px 0px 9px; z-index: 1"
+      >
+        <span class="me-1 opacity-50">
+          {{
+            $t('component.comment.replyTo', {
+              user: getUserInfo(comment.reply.created_by).fullname,
+            })
+          }}
+        </span>
+        <i class="mdi mdi-close-circle text-danger cursor-pointer" @click="comment.reply = null" />
+      </span>
       <span class="invalid-feedback">{{ errors.comment }}</span>
       <div class="mt-2 mb-2 float-end">
         <button type="submit" :disabled="Object.keys(errors).length" class="btn btn-primary">
