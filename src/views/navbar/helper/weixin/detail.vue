@@ -2,13 +2,16 @@
   <div v-if="account.id">
     <Breadcrumb :key="$route" />
     <div class="row">
-      <div class="col-xl-7">
+      <div class="col-xl-8">
         <div class="card card-height-100">
           <div class="card-body pb-0">
             <div class="align-items-center d-flex justify-content-between">
               <h5>{{ $t('layout.navbar.helper.weixin.detail.header') }}</h5>
               <div>
-                <div class="d-inline dropdown">
+                <div
+                  v-if="['serviceAccount', 'miniProgram'].includes(account.service_type)"
+                  class="d-inline dropdown"
+                >
                   <button
                     type="button"
                     class="btn btn-sm p-0 ms-2"
@@ -78,7 +81,6 @@
                     </button>
                   </Form>
                 </div>
-
                 <button class="btn btn-sm p-0 ms-2" @click="handleEditAccount">
                   <i class="fs-16 mdi mdi-square-edit-outline text-info"></i>
                 </button>
@@ -137,10 +139,7 @@
                     </dt>
                     <dd class="col-sm-8 mb-3">{{ account.app_secret || '&nbsp;' }}</dd>
                   </dl>
-                  <dl
-                    v-if="['serviceAccount', 'subscriptionAccount'].includes(account.service_type)"
-                    class="row mb-0"
-                  >
+                  <dl v-if="['serviceAccount'].includes(account.service_type)" class="row mb-0">
                     <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.mchId') }}
                     </dt>
@@ -228,7 +227,7 @@
           </div>
         </div>
       </div>
-      <div class="col-xl-5">
+      <div class="col-xl-4">
         <div class="card card-height-100" style="min-height: 40vh">
           <div class="card-body">
             <div class="align-items-center d-flex justify-content-between">
