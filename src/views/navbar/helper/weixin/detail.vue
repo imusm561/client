@@ -114,53 +114,48 @@
                   </dl>
                 </div>
                 <div class="col-lg-6">
+                  <dl
+                    v-if="['serviceAccount', 'subscriptionAccount'].includes(account.service_type)"
+                    class="row mb-0"
+                  >
+                    <dt class="col-sm-4 text-uppercase">
+                      {{ $t('layout.navbar.helper.weixin.detail.token') }}
+                    </dt>
+                    <dd class="col-sm-8 mb-3">{{ account.token || '&nbsp;' }}</dd>
+                    <dt class="col-sm-4 text-uppercase">
+                      {{ $t('layout.navbar.helper.weixin.detail.encodingAESKey') }}
+                    </dt>
+                    <dd class="col-sm-8 mb-3">{{ account.encoding_aes_key || '&nbsp;' }}</dd>
+                  </dl>
                   <dl class="row mb-0">
-                    <span
-                      v-if="
-                        ['serviceAccount', 'subscriptionAccount'].includes(account.service_type)
-                      "
-                    >
-                      <dt class="col-sm-4 text-uppercase">
-                        {{ $t('layout.navbar.helper.weixin.detail.token') }}
-                      </dt>
-                      <dd class="col-sm-8 mb-3">{{ account.token }}</dd>
-                      <dt class="col-sm-4 text-uppercase">
-                        {{ $t('layout.navbar.helper.weixin.detail.encodingAESKey') }}
-                      </dt>
-                      <dd class="col-sm-8 mb-3">{{ account.encoding_aes_key }}</dd>
-                    </span>
                     <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.appId') }}
                     </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.app_id }}</dd>
+                    <dd class="col-sm-8 mb-3">{{ account.app_id || '&nbsp;' }}</dd>
                     <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.appSecret') }}
                     </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.app_secret }}</dd>
-                    <span
-                      v-if="
-                        ['serviceAccount', 'subscriptionAccount'].includes(account.service_type)
-                      "
-                    >
-                      <dt class="col-sm-4 text-uppercase">
-                        {{ $t('layout.navbar.helper.weixin.detail.mchId') }}
-                      </dt>
-                      <dd class="col-sm-8 mb-3">{{ account.mch_id }}</dd>
-                      <dt class="col-sm-4 text-uppercase">
-                        {{ $t('layout.navbar.helper.weixin.detail.apiKey') }}
-                      </dt>
-                      <dd class="col-sm-8 mb-3">{{ account.api_key }}</dd>
-                    </span>
+                    <dd class="col-sm-8 mb-3">{{ account.app_secret || '&nbsp;' }}</dd>
+                  </dl>
+                  <dl
+                    v-if="['serviceAccount', 'subscriptionAccount'].includes(account.service_type)"
+                    class="row mb-0"
+                  >
+                    <dt class="col-sm-4 text-uppercase">
+                      {{ $t('layout.navbar.helper.weixin.detail.mchId') }}
+                    </dt>
+                    <dd class="col-sm-8 mb-3">{{ account.mch_id || '&nbsp;' }}</dd>
+                    <dt class="col-sm-4 text-uppercase">
+                      {{ $t('layout.navbar.helper.weixin.detail.apiKey') }}
+                    </dt>
+                    <dd class="col-sm-8 mb-3">{{ account.api_key || '&nbsp;' }}</dd>
                   </dl>
                 </div>
               </div>
             </div>
-            <div
-              class="pt-2 border-top border-top-dashed"
-              v-if="account.access_token || account.jsapi_ticket"
-            >
+            <div class="pt-2 border-top border-top-dashed">
               <div class="col-12">
-                <dl class="row mb-0" v-if="account.access_token">
+                <dl class="row mb-0">
                   <dt class="col-sm-3 text-uppercase">
                     {{ $t('layout.navbar.helper.weixin.detail.accessToken') }}
                     <i
@@ -169,16 +164,20 @@
                     ></i>
                   </dt>
                   <dd class="col-sm-9 mb-3" style="word-break: break-all">
-                    {{ account.access_token }}
+                    {{ account.access_token || '&nbsp;' }}
                   </dd>
                   <dt class="col-sm-3 text-uppercase">
                     {{ $t('layout.navbar.helper.weixin.detail.accessTokenTme') }}
                   </dt>
                   <dd class="col-sm-9 mb-3">
-                    {{ $moment(account.access_token_time).format('llll') }}
+                    {{
+                      account.access_token_time
+                        ? $moment(account.access_token_time).format('llll')
+                        : '&nbsp;'
+                    }}
                   </dd>
                 </dl>
-                <dl class="row mb-0" v-if="account.jsapi_ticket">
+                <dl class="row mb-0">
                   <dt class="col-sm-3 text-uppercase">
                     {{ $t('layout.navbar.helper.weixin.detail.jsapiTicket') }}
                     <i
@@ -187,13 +186,17 @@
                     ></i>
                   </dt>
                   <dd class="col-sm-9 mb-3" style="word-break: break-all">
-                    {{ account.jsapi_ticket }}
+                    {{ account.jsapi_ticket || '&nbsp;' }}
                   </dd>
                   <dt class="col-sm-3 text-uppercase">
                     {{ $t('layout.navbar.helper.weixin.detail.jsapiTicketTime') }}
                   </dt>
                   <dd class="col-sm-9 mb-3">
-                    {{ $moment(account.jsapi_ticket_time).format('llll') }}
+                    {{
+                      account.jsapi_ticket_time
+                        ? $moment(account.jsapi_ticket_time).format('llll')
+                        : '&nbsp;'
+                    }}
                   </dd>
                 </dl>
               </div>
