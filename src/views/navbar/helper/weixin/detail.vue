@@ -628,7 +628,11 @@
                         )
                       "
                       :class="['form-control', errors.msg_keyword && 'is-invalid']"
-                      rules="required"
+                      :rules="
+                        ['subscribe', 'unsubscribe', 'LOCATION'].includes(current_strategy.msg_type)
+                          ? ''
+                          : 'required'
+                      "
                     />
                     <span class="invalid-feedback">{{ errors.msg_keyword }}</span>
                   </div>
