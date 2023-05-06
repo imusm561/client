@@ -89,7 +89,7 @@
             </div>
             <div class="pt-2 border-top border-top">
               <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                   <dl class="row mb-0">
                     <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.title') }}
@@ -113,7 +113,7 @@
                     <dd class="col-sm-8 mb-3">{{ account.email }}</dd>
                   </dl>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-8">
                   <dl
                     v-if="['serviceAccount', 'subscriptionAccount'].includes(account.service_type)"
                     class="row mb-0"
@@ -300,6 +300,9 @@
                         {{ $t('layout.navbar.helper.weixin.detail.strategies.msgKeyword') }}
                       </th>
                       <th class="text-capitalize">
+                        {{ $t('layout.navbar.helper.weixin.detail.strategies.weight') }}
+                      </th>
+                      <th class="text-capitalize">
                         {{ $t('layout.navbar.helper.weixin.detail.strategies.instrPre') }}
                       </th>
                       <th class="text-capitalize">
@@ -349,6 +352,7 @@
                       </td>
                       <td>{{ strategy.reply_content }}</td>
                       <td>{{ strategy.reply_scope.toString() }}</td>
+                      <td>{{ strategy.weight }}</td>
                       <td>{{ replaceHtml(strategy.description) }}</td>
                     </tr>
                   </tbody>
@@ -606,7 +610,7 @@
                     />
                     <span class="invalid-feedback">{{ errors.msg_type }}</span>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-3">
                     <label class="form-label">
                       {{
                         $t(
@@ -627,6 +631,28 @@
                       rules="required"
                     />
                     <span class="invalid-feedback">{{ errors.msg_keyword }}</span>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">
+                      {{
+                        $t(
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.weight',
+                        )
+                      }}
+                    </label>
+                    <Field
+                      name="weight"
+                      v-model="current_strategy.weight"
+                      type="number"
+                      :placeholder="
+                        $t(
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.weight',
+                        )
+                      "
+                      :class="['form-control', errors.weight && 'is-invalid']"
+                      rules="required|between:0,1000"
+                    />
+                    <span class="invalid-feedback">{{ errors.weight }}</span>
                   </div>
                   <div
                     class="col-md-6"
@@ -817,7 +843,7 @@
                 </div>
               </div>
               <div v-else class="p-3">
-                <div class="row mb-2" v-if="current_strategy.msg_type">
+                <div class="row mb-2">
                   <span class="col-4 fw-bold">
                     {{ $t('layout.navbar.helper.weixin.detail.strategies.msgType') }}
                   </span>
@@ -830,12 +856,21 @@
                   </span>
                 </div>
 
-                <div class="row mb-2" v-if="current_strategy.msg_keyword">
+                <div class="row mb-2">
                   <span class="col-4 fw-bold">
                     {{ $t('layout.navbar.helper.weixin.detail.strategies.msgKeyword') }}
                   </span>
                   <span class="col-8 text-end">
                     {{ current_strategy.msg_keyword }}
+                  </span>
+                </div>
+
+                <div class="row mb-2">
+                  <span class="col-4 fw-bold">
+                    {{ $t('layout.navbar.helper.weixin.detail.strategies.weight') }}
+                  </span>
+                  <span class="col-8 text-end">
+                    {{ current_strategy.weight }}
                   </span>
                 </div>
 
@@ -869,7 +904,7 @@
                   </span>
                 </div>
 
-                <div class="row mb-2" v-if="current_strategy.reply_type">
+                <div class="row mb-2">
                   <span class="col-4 fw-bold">
                     {{ $t('layout.navbar.helper.weixin.detail.strategies.replyType') }}
                   </span>
@@ -891,7 +926,7 @@
                   </span>
                 </div>
 
-                <div class="row mb-2" v-if="current_strategy.reply_content">
+                <div class="row mb-2">
                   <span class="col-4 fw-bold">
                     {{ $t('layout.navbar.helper.weixin.detail.strategies.replyContent') }}
                   </span>
@@ -900,7 +935,7 @@
                   </span>
                 </div>
 
-                <div class="row mb-2" v-if="current_strategy.description">
+                <div class="row mb-2">
                   <span class="col-4 fw-bold">
                     {{ $t('layout.navbar.helper.weixin.detail.strategies.description') }}
                   </span>
@@ -1239,7 +1274,7 @@ export default {
     };
 
     const handleCreateStrategy = () => {
-      current_strategy.value = { soid: account.value.soid };
+      current_strategy.value = { soid: account.value.soid, weight: 0 };
       is_editing.value = true;
       viewAndEditStrategyModalKey.value = Math.random().toString(36).slice(-6);
       document.getElementById('showviewAndEditStrategyModalBtn').click();
