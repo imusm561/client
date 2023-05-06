@@ -341,6 +341,7 @@
                         }}
                       </td>
                       <td>{{ strategy.msg_keyword }}</td>
+                      <td>{{ strategy.weight }}</td>
                       <td>{{ strategy.instr_pre }}</td>
                       <td>{{ strategy.instr_exp }}</td>
                       <td>
@@ -352,7 +353,6 @@
                       </td>
                       <td>{{ strategy.reply_content }}</td>
                       <td>{{ strategy.reply_scope.toString() }}</td>
-                      <td>{{ strategy.weight }}</td>
                       <td>{{ replaceHtml(strategy.description) }}</td>
                     </tr>
                   </tbody>
