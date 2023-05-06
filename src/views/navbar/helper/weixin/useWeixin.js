@@ -61,11 +61,6 @@ export default function useWeixin() {
       for: ['serviceAccount', 'subscriptionAccount'],
     },
     {
-      text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.scan'),
-      value: 'scan',
-      for: ['serviceAccount', 'subscriptionAccount'],
-    },
-    {
       text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.unsubscribe'),
       value: 'unsubscribe',
       for: ['serviceAccount', 'subscriptionAccount'],
@@ -83,7 +78,7 @@ export default function useWeixin() {
     {
       text: i18n.global.t('layout.navbar.helper.weixin.detail.strategies.msgType.SCAN'),
       value: 'SCAN',
-      for: ['miniProgram'],
+      for: ['serviceAccount', 'subscriptionAccount', 'miniProgram'],
     },
   ];
 
