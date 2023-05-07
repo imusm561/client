@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Breadcrumb :key="$route" @refresh="handleRefetchDataList" />
+    <Breadcrumb :key="$route" />
     <div class="card">
       <div class="card-body d-flex flex-column pt-0" style="height: fit-content">
         <div class="mt-2 mb-2">
@@ -135,6 +135,7 @@
           :defaultColDef="defaultColDef"
           @grid-ready="onGridReady"
           :getRowId="getRowId"
+          :overlayLoadingTemplate="overlayLoadingTemplate"
           @columnVisible="handleColumnChange"
           @columnPinned="handleColumnChange"
           @columnResized="handleColumnChange"
@@ -1268,9 +1269,20 @@ export default {
       },
     };
 
+    const overlayLoadingTemplate = ref(
+      `<span class='ag-overlay-loading-center'>${i18n.global.t('data.list.loading')}</span>`,
+    );
+
     const handleRefetchDataList = () => {
+      overlayLoadingTemplate.value = `<span class='ag-overlay-loading-center'>${i18n.global.t(
+        'data.list.loading',
+      )}</span>`;
+      gridApi.showLoadingOverlay();
       fetchDataForm(() => {
         gridApi.refreshServerSide({ purge: true });
+        setTimeout(() => {
+          gridApi.hideOverlay();
+        }, 200);
       });
     };
 
@@ -1288,7 +1300,7 @@ export default {
             });
             window.open(href, '_blank');
           },
-          icon: '<i class="mdi mdi-eye-outline fs-14" style="margin-left: 2px;" />',
+          icon: '<i class="mdi mdi-eye-outline fs-14" style="margin-left: 1px;" />',
         });
 
         if (
@@ -1315,9 +1327,17 @@ export default {
               });
               window.open(href, '_blank');
             },
-            icon: '<i class="mdi mdi-square-edit-outline fs-14" style="margin-left: 2px;" />',
+            icon: '<i class="mdi mdi-square-edit-outline fs-14" style="margin-left: 1px;" />',
           });
         }
+
+        menu.push({
+          name: i18n.global.t('data.list.contextMenu.refresh'),
+          action: () => {
+            handleRefetchDataList();
+          },
+          icon: '<i class="mdi mdi-refresh fs-14" style="margin-left: 1px;" />',
+        });
 
         if (typeof params.value === 'object') {
           menu.push({
@@ -1325,7 +1345,7 @@ export default {
             action: () => {
               copyToClipboard(JSON.stringify(params.value));
             },
-            icon: '<i class="mdi mdi-code-json fs-14" style="margin-left: 2px;" />',
+            icon: '<i class="mdi mdi-code-json fs-14" style="margin-left: 1px;" />',
           });
         }
 
@@ -1353,10 +1373,10 @@ export default {
                     exportedRows: 'all',
                   });
                 },
-                icon: '<i class="mdi mdi-format-list-bulleted-square fs-14" style="margin-left: 2px;" />',
+                icon: '<i class="mdi mdi-format-list-bulleted-square fs-14" style="margin-left: 1px;" />',
               },
             ],
-            icon: '<i class="mdi mdi-export fs-14" style="margin-left: 2px;" />',
+            icon: '<i class="mdi mdi-export fs-14" style="margin-left: 1px;" />',
           };
 
           if (selectedRows.value.length) {
@@ -1369,7 +1389,7 @@ export default {
                   onlySelected: true,
                 });
               },
-              icon: '<i class="mdi mdi-checkbox-marked-outline fs-14" style="margin-left: 2px;" />',
+              icon: '<i class="mdi mdi-checkbox-marked-outline fs-14" style="margin-left: 1px;" />',
             });
           }
           menu.push(menu_export);
@@ -1389,7 +1409,7 @@ export default {
               action: () => {
                 document.getElementById('data-list-file-input').click();
               },
-              icon: '<i class="mdi mdi-file-upload-outline fs-14" style="margin-left: 2px;" />',
+              icon: '<i class="mdi mdi-file-upload-outline fs-14" style="margin-left: 1px;" />',
             },
             {
               name: i18n.global.t('data.list.contextMenu.import.download'),
@@ -1409,10 +1429,10 @@ export default {
                   window.URL.revokeObjectURL(href);
                 });
               },
-              icon: '<i class="mdi mdi-file-download-outline fs-14" style="margin-left: 2px;" />',
+              icon: '<i class="mdi mdi-file-download-outline fs-14" style="margin-left: 1px;" />',
             },
           ],
-          icon: '<i class="mdi mdi-import fs-14" style="margin-left: 2px;" />',
+          icon: '<i class="mdi mdi-import fs-14" style="margin-left: 1px;" />',
         };
 
         menu.push(menu_import);
@@ -1433,6 +1453,10 @@ export default {
     };
 
     const handleFileInput = (e) => {
+      overlayLoadingTemplate.value = `<span class='ag-overlay-loading-center'>${i18n.global.t(
+        'data.list.importing',
+      )}</span>`;
+      gridApi.showLoadingOverlay();
       const formData = new FormData();
       formData.append('file', e.target.files[0], e.target.files[0].name);
       formData.append('tid', form.value.id);
@@ -1446,16 +1470,19 @@ export default {
       });
       importData(formData).then(({ code, msg, data }) => {
         if (code === 200) {
-          gridApi.refreshServerSide({ purge: true });
           e.target.value = null;
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: i18n.global.tc('data.list.import.success', { count: data }),
-            },
-          });
+          gridApi.refreshServerSide({ purge: true });
+          setTimeout(() => {
+            gridApi.hideOverlay();
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'success',
+                icon: 'mdi-check-circle',
+                text: i18n.global.tc('data.list.import.success', { count: data }),
+              },
+            });
+          }, 200);
         } else {
           toast({
             component: ToastificationContent,
@@ -1489,11 +1516,12 @@ export default {
 
       getRowClass,
 
+      overlayLoadingTemplate,
+
       onGridReady,
       handleColumnChange,
       getRowId,
       serverSideDatasource,
-      handleRefetchDataList,
 
       setColumnConfiguration,
 

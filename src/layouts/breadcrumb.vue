@@ -19,20 +19,18 @@
               v-for="(item, index) in items"
               :key="index"
             >
-              <a :class="{ active: index === items.length - 1 }">
+              <a :class="{ active: index === items.length - 1 }" :title="$t(item.title)">
                 <i v-if="item.icon" :class="`mdi ${item.icon} me-1`"></i>
-                <span :title="$t(item.title)">
-                  <span
-                    v-if="['list', 'view', 'edit'].includes($route.name)"
-                    class="cursor-pointer"
-                    data-bs-toggle="modal"
-                    data-bs-target="#formInfoModal"
-                  >
-                    {{ $t(item.title) }}
-                  </span>
-                  <span v-else>
-                    {{ $t(item.title) }}
-                  </span>
+                <span
+                  v-if="['list', 'view', 'edit'].includes($route.name)"
+                  class="cursor-pointer"
+                  data-bs-toggle="modal"
+                  data-bs-target="#formInfoModal"
+                >
+                  {{ $t(item.title) }}
+                </span>
+                <span v-else>
+                  {{ $t(item.title) }}
                 </span>
               </a>
             </li>
@@ -45,15 +43,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header p-2 bg-light">
-          <h5 class="modal-title">
-            #{{ form.id }} {{ form.title }}
-            <i
-              v-if="['list'].includes($route.name)"
-              class="mdi mdi-refresh cursor-pointer text-info ps-2"
-              @click="$emit('refresh')"
-              data-bs-dismiss="modal"
-            ></i>
-          </h5>
+          <h5 class="modal-title">#{{ form.id }} {{ form.title }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body p-0">
