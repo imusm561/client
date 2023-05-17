@@ -302,7 +302,7 @@ import Breadcrumb from '@layouts/breadcrumb';
 import MonacoEditor from '@components/MonacoEditor';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, nextTick } from 'vue';
 import i18n from '@utils/i18n';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -335,7 +335,7 @@ export default {
       return (item) => {
         return (
           item.type === 'file' &&
-          ['txt', 'json', 'html', 'css', 'js'].includes(getFileSuffix(item.name))
+          ['txt', 'md', 'json', 'html', 'css', 'js'].includes(getFileSuffix(item.name))
         );
       };
     });
@@ -367,7 +367,7 @@ export default {
       };
     });
 
-    const handleGetCodeDirs = () => {
+    const handleGetCodeDirs = (callback) => {
       if (isModified({ toast: true })) return;
       getCodeDirs().then(({ code, data, msg }) => {
         if (code === 200) {
@@ -386,6 +386,9 @@ export default {
               2,
             );
           }
+          nextTick(() => {
+            callback && callback();
+          });
         } else {
           toast({
             component: ToastificationContent,
@@ -524,7 +527,7 @@ export default {
 
     let timer = null;
     const handleClickPath = (e) => {
-      if (!e?.edit) {
+      if (current.value.path != e.path && !e?.edit) {
         clearTimeout(timer);
         timer = setTimeout(() => {
           if (isModified({ toast: true })) return;
@@ -620,15 +623,21 @@ export default {
         focusInputEl();
       } else {
         if (node.data._name) {
-          renameCode({
+          const data = {
             old: node.data.path,
             new: node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name,
-          }).then(({ code, msg }) => {
+          };
+          renameCode(data).then(({ code, msg }) => {
             if (code === 200) {
               delete node.data._name;
               delete node.data.edit;
               isEditing.value = false;
-              handleGetCodeDirs();
+              handleGetCodeDirs(() => {
+                if (current.value.path === data.old) {
+                  const NODE = reftree.value.getNode(data.new);
+                  if (NODE) handleClickPath(NODE.data);
+                }
+              });
             } else {
               toast({
                 component: ToastificationContent,
