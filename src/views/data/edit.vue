@@ -977,15 +977,17 @@ export default {
             column.component === 'SelectTags'
               ? val.split(',')
               : column.component === 'SelectDatetime'
-              ? moment(val).format(
-                  column.cfg.dateFormat
-                    .replace('Y', 'YYYY')
-                    .replace('m', 'MM')
-                    .replace('d', 'DD')
-                    .replace('H', 'HH')
-                    .replace('i', 'mm')
-                    .replace('S', 'ss'),
-                )
+              ? column.cfg.dateFormat.includes('Y-m-d')
+                ? moment(val).format(
+                    column.cfg.dateFormat
+                      .replace('Y', 'YYYY')
+                      .replace('m', 'MM')
+                      .replace('d', 'DD')
+                      .replace('H', 'HH')
+                      .replace('i', 'mm')
+                      .replace('S', 'ss'),
+                  )
+                : val
               : val;
 
           if (

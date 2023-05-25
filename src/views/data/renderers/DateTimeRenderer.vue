@@ -5,20 +5,17 @@
       <span class="d-flex flex-column ms-1" style="line-height: 100%">
         <span class="fs-14">
           {{
-            ['date', 'datetime'].includes(params._column.type)
-              ? $moment(params.value).format('ll')
-              : ''
-          }}
-        </span>
-        <span class="fs-10">
-          {{
-            ['datetime', 'time'].includes(params._column.type)
-              ? $moment(
-                  params._column.type === 'datetime'
-                    ? params.value
-                    : `${$moment().format('YYYY-MM-DD')} ${params.value}`,
-                ).format('LTS')
-              : ''
+            params._column.cfg.dateFormat.includes('Y-m-d')
+              ? $moment(params.value).format(
+                  params._column.cfg.dateFormat
+                    .replace('Y', 'YYYY')
+                    .replace('m', 'MM')
+                    .replace('d', 'DD')
+                    .replace('H', 'HH')
+                    .replace('i', 'mm')
+                    .replace('S', 'ss'),
+                )
+              : params.value
           }}
         </span>
       </span>
@@ -27,18 +24,17 @@
       <i class="fs-20 mdi mdi-calendar-clock text-secondary" />
       <span class="ms-1">
         {{
-          ['date', 'datetime'].includes(params._column.type)
-            ? $moment(params.value).format('ll')
-            : ''
-        }}
-        {{
-          ['datetime', 'time'].includes(params._column.type)
-            ? $moment(
-                params._column.type === 'datetime'
-                  ? params.value
-                  : `${$moment().format('YYYY-MM-DD')} ${params.value}`,
-              ).format('LTS')
-            : ''
+          params._column.cfg.dateFormat.includes('Y-m-d')
+            ? $moment(params.value).format(
+                params._column.cfg.dateFormat
+                  .replace('Y', 'YYYY')
+                  .replace('m', 'MM')
+                  .replace('d', 'DD')
+                  .replace('H', 'HH')
+                  .replace('i', 'mm')
+                  .replace('S', 'ss'),
+              )
+            : params.value
         }}
       </span>
     </span>
