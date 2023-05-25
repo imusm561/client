@@ -43,7 +43,19 @@
   <div v-else>
     <span v-if="value">
       <i class="mdi mdi-clock-outline" />
-      {{ $moment(value).format('llll') }}
+      {{
+        column.cfg.dateFormat.includes('Y-m-d')
+          ? $moment(value).format(
+              column.cfg.dateFormat
+                .replace('Y', 'YYYY')
+                .replace('m', 'MM')
+                .replace('d', 'DD')
+                .replace('H', 'HH')
+                .replace('i', 'mm')
+                .replace('S', 'ss'),
+            )
+          : value
+      }}
     </span>
   </div>
 </template>
