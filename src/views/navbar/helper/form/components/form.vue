@@ -308,7 +308,6 @@
                       </label>
                       <VueSelect
                         v-model="current_form.tags"
-                        :disabled="isParentOrHasRedirect(current_form)"
                         multiple
                         :close-on-select="false"
                         taggable
