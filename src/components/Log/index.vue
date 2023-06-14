@@ -1,7 +1,7 @@
 <template>
   <div id="logs">
     <div v-if="logs.length">
-      <div data-simplebar style="height: 40vh; overflow-x: hidden" @scroll="foo">
+      <div data-simplebar style="height: 40vh; overflow-x: hidden">
         <div class="timeline p-3">
           <div class="item pb-3 d-flex" v-for="log in logs" :key="log.id">
             <div class="flex-shrink-0">

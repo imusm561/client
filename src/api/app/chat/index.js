@@ -1,7 +1,12 @@
 import axios from '@utils/axios';
+import { generateApiQuery } from '@utils';
 
 export const getChats = () => {
   return axios.get('/cor/app/chat/list');
+};
+
+export const getChatData = (params) => {
+  return axios.get('/cor/app/chat/data' + generateApiQuery(params));
 };
 
 export const sendMsg = (data) => {

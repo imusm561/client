@@ -199,6 +199,12 @@
             <div class="position-relative fade-out" :key="current_chat.username" id="user-chat">
               <div data-simplebar class="chat-conversation p-3 p-lg-4">
                 <ul class="chat-conversation-list">
+                  <li v-if="loading" class="justify-content-center mt-n3">
+                    <button type="button" class="btn btn-soft-info btn-rounded btn-sm px-2">
+                      <i class="mdi mdi-spin mdi-loading me-2"></i>
+                      Load More
+                    </button>
+                  </li>
                   <li
                     v-for="(data, index) in current_chat.chat_data"
                     :key="index"
@@ -508,7 +514,7 @@
 <script>
 import store from '@store';
 import { computed, onMounted, ref, reactive, watch, onUnmounted, nextTick } from 'vue';
-import { getChats, sendMsg, withdrawMsg, readMsg, delChat } from '@api/app/chat';
+import { getChats, getChatData, sendMsg, withdrawMsg, readMsg, delChat } from '@api/app/chat';
 import { useRouter, getUserInfo, encryptData, decryptData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -556,7 +562,7 @@ export default {
 
     const scrollToBottom = (behavior = 'auto') => {
       nextTick(() => {
-        if (document.getElementById('user-chat')) {
+        if (scrollable.value && document.getElementById('user-chat')) {
           const chatConversationList = document
             .getElementById('user-chat')
             .querySelector('.chat-conversation .simplebar-content-wrapper');
@@ -689,6 +695,9 @@ export default {
       socket.removeListener('withdrawMsg');
     });
 
+    const loading = ref(false);
+    const scrollable = ref(true);
+
     const handleClickContact = (contact) => {
       if (message.value) {
         sessionStorage.setItem(
@@ -719,6 +728,51 @@ export default {
         sessionStorage.removeItem(`${contact.username}ChatMessage`);
         message.value = decryptData(temp_message);
       }
+
+      if (current_chat.value.chat_data.length < 10) current_chat.value.all = true;
+
+      setTimeout(() => {
+        const chatConversationList = document
+          .getElementById('user-chat')
+          .querySelector('.chat-conversation .simplebar-content-wrapper');
+        if (chatConversationList) {
+          chatConversationList.addEventListener('scroll', () => {
+            if (chatConversationList.scrollTop < 5 && !current_chat.value.all && !loading.value) {
+              const oldHeight = chatConversationList.scrollHeight;
+              loading.value = true;
+              scrollable.value = false;
+              getChatData({
+                id: current_chat.value.chat_data[0].id,
+                contact: current_chat.value.username,
+              }).then(({ code, data, msg }) => {
+                if (code === 200) {
+                  if (data.length < 10) current_chat.value.all = true;
+                  setTimeout(() => {
+                    current_chat.value.chat_data.unshift(...data);
+                    loading.value = false;
+                    nextTick(() => {
+                      const newHeight = chatConversationList.scrollHeight;
+                      chatConversationList.scrollTop = newHeight - oldHeight - 12;
+                      setTimeout(() => {
+                        scrollable.value = true;
+                      }, 500);
+                    });
+                  }, 500);
+                } else {
+                  toast({
+                    component: ToastificationContent,
+                    props: {
+                      variant: 'danger',
+                      icon: 'mdi-alert',
+                      text: msg,
+                    },
+                  });
+                }
+              });
+            }
+          });
+        }
+      }, 100);
     };
 
     const quote = ref(null);
@@ -906,6 +960,7 @@ export default {
       chats,
       contacts,
       current_chat,
+      loading,
       handleClickContact,
       quote,
       message,
