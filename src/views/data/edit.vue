@@ -576,7 +576,7 @@
               <button type="button" class="btn w-sm btn-danger" @click="handleSubmitFormData(true)">
                 {{ $t('data.edit.updateConflictsModal.forceUpdate') }}
               </button>
-              <button type="button" class="btn w-sm btn-success" @click="handleStagedUpdate">
+              <button type="button" class="btn w-sm btn-success" @click="handleStagedUpdate()">
                 {{ $t('data.edit.updateConflictsModal.staged') }}
               </button>
             </div>

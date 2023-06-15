@@ -59,10 +59,10 @@ export default defineComponent({
     });
 
     let timer = null;
-    const handleClickImage = (cb) => {
+    const handleClickImage = (callback) => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        cb && cb();
+        callback && callback();
       }, 200);
     };
     const handleDbclickFile = (file) => {

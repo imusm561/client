@@ -11,7 +11,7 @@
               </h4>
               <i
                 class="mdi mdi-refresh text-secondary float-end fs-16 cursor-pointer ms-1"
-                @click.stop="handleGetCodeDirs"
+                @click.stop="handleGetCodeDirs()"
               ></i>
             </div>
             <el-tree
