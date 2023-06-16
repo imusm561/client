@@ -80,12 +80,17 @@
                       :error="errors[column.field]"
                       @search="handleSelecterSearch"
                       @selected="($event) => (column.cfg.selected = $event)"
-                      @syntax-error="
+                      @refresh="setColumnConfiguration($event)"
+                      @syntaxError="
                         ($event) => {
-                          syntax_error = $event;
+                          column.cfg.syntax_error = $event;
                         }
                       "
-                      @refresh="setColumnConfiguration($event)"
+                      @setUploadStatus="
+                        ($event) => {
+                          column.cfg.is_uploading = $event;
+                        }
+                      "
                     ></component>
                   </h5>
                 </template>
@@ -173,7 +178,11 @@
                   <button
                     type="submit"
                     class="btn btn-sm btn-primary"
-                    :disabled="Object.keys(errors).length || syntax_error"
+                    :disabled="
+                      Object.keys(errors).length ||
+                      columns.filter((column) => column.cfg.syntax_error).length != 0 ||
+                      columns.filter((column) => column.cfg.is_uploading).length != 0
+                    "
                   >
                     <i class="mdi mdi-share-variant-outline" />
                     {{ $t('data.edit.submit') }}
@@ -202,7 +211,11 @@
                   v-else
                   type="submit"
                   class="btn btn-sm btn-success"
-                  :disabled="Object.keys(errors).length || syntax_error"
+                  :disabled="
+                    Object.keys(errors).length ||
+                    columns.filter((column) => column.cfg.syntax_error).length != 0 ||
+                    columns.filter((column) => column.cfg.is_uploading).length != 0
+                  "
                 >
                   <i class="mdi mdi-content-save-outline" />
                   {{ $t('data.edit.save') }}
@@ -269,12 +282,17 @@
                         :error="errors[column.field]"
                         @search="handleSelecterSearch"
                         @selected="($event) => (column.cfg.selected = $event)"
-                        @syntax-error="
+                        @refresh="setColumnConfiguration($event)"
+                        @syntaxError="
                           ($event) => {
-                            syntax_error = $event;
+                            column.cfg.syntax_error = $event;
                           }
                         "
-                        @refresh="setColumnConfiguration($event)"
+                        @setUploadStatus="
+                          ($event) => {
+                            column.cfg.is_uploading = $event;
+                          }
+                        "
                       ></component>
                     </h5>
                   </template>
@@ -369,7 +387,11 @@
                         <button
                           type="submit"
                           class="btn btn-sm btn-primary"
-                          :disabled="Object.keys(errors).length || syntax_error"
+                          :disabled="
+                            Object.keys(errors).length ||
+                            columns.filter((column) => column.cfg.syntax_error).length != 0 ||
+                            columns.filter((column) => column.cfg.is_uploading).length != 0
+                          "
                         >
                           <i class="mdi mdi-share-variant-outline" />
                           {{ $t('data.edit.submit') }}
@@ -400,7 +422,11 @@
                         v-else
                         type="submit"
                         class="btn btn-sm btn-success"
-                        :disabled="Object.keys(errors).length || syntax_error"
+                        :disabled="
+                          Object.keys(errors).length ||
+                          columns.filter((column) => column.cfg.syntax_error).length != 0 ||
+                          columns.filter((column) => column.cfg.is_uploading).length != 0
+                        "
                       >
                         <i class="mdi mdi-content-save-outline" />
                         {{ $t('data.edit.save') }}
@@ -724,7 +750,6 @@ export default {
     const data = ref({ id: 0 });
     const init_data = ref({ id: 0 });
     const titles = ref([{ id: 0, title: i18n.global.t('data.edit.create') }]);
-    const syntax_error = ref(null);
 
     const formData = computed(() => {
       return JSON.parse(JSON.stringify(data.value));
@@ -1245,10 +1270,10 @@ export default {
 
     return {
       form,
+      columns,
       data,
       init_data,
       flow,
-      syntax_error,
 
       ribbon_mode,
       tabs,

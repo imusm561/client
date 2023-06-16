@@ -331,6 +331,7 @@ export default defineComponent({
     });
 
     const onFileAdded = (file) => {
+      emit('upload-start');
       file.key = Math.random().toString(36).slice(-6);
       file.pause();
       file['_status'] = { value: 'computing', text: 0 };
@@ -340,7 +341,7 @@ export default defineComponent({
         if (categories[category].includes(file.extension)) fileCategory = category;
       }
       file['category'] = fileCategory;
-      emit('added', file);
+      emit('file-added', file);
       computeFile(file);
       nextTick(() => {
         setTimeout(() => {
@@ -426,7 +427,8 @@ export default defineComponent({
           },
         });
       }
-      uploadWaitingFiles();
+      if (uploader.value.files.length) uploadWaitingFiles();
+      else emit('upload-end');
     };
 
     const uploadWaitingFiles = () => {

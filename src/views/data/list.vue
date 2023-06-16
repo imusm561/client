@@ -196,7 +196,7 @@
                   :error="errors[batch.column.field]"
                   @search="handleSelecterSearch"
                   @selected="($event) => (batch.column.cfg.selected = $event)"
-                  @syntax-error="
+                  @syntaxError="
                     ($event) => {
                       batch.syntax_error = $event;
                     }

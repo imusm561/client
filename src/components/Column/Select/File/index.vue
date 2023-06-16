@@ -27,6 +27,8 @@
       :qrable="column.cfg.qrable"
       :disabled="!editable"
       v-model="value"
+      @uploadStart="$emit('set-upload-status', true)"
+      @uploadEnd="$emit('set-upload-status', false)"
     />
     <Field
       :name="column.field"

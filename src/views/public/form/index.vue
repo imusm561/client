@@ -45,12 +45,17 @@
                     :error="errors[column.field]"
                     @search="handleSelecterSearch"
                     @selected="($event) => (column.cfg.selected = $event)"
-                    @syntax-error="
+                    @refresh="setColumnConfiguration($event)"
+                    @syntaxError="
                       ($event) => {
-                        syntax_error = $event;
+                        column.cfg.syntax_error = $event;
                       }
                     "
-                    @refresh="setColumnConfiguration($event)"
+                    @setUploadStatus="
+                      ($event) => {
+                        column.cfg.is_uploading = $event;
+                      }
+                    "
                   ></component>
                 </h5>
               </template>
@@ -60,7 +65,11 @@
             <button
               type="submit"
               class="btn btn-sm btn-primary"
-              :disabled="Object.keys(errors).length || syntax_error"
+              :disabled="
+                Object.keys(errors).length ||
+                columns.filter((column) => column.cfg.syntax_error).length != 0 ||
+                columns.filter((column) => column.cfg.is_uploading).length != 0
+              "
             >
               {{ $t('public.form.submit') }}
             </button>
@@ -112,12 +121,17 @@
                       :error="errors[column.field]"
                       @search="handleSelecterSearch"
                       @selected="($event) => (column.cfg.selected = $event)"
-                      @syntax-error="
+                      @refresh="setColumnConfiguration($event)"
+                      @syntaxError="
                         ($event) => {
-                          syntax_error = $event;
+                          column.cfg.syntax_error = $event;
                         }
                       "
-                      @refresh="setColumnConfiguration($event)"
+                      @setUploadStatus="
+                        ($event) => {
+                          column.cfg.is_uploading = $event;
+                        }
+                      "
                     ></component>
                   </h5>
                 </template>
@@ -129,7 +143,11 @@
                   <button
                     type="submit"
                     class="btn btn-sm btn-primary"
-                    :disabled="Object.keys(errors).length || syntax_error"
+                    :disabled="
+                      Object.keys(errors).length ||
+                      columns.filter((column) => column.cfg.syntax_error).length != 0 ||
+                      columns.filter((column) => column.cfg.is_uploading).length != 0
+                    "
                   >
                     {{ $t('public.form.submit') }}
                   </button>
@@ -237,7 +255,6 @@ export default {
     const current_tab = ref(0);
     const alias = ref({});
     const data = ref({ id: 0 });
-    const syntax_error = ref(null);
 
     const formData = computed(() => {
       return JSON.parse(JSON.stringify(data.value));
@@ -551,8 +568,8 @@ export default {
     return {
       pub,
       form,
+      columns,
       data,
-      syntax_error,
 
       no_tabs,
       tabs,
