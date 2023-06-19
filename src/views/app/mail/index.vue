@@ -216,12 +216,6 @@
                 </div>
               </li>
             </div>
-            <!-- <li class="bg-transparent text-center">
-                <button type="button" class="btn btn-soft-info btn-rounded btn-sm px-2">
-                  <i class="mdi mdi-spin mdi-loading me-2"></i>
-                  Loading...
-                </button>
-              </li> -->
           </ul>
         </div>
       </div>

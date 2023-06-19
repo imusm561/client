@@ -202,7 +202,7 @@
                   <li v-if="loading" class="justify-content-center mt-n3">
                     <button type="button" class="btn btn-soft-info btn-rounded btn-sm px-2">
                       <i class="mdi mdi-spin mdi-loading me-2"></i>
-                      Load More
+                      {{ $t('app.chat.loading') }}
                     </button>
                   </li>
                   <li

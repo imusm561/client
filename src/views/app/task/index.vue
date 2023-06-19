@@ -27,7 +27,7 @@
             multiple
             :close-on-select="false"
             :placeholder="$t('app.task.filter')"
-            :reduce="(item) => item.username"
+            :reduce="(user) => user.username"
             label="fullname"
             :options="$store.state.org.users"
           >
@@ -76,26 +76,33 @@
     </div>
 
     <div class="tasks-board p-2">
-      <div class="tasks-list" v-for="(item, index) in status" :key="index">
+      <div
+        :id="`task-${status.value}`"
+        class="tasks-list"
+        v-for="(status, index) in statuses"
+        :key="index"
+      >
         <div class="d-flex align-items-center mb-3">
           <h5 class="text-uppercase fw-semibold mb-0 me-1">
-            {{ item.title }}
+            {{ status.title }}
           </h5>
-          <small :class="`badge bg-${item.variant}`">{{ item.tasks.length }}</small>
+          <small :class="`badge bg-${status.variant}`">
+            {{ status.total }}
+          </small>
         </div>
         <div data-simplebar class="tasks-wrapper mb-1 px-3 mx-n3">
           <div class="tasks">
             <draggable
-              :list="item.tasks"
-              :id="item.value"
+              :list="status.tasks"
+              :id="status.value"
               class="dragArea"
               handle=".mover"
-              :group="item.group"
+              :group="status.group"
               @end="handleSortTask"
             >
               <div
                 class="card tasks-box"
-                v-for="task in item.tasks"
+                v-for="task in status.tasks"
                 :key="task.id"
                 :data-progress="task.progress"
               >
@@ -155,7 +162,7 @@
                       </span>
                     </div>
                     <div class="flex-shrink-0">
-                      <Avatar :data="task._users" size="xxs" />
+                      <Avatar :data="getTaskUsers(task.users)" size="xxs" />
                     </div>
                   </div>
                 </div>
@@ -178,6 +185,15 @@
                 </div>
               </div>
             </draggable>
+            <button
+              v-if="status.loading && !status.refetch"
+              type="button"
+              class="btn btn-soft-info btn-rounded btn-sm px-2 d-block mt-2"
+              style="margin: 0 auto"
+            >
+              <i class="mdi mdi-spin mdi-loading me-2"></i>
+              {{ $t('app.task.loading') }}
+            </button>
           </div>
         </div>
       </div>
@@ -247,10 +263,12 @@
                       v-model="current_task.status"
                       :placeholder="$t('app.task.editTaskModal.form.status')"
                       :class="errors.status && 'is-invalid'"
-                      :reduce="(item) => item.value"
+                      :reduce="(status) => status.value"
                       label="title"
-                      :options="status"
-                      :selectable="(option) => option.condition(Number(current_task.progress))"
+                      :options="statuses"
+                      :selectable="
+                        (status) => status.condition({ progress: Number(current_task.progress) })
+                      "
                     >
                       <template v-slot:no-options="{ search, searching }">
                         <template v-if="searching">
@@ -401,7 +419,7 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch, computed, nextTick } from 'vue';
 import { getTasks, createTask, updateTask, sortTask } from '@api/app/task';
 import CKEditor from '@components/CKEditor';
 import { VueDraggableNext } from 'vue-draggable-next';
@@ -426,53 +444,70 @@ export default {
     const socket = window.socket;
     const moment = window.moment;
 
-    const { status, resolveTaskVariant } = useTask();
+    const statuses = ref(
+      JSON.parse(JSON.stringify(store.state.sys.cfg.task.statuses)).map((status) => {
+        status.condition = new Function('task', `return ${status.condition}`);
+        status.group = {
+          name: 'group',
+          /* eslint-disable-next-line no-unused-vars */
+          put: (to, from, dragEl, evt) => {
+            const _status = statuses.value.find((status) => status.value === to.el.id);
+            return _status?.condition({ progress: Number(dragEl.getAttribute('data-progress')) });
+          },
+          pull: true,
+        };
+        status.total = 0;
+        status.pageNum = 1;
+        status.pageSize = 10;
+        status.tasks = [];
+        status.loading = false;
+        return status;
+      }),
+    );
+
+    const { resolveTaskVariant } = useTask();
 
     const search_users = ref([]);
     const search_keyword = ref('');
 
-    const filterKeyword = (str) => {
-      if (!search_keyword.value) return true;
-      return str.toLowerCase().includes(search_keyword.value.toLowerCase());
-    };
+    const getTaskUsers = computed(() => {
+      return (users) => {
+        return users.map((username) => {
+          return getUserInfo(username);
+        });
+      };
+    });
 
-    const filterUsers = (users) => {
-      if (search_users.value.length === 0) return true;
-      return search_users.value.every((username) => users.includes(username));
-    };
+    const fetchTasks = (status, callback) => {
+      const data = {};
+      data.status = status.value;
+      data.pageNum = status.pageNum;
+      data.pageSize = status.pageSize;
+      if (search_users.value.length) data.users = search_users.value.toString();
+      if (search_keyword.value) data.keyword = search_keyword.value.trim();
 
-    const setTaskStatusList = () => {
-      status.value = status.value.map((item) => {
-        item.group = {
-          name: 'group',
-          /* eslint-disable-next-line no-unused-vars */
-          put: (to, from, dragEl, evt) => {
-            const option = status.value.find((item) => item.value === to.el.id);
-            return option?.condition(Number(dragEl.getAttribute('data-progress')));
-          },
-          pull: true,
-        };
-        item.tasks = _tasks.value.filter(
-          (task) =>
-            task.status === item.value &&
-            (filterKeyword(task.title) || filterKeyword(replaceHtml(task.description))) &&
-            filterUsers(task.users),
-        );
-        return item;
-      });
-    };
+      if (status.refetch) {
+        data.pageNum = 1;
+        data.pageSize =
+          status.tasks.length < status.pageSize ? status.pageSize : status.tasks.length;
+      }
 
-    const _tasks = ref([]);
-    const fetchTasks = () => {
-      getTasks().then(({ code, data, msg }) => {
+      getTasks(data).then(({ code, data, msg }) => {
         if (code === 200) {
-          _tasks.value = data.map((task) => {
-            task._users = task.users.map((username) => {
-              return getUserInfo(username);
-            });
-            return task;
+          status.total = data.count;
+          if (status.refetch) {
+            status.tasks = data.rows;
+          } else {
+            status.pageNum += 1;
+            status.tasks.push(...data.rows);
+          }
+          setTimeout(() => {
+            status.loading = false;
+            status.refetch = false;
+          }, 500);
+          nextTick(() => {
+            callback && callback();
           });
-          setTaskStatusList();
         } else {
           toast({
             component: ToastificationContent,
@@ -487,9 +522,35 @@ export default {
     };
 
     onMounted(() => {
-      fetchTasks();
-      socket.on('refetchTasks', () => {
-        fetchTasks();
+      statuses.value.forEach((status) => {
+        fetchTasks(status, () => {
+          const list = document
+            .getElementById(`task-${status.value}`)
+            ?.querySelector('.simplebar-content-wrapper');
+          if (list) {
+            list.addEventListener('scroll', () => {
+              const _status = statuses.value.find((e) => e.value === status.value);
+              if (
+                list.scrollHeight - (list.scrollTop + list.offsetHeight) < 2 &&
+                _status.tasks.length < _status.total &&
+                !_status.loading
+              ) {
+                _status.loading = true;
+                fetchTasks(_status);
+              }
+            });
+          }
+        });
+      });
+
+      socket.on('refetchTasks', (relates) => {
+        statuses.value
+          .filter((status) => relates.includes(status.value))
+          .forEach((status) => {
+            status.refetch = true;
+            status.loading = true;
+            fetchTasks(status);
+          });
       });
     });
 
@@ -499,16 +560,38 @@ export default {
 
     watch(
       () => search_users.value,
-      () => {
-        setTaskStatusList();
+      (_, oldVal) => {
+        if (oldVal != undefined) {
+          statuses.value.forEach((status) => {
+            const list = document
+              .getElementById(`task-${status.value}`)
+              ?.querySelector('.simplebar-content-wrapper');
+            if (list) list.scrollTop = 0;
+            status.pageNum = 1;
+            status.tasks = [];
+            status.loading = true;
+            fetchTasks(status);
+          });
+        }
       },
       { immediate: true },
     );
 
     watch(
       () => search_keyword.value,
-      () => {
-        setTaskStatusList();
+      (_, oldVal) => {
+        if (oldVal != undefined) {
+          statuses.value.forEach((status) => {
+            const list = document
+              .getElementById(`task-${status.value}`)
+              ?.querySelector('.simplebar-content-wrapper');
+            if (list) list.scrollTop = 0;
+            status.pageNum = 1;
+            status.tasks = [];
+            status.loading = true;
+            fetchTasks(status);
+          });
+        }
       },
       { immediate: true },
     );
@@ -524,20 +607,22 @@ export default {
         users: [store.state.user.data.username],
         due_date: moment().add(7, 'd').format('YYYY-MM-DD'),
         progress: 0,
-        status: status.value[0].value,
+        status: statuses.value[0].value,
         sort: 0,
       };
     };
 
     const handleEditTask = (task) => {
       current_task.value = JSON.parse(JSON.stringify(task));
+      current_task.value.emits = current_task.value.users;
+      current_task.value.relates = current_task.value.status;
     };
 
     const handleChangeTaskProgress = (e) => {
-      for (let index = 0; index < status.value.length; index++) {
-        const option = status.value[index];
-        if (option.condition(Number(e.target.value || 0))) {
-          current_task.value.status = option.value;
+      for (let index = 0; index < statuses.value.length; index++) {
+        const status = statuses.value[index];
+        if (status.condition({ progress: Number(e.target.value || 0) })) {
+          current_task.value.status = status.value;
           break;
         }
       }
@@ -546,7 +631,8 @@ export default {
     const handleSubmitTask = () => {
       if (current_task.value.id) {
         const data = JSON.parse(JSON.stringify(current_task.value));
-        delete data._users;
+        data.emits = Array.from(new Set([...data.users, ...data.emits]));
+        data.relates = Array.from(new Set([current_task.value.status, data.relates]));
         updateTask(data).then(({ code, msg }) => {
           if (code === 200) {
             document.getElementById('hideEditTaskModalBtn').click();
@@ -583,6 +669,8 @@ export default {
       updateTask({
         id: current_task.value.id,
         data_state: 'deleted',
+        emits: current_task.value.users,
+        relates: [current_task.value.status],
       }).then(({ code, msg }) => {
         if (code === 200) {
           document.getElementById('hideDelTaskModalBtn').click();
@@ -601,12 +689,14 @@ export default {
 
     const handleSortTask = (e) => {
       if (!(e.to.id === e.from.id && e.newIndex === e.oldIndex)) {
-        const toStatus = status.value.find((item) => item.value === e.to.id);
+        const to = statuses.value.find((status) => status.value === e.to.id);
         sortTask({
-          ids: toStatus.tasks.map((task) => {
+          ids: to.tasks.map((task) => {
             return task.id;
           }),
-          status: toStatus.value,
+          status: to.value,
+          emits: to.tasks[e.newIndex].users,
+          relates: Array.from(new Set([e.from.id, e.to.id])),
         }).then(({ code, msg }) => {
           if (code !== 200) {
             toast({
@@ -626,8 +716,9 @@ export default {
       search_users,
       search_keyword,
       replaceHtml,
-      status,
+      statuses,
       resolveTaskVariant,
+      getTaskUsers,
       current_task,
       handleCreateTask,
       handleEditTask,

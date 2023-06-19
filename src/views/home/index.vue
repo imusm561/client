@@ -197,8 +197,8 @@
                         />
                       </td>
                       <td>
-                        <span :class="`badge bg-${resolveTaskStatusVariant(task)} text-uppercase`">
-                          {{ $t(`app.task.status.${task.status}`) }}
+                        <span :class="`badge bg-${resolveTaskStatus(task).variant} text-uppercase`">
+                          {{ resolveTaskStatus(task).title }}
                         </span>
                       </td>
                       <td style="min-width: 120px">
@@ -335,12 +335,14 @@ export default {
       },
     ]);
 
-    const { status, resolveTaskVariant } = useTask();
+    const { resolveTaskVariant } = useTask();
 
-    const resolveTaskStatusVariant = computed(() => {
+    const resolveTaskStatus = computed(() => {
       return (task) => {
-        const target = status.value.find((item) => item.value === task.status);
-        return target?.variant || status.value[0].variant;
+        const status = store.state.sys.cfg.task.statuses.find(
+          (status) => status.value === task.status,
+        );
+        return status || store.state.sys.cfg.task.statuses[0];
       };
     });
 
@@ -389,7 +391,7 @@ export default {
     return {
       types,
       heatmapRangeColor,
-      resolveTaskStatusVariant,
+      resolveTaskStatus,
       resolveTaskVariant,
       activities,
       analytics,

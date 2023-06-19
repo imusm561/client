@@ -1,7 +1,8 @@
 import axios from '@utils/axios';
+import { generateApiQuery } from '@utils';
 
-export const getTasks = () => {
-  return axios.get('/cor/app/task/list');
+export const getTasks = (params) => {
+  return axios.get('/cor/app/task/list' + generateApiQuery(params));
 };
 
 export const createTask = (data) => {
