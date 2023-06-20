@@ -471,8 +471,8 @@ export default {
         variant: 'primary',
       },
       {
-        title: i18n.global.t('app.calendar.category.metting'),
-        value: 'metting',
+        title: i18n.global.t('app.calendar.category.meeting'),
+        value: 'meeting',
         variant: 'secondary',
       },
       {
