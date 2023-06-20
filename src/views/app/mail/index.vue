@@ -1114,14 +1114,14 @@ export default {
           ).length,
         },
         {
-          title: i18n.global.t('app.mail.label.metting'),
-          value: 'metting',
+          title: i18n.global.t('app.mail.label.meeting'),
+          value: 'meeting',
           variant: 'secondary',
           icon: 'mdi-notebook-outline',
           count: _mails.value.filter(
             (mail) =>
               !mail.trash.includes(store.state.user.data.username) &&
-              mail.label.includes('metting'),
+              mail.label.includes('meeting'),
           ).length,
         },
         {
