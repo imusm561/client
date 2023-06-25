@@ -94,6 +94,7 @@
           <div class="tasks" :id="status.value">
             <draggable
               :list="status.tasks"
+              :id="status.value"
               class="dragArea"
               handle=".mover"
               :group="status.group"
@@ -450,8 +451,8 @@ export default {
           name: 'group',
           /* eslint-disable-next-line no-unused-vars */
           put: (to, from, dragEl, evt) => {
-            const _status = statuses.value.find((status) => status.value === to.el.id);
-            return _status?.condition({ progress: Number(dragEl.getAttribute('data-progress')) });
+            const status = statuses.value.find((status) => status.value === to.el.id);
+            return status?.condition({ progress: Number(dragEl.getAttribute('data-progress')) });
           },
           pull: true,
         };
@@ -531,19 +532,21 @@ export default {
     };
 
     const scrollHandler = (e) => {
-      const status = e.target.children[0].children[0].id;
+      const status = statuses.value.find(
+        (status) => status.value === e.target.children[0].children[0].id,
+      );
       const list = document
-        .getElementById(`task-${status}`)
+        .getElementById(`task-${status.value}`)
         ?.querySelector('.simplebar-content-wrapper');
-      const _status = statuses.value.find((e) => e.value === status);
+
       if (
         list &&
         list.scrollHeight - (list.scrollTop + list.offsetHeight) < 2 &&
-        _status.tasks.length < _status.total &&
-        !_status.loading
+        status.tasks.length < status.total &&
+        !status.loading
       ) {
-        _status.loading = true;
-        fetchTasks(_status);
+        status.loading = true;
+        fetchTasks(status);
       }
     };
 
@@ -570,28 +573,9 @@ export default {
     });
 
     watch(
-      () => search_users.value,
-      (_, oldVal) => {
-        if (oldVal != undefined) {
-          statuses.value.forEach((status) => {
-            const list = document
-              .getElementById(`task-${status.value}`)
-              ?.querySelector('.simplebar-content-wrapper');
-            if (list) list.scrollTop = 0;
-            status.pageNum = 1;
-            status.tasks = [];
-            status.loading = true;
-            fetchTasks(status);
-          });
-        }
-      },
-      { immediate: true },
-    );
-
-    watch(
-      () => search_keyword.value,
-      (_, oldVal) => {
-        if (oldVal != undefined) {
+      () => [search_users.value, search_keyword.value],
+      (newVal, oldVal) => {
+        if (newVal && oldVal) {
           statuses.value.forEach((status) => {
             const list = document
               .getElementById(`task-${status.value}`)
