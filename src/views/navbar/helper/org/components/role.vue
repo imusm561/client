@@ -45,9 +45,9 @@
                   <div class="flex-grow-1">
                     <h6 class="text-muted mb-0">
                       <span class="text-secondary">
-                        {{ getCheckedMenuCount(role.permissions) }}
+                        {{ role.id === 1 ? forms.length : getCheckedMenuCount(role.permissions) }}
                       </span>
-                      / {{ $store.state.user.forms.length }}
+                      / {{ forms.length }}
                     </h6>
                   </div>
                 </div>
@@ -56,7 +56,8 @@
                     class="progress-bar bg-soft-primary"
                     :style="{
                       width: `${
-                        (getCheckedMenuCount(role.permissions) / $store.state.user.forms.length) *
+                        ((role.id === 1 ? forms.length : getCheckedMenuCount(role.permissions)) /
+                          forms.length) *
                         100
                       }%`,
                     }"
@@ -693,6 +694,7 @@ export default {
       current_role,
       editOrCreateRoleModalKey,
       handleCreateOrEditRole,
+      forms,
       tree,
       generateDefaultCheckedKeys,
       handleNodeChecked,
