@@ -117,8 +117,6 @@
   "layout.navbar.helper.org.dept.deleteDeptModal.confirmed": "Yes, Delete It!",
 
   "layout.navbar.helper.org.role.roles": "Roles",
-  "layout.navbar.helper.org.role.action.edit": "Edit",
-  "layout.navbar.helper.org.role.action.delete": "Delete",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.newRole": "New Role",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.name": "Name",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.tags": "Tags",

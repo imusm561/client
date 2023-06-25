@@ -318,23 +318,27 @@ export default {
       });
     };
 
+    const QRCodeScanHandler = ({ scene }) => {
+      if (logintype.value === 'scan_qrcode' && !qr.scaned && scene === qr.scene) {
+        qr.scaned = true;
+      }
+    };
+
+    const QRCodeLoginHandler = ({ scene }) => {
+      if (logintype.value === 'scan_qrcode' && qr.scaned && scene === qr.scene) {
+        canSubmit.value = true;
+        handleFormSubmit();
+      }
+    };
+
     onMounted(() => {
-      socket.on('QRCodeScan', ({ scene }) => {
-        if (logintype.value === 'scan_qrcode' && !qr.scaned && scene === qr.scene) {
-          qr.scaned = true;
-        }
-      });
-      socket.on('QRCodeLogin', ({ scene }) => {
-        if (logintype.value === 'scan_qrcode' && qr.scaned && scene === qr.scene) {
-          canSubmit.value = true;
-          handleFormSubmit();
-        }
-      });
+      socket.on('QRCodeScan', QRCodeScanHandler);
+      socket.on('QRCodeLogin', QRCodeLoginHandler);
     });
 
     onUnmounted(() => {
-      socket.removeListener('QRCodeScan');
-      socket.removeListener('QRCodeLogin');
+      socket.removeListener('QRCodeScan', QRCodeScanHandler);
+      socket.removeListener('QRCodeLogin', QRCodeLoginHandler);
     });
 
     const username = ref('');

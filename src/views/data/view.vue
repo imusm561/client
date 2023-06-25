@@ -643,6 +643,11 @@ export default {
     const flow = ref(null);
     const titles = ref([]);
 
+    const refetchDataViewHandler = (res) => {
+      if (res.tid == route.value.params.tid && res.rid == route.value.params.rid)
+        handleRefetchDataView();
+    };
+
     onMounted(() => {
       watch(
         () => route.value.params.rid,
@@ -654,14 +659,11 @@ export default {
         { immediate: true },
       );
 
-      socket.on('refetchDataView', (res) => {
-        if (res.tid == route.value.params.tid && res.rid == route.value.params.rid)
-          handleRefetchDataView();
-      });
+      socket.on('refetchDataView', refetchDataViewHandler);
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchDataView');
+      socket.removeListener('refetchDataView', refetchDataViewHandler);
     });
 
     const fetchDataView = async (tid, rid) => {

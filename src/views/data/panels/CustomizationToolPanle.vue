@@ -710,15 +710,17 @@ export default defineComponent({
     const _filters = ref([]);
     const filters = ref([]);
 
+    const refetchFilterHandler = (res) => {
+      if (res.tid === Number(route.value.params.tid)) fetchFormFilters();
+    };
+
     onMounted(() => {
-      socket.on('refetchFilter', (res) => {
-        if (res.tid === Number(route.value.params.tid)) fetchFormFilters();
-      });
+      socket.on('refetchFilter', refetchFilterHandler);
       fetchFormFilters();
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchFilter');
+      socket.removeListener('refetchFilter', refetchFilterHandler);
     });
 
     const fetchFormFilters = () => {

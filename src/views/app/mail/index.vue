@@ -720,7 +720,7 @@
                       label="title"
                       multiple
                       :close-on-select="false"
-                      :options="labels"
+                      :options="labels.filter((label) => label.value != 'all')"
                     >
                       <template v-slot:no-options="{ search, searching }">
                         <template v-if="searching">
@@ -1230,6 +1230,63 @@ export default {
       });
     };
 
+    const scrollHandler = () => {
+      const list = document
+        .getElementById('email-list')
+        ?.querySelector('.simplebar-content-wrapper');
+      if (
+        list &&
+        list.scrollHeight - (list.scrollTop + list.offsetHeight) < 2 &&
+        mails.list.length < mails.total &&
+        !mails.loading
+      ) {
+        mails.loading = true;
+        fetchMails();
+      }
+    };
+
+    const refetchMailsHandler = () => {
+      mails.refetch = true;
+      mails.loading = true;
+      fetchMails();
+    };
+
+    const ccRecipientsCollapseHiddenHandler = () => {
+      new_mail.value.cc = [];
+      vs.value.cc = [];
+    };
+
+    const bccRecipientsCollapseHiddenHandler = () => {
+      new_mail.value.bcc = [];
+      vs.value.bcc = [];
+    };
+
+    const composeModalShowHandler = () => {
+      const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
+      const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
+      if (ccRecipientsCollapse && new_mail.value.cc.length != 0)
+        ccRecipientsCollapse.classList.add('show');
+      if (bccRecipientsCollapse && new_mail.value.bcc.length != 0)
+        bccRecipientsCollapse.classList.add('show');
+    };
+
+    const composeModalHiddenHandler = () => {
+      const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
+      const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
+      if (ccRecipientsCollapse && new_mail.value.cc.length === 0)
+        ccRecipientsCollapse.classList.remove('show');
+      if (bccRecipientsCollapse && new_mail.value.bcc.length === 0)
+        bccRecipientsCollapse.classList.remove('show');
+    };
+
+    const mailCcListElShowHandler = () => {
+      showMoreUsers.value = true;
+    };
+
+    const mailCcListElHideHandler = () => {
+      showMoreUsers.value = false;
+    };
+
     onMounted(async () => {
       if (route.value.query.id) {
         const { code, data, msg } = await getMail(route.value.query);
@@ -1285,62 +1342,64 @@ export default {
         const list = document
           .getElementById('email-list')
           ?.querySelector('.simplebar-content-wrapper');
-        if (list) {
-          list.addEventListener('scroll', () => {
-            if (
-              list.scrollHeight - (list.scrollTop + list.offsetHeight) < 2 &&
-              mails.list.length < mails.total &&
-              !mails.loading
-            ) {
-              mails.loading = true;
-              fetchMails();
-            }
-          });
-        }
+        if (list) list.addEventListener('scroll', scrollHandler);
       });
-      socket.on('refetchMails', () => {
-        mails.refetch = true;
-        mails.loading = true;
-        fetchMails();
-      });
+      socket.on('refetchMails', refetchMailsHandler);
       handleCloseMail();
-      const CcRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
-      if (CcRecipientsCollapse)
-        CcRecipientsCollapse.addEventListener('hidden.bs.collapse', () => {
-          new_mail.value.cc = [];
-          vs.value.cc = [];
-        });
-      const BccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
-      if (BccRecipientsCollapse)
-        BccRecipientsCollapse.addEventListener('hidden.bs.collapse', () => {
-          new_mail.value.bcc = [];
-          vs.value.bcc = [];
-        });
+
+      const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
+      if (ccRecipientsCollapse)
+        ccRecipientsCollapse.addEventListener(
+          'hidden.bs.collapse',
+          ccRecipientsCollapseHiddenHandler,
+        );
+
+      const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
+      if (bccRecipientsCollapse)
+        bccRecipientsCollapse.addEventListener(
+          'hidden.bs.collapse',
+          bccRecipientsCollapseHiddenHandler,
+        );
+
       const composeModal = document.getElementById('composeModal');
-      if (composeModal)
-        composeModal.addEventListener('hidden.bs.modal', () => {
-          if (CcRecipientsCollapse && new_mail.value.cc.length === 0)
-            CcRecipientsCollapse.classList.remove('show');
-          if (BccRecipientsCollapse && new_mail.value.bcc.length === 0)
-            BccRecipientsCollapse.classList.remove('show');
-        });
+      if (composeModal) {
+        composeModal.addEventListener('show.bs.modal', composeModalShowHandler);
+        composeModal.addEventListener('hidden.bs.modal', composeModalHiddenHandler);
+      }
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchMails');
+      const list = document
+        .getElementById('email-list')
+        ?.querySelector('.simplebar-content-wrapper');
+      if (list) list.removeEventListener('scroll', scrollHandler);
+
+      socket.removeListener('refetchMails', refetchMailsHandler);
       const mailCcListEl = document.getElementById('cc_list');
       if (mailCcListEl) {
-        mailCcListEl.removeEventListener('show.bs.collapse', () => {});
-        mailCcListEl.removeEventListener('hide.bs.collapse', () => {});
+        mailCcListEl.removeEventListener('show.bs.collapse', mailCcListElShowHandler);
+        mailCcListEl.removeEventListener('hide.bs.collapse', mailCcListElHideHandler);
       }
-      const CcRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
-      if (CcRecipientsCollapse)
-        CcRecipientsCollapse.removeEventListener('hidden.bs.collapse', () => {});
-      const BccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
-      if (BccRecipientsCollapse)
-        BccRecipientsCollapse.removeEventListener('hidden.bs.collapse', () => {});
+
+      const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
+      if (ccRecipientsCollapse)
+        ccRecipientsCollapse.removeEventListener(
+          'hidden.bs.collapse',
+          ccRecipientsCollapseHiddenHandler,
+        );
+
+      const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
+      if (bccRecipientsCollapse)
+        bccRecipientsCollapse.removeEventListener(
+          'hidden.bs.collapse',
+          bccRecipientsCollapseHiddenHandler,
+        );
+
       const composeModal = document.getElementById('composeModal');
-      if (composeModal) composeModal.removeEventListener('hidden.bs.modal', () => {});
+      if (composeModal) {
+        composeModal.removeEventListener('show.bs.modal', composeModalShowHandler);
+        composeModal.removeEventListener('hidden.bs.modal', composeModalHiddenHandler);
+      }
     });
 
     const handleClickMenuBtn = () => {
@@ -1506,12 +1565,8 @@ export default {
         setTimeout(() => {
           const mailCcListEl = document.getElementById('cc_list');
           if (mailCcListEl) {
-            mailCcListEl.addEventListener('show.bs.collapse', () => {
-              showMoreUsers.value = true;
-            });
-            mailCcListEl.addEventListener('hide.bs.collapse', () => {
-              showMoreUsers.value = false;
-            });
+            mailCcListEl.addEventListener('show.bs.collapse', mailCcListElShowHandler);
+            mailCcListEl.addEventListener('hide.bs.collapse', mailCcListElHideHandler);
           }
         }, 100);
       }
@@ -1521,8 +1576,8 @@ export default {
       const mailCcListEl = document.getElementById('cc_list');
       setTimeout(() => {
         if (mailCcListEl) {
-          mailCcListEl.removeEventListener('show.bs.collapse', () => {});
-          mailCcListEl.removeEventListener('hide.bs.collapse', () => {});
+          mailCcListEl.removeEventListener('show.bs.collapse', mailCcListElShowHandler);
+          mailCcListEl.removeEventListener('hide.bs.collapse', mailCcListElHideHandler);
         }
         showMoreUsers.value = false;
         current_mail.value = {};

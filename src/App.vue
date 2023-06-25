@@ -99,43 +99,46 @@ export default {
       document.documentElement.scrollTop = 0;
     };
 
-    onMounted(() => {
-      document.addEventListener('visibilitychange', async () => {
-        if (document.visibilityState === 'visible') {
-          const token = jwt.decode(localStorage.getItem('accessToken'));
-          if (token && token.exp > Math.round(new Date().getTime() / 1000)) {
-            if (
-              !store.state.user.data.username ||
-              token.username === store.state.user.data.username
-            ) {
-              if (route.value.name === 'login') {
-                await getUserData();
-                router.replace({ name: 'home' });
-              }
-            } else {
-              router.go(0);
+    const documentVisibilitychangeHandler = async () => {
+      if (document.visibilityState === 'visible') {
+        const token = jwt.decode(localStorage.getItem('accessToken'));
+        if (token && token.exp > Math.round(new Date().getTime() / 1000)) {
+          if (
+            !store.state.user.data.username ||
+            token.username === store.state.user.data.username
+          ) {
+            if (route.value.name === 'login') {
+              await getUserData();
+              router.replace({ name: 'home' });
             }
           } else {
-            if (route.value?.meta?.auth) {
-              await clearUserData();
-              router.replace({ name: 'login', query: { redirect: route.value.path } });
-            }
+            router.go(0);
+          }
+        } else {
+          if (route.value?.meta?.auth) {
+            await clearUserData();
+            router.replace({ name: 'login', query: { redirect: route.value.path } });
           }
         }
-      });
+      }
+    };
 
-      window.addEventListener('resize', () => {
-        if (store.state.sys.cfg.water_mark && store.state.user.data.id)
-          setWatermark(
-            `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
-            moment().format('ll'),
-          );
-      });
+    const windowResizeHandler = () => {
+      if (store.state.sys.cfg.water_mark && store.state.user.data.id)
+        setWatermark(
+          `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
+          moment().format('ll'),
+        );
+    };
+
+    onMounted(() => {
+      document.addEventListener('visibilitychange', documentVisibilitychangeHandler);
+      window.addEventListener('resize', windowResizeHandler);
     });
 
     onUnmounted(() => {
-      document.removeEventListener('visibilitychange', () => {});
-      window.removeEventListener('resize', () => {});
+      document.removeEventListener('visibilitychange', documentVisibilitychangeHandler);
+      window.removeEventListener('resize', windowResizeHandler);
     });
 
     const resolveLayoutVariant = computed(() => {

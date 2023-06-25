@@ -1189,6 +1189,10 @@ export default {
       });
     };
 
+    const viewAndEditStrategyModalHiddenHandler = () => {
+      is_editing.value = false;
+    };
+
     onMounted(() => {
       fetchAccountInfo();
       fetchBindBinds();
@@ -1196,15 +1200,19 @@ export default {
 
       const viewAndEditStrategyModal = document.getElementById('viewAndEditStrategyModal');
       if (viewAndEditStrategyModal)
-        viewAndEditStrategyModal.addEventListener('hidden.bs.modal', () => {
-          is_editing.value = false;
-        });
+        viewAndEditStrategyModal.addEventListener(
+          'hidden.bs.modal',
+          viewAndEditStrategyModalHiddenHandler,
+        );
     });
 
     onUnmounted(() => {
       const viewAndEditStrategyModal = document.getElementById('viewAndEditStrategyModal');
       if (viewAndEditStrategyModal)
-        viewAndEditStrategyModal.removeEventListener('hidden.bs.modal', () => {});
+        viewAndEditStrategyModal.removeEventListener(
+          'hidden.bs.modal',
+          viewAndEditStrategyModalHiddenHandler,
+        );
     });
 
     const handleEditAccount = () => {

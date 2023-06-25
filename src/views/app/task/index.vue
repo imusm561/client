@@ -91,10 +91,9 @@
           </small>
         </div>
         <div data-simplebar class="tasks-wrapper mb-1 px-3 mx-n3">
-          <div class="tasks">
+          <div class="tasks" :id="status.value">
             <draggable
               :list="status.tasks"
-              :id="status.value"
               class="dragArea"
               handle=".mover"
               :group="status.group"
@@ -521,41 +520,53 @@ export default {
       });
     };
 
+    const refetchTasksHandler = (relates) => {
+      statuses.value
+        .filter((status) => relates.includes(status.value))
+        .forEach((status) => {
+          status.refetch = true;
+          status.loading = true;
+          fetchTasks(status);
+        });
+    };
+
+    const scrollHandler = (e) => {
+      const status = e.target.children[0].children[0].id;
+      const list = document
+        .getElementById(`task-${status}`)
+        ?.querySelector('.simplebar-content-wrapper');
+      const _status = statuses.value.find((e) => e.value === status);
+      if (
+        list &&
+        list.scrollHeight - (list.scrollTop + list.offsetHeight) < 2 &&
+        _status.tasks.length < _status.total &&
+        !_status.loading
+      ) {
+        _status.loading = true;
+        fetchTasks(_status);
+      }
+    };
+
     onMounted(() => {
+      socket.on('refetchTasks', refetchTasksHandler);
       statuses.value.forEach((status) => {
         fetchTasks(status, () => {
           const list = document
             .getElementById(`task-${status.value}`)
             ?.querySelector('.simplebar-content-wrapper');
-          if (list) {
-            list.addEventListener('scroll', () => {
-              const _status = statuses.value.find((e) => e.value === status.value);
-              if (
-                list.scrollHeight - (list.scrollTop + list.offsetHeight) < 2 &&
-                _status.tasks.length < _status.total &&
-                !_status.loading
-              ) {
-                _status.loading = true;
-                fetchTasks(_status);
-              }
-            });
-          }
+          if (list) list.addEventListener('scroll', scrollHandler);
         });
-      });
-
-      socket.on('refetchTasks', (relates) => {
-        statuses.value
-          .filter((status) => relates.includes(status.value))
-          .forEach((status) => {
-            status.refetch = true;
-            status.loading = true;
-            fetchTasks(status);
-          });
       });
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchTasks');
+      socket.removeListener('refetchTasks', refetchTasksHandler);
+      statuses.value.forEach((status) => {
+        const list = document
+          .getElementById(`task-${status.value}`)
+          ?.querySelector('.simplebar-content-wrapper');
+        if (list) list.removeEventListener('scroll', scrollHandler);
+      });
     });
 
     watch(

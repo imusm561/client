@@ -401,12 +401,18 @@ export default {
       { immediate: true, deep: true },
     );
 
+    const viewAndEditColumnModalShownHandler = () => {
+      const viewAndEditColumnModal = document.getElementById('viewAndEditColumnModal');
+      if (viewAndEditColumnModal) scrollToTop(viewAndEditColumnModal);
+    };
+
     onMounted(() => {
       const viewAndEditColumnModal = document.getElementById('viewAndEditColumnModal');
       if (viewAndEditColumnModal)
-        viewAndEditColumnModal.addEventListener('shown.bs.modal', () => {
-          scrollToTop(viewAndEditColumnModal);
-        });
+        viewAndEditColumnModal.addEventListener(
+          'shown.bs.modal',
+          viewAndEditColumnModalShownHandler,
+        );
 
       document.onkeydown = (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
@@ -419,7 +425,10 @@ export default {
     onUnmounted(() => {
       const viewAndEditColumnModal = document.getElementById('viewAndEditColumnModal');
       if (viewAndEditColumnModal)
-        viewAndEditColumnModal.removeEventListener('shown.bs.modal', () => {});
+        viewAndEditColumnModal.removeEventListener(
+          'shown.bs.modal',
+          viewAndEditColumnModalShownHandler,
+        );
     });
 
     const scrollToTop = (modal) => {

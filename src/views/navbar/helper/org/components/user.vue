@@ -944,18 +944,23 @@ export default {
     const current_user = ref({});
     const is_editing = ref(false);
 
+    const viewAndEditUserModalHiddenHandler = () => {
+      is_editing.value = false;
+    };
+
     onMounted(() => {
       const viewAndEditUserModal = document.getElementById('viewAndEditUserModal');
       if (viewAndEditUserModal)
-        viewAndEditUserModal.addEventListener('hidden.bs.modal', () => {
-          is_editing.value = false;
-        });
+        viewAndEditUserModal.addEventListener('hidden.bs.modal', viewAndEditUserModalHiddenHandler);
     });
 
     onUnmounted(() => {
       const viewAndEditUserModal = document.getElementById('viewAndEditUserModal');
       if (viewAndEditUserModal)
-        viewAndEditUserModal.removeEventListener('hidden.bs.modal', () => {});
+        viewAndEditUserModal.removeEventListener(
+          'hidden.bs.modal',
+          viewAndEditUserModalHiddenHandler,
+        );
     });
 
     const viewAndEditUserModalKey = ref(null);

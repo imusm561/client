@@ -117,8 +117,6 @@
   "layout.navbar.helper.org.dept.deleteDeptModal.confirmed": "确定",
 
   "layout.navbar.helper.org.role.roles": "角色",
-  "layout.navbar.helper.org.role.action.edit": "编辑",
-  "layout.navbar.helper.org.role.action.delete": "删除",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.newRole": "创建新角色",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.name": "名称",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.tags": "标签",

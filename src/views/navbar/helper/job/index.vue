@@ -170,15 +170,17 @@ export default {
     const moment = window.moment;
     const socket = window.socket;
 
+    const refetchJobsHandler = () => {
+      fetchJobs();
+    };
+
     onMounted(() => {
       fetchJobs();
-      socket.on('refetchJobs', () => {
-        fetchJobs();
-      });
+      socket.on('refetchJobs', refetchJobsHandler);
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchJobs');
+      socket.removeListener('refetchJobs', refetchJobsHandler);
     });
 
     const jobs = ref([]);

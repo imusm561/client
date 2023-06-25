@@ -450,20 +450,24 @@ export default {
       { immediate: true, deep: true },
     );
 
+    const refetchJobInfoHandler = () => {
+      fetchJobInfo();
+    };
+
+    const refetchJobLogHandler = () => {
+      fetchJobLog();
+    };
+
     onMounted(() => {
       fetchJobInfo();
       fetchJobLog();
-      socket.on('refetchJobInfo', () => {
-        fetchJobInfo();
-      });
-      socket.on('refetchJobLog', () => {
-        fetchJobLog();
-      });
+      socket.on('refetchJobInfo', refetchJobInfoHandler);
+      socket.on('refetchJobLog', refetchJobLogHandler);
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchJobInfo');
-      socket.removeListener('refetchJobLog');
+      socket.removeListener('refetchJobInfo', refetchJobInfoHandler);
+      socket.removeListener('refetchJobLog', refetchJobLogHandler);
     });
 
     const temp_job = ref({});

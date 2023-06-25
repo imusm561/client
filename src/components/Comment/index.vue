@@ -197,11 +197,13 @@ export default defineComponent({
       }, 1000);
     };
 
+    const refetchCommentsHandler = () => {
+      fetchComments();
+    };
+
     onMounted(() => {
       fetchComments();
-      socket.on('refetchComments', () => {
-        fetchComments();
-      });
+      socket.on('refetchComments', refetchCommentsHandler);
 
       watch(
         () => route.value.query.id,
@@ -213,7 +215,7 @@ export default defineComponent({
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchComments');
+      socket.removeListener('refetchComments', refetchCommentsHandler);
     });
 
     const comment = ref({

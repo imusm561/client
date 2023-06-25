@@ -706,6 +706,15 @@ export default {
       eventReceive: handleEventReceive,
     });
 
+    const refetchEventsHandler = () => {
+      fetchUpcomingEvents();
+      calendarApi.refetchEvents();
+    };
+
+    const viewAndEditEventModalHiddenHandler = () => {
+      is_editing.value = false;
+    };
+
     onMounted(() => {
       fetchUpcomingEvents();
       calendarApi = calendar.value.getApi().view.calendar;
@@ -724,23 +733,23 @@ export default {
 
       const viewAndEditEventModal = document.getElementById('viewAndEditEventModal');
       if (viewAndEditEventModal) {
-        viewAndEditEventModal.addEventListener('hidden.bs.modal', () => {
-          is_editing.value = false;
-          // current_event.value = {};
-        });
+        viewAndEditEventModal.addEventListener(
+          'hidden.bs.modal',
+          viewAndEditEventModalHiddenHandler,
+        );
       }
-      socket.on('refetchEvents', () => {
-        fetchUpcomingEvents();
-        calendarApi.refetchEvents();
-      });
+      socket.on('refetchEvents', refetchEventsHandler);
     });
 
     onUnmounted(() => {
       const viewAndEditEventModal = document.getElementById('viewAndEditEventModal');
       if (viewAndEditEventModal) {
-        viewAndEditEventModal.removeEventListener('hidden.bs.modal', () => {});
+        viewAndEditEventModal.removeEventListener(
+          'hidden.bs.modal',
+          viewAndEditEventModalHiddenHandler,
+        );
       }
-      socket.removeListener('refetchEvents');
+      socket.removeListener('refetchEvents', refetchEventsHandler);
     });
 
     const handleCreateEvent = () => {

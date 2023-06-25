@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted, onUnmounted } from 'vue';
+import { defineComponent, ref, onMounted, onUnmounted, nextTick } from 'vue';
 import { getUserInfo } from '@utils';
 import Empty from '@components/Empty';
 import Avatar from '@components/Avatar';
@@ -135,30 +135,34 @@ export default defineComponent({
       });
     };
 
+    const scrollHandler = () => {
+      const logsList = document.getElementById('logs')?.querySelector('.simplebar-content-wrapper');
+      if (
+        logsList &&
+        logsList.scrollHeight - (logsList.scrollTop + logsList.offsetHeight) < 2 &&
+        loading.value.enable &&
+        !loading.value.show
+      ) {
+        fetchLogs();
+      }
+    };
+
     onMounted(() => {
       fetchLogs().then(() => {
-        setTimeout(() => {
-          const logsList = document
-            .getElementById('logs')
-            ?.querySelector('.simplebar-content-wrapper');
-          if (logsList) {
-            logsList.addEventListener('scroll', () => {
-              if (
-                logsList.scrollHeight - (logsList.scrollTop + logsList.offsetHeight) < 2 &&
-                loading.value.enable &&
-                !loading.value.show
-              ) {
-                fetchLogs();
-              }
-            });
-          }
-        }, 10);
+        nextTick(() => {
+          setTimeout(() => {
+            const logsList = document
+              .getElementById('logs')
+              ?.querySelector('.simplebar-content-wrapper');
+            if (logsList) logsList.addEventListener('scroll', scrollHandler);
+          }, 100);
+        });
       });
     });
 
     onUnmounted(() => {
       const logsList = document.getElementById('logs')?.querySelector('.simplebar-content-wrapper');
-      if (logsList) logsList.removeEventListener('scroll', () => {});
+      if (logsList) logsList.removeEventListener('scroll', scrollHandler);
     });
 
     const current_log = ref({});

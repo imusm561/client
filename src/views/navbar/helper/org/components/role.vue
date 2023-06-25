@@ -18,26 +18,23 @@
         >
           <div class="card tasks-box ribbon-box border ribbon-fill right">
             <div class="card-body bg-light">
-              <div class="d-flex mb-2">
-                <h6 class="fs-15 mb-1 flex-grow-1 text-truncate">
-                  <span class="cursor-pointer" @click="$emit('set-role', role)">
-                    {{ role.name }}
-                  </span>
-                </h6>
-                <div class="dropdown" v-if="role.id != 1 || $store.state.user.data.id === 1">
-                  <span class="text-muted cursor-pointer" data-bs-toggle="dropdown">
-                    <i class="mdi mdi-dots-vertical"></i>
-                  </span>
-                  <ul class="dropdown-menu">
-                    <li class="dropdown-item cursor-pointer" @click="handleCreateOrEditRole(role)">
-                      <i class="ri-edit-2-line align-bottom me-2 text-muted"></i>
-                      {{ $t('layout.navbar.helper.org.role.action.edit') }}
-                    </li>
-                    <li class="dropdown-item cursor-pointer" @click="handlePreDelRole(role)">
-                      <i class="ri-delete-bin-5-line align-bottom me-2 text-muted"></i>
-                      {{ $t('layout.navbar.helper.org.role.action.delete') }}
-                    </li>
-                  </ul>
+              <div class="p-3 mt-n3 mx-n3">
+                <div class="d-flex align-items-center">
+                  <div class="fs-15 flex-grow-1 text-truncate">
+                    <span class="cursor-pointer" @click="$emit('set-role', role)">
+                      {{ role.name }}
+                    </span>
+                  </div>
+                  <div v-if="role.id != 1 || $store.state.user.data.id === 1" class="flex-shrink-0">
+                    <div class="d-flex gap-2 align-items-center my-n2">
+                      <button type="button" class="btn p-0" @click="handleCreateOrEditRole(role)">
+                        <i class="mdi mdi-square-edit-outline text-info"></i>
+                      </button>
+                      <button type="button" class="btn p-0" @click="handlePreDelRole(role)">
+                        <i class="mdi mdi-delete-outline text-danger"></i>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
               <p class="text-muted text-truncate" :title="role.description">

@@ -452,6 +452,10 @@ export default {
       getRows: false,
     });
 
+    const refetchDataListHandler = (res) => {
+      if (res.tid == route.value.params.tid) handleRefetchDataList();
+    };
+
     onMounted(() => {
       watch(
         () => route.value.params.tid,
@@ -466,13 +470,11 @@ export default {
         { immediate: true },
       );
 
-      socket.on('refetchDataList', (res) => {
-        if (res.tid == route.value.params.tid) handleRefetchDataList();
-      });
+      socket.on('refetchDataList', refetchDataListHandler);
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchDataList');
+      socket.removeListener('refetchDataList', refetchDataListHandler);
     });
 
     const fetchDataForm = async (callback) => {

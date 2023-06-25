@@ -598,6 +598,103 @@ export default {
       { immediate: true, deep: true },
     );
 
+    const receiverReadMsgHandler = (data) => {
+      let _chat = _chats.value.find((chat) => chat.username === data.receiver);
+      if (_chat) {
+        _chat.chat_data.map((data) => {
+          data.receiver_read = true;
+          return data;
+        });
+      }
+    };
+    const receiveMsgHandler = (data) => {
+      let _chat = _chats.value.find((chat) => chat.username === data.sender);
+      if (_chat) {
+        _chat.chat_data.push({
+          id: data.id,
+          created_at: data.created_at,
+          sender: data.sender,
+          receiver: data.receiver,
+          message: data.message,
+          quote: data.quote,
+          receiver_read: current_chat.value.username === data.sender ? true : false,
+        });
+        if (current_chat.value.username === data.sender) handleReadMsg();
+      } else {
+        let contact = _contacts.value.find((contact) => contact.username == data.sender);
+        if (contact) {
+          _chat = {
+            ...contact,
+            ...{
+              chat_data: [
+                {
+                  id: data.id,
+                  created_at: data.created_at,
+                  sender: data.sender,
+                  receiver: data.receiver,
+                  message: data.message,
+                  quote: data.quote,
+                  receiver_read: false,
+                },
+              ],
+            },
+          };
+          _chats.value.push(_chat);
+        }
+      }
+    };
+    const withdrawMsgHandler = (data) => {
+      let _chat = _chats.value.find((chat) => chat.username === data.sender);
+      if (_chat) {
+        const index = _chat.chat_data.findIndex((item) => item.id === data.id);
+        if (index !== -1) _chat.chat_data.splice(index, 1);
+      }
+    };
+
+    const scrollHandler = () => {
+      const chatConversationList = document
+        .getElementById('user-chat')
+        .querySelector('.chat-conversation .simplebar-content-wrapper');
+      if (
+        chatConversationList &&
+        chatConversationList.scrollTop < 5 &&
+        !current_chat.value.all &&
+        !loading.value
+      ) {
+        const oldHeight = chatConversationList.scrollHeight;
+        loading.value = true;
+        scrollable.value = false;
+        getChatData({
+          id: current_chat.value.chat_data[0].id,
+          contact: current_chat.value.username,
+        }).then(({ code, data, msg }) => {
+          if (code === 200) {
+            if (data.length < 10) current_chat.value.all = true;
+            setTimeout(() => {
+              current_chat.value.chat_data.unshift(...data);
+              loading.value = false;
+              nextTick(() => {
+                const newHeight = chatConversationList.scrollHeight;
+                chatConversationList.scrollTop = newHeight - oldHeight - 12;
+                setTimeout(() => {
+                  scrollable.value = true;
+                }, 500);
+              });
+            }, 500);
+          } else {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: msg,
+              },
+            });
+          }
+        });
+      }
+    };
+
     onMounted(() => {
       getChats().then(({ code, data, msg }) => {
         if (code === 200) {
@@ -633,66 +730,20 @@ export default {
         }
       });
 
-      socket.on('onReceiverReadMsg', (data) => {
-        let _chat = _chats.value.find((chat) => chat.username === data.receiver);
-        if (_chat) {
-          _chat.chat_data.map((data) => {
-            data.receiver_read = true;
-            return data;
-          });
-        }
-      });
-
-      socket.on('receiveMsg', (data) => {
-        let _chat = _chats.value.find((chat) => chat.username === data.sender);
-        if (_chat) {
-          _chat.chat_data.push({
-            id: data.id,
-            created_at: data.created_at,
-            sender: data.sender,
-            receiver: data.receiver,
-            message: data.message,
-            quote: data.quote,
-            receiver_read: current_chat.value.username === data.sender ? true : false,
-          });
-          if (current_chat.value.username === data.sender) handleReadMsg();
-        } else {
-          let contact = _contacts.value.find((contact) => contact.username == data.sender);
-          if (contact) {
-            _chat = {
-              ...contact,
-              ...{
-                chat_data: [
-                  {
-                    id: data.id,
-                    created_at: data.created_at,
-                    sender: data.sender,
-                    receiver: data.receiver,
-                    message: data.message,
-                    quote: data.quote,
-                    receiver_read: false,
-                  },
-                ],
-              },
-            };
-            _chats.value.push(_chat);
-          }
-        }
-      });
-
-      socket.on('withdrawMsg', (data) => {
-        let _chat = _chats.value.find((chat) => chat.username === data.sender);
-        if (_chat) {
-          const index = _chat.chat_data.findIndex((item) => item.id === data.id);
-          if (index !== -1) _chat.chat_data.splice(index, 1);
-        }
-      });
+      socket.on('receiverReadMsg', receiverReadMsgHandler);
+      socket.on('receiveMsg', receiveMsgHandler);
+      socket.on('withdrawMsg', withdrawMsgHandler);
     });
 
     onUnmounted(() => {
-      socket.removeListener('onReceiverReadMsg');
-      socket.removeListener('receiveMsg');
-      socket.removeListener('withdrawMsg');
+      socket.removeListener('receiverReadMsg', receiverReadMsgHandler);
+      socket.removeListener('receiveMsg', receiveMsgHandler);
+      socket.removeListener('withdrawMsg', withdrawMsgHandler);
+
+      const chatConversationList = document
+        .getElementById('user-chat')
+        .querySelector('.chat-conversation .simplebar-content-wrapper');
+      if (chatConversationList) chatConversationList.removeEventListener('scroll', scrollHandler);
     });
 
     const loading = ref(false);
@@ -735,43 +786,7 @@ export default {
         const chatConversationList = document
           .getElementById('user-chat')
           .querySelector('.chat-conversation .simplebar-content-wrapper');
-        if (chatConversationList) {
-          chatConversationList.addEventListener('scroll', () => {
-            if (chatConversationList.scrollTop < 5 && !current_chat.value.all && !loading.value) {
-              const oldHeight = chatConversationList.scrollHeight;
-              loading.value = true;
-              scrollable.value = false;
-              getChatData({
-                id: current_chat.value.chat_data[0].id,
-                contact: current_chat.value.username,
-              }).then(({ code, data, msg }) => {
-                if (code === 200) {
-                  if (data.length < 10) current_chat.value.all = true;
-                  setTimeout(() => {
-                    current_chat.value.chat_data.unshift(...data);
-                    loading.value = false;
-                    nextTick(() => {
-                      const newHeight = chatConversationList.scrollHeight;
-                      chatConversationList.scrollTop = newHeight - oldHeight - 12;
-                      setTimeout(() => {
-                        scrollable.value = true;
-                      }, 500);
-                    });
-                  }, 500);
-                } else {
-                  toast({
-                    component: ToastificationContent,
-                    props: {
-                      variant: 'danger',
-                      icon: 'mdi-alert',
-                      text: msg,
-                    },
-                  });
-                }
-              });
-            }
-          });
-        }
+        if (chatConversationList) chatConversationList.addEventListener('scroll', scrollHandler);
       }, 100);
     };
 

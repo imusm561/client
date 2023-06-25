@@ -291,6 +291,11 @@ export default {
       fetchLogs();
     };
 
+    const refetchLogsHandler = () => {
+      pagination.value.pageNum = 1;
+      fetchLogs();
+    };
+
     onMounted(() => {
       fetchLogs();
       watch(
@@ -315,14 +320,11 @@ export default {
         { immediate: true },
       );
 
-      socket.on('refetchLogs', () => {
-        pagination.value.pageNum = 1;
-        fetchLogs();
-      });
+      socket.on('refetchLogs', refetchLogsHandler);
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchLogs');
+      socket.removeListener('refetchLogs', refetchLogsHandler);
     });
 
     const fetchLogs = () => {

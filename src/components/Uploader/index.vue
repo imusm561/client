@@ -529,31 +529,36 @@ export default defineComponent({
 
     const socket = window.socket;
 
+    const fileChangedHandler = ({ type, code, file }) => {
+      if (code === qrcode.value) {
+        if (type === 'add') files.value = [...files.value, ...[file]];
+        else if (type === 'del') files.value = files.value.filter((_file) => _file.id != file.id);
+      }
+    };
+
+    const uploadDropdownMenuShowHandler = () => {
+      qrcode.value = null;
+      if (props.qrable) hendleClickMobileUpload();
+    };
+    const uploadDropdownMenuHideHandler = () => {
+      qrcode.value = null;
+    };
+
     onMounted(() => {
-      socket.on('fileChanged', ({ type, code, file }) => {
-        if (code === qrcode.value) {
-          if (type === 'add') files.value = [...files.value, ...[file]];
-          else if (type === 'del') files.value = files.value.filter((_file) => _file.id != file.id);
-        }
-      });
+      socket.on('fileChanged', fileChangedHandler);
       const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
       if (uploadDropdownMenu) {
-        uploadDropdownMenu.addEventListener('show.bs.dropdown', () => {
-          qrcode.value = null;
-          if (props.qrable) hendleClickMobileUpload();
-        });
-        uploadDropdownMenu.addEventListener('hide.bs.dropdown', () => {
-          qrcode.value = null;
-        });
+        uploadDropdownMenu.addEventListener('show.bs.dropdown', uploadDropdownMenuShowHandler);
+        uploadDropdownMenu.addEventListener('hide.bs.dropdown', uploadDropdownMenuHideHandler);
       }
     });
 
     onUnmounted(() => {
-      socket.removeListener('fileChanged');
+      socket.removeListener('fileChanged', fileChangedHandler);
       const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
       if (uploadDropdownMenu) {
-        uploadDropdownMenu.removeEventListener('show.bs.dropdown', () => {});
-        uploadDropdownMenu.removeEventListener('hide.bs.dropdown', () => {});
+        uploadDropdownMenu.removeEventListener('show.bs.dropdown', uploadDropdownMenuShowHandler);
+        uploadDropdownMenu.removeEventListener('hide.bs.dropdown', uploadDropdownMenuHideHandler);
       }
     });
 
