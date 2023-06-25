@@ -1,7 +1,12 @@
 import axios from '@utils/axios';
+import { generateApiQuery } from '@utils';
 
-export const getMails = () => {
-  return axios.get('/cor/app/mail/list');
+export const getMail = (params) => {
+  return axios.get('/cor/app/mail/data' + generateApiQuery(params));
+};
+
+export const getMails = (params) => {
+  return axios.get('/cor/app/mail/list' + generateApiQuery(params));
 };
 
 export const createMail = (data) => {

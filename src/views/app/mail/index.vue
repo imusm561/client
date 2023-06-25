@@ -14,20 +14,26 @@
             <i class="mdi mdi-email-plus-outline me-1"></i>
             {{ $t('app.mail.compose') }}
           </button>
+          <button
+            class="d-none"
+            id="showDraftMailModalBtn"
+            data-bs-toggle="modal"
+            data-bs-target="#composeModal"
+          ></button>
         </div>
 
         <div class="mx-n4 px-4 email-menu-sidebar-scroll">
-          <div class="mail-list mt-3">
+          <div class="email-menu-list mt-3">
             <a
-              v-for="(menu, index) in menus"
-              :key="index"
+              v-for="menu in menus"
+              :key="menu.value"
               class="cursor-pointer"
-              :class="{ active: current_menu === menu.value }"
-              @click="changemenu(menu.value)"
+              :class="{ active: mails.menu === menu.value }"
+              @click="mails.menu = menu.value"
             >
               <i :class="`mdi ${menu.icon} me-3 align-middle fw-medium`"></i>
-              <span class="mail-list-link">{{ menu.title }}</span>
-              <span v-if="menu.count !== 0" class="badge badge-soft-success ms-auto">
+              <span>{{ menu.title }}</span>
+              <span v-if="menu.count !== 0" :class="`badge badge-soft-${menu.variant} ms-auto`">
                 {{ menu.count }}
               </span>
             </a>
@@ -35,16 +41,17 @@
 
           <div>
             <h5 class="fs-12 text-uppercase text-muted mt-4">{{ $t('app.mail.label') }}</h5>
-            <div class="mail-list mt-1">
+            <div class="email-label-list mt-1">
               <a
                 v-for="label in labels"
                 :key="label.value"
                 class="cursor-pointer"
-                @click="changelabel(label.value)"
+                :class="{ active: mails.label === label.value }"
+                @click="mails.label = label.value"
               >
-                <span class="mdi mdi-circle-outline me-2 text-info"></span>
-                {{ label.title }}
-                <span v-if="label.count !== 0" class="badge badge-soft-success ms-auto">
+                <i :class="`mdi ${label.icon} me-3 align-middle fw-medium`"></i>
+                <span>{{ label.title }}</span>
+                <span v-if="label.count !== 0" :class="`badge badge-soft-${label.variant} ms-auto`">
                   {{ label.count }}
                 </span>
               </a>
@@ -74,7 +81,7 @@
                     class="form-check-input"
                     type="checkbox"
                     id="checkall"
-                    :disabled="mails.length === 0"
+                    :disabled="mails.list.length === 0"
                     @change="handleCheckAllMail"
                   />
                   <label class="form-check-label" for="flexCheck18"></label>
@@ -82,7 +89,12 @@
                 <button
                   type="button"
                   class="btn btn-ghost-secondary btn-icon btn-sm fs-16"
-                  @click="fetchMails()"
+                  @click="
+                    () => {
+                      mails.refetch = true;
+                      fetchMails();
+                    }
+                  "
                 >
                   <i class="mdi mdi-refresh align-bottom"></i>
                 </button>
@@ -90,13 +102,13 @@
                   <button
                     type="button"
                     class="btn btn-ghost-secondary btn-icon btn-sm fs-16 trash-btn"
-                    :class="{ active: current_menu === 'trash' }"
-                    @click="handleTrashMails()"
+                    :class="{ active: mails.menu === 'trash' }"
+                    @click="handleMarkOrUnmarkMails(checkedMailIds, 'trash', mails.menu != 'trash')"
                   >
                     <i class="mdi mdi-trash-can align-bottom"></i>
                   </button>
                   <button
-                    v-if="current_menu === 'trash'"
+                    v-if="mails.menu === 'trash'"
                     type="button"
                     class="btn btn-ghost-secondary btn-icon btn-sm fs-16"
                     data-bs-toggle="modal"
@@ -120,11 +132,47 @@
                     <i class="mdi mdi-dots-vertical align-bottom"></i>
                   </button>
                   <div class="dropdown-menu dropdown-menu-end">
-                    <a class="dropdown-item cursor-pointer" @click="handleMarkMails('important')">
-                      {{ $t('app.mail.detail.markAsImportant') }}
+                    <a
+                      class="dropdown-item cursor-pointer"
+                      @click="
+                        handleMarkOrUnmarkMails(
+                          checkedMailIds,
+                          'important',
+                          !mails.list
+                            .filter((mail) => checkedMailIds.includes(mail.id))
+                            .every((mail) =>
+                              mail.important.includes($store.state.user.data.username),
+                            ),
+                        )
+                      "
+                    >
+                      {{
+                        mails.list
+                          .filter((mail) => checkedMailIds.includes(mail.id))
+                          .every((mail) => mail.important.includes($store.state.user.data.username))
+                          ? $t('app.mail.detail.unmarkImportant')
+                          : $t('app.mail.detail.markAsImportant')
+                      }}
                     </a>
-                    <a class="dropdown-item cursor-pointer" @click="handleMarkMails('star')">
-                      {{ $t('app.mail.detail.addStar') }}
+                    <a
+                      class="dropdown-item cursor-pointer"
+                      @click="
+                        handleMarkOrUnmarkMails(
+                          checkedMailIds,
+                          'star',
+                          !mails.list
+                            .filter((mail) => checkedMailIds.includes(mail.id))
+                            .every((mail) => mail.star.includes($store.state.user.data.username)),
+                        )
+                      "
+                    >
+                      {{
+                        mails.list
+                          .filter((mail) => checkedMailIds.includes(mail.id))
+                          .every((mail) => mail.star.includes($store.state.user.data.username))
+                          ? $t('app.mail.detail.unmarkStar')
+                          : $t('app.mail.detail.markStar')
+                      }}
                     </a>
                   </div>
                 </div>
@@ -138,25 +186,12 @@
                 class="nav nav-tabs nav-tabs-custom nav-success gap-1 text-center border-bottom-0"
                 style="width: 100vw"
               >
-                <li class="nav-item tabtype">
-                  <a
-                    class="nav-link fw-semibold cursor-pointer"
-                    :class="{ active: current_label == 'all' }"
-                    id="all_tab"
-                    @click="changetab('all')"
-                  >
-                    <i class="mdi mdi-format-list-bulleted align-bottom d-inline-block"></i>
-                    <span class="ms-1 d-none d-sm-inline-block">
-                      {{ $t('app.mail.label.all') }}
-                    </span>
-                  </a>
-                </li>
                 <li v-for="label in labels" :key="label.value" class="nav-item tabtype">
                   <a
                     class="nav-link fw-semibold cursor-pointer"
-                    :class="{ active: current_label == label.value }"
+                    :class="{ active: mails.label == label.value }"
                     :id="`${label.value}_tab`"
-                    @click="changetab(label.value)"
+                    @click="mails.label = label.value"
                   >
                     <i :class="`mdi ${label.icon} align-bottom d-inline-block`"></i>
                     <span class="ms-1 d-none d-sm-inline-block">{{ label.title }}</span>
@@ -166,15 +201,16 @@
             </div>
           </div>
         </div>
-        <div class="message-list-content mx-n4 px-4 message-list-scroll p-2" data-simplebar>
-          <ul id="messageList" class="message-list mb-0">
-            <div v-for="mail in mails" :key="mail.id">
+        <div id="email-list" class="email-list-content mx-n4 px-4 p-2" data-simplebar>
+          <ul class="email-list mb-0">
+            <div v-for="mail in mails.list" :key="mail.id">
               <li
                 :class="{
                   unread:
                     !mail.read.includes($store.state.user.data.username) &&
                     mail.created_by != $store.state.user.data.username,
                   active: checkedMailIds.includes(mail.id),
+                  'bg-soft-warning': mail.important.includes($store.state.user.data.username),
                 }"
               >
                 <div>
@@ -193,7 +229,13 @@
                       type="button"
                       class="btn avatar-xs p-0 favourite-btn fs-15"
                       :class="{ active: mail.star.includes($store.state.user.data.username) }"
-                      @click="handleMarkOrUnmarkMail(mail, 'star')"
+                      @click="
+                        handleMarkOrUnmarkMails(
+                          [mail.id],
+                          'star',
+                          !mail.star.includes($store.state.user.data.username),
+                        )
+                      "
                     >
                       <i class="mdi mdi-star"></i>
                     </button>
@@ -216,6 +258,15 @@
                 </div>
               </li>
             </div>
+            <button
+              v-if="mails.loading && !mails.refetch"
+              type="button"
+              class="btn btn-soft-info btn-rounded btn-sm px-2 d-block mt-2"
+              style="margin: 0 auto"
+            >
+              <i class="mdi mdi-spin mdi-loading me-2"></i>
+              {{ $t('app.mail.loading') }}
+            </button>
           </ul>
         </div>
       </div>
@@ -258,14 +309,26 @@
                   type="button"
                   class="btn btn-ghost-secondary btn-icon btn-sm fs-16 favourite-btn"
                   :class="{ active: current_mail.star.includes($store.state.user.data.username) }"
-                  @click="handleMarkOrUnmarkMail(current_mail, 'star')"
+                  @click="
+                    handleMarkOrUnmarkMails(
+                      [current_mail.id],
+                      'star',
+                      !current_mail.star.includes($store.state.user.data.username),
+                    )
+                  "
                 >
                   <i class="mdi mdi-star align-bottom"></i>
                 </button>
                 <button
                   class="btn btn-ghost-secondary btn-icon btn-sm fs-16 trash-btn"
                   :class="{ active: current_mail.trash.includes($store.state.user.data.username) }"
-                  @click="handleMarkOrUnmarkMail(current_mail, 'trash')"
+                  @click="
+                    handleMarkOrUnmarkMails(
+                      [current_mail.id],
+                      'trash',
+                      !current_mail.trash.includes($store.state.user.data.username),
+                    )
+                  "
                 >
                   <i class="mdi mdi-trash-can align-bottom"></i>
                 </button>
@@ -289,7 +352,13 @@
                   <div class="dropdown-menu dropdown-menu-end">
                     <a
                       class="dropdown-item cursor-pointer"
-                      @click="handleMarkOrUnmarkMail(current_mail, 'important')"
+                      @click="
+                        handleMarkOrUnmarkMails(
+                          [current_mail.id],
+                          'important',
+                          !current_mail.important.includes($store.state.user.data.username),
+                        )
+                      "
                     >
                       {{
                         current_mail.important.includes($store.state.user.data.username)
@@ -401,7 +470,7 @@
               data-bs-dismiss="modal"
             ></button>
           </div>
-          <Form v-slot="{ errors }" @submit="handleSubmitMail" :key="new_mail.key">
+          <Form v-slot="{ errors }" @submit="handleSubmitMail('published')" :key="new_mail.key">
             <div class="modal-body p-0">
               <div data-simplebar class="p-3" style="max-height: 80vh; overflow-x: hidden">
                 <div class="row g-3">
@@ -697,6 +766,14 @@
                 {{ $t('app.mail.composeModal.form.footer.cancel') }}
               </button>
               <button
+                type="button"
+                class="btn btn-sm btn-warning"
+                @click="handleSubmitMail('drafted')"
+              >
+                <i class="mdi mdi-email-edit-outline"></i>
+                {{ $t('app.mail.composeModal.form.footer.draft') }}
+              </button>
+              <button
                 type="submit"
                 class="btn btn-sm btn-success"
                 :disabled="Object.keys(errors).length"
@@ -767,7 +844,6 @@
               type="button"
               class="btn-close"
               data-bs-target="#composeModal"
-              data-bs-toggle="modal"
               data-bs-dismiss="modal"
               aria-label="Close"
             ></button>
@@ -836,7 +912,7 @@
                 type="button"
                 class="btn w-sm btn-danger"
                 data-bs-dismiss="modal"
-                @click="handleTrashMails(true)"
+                @click="handleMarkOrUnmarkMails(checkedMailIds, 'delete', true)"
               >
                 {{ $t('app.mail.deleteMailConfirmModal.confirmed') }}
               </button>
@@ -867,12 +943,12 @@
 </template>
 
 <script>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch, reactive, nextTick } from 'vue';
 import { replaceHtml, useRouter, getUserInfo, encryptData, decryptData } from '@utils';
 import store from '@store';
 import CKEditor from '@components/CKEditor';
 import Uploader from '@components/Uploader';
-import { getMails, createMail, updateMail } from '@api/app/mail';
+import { getMail, getMails, createMail, updateMail } from '@api/app/mail';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Avatar from '@components/Avatar';
@@ -1041,171 +1117,106 @@ export default {
       });
     };
 
-    const menus = computed(() => {
-      return [
-        {
-          title: i18n.global.t('app.mail.menu.all'),
-          value: 'all',
-          icon: 'mdi-email-multiple',
-          count: _mails.value.filter((mail) => !mail.trash.includes(store.state.user.data.username))
-            .length,
-        },
-        {
-          title: i18n.global.t('app.mail.menu.inbox'),
-          value: 'inbox',
-          icon: 'mdi-email-receive',
-          count: _mails.value.filter(
-            (mail) =>
-              !mail.trash.includes(store.state.user.data.username) &&
-              mail.created_by != store.state.user.data.username,
-          ).length,
-        },
-        {
-          title: i18n.global.t('app.mail.menu.sent'),
-          value: 'sent',
-          icon: 'mdi-email-send',
-          count: _mails.value.filter(
-            (mail) =>
-              !mail.trash.includes(store.state.user.data.username) &&
-              mail.created_by === store.state.user.data.username,
-          ).length,
-        },
-        {
-          title: i18n.global.t('app.mail.menu.trash'),
-          value: 'trash',
-          icon: 'mdi-trash-can',
-          count: _mails.value.filter((mail) => mail.trash.includes(store.state.user.data.username))
-            .length,
-        },
-        {
-          title: i18n.global.t('app.mail.menu.star'),
-          value: 'star',
-          icon: 'mdi-star',
-          count: _mails.value.filter(
-            (mail) =>
-              !mail.trash.includes(store.state.user.data.username) &&
-              mail.star.includes(store.state.user.data.username),
-          ).length,
-        },
-        {
-          title: i18n.global.t('app.mail.menu.important'),
-          value: 'important',
-          icon: 'mdi-label',
-          count: _mails.value.filter(
-            (mail) =>
-              !mail.trash.includes(store.state.user.data.username) &&
-              mail.important.includes(store.state.user.data.username),
-          ).length,
-        },
-      ];
+    const menus = reactive([
+      {
+        title: i18n.global.t('app.mail.menu.all'),
+        value: 'all',
+        variant: 'primary',
+        icon: 'mdi-email-multiple',
+      },
+      {
+        title: i18n.global.t('app.mail.menu.inbox'),
+        value: 'inbox',
+        variant: 'info',
+        icon: 'mdi-email-receive',
+      },
+      {
+        title: i18n.global.t('app.mail.menu.draft'),
+        value: 'draft',
+        variant: 'warning',
+        icon: 'mdi-email-edit-outline',
+      },
+      {
+        title: i18n.global.t('app.mail.menu.sent'),
+        value: 'sent',
+        variant: 'success',
+        icon: 'mdi-email-send',
+      },
+      {
+        title: i18n.global.t('app.mail.menu.trash'),
+        value: 'trash',
+        variant: 'danger',
+        icon: 'mdi-trash-can',
+      },
+      {
+        title: i18n.global.t('app.mail.menu.star'),
+        value: 'star',
+        variant: 'warning',
+        icon: 'mdi-star',
+      },
+      {
+        title: i18n.global.t('app.mail.menu.important'),
+        value: 'important',
+        variant: 'warning',
+        icon: 'mdi-label',
+      },
+    ]);
+
+    const labels = reactive(JSON.parse(JSON.stringify(store.state.sys.cfg.mail.labels)));
+
+    const mails = reactive({
+      menu: menus[0].value,
+      label: labels[0].value,
+      total: 0,
+      pageNum: 1,
+      pageSize: 20,
+      list: [],
+      loading: false,
+      refetch: false,
     });
-
-    const labels = computed(() => {
-      return [
-        {
-          title: i18n.global.t('app.mail.label.personal'),
-          value: 'personal',
-          variant: 'primary',
-          icon: 'mdi-account',
-          count: _mails.value.filter(
-            (mail) =>
-              !mail.trash.includes(store.state.user.data.username) &&
-              mail.label.includes('personal'),
-          ).length,
-        },
-        {
-          title: i18n.global.t('app.mail.label.meeting'),
-          value: 'meeting',
-          variant: 'secondary',
-          icon: 'mdi-notebook-outline',
-          count: _mails.value.filter(
-            (mail) =>
-              !mail.trash.includes(store.state.user.data.username) &&
-              mail.label.includes('meeting'),
-          ).length,
-        },
-        {
-          title: i18n.global.t('app.mail.label.family'),
-          value: 'family',
-          variant: 'warning',
-          icon: 'mdi-home-outline',
-          count: _mails.value.filter(
-            (mail) =>
-              !mail.trash.includes(store.state.user.data.username) && mail.label.includes('family'),
-          ).length,
-        },
-        {
-          title: i18n.global.t('app.mail.label.work'),
-          value: 'work',
-          variant: 'danger',
-          icon: 'mdi-wallet-travel',
-          count: _mails.value.filter(
-            (mail) =>
-              !mail.trash.includes(store.state.user.data.username) && mail.label.includes('work'),
-          ).length,
-        },
-        {
-          title: i18n.global.t('app.mail.label.holiday'),
-          value: 'holiday',
-          variant: 'success',
-          icon: 'mdi-weather-sunny',
-          count: _mails.value.filter(
-            (mail) =>
-              !mail.trash.includes(store.state.user.data.username) &&
-              mail.label.includes('holiday'),
-          ).length,
-        },
-        {
-          title: i18n.global.t('app.mail.label.other'),
-          value: 'other',
-          variant: 'info',
-          icon: 'mdi-information-outline',
-          count: _mails.value.filter(
-            (mail) =>
-              !mail.trash.includes(store.state.user.data.username) && mail.label.includes('other'),
-          ).length,
-        },
-      ];
-    });
-
-    const _mails = ref([]);
-
-    const current_menu = ref('all');
-    const changemenu = (menu) => {
-      if (current_menu.value != menu) {
-        handleCloseMail();
-        current_label.value = 'all';
-        current_menu.value = menu;
-        const checkall = document.getElementById('checkall');
-        checkall.checked = false;
-        checkall.indeterminate = false;
-        checkedMailIds.value = [];
-      }
-    };
-    const current_label = ref('all');
-    const changelabel = (label) => {
-      current_menu.value = 'all';
-      document.getElementById(`${label}_tab`).click();
-    };
-    const changetab = (label) => {
-      if (current_label.value != label) {
-        handleCloseMail();
-        current_label.value = label;
-        const checkall = document.getElementById('checkall');
-        checkall.checked = false;
-        checkall.indeterminate = false;
-        checkedMailIds.value = [];
-      }
-    };
 
     const fetchMails = (callback) => {
-      getMails().then(({ code, data, msg }) => {
+      getMails({
+        menu: mails.menu,
+        label: mails.label,
+        pageNum: mails.refetch ? 1 : mails.pageNum,
+        pageSize: mails.refetch
+          ? mails.list.length < mails.pageSize
+            ? mails.pageSize
+            : mails.list.length
+          : mails.pageSize,
+      }).then(({ code, data, msg }) => {
         if (code === 200) {
-          _mails.value = data.map((mail) => {
-            mail.sender = getUserInfo(mail.created_by);
-            return mail;
+          mails.total = data.count;
+          if (mails.refetch) {
+            mails.list = data.rows.map((mail) => {
+              mail.sender = getUserInfo(mail.created_by);
+              return mail;
+            });
+          } else {
+            mails.pageNum += 1;
+            mails.list.push(
+              ...data.rows.map((mail) => {
+                mail.sender = getUserInfo(mail.created_by);
+                return mail;
+              }),
+            );
+          }
+          if (data.menu)
+            menus.forEach((menu) => {
+              menu.count = data.menu[menu.value];
+            });
+          if (data.label)
+            labels.forEach((label) => {
+              label.count = data.label[label.value];
+            });
+          setTimeout(() => {
+            mails.loading = false;
+            mails.refetch = false;
+          }, 500);
+          nextTick(() => {
+            callback && callback();
           });
-          callback && callback();
         } else {
           toast({
             component: ToastificationContent,
@@ -1219,65 +1230,77 @@ export default {
       });
     };
 
-    const mails = computed(() => {
-      if (current_menu.value === 'all')
-        return _mails.value
-          .filter((mail) => !mail.trash.includes(store.state.user.data.username))
-          .filter((mail) =>
-            current_label.value === 'all' ? true : mail.label.includes(current_label.value),
-          );
-      else if (current_menu.value === 'inbox')
-        return _mails.value
-          .filter((mail) => !mail.trash.includes(store.state.user.data.username))
-          .filter((mail) => mail.created_by !== store.state.user.data.username)
-          .filter((mail) =>
-            current_label.value === 'all' ? true : mail.label.includes(current_label.value),
-          );
-      else if (current_menu.value === 'sent')
-        return _mails.value
-          .filter((mail) => !mail.trash.includes(store.state.user.data.username))
-          .filter((mail) => mail.created_by === store.state.user.data.username)
-          .filter((mail) =>
-            current_label.value === 'all' ? true : mail.label.includes(current_label.value),
-          );
-      else if (current_menu.value === 'trash')
-        return _mails.value
-          .filter((mail) => mail.trash.includes(store.state.user.data.username))
-          .filter((mail) =>
-            current_label.value === 'all' ? true : mail.label.includes(current_label.value),
-          );
-      else
-        return _mails.value
-          .filter((mail) => !mail.trash.includes(store.state.user.data.username))
-          .filter((mail) => mail[current_menu.value].includes(store.state.user.data.username))
-          .filter((mail) =>
-            current_label.value === 'all' ? true : mail.label.includes(current_label.value),
-          );
-    });
+    onMounted(async () => {
+      if (route.value.query.id) {
+        const { code, data, msg } = await getMail(route.value.query);
+        if (code === 200) {
+          data.sender = getUserInfo(data.created_by);
+          mails.menu = data.trash.includes(store.state.user.data.username)
+            ? 'trash'
+            : data.created_by === store.state.user.data.username
+            ? data.data_state === 'published'
+              ? 'sent'
+              : 'draft'
+            : 'inbox';
+          mails.label = data.label?.length ? data.label[0] : 'all';
+          nextTick(() => {
+            setTimeout(() => {
+              handleOpenMail(data);
+            }, 500);
+          });
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      }
 
-    onMounted(() => {
       fetchMails(() => {
         watch(
-          () => route.value.query,
-          (val) => {
-            if (val.id) {
-              let mail = _mails.value.find((mail) => mail.id == val.id);
-              if (mail) {
-                setTimeout(() => {
-                  handleOpenMail(mail);
-                  if (mail.trash.includes(store.state.user.data.username))
-                    current_menu.value = 'trash';
-                  else if (mail.created_by === store.state.user.data.username)
-                    current_menu.value = 'sent';
-                  else current_menu.value = 'inbox';
-                }, 100);
-              }
+          () => [mails.menu, mails.label],
+          (newVal, oldVal) => {
+            if (newVal && oldVal) {
+              handleCloseMail();
+              const checkall = document.getElementById('checkall');
+              checkall.checked = false;
+              checkall.indeterminate = false;
+              checkedMailIds.value = [];
+
+              mails.total = 0;
+              mails.pageNum = 1;
+              mails.pageSize = 20;
+              mails.list = [];
+
+              fetchMails();
             }
           },
           { immediate: true },
         );
+
+        const list = document
+          .getElementById('email-list')
+          ?.querySelector('.simplebar-content-wrapper');
+        if (list) {
+          list.addEventListener('scroll', () => {
+            if (
+              list.scrollHeight - (list.scrollTop + list.offsetHeight) < 2 &&
+              mails.list.length < mails.total &&
+              !mails.loading
+            ) {
+              mails.loading = true;
+              fetchMails();
+            }
+          });
+        }
       });
       socket.on('refetchMails', () => {
+        mails.refetch = true;
+        mails.loading = true;
         fetchMails();
       });
       handleCloseMail();
@@ -1331,33 +1354,63 @@ export default {
 
     const checkedMailIds = ref([]);
 
+    watch(
+      () => checkedMailIds.value,
+      (val) => {
+        if (val) {
+          const checkall = document.getElementById('checkall');
+          if (checkall) {
+            checkall.checked = val.length > 0;
+            checkall.indeterminate = val.length > 0 && val.length < mails.list.length;
+          }
+        }
+      },
+      { immediate: true, deep: true },
+    );
+
     const handleCheckMail = (mail) => {
       const idx = checkedMailIds.value.indexOf(mail.id);
       if (idx === -1) checkedMailIds.value.push(mail.id);
       else checkedMailIds.value.splice(idx, 1);
-      const checkall = document.getElementById('checkall');
-      checkall.checked = checkedMailIds.value.length > 0;
-      checkall.indeterminate =
-        checkedMailIds.value.length > 0 && checkedMailIds.value.length < mails.value.length;
     };
+
     const handleCheckAllMail = (e) => {
-      if (e.target.checked)
-        checkedMailIds.value = mails.value.map((mail) => {
+      if (e?.target?.checked)
+        checkedMailIds.value = mails.list.map((mail) => {
           return mail.id;
         });
       else checkedMailIds.value = [];
     };
 
-    const handleMarkOrUnmarkMail = (mail, field, callback) => {
-      const idx = mail[field].indexOf(store.state.user.data.username);
-      if (idx === -1) mail[field].push(store.state.user.data.username);
-      else mail[field].splice(idx, 1);
-      const params = { id: mail.id };
-      params[field] = mail[field];
-      updateMail(params).then(({ code, msg }) => {
+    const handleMarkOrUnmarkMails = (ids, field, mark) => {
+      const data = {
+        mails: ids.map((id) => {
+          const mail = mails.list.find((mail) => mail.id === id);
+          const idx = mail[field].indexOf(store.state.user.data.username);
+          if (mark) {
+            if (idx === -1) mail[field].push(store.state.user.data.username);
+          } else {
+            if (idx != -1) mail[field].splice(idx, 1);
+          }
+          if (id === current_mail.value.id) current_mail.value[field] = mail[field];
+          return {
+            id,
+            [field]: mail[field],
+          };
+        }),
+      };
+      updateMail(data).then(({ code, msg }) => {
         if (code === 200) {
-          callback && callback();
-          if (field === 'trash') handleCloseMail();
+          if (
+            mark &&
+            (field === 'trash' || field === 'delete') &&
+            ids.includes(current_mail.value.id)
+          )
+            handleCloseMail();
+          mails.refetch = true;
+          mails.loading = true;
+          fetchMails();
+          handleCheckAllMail();
         } else {
           toast({
             component: ToastificationContent,
@@ -1409,45 +1462,59 @@ export default {
     const showMoreUsers = ref(false);
 
     const handleOpenMail = (mail) => {
-      store.commit('user/DEL_NOTICE', {
-        app: 'mail',
-        data: mail,
-      });
-      if (
-        mail.created_by != store.state.user.data.username &&
-        mail.read.indexOf(store.state.user.data.username) === -1
-      ) {
-        mail.read.push(store.state.user.data.username);
-        updateMail({
-          id: mail.id,
-          read: mail.read,
-        }).then(({ code, msg }) => {
-          if (code !== 200) {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
+      if (mail.data_state === 'drafted') {
+        handleCloseMail();
+        new_mail.value = JSON.parse(JSON.stringify(mail));
+        new_mail.value.key = Math.random().toString(36).slice(-6);
+        randerVsUsers(new_mail.value);
+        setTimeout(() => {
+          document.getElementById('showDraftMailModalBtn').click();
+        }, 100);
+      } else {
+        store.commit('user/DEL_NOTICE', {
+          app: 'mail',
+          data: mail,
         });
-      }
-      current_mail.value = mail;
-      randerVsUsers(current_mail.value);
-      document.body.classList.add('email-detail-show');
-      setTimeout(() => {
-        const mailCcListEl = document.getElementById('cc_list');
-        if (mailCcListEl) {
-          mailCcListEl.addEventListener('show.bs.collapse', () => {
-            showMoreUsers.value = true;
-          });
-          mailCcListEl.addEventListener('hide.bs.collapse', () => {
-            showMoreUsers.value = false;
+        if (
+          mail.created_by != store.state.user.data.username &&
+          mail.read.indexOf(store.state.user.data.username) === -1
+        ) {
+          mail.read.push(store.state.user.data.username);
+          updateMail({
+            mails: [
+              {
+                id: mail.id,
+                read: mail.read,
+              },
+            ],
+          }).then(({ code, msg }) => {
+            if (code !== 200) {
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: msg,
+                },
+              });
+            }
           });
         }
-      }, 100);
+        current_mail.value = mail;
+        randerVsUsers(current_mail.value);
+        document.body.classList.add('email-detail-show');
+        setTimeout(() => {
+          const mailCcListEl = document.getElementById('cc_list');
+          if (mailCcListEl) {
+            mailCcListEl.addEventListener('show.bs.collapse', () => {
+              showMoreUsers.value = true;
+            });
+            mailCcListEl.addEventListener('hide.bs.collapse', () => {
+              showMoreUsers.value = false;
+            });
+          }
+        }, 100);
+      }
     };
 
     const handleCloseMail = () => {
@@ -1477,12 +1544,23 @@ export default {
       randerVsUsers(new_mail.value);
     };
 
-    const handleSubmitMail = () => {
-      createMail(new_mail.value).then(({ code, msg }) => {
+    const handleSubmitMail = (data_state) => {
+      new_mail.value.data_state = data_state;
+      const apis = { createMail, updateMail };
+      apis[new_mail.value.id ? 'updateMail' : 'createMail'](
+        new_mail.value.id
+          ? {
+              mails: [new_mail.value],
+            }
+          : new_mail.value,
+      ).then(({ code, msg }) => {
         if (code === 200) {
-          handleCancelCompose();
+          mails.refetch = true;
+          fetchMails();
           document.getElementById('hideComposeModalBtn').click();
-          localStorage.removeItem(`staged_app_mail_${store.state.user.data.id}`);
+          setTimeout(() => {
+            handleCancelCompose();
+          }, 500);
         } else {
           toast({
             component: ToastificationContent,
@@ -1575,7 +1653,12 @@ export default {
       document.getElementById('showComposeModalBtn').click();
     };
     const showCancelConfirmModal = () => {
-      document.getElementById('showCancelConfirmModalBtn').click();
+      if (new_mail.value.data_state === 'drafted') {
+        document.getElementById('hideComposeModalBtn').click();
+        setTimeout(() => {
+          handleCancelCompose();
+        }, 500);
+      } else document.getElementById('showCancelConfirmModalBtn').click();
     };
     const handleCancelCompose = (discard = true) => {
       if (discard) {
@@ -1603,55 +1686,6 @@ export default {
       }
     };
 
-    const handleDeleteMail = (mail, callback) => {
-      updateMail({ id: mail.id, data_state: 'deleted' }).then(({ code, msg }) => {
-        if (code === 200) {
-          callback && callback();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const handleTrashMails = (del = false) => {
-      const mails = _mails.value.filter((mail) => checkedMailIds.value.includes(mail.id));
-      mails.forEach((mail) => {
-        if (del) {
-          handleDeleteMail(mail, () => {
-            handleCheckMail(mail);
-            _mails.value.splice(
-              _mails.value.findIndex((_mail) => _mail.id === mail.id),
-              1,
-            );
-          });
-        } else {
-          handleMarkOrUnmarkMail(mail, 'trash', () => {
-            handleCheckMail(mail);
-          });
-        }
-      });
-    };
-
-    const handleMarkMails = (field) => {
-      const mails = _mails.value.filter(
-        (mail) =>
-          checkedMailIds.value.includes(mail.id) &&
-          !mail[field].includes(store.state.user.data.username),
-      );
-      mails.forEach((mail) => {
-        handleMarkOrUnmarkMail(mail, field, () => {
-          handleCheckMail(mail);
-        });
-      });
-    };
-
     return {
       new_mail,
       options4to,
@@ -1659,12 +1693,7 @@ export default {
       options4bcc,
       vs,
       menus,
-      current_menu,
       labels,
-      current_label,
-      changelabel,
-      changetab,
-      changemenu,
       fetchMails,
       replaceHtml,
       handleSelectValue,
@@ -1674,7 +1703,7 @@ export default {
       checkedMailIds,
       handleCheckMail,
       handleCheckAllMail,
-      handleMarkOrUnmarkMail,
+      handleMarkOrUnmarkMails,
       current_mail,
       resolveUsers,
       showMoreUsers,
@@ -1686,8 +1715,6 @@ export default {
       handleReply2All,
       showCancelConfirmModal,
       handleCancelCompose,
-      handleTrashMails,
-      handleMarkMails,
     };
   },
 };
