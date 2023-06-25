@@ -833,8 +833,10 @@
   "data.column.BasicDataState.approving": "流转中",
   "data.column.BasicCreatedAt": "创建时间",
   "data.column.BasicCreatedBy": "创建人",
+  "data.column.BasicCreateInfo": "创建信息",
   "data.column.BasicUpdatedAt": "更新时间",
   "data.column.BasicUpdatedBy": "更新人",
+  "data.column.BasicUpdateInfo": "最后更新",
   "data.column.BasicAclView": "查看权限",
   "data.column.BasicAclEdit": "编辑权限",
 

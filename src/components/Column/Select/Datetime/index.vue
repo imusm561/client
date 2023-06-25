@@ -44,17 +44,19 @@
     <span v-if="value">
       <i class="mdi mdi-clock-outline" />
       {{
-        column.cfg.dateFormat.includes('Y-m-d')
-          ? $moment(value).format(
-              column.cfg.dateFormat
-                .replace('Y', 'YYYY')
-                .replace('m', 'MM')
-                .replace('d', 'DD')
-                .replace('H', 'HH')
-                .replace('i', 'mm')
-                .replace('S', 'ss'),
-            )
-          : value
+        $moment(
+          column.cfg.dateFormat.includes('Y-m-d')
+            ? value
+            : `${$moment().format('YYYY-MM-DD')} ${value}`,
+        ).format(
+          column.cfg.dateFormat
+            .replace('Y', 'YYYY')
+            .replace('m', 'MM')
+            .replace('d', 'DD')
+            .replace('H', 'HH')
+            .replace('i', 'mm')
+            .replace('S', 'ss'),
+        )
       }}
     </span>
   </div>

@@ -134,17 +134,19 @@
                   </span>
                 </h6>
                 <h6 class="pb-1">
-                  <span class="text-muted">{{ $t('data.column.BasicCreatedAt') }}:&nbsp;</span>
+                  <span class="text-muted">{{ $t('data.column.BasicCreateInfo') }}:&nbsp;</span>
                   <span>
-                    {{ getUserInfo(data.created_by).fullname }} @
-                    {{ $moment(data.created_at).format('llll') }}
+                    {{ getUserInfo(data.created_by).fullname }}@{{
+                      $moment(data.created_at).format('llll')
+                    }}
                   </span>
                 </h6>
                 <h6 class="pb-1" v-if="data.updated_at && data.updated_by">
-                  <span class="text-muted">{{ $t('data.column.BasicUpdatedAt') }}:&nbsp;</span>
+                  <span class="text-muted">{{ $t('data.column.BasicUpdateInfo') }}:&nbsp;</span>
                   <span>
-                    {{ getUserInfo(data.updated_by).fullname }} @
-                    {{ $moment(data.updated_at).format('llll') }}
+                    {{ getUserInfo(data.updated_by).fullname }}@{{
+                      $moment(data.updated_at).format('llll')
+                    }}
                   </span>
                 </h6>
               </div>

@@ -42,9 +42,11 @@ export default defineComponent({
     const date = ref(null);
     const getDate = () => {
       return date.value
-        ? !props.params.filterParams._column.cfg.dateFormat.includes('Y-m-d')
-          ? moment(`${moment().format('YYYY-MM-DD')} ${date.value}`).toDate()
-          : moment(date.value).toDate()
+        ? moment(
+            props.params.filterParams._column.cfg.dateFormat.includes('Y-m-d')
+              ? date.value
+              : `${moment().format('YYYY-MM-DD')} ${date.value}`,
+          ).toDate()
         : null;
     };
 

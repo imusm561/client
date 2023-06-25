@@ -416,17 +416,19 @@ export default {
             column.component === 'SelectTags'
               ? val.split(',')
               : column.component === 'SelectDatetime'
-              ? column.cfg.dateFormat.includes('Y-m-d')
-                ? moment(val).format(
-                    column.cfg.dateFormat
-                      .replace('Y', 'YYYY')
-                      .replace('m', 'MM')
-                      .replace('d', 'DD')
-                      .replace('H', 'HH')
-                      .replace('i', 'mm')
-                      .replace('S', 'ss'),
-                  )
-                : val
+              ? moment(
+                  column.cfg.dateFormat.includes('Y-m-d')
+                    ? val
+                    : `${moment().format('YYYY-MM-DD')} ${val}`,
+                ).format(
+                  column.cfg.dateFormat
+                    .replace('Y', 'YYYY')
+                    .replace('m', 'MM')
+                    .replace('d', 'DD')
+                    .replace('H', 'HH')
+                    .replace('i', 'mm')
+                    .replace('S', 'ss'),
+                )
               : val;
 
           if (

@@ -833,8 +833,10 @@
   "data.column.BasicDataState.approving": "Approving",
   "data.column.BasicCreatedAt": "Created At",
   "data.column.BasicCreatedBy": "Created By",
+  "data.column.BasicCreateInfo": "Create Info",
   "data.column.BasicUpdatedAt": "Updated At",
   "data.column.BasicUpdatedBy": "Updated By",
+  "data.column.BasicUpdateInfo": "Update Info",
   "data.column.BasicAclView": "Acl View",
   "data.column.BasicAclEdit": "Acl Edit",
 
