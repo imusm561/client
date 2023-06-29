@@ -62,22 +62,27 @@ export default {
 
     provide('reload', reload);
 
-    const theme = localStorage.getItem('theme');
+    const theme = localStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`);
     if (new Date().getHours() > 6 && new Date().getHours() < 18) {
-      if (theme === 'light') localStorage.removeItem('theme');
+      if (theme === 'light')
+        localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`);
       store.commit('sys/TOGGLE_THEME', theme || 'light');
     } else {
-      if (theme === 'dark') localStorage.removeItem('theme');
+      if (theme === 'dark')
+        localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`);
       store.commit('sys/TOGGLE_THEME', theme || 'dark');
     }
 
-    const locale = localStorage.getItem('locale') || navigator.language;
+    const locale =
+      localStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}locale`) ||
+      navigator.language;
     store.commit('sys/TOGGLE_LANG', locale.toLowerCase());
 
     getSysInfo().then(({ code, data }) => {
       if (code === 200) {
         store.commit('sys/UPDATE_SYS_INFO', data);
-        if (localStorage.getItem('accessToken')) getUserData();
+        if (localStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`))
+          getUserData();
       }
     });
 
@@ -101,7 +106,9 @@ export default {
 
     const documentVisibilitychangeHandler = async () => {
       if (document.visibilityState === 'visible') {
-        const token = jwt.decode(localStorage.getItem('accessToken'));
+        const token = jwt.decode(
+          localStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`),
+        );
         if (token && token.exp > Math.round(new Date().getTime() / 1000)) {
           if (
             !store.state.user.data.username ||
@@ -147,8 +154,6 @@ export default {
       document.documentElement.setAttribute('data-layout', layout);
       return layout;
     });
-
-    sessionStorage.clear();
 
     return { backToTop, resolveLayoutVariant, isRouterAlive };
   },

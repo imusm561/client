@@ -847,7 +847,9 @@ export default {
         current_tab.value = current_tab.value || 0;
         initialized.value = true;
         const staged = localStorage.getItem(
-          `staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`,
+          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+            `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+          )}`,
         );
         if (staged) document.getElementById('showUseStageDataConfirmModalBtn').click();
       } else {
@@ -1226,7 +1228,9 @@ export default {
 
     const handleStagedUpdate = (callback) => {
       localStorage.setItem(
-        `staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`,
+        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+          `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+        )}`,
         encryptData(JSON.stringify(data.value)),
       );
       document.getElementById('hideUpdateConflictsModalBtn').click();
@@ -1235,7 +1239,9 @@ export default {
 
     const handleApplyStagedData = () => {
       const staged = localStorage.getItem(
-        `staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`,
+        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+          `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+        )}`,
       );
       try {
         data.value = JSON.parse(decryptData(staged));
@@ -1243,13 +1249,17 @@ export default {
         // console.error(error);
       }
       localStorage.removeItem(
-        `staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`,
+        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+          `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+        )}`,
       );
     };
 
     const handleDiscardStagedData = () => {
       localStorage.removeItem(
-        `staged_${form.value.id}_${data.value.id}_${store.state.user.data.id}`,
+        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+          `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+        )}`,
       );
     };
 

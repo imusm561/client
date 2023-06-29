@@ -36,7 +36,9 @@ instance.interceptors.request.use(
     config.headers = config.headers || {};
     config.headers.lang = store.state.sys.lang;
 
-    let access_token = localStorage.getItem('accessToken');
+    let access_token = localStorage.getItem(
+      `${process.env.BASE_URL.replace(/\//g, '_')}accessToken`,
+    );
     if (access_token) config.headers.Authorization = `Bearer ${access_token}`;
 
     let public_token = sessionStorage.getItem('publicToken');

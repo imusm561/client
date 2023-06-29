@@ -515,7 +515,7 @@
 import store from '@store';
 import { computed, onMounted, ref, reactive, watch, onUnmounted, nextTick } from 'vue';
 import { getChats, getChatData, sendMsg, withdrawMsg, readMsg, delChat } from '@api/app/chat';
-import { useRouter, getUserInfo, encryptData, decryptData } from '@utils';
+import { useRouter, getUserInfo, hashData, encryptData, decryptData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Avatar from '@components/Avatar';
@@ -565,12 +565,14 @@ export default {
         if (scrollable.value && document.getElementById('user-chat')) {
           const chatConversationList = document
             .getElementById('user-chat')
-            .querySelector('.chat-conversation .simplebar-content-wrapper');
-          chatConversationList.scrollTo({
-            top: chatConversationList.scrollHeight,
-            behavior,
-          });
-          document.getElementById('message_input').focus();
+            ?.querySelector('.chat-conversation .simplebar-content-wrapper');
+          if (chatConversationList) {
+            chatConversationList.scrollTo({
+              top: chatConversationList.scrollHeight,
+              behavior,
+            });
+            document.getElementById('message_input').focus();
+          }
         }
       });
     };
@@ -654,7 +656,7 @@ export default {
     const scrollHandler = () => {
       const chatConversationList = document
         .getElementById('user-chat')
-        .querySelector('.chat-conversation .simplebar-content-wrapper');
+        ?.querySelector('.chat-conversation .simplebar-content-wrapper');
       if (
         chatConversationList &&
         chatConversationList.scrollTop < 5 &&
@@ -742,7 +744,7 @@ export default {
 
       const chatConversationList = document
         .getElementById('user-chat')
-        .querySelector('.chat-conversation .simplebar-content-wrapper');
+        ?.querySelector('.chat-conversation .simplebar-content-wrapper');
       if (chatConversationList) chatConversationList.removeEventListener('scroll', scrollHandler);
     });
 
@@ -751,8 +753,10 @@ export default {
 
     const handleCloseChat = () => {
       if (message.value) {
-        sessionStorage.setItem(
-          `${current_chat.value.username}ChatMessage`,
+        localStorage.setItem(
+          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+            `chat_message_${store.state.user.data.username}_${current_chat.value.username}`,
+          )}`,
           encryptData(message.value),
         );
         message.value = '';
@@ -762,8 +766,10 @@ export default {
 
     const handleClickContact = (contact) => {
       if (message.value) {
-        sessionStorage.setItem(
-          `${current_chat.value.username}ChatMessage`,
+        localStorage.setItem(
+          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+            `chat_message_${store.state.user.data.username}_${current_chat.value.username}`,
+          )}`,
           encryptData(message.value),
         );
         message.value = '';
@@ -785,9 +791,17 @@ export default {
       current_chat.value = chat;
       scrollToBottom();
       search_contact.value = '';
-      const temp_message = sessionStorage.getItem(`${contact.username}ChatMessage`);
+      const temp_message = localStorage.getItem(
+        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+          `chat_message_${store.state.user.data.username}_${contact.username}`,
+        )}`,
+      );
       if (temp_message) {
-        sessionStorage.removeItem(`${contact.username}ChatMessage`);
+        localStorage.removeItem(
+          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+            `chat_message_${store.state.user.data.username}_${contact.username}`,
+          )}`,
+        );
         message.value = decryptData(temp_message);
       }
 
@@ -796,7 +810,7 @@ export default {
       setTimeout(() => {
         const chatConversationList = document
           .getElementById('user-chat')
-          .querySelector('.chat-conversation .simplebar-content-wrapper');
+          ?.querySelector('.chat-conversation .simplebar-content-wrapper');
         if (chatConversationList) chatConversationList.addEventListener('scroll', scrollHandler);
       }, 100);
     };

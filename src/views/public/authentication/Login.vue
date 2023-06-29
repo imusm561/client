@@ -406,7 +406,7 @@ export default {
           if (code === 200) {
             const { token } = data;
             // Set access token in localStorage so axios interceptor can use it
-            localStorage.setItem('accessToken', token);
+            localStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`, token);
             // Getting user information
             getUserData().then(() => {
               // Redirect to home or query.redirect

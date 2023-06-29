@@ -888,7 +888,7 @@ export default {
       get: () => store.state.sys.theme,
       set: (value) => {
         store.commit('sys/TOGGLE_THEME', value);
-        localStorage.setItem('theme', value);
+        localStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`, value);
       },
     });
 

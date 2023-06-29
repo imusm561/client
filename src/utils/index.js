@@ -57,7 +57,7 @@ export const checkUserData = () => {
 export const clearUserData = () => {
   return new Promise((resolve) => {
     // Remove accessToken from localStorage
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`);
     // Remove data from vuex
     store.commit('user/SET_USER', {});
     store.commit('user/SET_FORMS', []);

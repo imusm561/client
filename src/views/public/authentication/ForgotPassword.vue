@@ -213,7 +213,7 @@
 import { ref, computed } from 'vue';
 import { resetPassword } from '@api/user';
 import { sendVerificationCode, verifyVerificationCode } from '@api/com/sms';
-import { useRouter, hashData } from '@utils';
+import { useRouter, hashData, clearUserData } from '@utils';
 import store from '@store';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -287,8 +287,9 @@ export default {
           phone: phone.value,
           password: hashData(newpassword.value),
         };
-        resetPassword(params).then(({ code, msg }) => {
+        resetPassword(params).then(async ({ code, msg }) => {
           if (code === 200) {
+            await clearUserData();
             router.replace({ name: 'login', query: route.value.query });
           } else {
             toast({

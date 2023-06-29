@@ -432,11 +432,12 @@ export default {
     });
 
     const scrollToTop = (modal) => {
-      const el = modal.querySelector('.simplebar-content-wrapper');
-      el.scrollTo({
-        top: el.offsetTop,
-        behavior: 'smooth',
-      });
+      const el = modal?.querySelector('.simplebar-content-wrapper');
+      if (el)
+        el.scrollTo({
+          top: el.offsetTop,
+          behavior: 'smooth',
+        });
     };
 
     const handleAddColumn = (e) => {

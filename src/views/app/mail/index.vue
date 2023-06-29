@@ -944,7 +944,7 @@
 
 <script>
 import { computed, onMounted, onUnmounted, ref, watch, reactive, nextTick } from 'vue';
-import { replaceHtml, useRouter, getUserInfo, encryptData, decryptData } from '@utils';
+import { replaceHtml, useRouter, getUserInfo, hashData, encryptData, decryptData } from '@utils';
 import store from '@store';
 import CKEditor from '@components/CKEditor';
 import Uploader from '@components/Uploader';
@@ -1586,14 +1586,22 @@ export default {
     };
 
     const handleComposeMail = () => {
-      const staged = localStorage.getItem(`staged_app_mail_${store.state.user.data.id}`);
+      const staged = localStorage.getItem(
+        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+          `app_mail_${store.state.user.data.username}_staged`,
+        )}`,
+      );
       if (staged) {
         try {
           new_mail.value = JSON.parse(decryptData(staged));
         } catch (error) {
           // console.error(error);
         }
-        localStorage.removeItem(`staged_app_mail_${store.state.user.data.id}`);
+        localStorage.removeItem(
+          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+            `app_mail_${store.state.user.data.username}_staged`,
+          )}`,
+        );
       }
       handleCloseMail();
       randerVsUsers(new_mail.value);
@@ -1732,10 +1740,16 @@ export default {
           read: [],
         };
         randerVsUsers(new_mail.value);
-        localStorage.removeItem(`staged_app_mail_${store.state.user.data.id}`);
+        localStorage.removeItem(
+          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+            `app_mail_${store.state.user.data.username}_staged`,
+          )}`,
+        );
       } else {
         localStorage.setItem(
-          `staged_app_mail_${store.state.user.data.id}`,
+          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
+            `app_mail_${store.state.user.data.username}_staged`,
+          )}`,
           encryptData(JSON.stringify(new_mail.value)),
         );
       }

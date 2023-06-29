@@ -189,10 +189,11 @@ export default defineComponent({
           const commentList = document
             .getElementById('comment')
             ?.querySelector('.simplebar-content-wrapper');
-          commentList.scrollTo({
-            top: el.offsetTop,
-            behavior: 'smooth',
-          });
+          if (commentList)
+            commentList.scrollTo({
+              top: el.offsetTop,
+              behavior: 'smooth',
+            });
         }
       }, 1000);
     };

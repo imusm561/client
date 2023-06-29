@@ -170,7 +170,7 @@
                     </h5>
                     <div
                       class="d-flex flex-wrap gap-2 fs-15"
-                      v-if="$store.state.user.data.skills.length"
+                      v-if="$store.state.user.data?.skills?.length"
                     >
                       <span
                         class="badge badge-soft-primary"

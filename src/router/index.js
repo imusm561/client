@@ -1,5 +1,5 @@
 import { createWebHistory, createRouter } from 'vue-router';
-import { checkUserData, getListPath } from '@utils';
+import { checkUserData, getListPath, clearUserData } from '@utils';
 import jwt from 'jsonwebtoken';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
@@ -62,7 +62,9 @@ router.beforeEach((to, from, next) => {
           }, 200);
         }
       }
-      const token = jwt.decode(localStorage.getItem('accessToken'));
+      const token = jwt.decode(
+        localStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`),
+      );
       if (token && token.exp > Math.round(new Date().getTime() / 1000)) {
         await checkUserData();
         if (['login'].includes(to.name)) {
@@ -103,6 +105,8 @@ router.beforeEach((to, from, next) => {
         }
       } else {
         if (to?.meta?.auth) {
+          // Clean user information
+          await clearUserData();
           // Redirect to login page
           next({ name: 'login', query: { redirect: to.path } });
         }

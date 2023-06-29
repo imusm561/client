@@ -22,7 +22,7 @@ export default {
       i18n.global.locale = state.lang;
       const moment = window.moment;
       moment.locale(state.lang);
-      localStorage.setItem('locale', state.lang);
+      localStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}locale`, state.lang);
     },
     TOGGLE_THEME(state, theme) {
       state.theme = theme;

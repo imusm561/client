@@ -347,7 +347,7 @@ export default defineComponent({
         setTimeout(() => {
           const fileList = document
             .getElementById('file-list')
-            .querySelector('.simplebar-content-wrapper');
+            ?.querySelector('.simplebar-content-wrapper');
           if (fileList)
             fileList.scrollTo({
               top: fileList.scrollHeight,
@@ -564,13 +564,12 @@ export default defineComponent({
 
     const qrcode = ref(null);
     const hendleClickMobileUpload = () => {
-      let public_username = sessionStorage.getItem('publicUsername');
-      let options = {};
+      const options = {};
       options.prefix = props.prefix;
       options.accept = props.accept;
       options.placeholder = props.placeholder;
       options.multiple = props.multiple;
-      options.username = public_username || store.state.user.data.username;
+      options.username = sessionStorage.getItem('publicUsername') || store.state.user.data.username;
       qrcode.value = options.code = Math.random().toString(36).slice(-6);
       let url = `${location.origin}${process.env.BASE_URL}uploader/${encodeURIComponent(
         encryptData(JSON.stringify(options)),
