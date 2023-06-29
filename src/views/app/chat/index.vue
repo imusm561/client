@@ -122,7 +122,7 @@
                 <div class="col-sm-4 col-8">
                   <div class="d-flex align-items-center">
                     <div class="flex-shrink-0 d-block d-lg-none me-3">
-                      <span @click="current_chat = {}" class="cursor-pointer fs-18 p-1">
+                      <span @click="handleCloseChat" class="cursor-pointer fs-18 p-1">
                         <i class="mdi mdi-arrow-left align-bottom"></i>
                       </span>
                     </div>
@@ -749,6 +749,17 @@ export default {
     const loading = ref(false);
     const scrollable = ref(true);
 
+    const handleCloseChat = () => {
+      if (message.value) {
+        sessionStorage.setItem(
+          `${current_chat.value.username}ChatMessage`,
+          encryptData(message.value),
+        );
+        message.value = '';
+      }
+      current_chat.value = {};
+    };
+
     const handleClickContact = (contact) => {
       if (message.value) {
         sessionStorage.setItem(
@@ -976,6 +987,7 @@ export default {
       contacts,
       current_chat,
       loading,
+      handleCloseChat,
       handleClickContact,
       quote,
       message,
