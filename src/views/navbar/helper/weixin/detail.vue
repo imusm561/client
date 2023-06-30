@@ -302,9 +302,6 @@
                         {{ $t('layout.navbar.helper.weixin.detail.strategies.weight') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.strategies.instrPre') }}
-                      </th>
-                      <th class="text-capitalize">
                         {{ $t('layout.navbar.helper.weixin.detail.strategies.instrExp') }}
                       </th>
                       <th class="text-capitalize">
@@ -341,7 +338,6 @@
                       </td>
                       <td>{{ strategy.msg_keyword }}</td>
                       <td>{{ strategy.weight }}</td>
-                      <td>{{ strategy.instr_pre }}</td>
                       <td>{{ strategy.instr_exp }}</td>
                       <td>
                         {{
@@ -664,31 +660,6 @@
                     <label class="form-label">
                       {{
                         $t(
-                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.instrPre',
-                        )
-                      }}
-                    </label>
-                    <Field
-                      name="instr_pre"
-                      v-model="current_strategy.instr_pre"
-                      type="text"
-                      :placeholder="
-                        $t(
-                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.instrPre',
-                        )
-                      "
-                      :class="['form-control', errors.instr_pre && 'is-invalid']"
-                      rules=""
-                    />
-                    <span class="invalid-feedback">{{ errors.instr_pre }}</span>
-                  </div>
-                  <div
-                    class="col-md-6"
-                    v-if="['serviceAccount', 'subscriptionAccount'].includes(account.service_type)"
-                  >
-                    <label class="form-label">
-                      {{
-                        $t(
                           'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.instrExp',
                         )
                       }}
@@ -703,7 +674,11 @@
                         )
                       "
                       :class="['form-control', errors.instr_exp && 'is-invalid']"
-                      :rules="current_strategy.instr_pre ? 'required' : ''"
+                      :rules="
+                        current_strategy?.msg_keyword?.charAt(0) === '@'
+                          ? 'required|between:60,300'
+                          : ''
+                      "
                     />
                     <span class="invalid-feedback">{{ errors.instr_exp }}</span>
                   </div>
@@ -752,7 +727,7 @@
                     <span class="invalid-feedback">{{ errors.reply_type }}</span>
                   </div>
 
-                  <div class="col-md-6">
+                  <div class="col-md-12">
                     <label class="form-label">
                       {{
                         $t(
@@ -874,21 +849,6 @@
                   </span>
                   <span class="col-8 text-end">
                     {{ current_strategy.weight }}
-                  </span>
-                </div>
-
-                <div
-                  class="row mb-2"
-                  v-if="
-                    current_strategy.instr_pre &&
-                    ['serviceAccount', 'subscriptionAccount'].includes(account.service_type)
-                  "
-                >
-                  <span class="col-4 fw-bold">
-                    {{ $t('layout.navbar.helper.weixin.detail.strategies.instrPre') }}
-                  </span>
-                  <span class="col-8 text-end">
-                    {{ current_strategy.instr_pre }}
                   </span>
                 </div>
 
