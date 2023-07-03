@@ -1180,11 +1180,7 @@ export default {
         menu: mails.menu,
         label: mails.label,
         pageNum: mails.refetch ? 1 : mails.pageNum,
-        pageSize: mails.refetch
-          ? mails.list.length < mails.pageSize
-            ? mails.pageSize
-            : mails.list.length
-          : mails.pageSize,
+        pageSize: mails.refetch ? (mails.pageNum - 1) * mails.pageSize : mails.pageSize,
       }).then(({ code, data, msg }) => {
         if (code === 200) {
           mails.total = data.count;

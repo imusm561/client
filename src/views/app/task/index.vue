@@ -481,16 +481,10 @@ export default {
     const fetchTasks = (status, callback) => {
       const data = {};
       data.status = status.value;
-      data.pageNum = status.pageNum;
-      data.pageSize = status.pageSize;
+      data.pageNum = status.refetch ? 1 : status.pageNum;
+      data.pageSize = status.refetch ? (status.pageNum - 1) * status.pageSize : status.pageSize;
       if (search_users.value.length) data.users = search_users.value.toString();
       if (search_keyword.value) data.keyword = search_keyword.value.trim();
-
-      if (status.refetch) {
-        data.pageNum = 1;
-        data.pageSize =
-          status.tasks.length < status.pageSize ? status.pageSize : status.tasks.length;
-      }
 
       getTasks(data).then(({ code, data, msg }) => {
         if (code === 200) {
