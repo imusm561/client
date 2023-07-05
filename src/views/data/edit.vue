@@ -770,6 +770,7 @@ export default {
               (Number(newVal) !== 0 &&
                 !(
                   store.state.user.data?.tags?.includes('ALL') ||
+                  store.state.user.data?.permissions?.[route.value.params.tid]?.all ||
                   store.state.user.data?.permissions?.[route.value.params.tid]?.edit
                 )))
           ) {
