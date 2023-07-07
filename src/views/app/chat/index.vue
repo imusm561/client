@@ -660,18 +660,18 @@ export default {
       if (
         chatConversationList &&
         chatConversationList.scrollTop < 5 &&
-        !current_chat.value.all &&
+        !current_chat.value.completed &&
         !loading.value
       ) {
         const oldHeight = chatConversationList.scrollHeight;
         loading.value = true;
         scrollable.value = false;
         getChatData({
-          id: current_chat.value.chat_data[0].id,
+          lt: current_chat.value.chat_data[0].id,
           contact: current_chat.value.username,
         }).then(({ code, data, msg }) => {
           if (code === 200) {
-            if (data.length < 10) current_chat.value.all = true;
+            if (data.length < 10) current_chat.value.completed = true;
             setTimeout(() => {
               current_chat.value.chat_data.unshift(...data);
               loading.value = false;
@@ -805,7 +805,7 @@ export default {
         message.value = decryptData(temp_message);
       }
 
-      if (current_chat.value.chat_data.length < 10) current_chat.value.all = true;
+      if (current_chat.value.chat_data.length < 10) current_chat.value.completed = true;
 
       setTimeout(() => {
         const chatConversationList = document
