@@ -394,7 +394,7 @@
                         {{ $t('layout.navbar.helper.weixin.detail.binds.openid') }}
                       </th>
                       <th class="text-capitalize">
-                        {{ $t('layout.navbar.helper.weixin.detail.binds.data') }}
+                        {{ $t('layout.navbar.helper.weixin.detail.binds.userinfo') }}
                       </th>
                       <th class="text-capitalize"></th>
                     </tr>
@@ -418,7 +418,7 @@
                         class="text-secondary text-decoration-underline cursor-pointer fw-medium"
                         @click="handleViewBindData(bind)"
                       >
-                        {{ bind.data }}
+                        {{ bind.userinfo }}
                       </td>
                     </tr>
                   </tbody>
@@ -452,7 +452,7 @@
           data-bs-dismiss="offcanvas"
         />
         <MonacoEditor
-          v-model="current_bind.data"
+          v-model="current_bind.userinfo"
           language="json"
           :options="{
             readOnly: true,
@@ -1192,7 +1192,7 @@ export default {
 
     const handleViewBindData = (bind) => {
       current_bind.value = JSON.parse(JSON.stringify(bind));
-      current_bind.value.data = JSON.stringify(current_bind.value.data, null, 2);
+      current_bind.value.userinfo = JSON.stringify(current_bind.value.userinfo, null, 2);
       document.getElementById('showBindDataOffcanvasBtn').click();
     };
 

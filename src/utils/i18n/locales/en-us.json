@@ -493,7 +493,7 @@
   "layout.navbar.helper.weixin.detail.binds.title": "Title",
   "layout.navbar.helper.weixin.detail.binds.createdAt": "Bind At",
   "layout.navbar.helper.weixin.detail.binds.openid": "OpenID",
-  "layout.navbar.helper.weixin.detail.binds.data": "Data",
+  "layout.navbar.helper.weixin.detail.binds.userinfo": "UserInfo",
   "layout.navbar.helper.weixin.detail.binds.unbind": "Unbind",
   "layout.navbar.helper.weixin.detail.binds.empty": "No Users!",
   "layout.navbar.helper.weixin.detail.binds.unbindModal.confirm": "Are you sure to unbind this user ?",

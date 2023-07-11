@@ -493,7 +493,7 @@
   "layout.navbar.helper.weixin.detail.binds.title": "绑定标题",
   "layout.navbar.helper.weixin.detail.binds.createdAt": "绑定时间",
   "layout.navbar.helper.weixin.detail.binds.openid": "OpenID",
-  "layout.navbar.helper.weixin.detail.binds.data": "绑定信息",
+  "layout.navbar.helper.weixin.detail.binds.userinfo": "绑定信息",
   "layout.navbar.helper.weixin.detail.binds.unbind": "解除绑定",
   "layout.navbar.helper.weixin.detail.binds.empty": "暂无用户绑定",
   "layout.navbar.helper.weixin.detail.binds.unbindModal.confirm": "确定要接解绑此用户吗？",
