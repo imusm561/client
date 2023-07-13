@@ -541,7 +541,7 @@
                 style="max-height: 80vh; overflow-x: hidden"
               >
                 <div class="row g-3">
-                  <div class="col-md-3">
+                  <div class="col-md-6">
                     <label class="form-label">
                       {{
                         $t(
@@ -565,7 +565,7 @@
                     <span class="invalid-feedback">{{ errors.soid }}</span>
                   </div>
 
-                  <div class="col-md-3">
+                  <div class="col-md-6">
                     <label class="form-label">
                       {{
                         $t(
@@ -605,7 +605,13 @@
                     />
                     <span class="invalid-feedback">{{ errors.msg_type }}</span>
                   </div>
-                  <div class="col-md-3">
+                  <div
+                    :class="
+                      ['serviceAccount', 'subscriptionAccount'].includes(account.service_type)
+                        ? 'col-md-6'
+                        : 'col-12'
+                    "
+                  >
                     <label class="form-label">
                       {{
                         $t(
@@ -630,28 +636,6 @@
                       "
                     />
                     <span class="invalid-feedback">{{ errors.msg_keyword }}</span>
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label">
-                      {{
-                        $t(
-                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.weight',
-                        )
-                      }}
-                    </label>
-                    <Field
-                      name="weight"
-                      v-model="current_strategy.weight"
-                      type="number"
-                      :placeholder="
-                        $t(
-                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.weight',
-                        )
-                      "
-                      :class="['form-control', errors.weight && 'is-invalid']"
-                      rules="required|between:0,1000"
-                    />
-                    <span class="invalid-feedback">{{ errors.weight }}</span>
                   </div>
                   <div
                     class="col-md-6"
@@ -681,6 +665,29 @@
                       "
                     />
                     <span class="invalid-feedback">{{ errors.instr_exp }}</span>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">
+                      {{
+                        $t(
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.weight',
+                        )
+                      }}
+                    </label>
+                    <Field
+                      name="weight"
+                      v-model="current_strategy.weight"
+                      type="number"
+                      :placeholder="
+                        $t(
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.weight',
+                        )
+                      "
+                      :class="['form-control', errors.weight && 'is-invalid']"
+                      rules="required|between:0,1000"
+                    />
+                    <span class="invalid-feedback">{{ errors.weight }}</span>
                   </div>
 
                   <div class="col-md-6">
