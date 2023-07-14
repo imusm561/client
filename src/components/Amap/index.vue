@@ -161,10 +161,11 @@ export default defineComponent({
       }
     });
 
+    let interval;
     let _instance = null;
     let count = 0;
     if (store.state.sys.cfg?.amap?.map_key) {
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         count += 1;
         if (window.AMap || count > 100) {
           clearInterval(interval);

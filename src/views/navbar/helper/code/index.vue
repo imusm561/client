@@ -657,7 +657,8 @@ export default {
                 isEditing.value = false;
                 handleGetCodeDirs();
                 if (node.data.type === 'file') {
-                  const interval = setInterval(() => {
+                  let interval;
+                  interval = setInterval(() => {
                     const node = reftree.value.getNode(data.path);
                     if (node) {
                       clearInterval(interval);

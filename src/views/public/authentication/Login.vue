@@ -363,10 +363,11 @@ export default {
         };
         sendVerificationCode(params).then(({ code, data }) => {
           if (code === 200) {
-            const sendVerificationCodeCountDown = setInterval(() => {
+            let interval;
+            interval = setInterval(() => {
               resendVerificationCodeCountDown.value -= 1;
               if (resendVerificationCodeCountDown.value === 0) {
-                clearInterval(sendVerificationCodeCountDown);
+                clearInterval(interval);
                 canSendVerificationCode.value = true;
                 resendVerificationCodeCountDown.value = 60;
               }

@@ -646,9 +646,10 @@ export default {
         }
       }
 
-      const refetchColumns = setInterval(() => {
+      let interval;
+      interval = setInterval(() => {
         if (completed.create && completed.update) {
-          clearInterval(refetchColumns);
+          clearInterval(interval);
           fetchColumns(props.form.id);
           saving.value = false;
           toast({
