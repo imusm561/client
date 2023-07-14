@@ -40,16 +40,14 @@
 import { defineComponent, ref } from 'vue';
 import { useRouter, getDataByFormula } from '@utils';
 export default defineComponent({
-  setup(props) {
+  async setup(props) {
     const column = JSON.parse(JSON.stringify(props.params._column));
     const data = ref(null);
 
     if (column.cfg?.__source) {
-      getDataByFormula(props.params.data, column.cfg.__source, {
+      data.value = await getDataByFormula(props.params.data, column.cfg.__source, {
         view: true,
         value: props.params.value,
-      }).then((res) => {
-        data.value = res;
       });
     } else {
       data.value = JSON.parse(JSON.stringify(props.params.value || null));

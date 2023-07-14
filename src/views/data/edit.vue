@@ -1272,7 +1272,8 @@ export default {
         callback(true);
       } else {
         document.getElementById('showConfirmCancelEditModalBtn').click();
-        const interval = setInterval(() => {
+        let interval;
+        interval = setInterval(() => {
           if (cancel_edit_confirm.value != null) {
             callback(cancel_edit_confirm.value);
             clearInterval(interval);

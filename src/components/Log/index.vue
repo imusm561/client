@@ -108,30 +108,28 @@ export default defineComponent({
     const logs = ref([]);
     const loading = ref({ enable: true, show: false });
 
-    const fetchLogs = () => {
-      return new Promise((resolve) => {
-        loading.value.show = true;
+    const fetchLogs = (callback) => {
+      loading.value.show = true;
 
-        const params = { tid: props.tid, rid: props.rid, limit: props.limit };
-        if (logs.value.length) params.lid = logs.value[logs.value.length - 1].id;
+      const params = { tid: props.tid, rid: props.rid, limit: props.limit };
+      if (logs.value.length) params.lid = logs.value[logs.value.length - 1].id;
 
-        getLogs(params).then(({ code, data, msg }) => {
-          if (code === 200) {
-            logs.value = [...logs.value, ...data];
-            loading.value.show = false;
-            if (data.length != props.limit) loading.value.enable = false;
-            resolve();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
+      getLogs(params).then(({ code, data, msg }) => {
+        if (code === 200) {
+          logs.value = [...logs.value, ...data];
+          loading.value.show = false;
+          if (data.length != props.limit) loading.value.enable = false;
+          callback && callback();
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
       });
     };
 
@@ -148,7 +146,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      fetchLogs().then(() => {
+      fetchLogs(() => {
         nextTick(() => {
           setTimeout(() => {
             const logsList = document

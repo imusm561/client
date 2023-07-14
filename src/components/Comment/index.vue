@@ -135,49 +135,47 @@ export default defineComponent({
     const { route } = useRouter();
     const socket = window.socket;
 
-    const fetchComments = () => {
-      return new Promise((resolve) => {
-        getComments({ source: props.source }).then(({ code, data, msg }) => {
-          if (code === 200) {
-            data.forEach((comment) => {
-              if (
-                store.state.user.notices?.comment?.findIndex((item) => item.id == comment.id) !== -1
-              ) {
-                store.commit('user/DEL_NOTICE', {
-                  app: 'comment',
-                  data: comment,
-                });
-                updateComment({
-                  id: comment.id,
-                  read: true,
-                }).then(({ code, msg }) => {
-                  if (code !== 200) {
-                    toast({
-                      component: ToastificationContent,
-                      props: {
-                        variant: 'danger',
-                        icon: 'mdi-alert',
-                        text: msg,
-                      },
-                    });
-                  }
-                });
-              }
-            });
-            comments.value = listToTree(data);
-            emit('fetch', data);
-            resolve();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
+    const fetchComments = (callback) => {
+      getComments({ source: props.source }).then(({ code, data, msg }) => {
+        if (code === 200) {
+          data.forEach((comment) => {
+            if (
+              store.state.user.notices?.comment?.findIndex((item) => item.id == comment.id) !== -1
+            ) {
+              store.commit('user/DEL_NOTICE', {
+                app: 'comment',
+                data: comment,
+              });
+              updateComment({
+                id: comment.id,
+                read: true,
+              }).then(({ code, msg }) => {
+                if (code !== 200) {
+                  toast({
+                    component: ToastificationContent,
+                    props: {
+                      variant: 'danger',
+                      icon: 'mdi-alert',
+                      text: msg,
+                    },
+                  });
+                }
+              });
+            }
+          });
+          comments.value = listToTree(data);
+          emit('fetch', data);
+          callback && callback();
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
       });
     };
 
@@ -242,7 +240,7 @@ export default defineComponent({
         read: false,
       }).then(({ code, data, msg }) => {
         if (code === 200) {
-          fetchComments().then(() => {
+          fetchComments(() => {
             scrollToComment(data);
             comment.value = {
               key: Math.random().toString(36).slice(-6),

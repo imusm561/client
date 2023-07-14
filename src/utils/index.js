@@ -43,27 +43,13 @@ export const generateApiQuery = (params) => {
   return query.substring(0, query.length - 1);
 };
 
-export const checkUserData = () => {
-  return new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (store.state.user.data.id) {
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100);
-  });
-};
-
 export const clearUserData = () => {
-  return new Promise((resolve) => {
-    // Remove accessToken from localStorage
-    localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`);
-    // Remove data from vuex
-    store.commit('user/SET_USER', {});
-    store.commit('user/SET_FORMS', []);
-    store.commit('user/SET_NOTICES', []);
-    resolve();
-  });
+  // Remove accessToken from localStorage
+  localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`);
+  // Remove data from vuex
+  store.commit('user/SET_USER', {});
+  store.commit('user/SET_FORMS', []);
+  store.commit('user/SET_NOTICES', []);
 };
 
 export const getUserInfo = (value, key = 'username') => {
@@ -348,182 +334,163 @@ export const parseExpr2Params = (data, expr) => {
   return params;
 };
 
-export const getDataByFormula = (
+export const getDataByFormula = async (
   data,
   expr,
   options = { view: false, value: undefined, search: undefined },
 ) => {
-  return new Promise((resolve) => {
-    const type = Array.isArray(options.value) ? 'Multiple' : 'Single';
-    if (options.view) {
-      if (expr == '*==userlist') {
-        if (type === 'Single') {
-          const user = getUserInfo(options.value);
-          resolve(user.fullname);
-        } else {
-          const users = options.value.map((item) => {
-            const user = getUserInfo(item);
-            return user.fullname;
-          });
-          resolve(users);
-        }
-      } else if (expr == '*==deptlist') {
-        if (type === 'Single') {
-          const dept = store.state.org.depts.find((dept) => dept.id == options.value);
-          resolve(dept?.name || options.value);
-        } else {
-          const depts = options.value.map((item) => {
-            const dept = store.state.org.depts.find((dept) => dept.id == item);
-            return dept?.name || item;
-          });
-          resolve(depts);
-        }
-      } else if (expr == '*==rolelist') {
-        if (type === 'Single') {
-          const role = store.state.org.roles.find((role) => role.id == options.value);
-          resolve(role?.name || options.value);
-        } else {
-          const roles = options.value.map((item) => {
-            const role = store.state.org.roles.find((role) => role.id == item);
-            return role?.name || item;
-          });
-          resolve(roles);
-        }
+  const type = Array.isArray(options.value) ? 'Multiple' : 'Single';
+  if (options.view) {
+    if (expr == '*==userlist') {
+      if (type === 'Single') {
+        const user = getUserInfo(options.value);
+        return user.fullname;
       } else {
-        const params = parseExpr2Params(data, expr.replace('*==', ''));
-        if (params.tid) {
-          params.value = type === 'Single' ? (options.value ? [options.value] : []) : options.value;
-          if (params.value.length) {
-            getDataValue(params).then(({ code, data }) => {
-              if (code === 200) {
-                resolve(
-                  params.value.map((v) => {
-                    const item = data.find((item) => item.value == Number(v));
-                    return item || v;
-                  }),
-                );
-              } else resolve(options.value);
-            });
-          }
-        } else resolve(options.value);
+        const users = options.value.map((item) => {
+          const user = getUserInfo(item);
+          return user.fullname;
+        });
+        return users;
+      }
+    } else if (expr == '*==deptlist') {
+      if (type === 'Single') {
+        const dept = store.state.org.depts.find((dept) => dept.id == options.value);
+        return dept?.name || options.value;
+      } else {
+        const depts = options.value.map((item) => {
+          const dept = store.state.org.depts.find((dept) => dept.id == item);
+          return dept?.name || item;
+        });
+        return depts;
+      }
+    } else if (expr == '*==rolelist') {
+      if (type === 'Single') {
+        const role = store.state.org.roles.find((role) => role.id == options.value);
+        return role?.name || options.value;
+      } else {
+        const roles = options.value.map((item) => {
+          const role = store.state.org.roles.find((role) => role.id == item);
+          return role?.name || item;
+        });
+        return roles;
       }
     } else {
-      if (expr.substring(0, 3) == '===') {
-        expr = expr.replace('===', '');
-        try {
-          let fn = new Function('data', 'return ' + expr);
-          resolve(fn(data));
-        } catch (error) {
-          resolve(error.message);
-        }
-      } else if (expr.substring(0, 3) == '@==') {
-        const params = parseExpr2Params(data, expr.replace('@==', ''));
-        if (options.search) params.search = options.search;
-        getDataDefault(params).then(({ code, msg, data }) => {
-          if (code === 200) resolve(data);
-          else resolve(`Error: ${msg}`);
-        });
-      } else if (expr.substring(0, 3) == '*==') {
-        if (expr == '*==userlist') {
-          if (store.state.org.users.length) {
-            resolve(
-              store.state.org.users.map((user) => {
-                return { text: user.fullname, value: user.username };
-              }),
-            );
-          } else if (sessionStorage.getItem('publicUsername')) {
-            resolve([
-              {
-                text: sessionStorage.getItem('publicUsername'),
-                value: sessionStorage.getItem('publicUsername'),
-              },
-            ]);
-          } else {
-            resolve([]);
-          }
-        } else if (expr == '*==deptlist') {
-          resolve(
-            store.state.org.depts.map((dept) => {
-              return { text: dept.name, value: dept.id };
-            }),
-          );
-        } else if (expr == '*==rolelist') {
-          resolve(
-            store.state.org.roles.map((role) => {
-              return { text: role.name, value: role.id };
-            }),
-          );
-        } else {
-          (async () => {
-            const params = parseExpr2Params(data, expr.replace('*==', ''));
-            if (options.search) params.search = options.search;
-            let existed_options = [];
-            if (options.value) {
-              if (params.tid) {
-                const _params = JSON.parse(JSON.stringify(params));
-                _params.value =
-                  type === 'Single' ? (options.value ? [options.value] : []) : options.value;
-                if (_params.value.length) {
-                  const { data } = await getDataValue(_params);
-                  existed_options = data;
-                }
-              } else if (params.script) {
-                existed_options =
-                  type === 'Single'
-                    ? [{ text: options.value, value: options.value }]
-                    : options.value.map((item) => {
-                        return { text: item, value: item };
-                      });
-              }
-            }
-            getDataSource(params).then(({ code, msg, data }) => {
-              if (code === 200) {
-                if (typeof data === 'object' && Array.isArray(data))
-                  resolve([
-                    ...data,
-                    ...existed_options.filter(
-                      (item) =>
-                        !data
-                          .map((i) => {
-                            return i.value;
-                          })
-                          .includes(item.value),
-                    ),
-                  ]);
-                else
-                  resolve([
-                    { text: `Error: expected array, got ${typeof data}.`, value: 'Error: ' },
-                  ]);
-              } else resolve([{ text: msg, value: 'Error: ' }]);
+      const params = parseExpr2Params(data, expr.replace('*==', ''));
+      if (params.tid) {
+        params.value = type === 'Single' ? (options.value ? [options.value] : []) : options.value;
+        if (params.value.length) {
+          const res = await getDataValue(params);
+          if (res.code === 200) {
+            return params.value.map((v) => {
+              const item = res.data.find((item) => item.value == Number(v));
+              return item || v;
             });
-          })();
+          } else return options.value;
         }
-      } else {
-        resolve(expr);
-      }
+      } else return options.value;
     }
-  });
+  } else {
+    if (expr.substring(0, 3) == '===') {
+      expr = expr.replace('===', '');
+      try {
+        let fn = new Function('data', 'return ' + expr);
+        return fn(data);
+      } catch (error) {
+        return error.message;
+      }
+    } else if (expr.substring(0, 3) == '@==') {
+      const params = parseExpr2Params(data, expr.replace('@==', ''));
+      if (options.search) params.search = options.search;
+      const res = await getDataDefault(params);
+      if (res.code === 200) return res.data;
+      else return `Error: ${res.msg}`;
+    } else if (expr.substring(0, 3) == '*==') {
+      if (expr == '*==userlist') {
+        if (store.state.org.users.length) {
+          return store.state.org.users.map((user) => {
+            return { text: user.fullname, value: user.username };
+          });
+        } else if (sessionStorage.getItem('publicUsername')) {
+          return [
+            {
+              text: sessionStorage.getItem('publicUsername'),
+              value: sessionStorage.getItem('publicUsername'),
+            },
+          ];
+        } else {
+          return [];
+        }
+      } else if (expr == '*==deptlist') {
+        return store.state.org.depts.map((dept) => {
+          return { text: dept.name, value: dept.id };
+        });
+      } else if (expr == '*==rolelist') {
+        return store.state.org.roles.map((role) => {
+          return { text: role.name, value: role.id };
+        });
+      } else {
+        const params = parseExpr2Params(data, expr.replace('*==', ''));
+        if (options.search) params.search = options.search;
+        let existed_options = [];
+        if (options.value) {
+          if (params.tid) {
+            const _params = JSON.parse(JSON.stringify(params));
+            _params.value =
+              type === 'Single' ? (options.value ? [options.value] : []) : options.value;
+            if (_params.value.length) {
+              const { data } = await getDataValue(_params);
+              existed_options = data;
+            }
+          } else if (params.script) {
+            existed_options =
+              type === 'Single'
+                ? [{ text: options.value, value: options.value }]
+                : options.value.map((item) => {
+                    return { text: item, value: item };
+                  });
+          }
+        }
+        const res = await getDataSource(params);
+        if (res.code === 200) {
+          if (typeof res.data === 'object' && Array.isArray(res.data))
+            return [
+              ...res.data,
+              ...existed_options.filter(
+                (item) =>
+                  !res.data
+                    .map((i) => {
+                      return i.value;
+                    })
+                    .includes(item.value),
+              ),
+            ];
+          else
+            return [{ text: `Error: expected array, got ${typeof res.data}.`, value: 'Error: ' }];
+        } else return [{ text: res.msg, value: 'Error: ' }];
+      }
+    } else {
+      return expr;
+    }
+  }
 };
 
 export const getRulesByFormula = (data, column) => {
-  return new Promise((resolve) => {
-    const res = {
-      visible: true,
-      required: false,
-      editable: true,
-    };
-    for (let key in res) {
-      if (column[key]) {
-        try {
-          let fn = new Function('data', 'return ' + column[key]);
-          res[key] = !!fn(data);
-        } catch (error) {
-          res[key] = !res[key];
-        }
+  const res = {
+    visible: true,
+    required: false,
+    editable: true,
+  };
+  for (let key in res) {
+    if (column[key]) {
+      try {
+        let fn = new Function('data', 'return ' + column[key]);
+        res[key] = !!fn(data);
+      } catch (error) {
+        res[key] = !res[key];
       }
     }
-    resolve(res);
-  });
+  }
+  return res;
 };
 
 export const generateFlowByCurrentUser = (flow) => {

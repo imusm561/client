@@ -123,7 +123,7 @@ export default {
           }
         } else {
           if (route.value?.meta?.auth) {
-            await clearUserData();
+            clearUserData();
             router.replace({ name: 'login', query: { redirect: route.value.path } });
           }
         }

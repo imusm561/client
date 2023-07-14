@@ -1,5 +1,5 @@
 import { createWebHistory, createRouter } from 'vue-router';
-import { checkUserData, getListPath, clearUserData } from '@utils';
+import { getListPath, clearUserData } from '@utils';
 import jwt from 'jsonwebtoken';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
@@ -49,7 +49,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   NProgress.start();
-  const interval = setInterval(async () => {
+  let interval;
+  interval = setInterval(() => {
     if (window.socket) {
       clearInterval(interval);
       const modelEl = document.getElementsByClassName('modal show')?.[0];
@@ -66,48 +67,52 @@ router.beforeEach((to, from, next) => {
         localStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`),
       );
       if (token && token.exp > Math.round(new Date().getTime() / 1000)) {
-        await checkUserData();
-        if (['login'].includes(to.name)) {
-          next({ name: 'home' });
-        } else {
-          if (
-            ['list', 'view', 'edit'].includes(to.name) &&
-            store.state.user.forms.some((form) => Number(form.pid) === Number(to.params?.tid))
-          ) {
-            next({ name: 'notFound' });
-          } else if (
-            (['list', 'view', 'edit'].includes(to.name) &&
-              !(
-                store.state.user.data.tags.includes('ALL') ||
-                store.state.user.data.permissions?.[Number(to.params?.tid)]?.checked
-              )) ||
-            (['edit'].includes(to.name) &&
-              Number(to.params?.rid) === 0 &&
-              !(
-                store.state.user.data.tags.includes('ALL') ||
-                store.state.user.data.permissions?.[Number(to.params?.tid)]?.create
-              )) ||
-            (['edit'].includes(to.name) &&
-              Number(to.params?.rid) !== 0 &&
-              !(
-                store.state.user.data.tags.includes('ALL') ||
-                store.state.user.data.permissions?.[Number(to.params?.tid)]?.all ||
-                store.state.user.data.permissions?.[Number(to.params?.tid)]?.edit
-              )) ||
-            (to?.meta?.auth &&
-              !(
-                store.state.user.data.tags.includes('ALL') ||
-                to?.meta?.auth.every((tag) => store.state.user.data.tags.includes(tag))
-              ))
-          ) {
-            next({ name: 'permissionDenied' });
+        interval = setInterval(() => {
+          if (store.state.user.data.id) {
+            clearInterval(interval);
+            if (['login'].includes(to.name)) {
+              next({ name: 'home' });
+            } else {
+              if (
+                ['list', 'view', 'edit'].includes(to.name) &&
+                store.state.user.forms.some((form) => Number(form.pid) === Number(to.params?.tid))
+              ) {
+                next({ name: 'notFound' });
+              } else if (
+                (['list', 'view', 'edit'].includes(to.name) &&
+                  !(
+                    store.state.user.data.tags.includes('ALL') ||
+                    store.state.user.data.permissions?.[Number(to.params?.tid)]?.checked
+                  )) ||
+                (['edit'].includes(to.name) &&
+                  Number(to.params?.rid) === 0 &&
+                  !(
+                    store.state.user.data.tags.includes('ALL') ||
+                    store.state.user.data.permissions?.[Number(to.params?.tid)]?.create
+                  )) ||
+                (['edit'].includes(to.name) &&
+                  Number(to.params?.rid) !== 0 &&
+                  !(
+                    store.state.user.data.tags.includes('ALL') ||
+                    store.state.user.data.permissions?.[Number(to.params?.tid)]?.all ||
+                    store.state.user.data.permissions?.[Number(to.params?.tid)]?.edit
+                  )) ||
+                (to?.meta?.auth &&
+                  !(
+                    store.state.user.data.tags.includes('ALL') ||
+                    to?.meta?.auth.every((tag) => store.state.user.data.tags.includes(tag))
+                  ))
+              ) {
+                next({ name: 'permissionDenied' });
+              }
+              next();
+            }
           }
-          next();
-        }
+        }, 100);
       } else {
         if (to?.meta?.auth) {
           // Clean user information
-          await clearUserData();
+          clearUserData();
           // Redirect to login page
           next({ name: 'login', query: { redirect: to.path } });
         }
@@ -121,7 +126,8 @@ router.afterEach((to) => {
   document.body.removeAttribute('style');
   const path = getListPath(to.path);
   const page = store.state.user.forms.find((item) => item.route && item.route.path == path);
-  const interval = setInterval(() => {
+  let interval;
+  interval = setInterval(() => {
     if (store.state.sys.name) {
       clearInterval(interval);
       if (page) {

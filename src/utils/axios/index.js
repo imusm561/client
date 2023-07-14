@@ -61,7 +61,7 @@ instance.interceptors.response.use(
       if (status === 401) {
         if (router.currentRoute.value.name != 'pubForm') {
           // Clean user information
-          await clearUserData();
+          clearUserData();
         }
         // Redirect to login page
         router.replace({ name: 'login', query: { redirect: router.currentRoute.value.path } });

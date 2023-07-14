@@ -952,7 +952,7 @@ export default {
     const handleUserLogout = () => {
       userLogout().then(async () => {
         // Clean user information
-        await clearUserData();
+        clearUserData();
         // Redirect to login page
         router.replace({ name: 'login' });
       });

@@ -857,7 +857,7 @@ export default {
       }).then(async ({ code, msg }) => {
         if (code === 200) {
           // Clean user information
-          await clearUserData();
+          clearUserData();
           // Redirect to login page
           router.replace({ name: 'login' });
         } else {
