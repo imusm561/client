@@ -607,7 +607,8 @@
                   </div>
                   <div
                     :class="
-                      ['serviceAccount', 'subscriptionAccount'].includes(account.service_type)
+                      ['serviceAccount', 'subscriptionAccount'].includes(account.service_type) &&
+                      current_strategy.msg_keyword?.charAt(0) === '@'
                         ? 'col-md-6'
                         : 'col-12'
                     "
@@ -639,7 +640,10 @@
                   </div>
                   <div
                     class="col-md-6"
-                    v-if="['serviceAccount', 'subscriptionAccount'].includes(account.service_type)"
+                    v-if="
+                      ['serviceAccount', 'subscriptionAccount'].includes(account.service_type) &&
+                      current_strategy.msg_keyword?.charAt(0) === '@'
+                    "
                   >
                     <label class="form-label">
                       {{
@@ -658,11 +662,7 @@
                         )
                       "
                       :class="['form-control', errors.instr_exp && 'is-invalid']"
-                      :rules="
-                        current_strategy?.msg_keyword?.charAt(0) === '@'
-                          ? 'required|between:60,300'
-                          : ''
-                      "
+                      rules="required|between:60,300"
                     />
                     <span class="invalid-feedback">{{ errors.instr_exp }}</span>
                   </div>
@@ -1259,6 +1259,8 @@ export default {
     };
 
     const handleSubmitStrategy = () => {
+      if (current_strategy.value.msg_keyword?.charAt(0) != '@')
+        current_strategy.value.instr_exp = null;
       if (current_strategy.value.id) {
         updateStrategy(current_strategy.value).then(({ code, msg }) => {
           if (code === 200) {
