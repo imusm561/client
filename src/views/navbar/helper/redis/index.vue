@@ -166,10 +166,14 @@ export default {
     });
 
     const handleGetKeys = () => {
-      current.value = {};
       getKeys().then(({ code, data, msg }) => {
         if (code === 200) {
-          keys.value = data;
+          keys.value = data.sort();
+          if (!current.value.detail || Array.isArray(JSON.parse(current.value.detail))) {
+            current.value.name = '*';
+            current.value.key = '*';
+            current.value.detail = JSON.stringify(keys.value, null, 2);
+          }
         } else {
           toast({
             component: ToastificationContent,
