@@ -16,8 +16,11 @@
               data-simplebar
               class="scroll"
               :data="tree"
-              node-key="key"
               :empty-text="$t('layout.navbar.helper.redis.keys.empty')"
+              :default-expanded-keys="defaultExpandKeys"
+              @node-expand="(data) => handleNodeToggle(data, true)"
+              @node-collapse="(data) => handleNodeToggle(data, false)"
+              node-key="key"
               :draggable="false"
               :expand-on-click-node="false"
               @node-click="handleClickKey"
@@ -219,6 +222,26 @@ export default {
       return keyToTree(keys.value);
     });
 
+    const defaultExpandKeys = ref([]);
+    const removeChildrenKeys = (data) => {
+      if (data.children) {
+        data.children.forEach((item) => {
+          const index = defaultExpandKeys.value.indexOf(item.key);
+          if (index != -1) defaultExpandKeys.value.splice(index, 1);
+          removeChildrenKeys(item);
+        });
+      }
+    };
+    const handleNodeToggle = (data, expanded) => {
+      if (expanded) {
+        if (!defaultExpandKeys.value.includes(data.key)) defaultExpandKeys.value.push(data.key);
+      } else {
+        const index = defaultExpandKeys.value.indexOf(data.key);
+        if (index != -1) defaultExpandKeys.value.splice(index, 1);
+      }
+      removeChildrenKeys(data);
+    };
+
     const handleClickKey = (e) => {
       current.value = JSON.parse(JSON.stringify(e));
       if (current.value.children) {
@@ -267,7 +290,15 @@ export default {
       });
     };
 
-    return { tree, current, handleGetKeys, handleClickKey, handleDelKey };
+    return {
+      tree,
+      current,
+      handleGetKeys,
+      defaultExpandKeys,
+      handleNodeToggle,
+      handleClickKey,
+      handleDelKey,
+    };
   },
 };
 </script>
