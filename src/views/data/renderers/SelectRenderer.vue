@@ -37,21 +37,23 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onBeforeMount, ref } from 'vue';
 import { useRouter, getDataByFormula } from '@utils';
 export default defineComponent({
-  async setup(props) {
+  setup(props) {
     const column = JSON.parse(JSON.stringify(props.params._column));
     const data = ref(null);
 
-    if (column.cfg?.__source) {
-      data.value = await getDataByFormula(props.params.data, column.cfg.__source, {
-        view: true,
-        value: props.params.value,
-      });
-    } else {
-      data.value = JSON.parse(JSON.stringify(props.params.value || null));
-    }
+    onBeforeMount(async () => {
+      if (column.cfg?.__source) {
+        data.value = await getDataByFormula(props.params.data, column.cfg.__source, {
+          view: true,
+          value: props.params.value,
+        });
+      } else {
+        data.value = JSON.parse(JSON.stringify(props.params.value || null));
+      }
+    });
 
     const { router } = useRouter();
     const handleClickValue = (item) => {
