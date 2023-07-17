@@ -41,81 +41,12 @@ export default {
     Menu,
   },
   setup() {
-    const handleMenuItemClick = (collapse) => {
-      let parentCollapse = collapse.parentElement.closest('.collapse');
-      if (parentCollapse) {
-        let siblingCollapses = parentCollapse.querySelectorAll('.collapse');
-        siblingCollapses.forEach((siblingCollapse) => {
-          if (siblingCollapse.classList.contains('show')) {
-            let aChild = siblingCollapse.parentNode.firstChild;
-            if (aChild.hasAttribute('aria-expanded')) {
-              aChild.setAttribute('aria-expanded', 'false');
-            }
-            siblingCollapse.classList.remove('show');
-          }
-        });
-      } else {
-        let getSiblings = (elem) => {
-          let siblings = [];
-          let sibling = elem.parentNode.firstChild;
-          while (sibling) {
-            if (sibling.nodeType === 1 && sibling !== elem) {
-              siblings.push(sibling);
-            }
-            sibling = sibling.nextSibling;
-          }
-          return siblings;
-        };
-        let siblings = getSiblings(collapse.parentElement);
-        siblings.forEach((item) => {
-          if (item.childNodes.length > 2)
-            item.firstElementChild.setAttribute('aria-expanded', 'false');
-          let ids = item.querySelectorAll('*[id]');
-          ids.forEach((id) => {
-            let aChild = id.parentNode.firstChild;
-            if (aChild.hasAttribute('aria-expanded')) {
-              aChild.setAttribute('aria-expanded', 'false');
-            }
-            id.classList.remove('show');
-            if (id.childNodes.length > 2) {
-              let val = id.querySelectorAll('ul li a');
-              val.forEach((subitem) => {
-                if (subitem.hasAttribute('aria-expanded'))
-                  subitem.setAttribute('aria-expanded', 'false');
-              });
-            }
-          });
-        });
-      }
-    };
-
-    const setMenuItemEvent = () => {
-      let collapses = document.querySelectorAll('.navbar-nav .collapse');
-      if (collapses)
-        collapses.forEach((collapse) => {
-          collapse.addEventListener('show.bs.collapse', (e) => {
-            e.stopPropagation();
-            handleMenuItemClick(collapse);
-          });
-        });
-    };
+    const { route } = useRouter();
 
     onMounted(() => {
       document.getElementById('menu-overlay').addEventListener('click', () => {
         document.body.classList.remove('vertical-sidebar-enable');
       });
-
-      setMenuItemEvent();
-
-      watch(
-        () => menu,
-        () => {
-          setTimeout(() => {
-            setMenuItemEvent();
-          }, 500);
-        },
-        { immediate: true, deep: true },
-      );
 
       watch(
         () => route,
@@ -126,16 +57,35 @@ export default {
       );
     });
 
-    const { route } = useRouter();
-
     const onRoutechange = (route) => {
-      initActiveMenu(route.path);
+      activeMenu(route.path);
       document.getElementById('menu-overlay').click();
       if (document.getElementsByClassName('active').length > 0) {
         const currentPosition = document.getElementsByClassName('active')[0].offsetTop;
         if (currentPosition > 500)
           if (this.$refs.isSimplebar)
             this.$refs.isSimplebar.value.getScrollElement().scrollTop = currentPosition + 300;
+      }
+    };
+
+    const activeMenu = (path) => {
+      if (document.querySelector('#navbar-nav')) {
+        let actives = document.querySelectorAll('.navbar-nav .active');
+        actives.forEach((active) => {
+          active.classList.remove('active');
+        });
+        let collapses = document.querySelectorAll('.navbar-nav .collapse');
+        collapses.forEach((collapse) => {
+          collapse.parentNode.firstChild.setAttribute('aria-expanded', 'false');
+          collapse.classList.remove('show');
+        });
+
+        path = getListPath(path).replace('/', process.env.BASE_URL);
+        let el = document.querySelector('#navbar-nav').querySelector('[href="' + path + '"]');
+        if (el) {
+          el.classList.add('active');
+          activeParentCollapseDiv(el);
+        }
       }
     };
 
@@ -146,28 +96,6 @@ export default {
         parentCollapseDiv.parentElement.children[0].classList.add('active');
         parentCollapseDiv.parentElement.children[0].setAttribute('aria-expanded', 'true');
         activeParentCollapseDiv(parentCollapseDiv.parentElement.children[0]);
-      }
-    };
-
-    const initActiveMenu = (path) => {
-      if (document.querySelector('#navbar-nav')) {
-        let actives = document.querySelectorAll('.navbar-nav .active');
-        actives.forEach((active) => {
-          active.classList.remove('active');
-        });
-        let collapses = document.querySelectorAll('.navbar-nav .collapse');
-        collapses.forEach((collapse) => {
-          handleMenuItemClick(collapse);
-        });
-
-        path = getListPath(path);
-        let a = document.querySelector('#navbar-nav').querySelector('[href="' + path + '"]');
-        if (a) {
-          setTimeout(() => {
-            a.classList.add('active');
-          }, 0);
-          activeParentCollapseDiv(a);
-        }
       }
     };
 
