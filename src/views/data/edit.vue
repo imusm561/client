@@ -200,7 +200,11 @@
                         :key="index"
                       >
                         <span>
-                          #{{ index + 1 }} {{ node.title }} [{{ node.logic === 1 ? 'And' : 'Or' }}]
+                          #{{ index + 1 }} {{ node.title }} [{{
+                            node.logic === 1
+                              ? $t('data.view.flow.logic.and')
+                              : $t('data.view.flow.logic.or')
+                          }}]
                         </span>
                         <Avatar :data="resolveFlowUsers(node.users)" size="xxs" />
                       </li>
@@ -375,9 +379,11 @@
                   >
                     <div
                       v-if="
-                        (!flow && !form.flow?.length) ||
-                        (flow && init_data.data_state === 'drafted') ||
-                        data.id === 0
+                        data.id === 0 ||
+                        (flow === null &&
+                          (form.flow === null ||
+                            form.flow.length === 0 ||
+                            init_data.data_state === 'drafted'))
                       "
                     >
                       <div
@@ -410,7 +416,9 @@
                             >
                               <span>
                                 #{{ index + 1 }} {{ node.title }} [{{
-                                  node.logic === 1 ? 'And' : 'Or'
+                                  node.logic === 1
+                                    ? $t('data.view.flow.logic.and')
+                                    : $t('data.view.flow.logic.or')
                                 }}]
                               </span>
                               <Avatar :data="resolveFlowUsers(node.users)" size="xxs" />
@@ -799,6 +807,9 @@ export default {
               columns.value
                 .filter(
                   (column) =>
+                    column.visible?.includes(`data.${field}`) ||
+                    column.required?.includes(`data.${field}`) ||
+                    column.editable?.includes(`data.${field}`) ||
                     column.__default?.includes(`data.${field}`) ||
                     column.cfg?.__source?.includes(`data.${field}`) ||
                     column.cfg?.prefix?.includes(`data.${field}`) ||
@@ -807,18 +818,13 @@ export default {
                     column.cfg?.max?.includes(`data.${field}`),
                 )
                 .map(async (column) => {
-                  await setColumnConfiguration(column);
-                });
-
-              columns.value
-                .filter(
-                  (column) =>
+                  if (
                     column.visible?.includes(`data.${field}`) ||
                     column.required?.includes(`data.${field}`) ||
-                    column.editable?.includes(`data.${field}`),
-                )
-                .map(async (column) => {
-                  await setColumnRules(column);
+                    column.editable?.includes(`data.${field}`)
+                  )
+                    await setColumnRules(column);
+                  if (column._visible) await setColumnConfiguration(column);
                 });
             }
           }
@@ -977,8 +983,8 @@ export default {
         for await (let column of tab.children) {
           column.key = hashData(JSON.stringify(column));
           await replaceColumnVariables(column);
-          await setColumnConfiguration(column);
           await setColumnRules(column);
+          if (column._visible) await setColumnConfiguration(column);
         }
         tab.columns = tab.children;
       }
@@ -1089,19 +1095,16 @@ export default {
       )
         column.key = hashData(JSON.stringify(column));
 
-      // column._visible = visible;
+      column._visible = visible;
       column._required = required;
       column._editable = editable;
 
-      if (column._visible != visible) {
-        column._visible = visible;
-        if (column._visible) setColumnConfiguration(column);
-        else
-          data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
-            column.component,
-          )
-            ? []
-            : null;
+      if (!column._visible) {
+        data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
+          column.component,
+        )
+          ? []
+          : null;
       }
     };
 
@@ -1179,51 +1182,53 @@ export default {
           }
         });
       } else {
-        checkData({ tid: form.value.id, rid: formdata.id }).then(({ code, data: editing, msg }) => {
-          if (code === 200) {
-            if (editing === null || editing === store.state.user.data.username || force) {
-              const changes = deepCompare(formdata, init_data.value);
-              if (Object.keys(changes).length) {
-                changes.tid = form.value.id;
-                changes.id = formdata.id;
-                changes.data_state = formdata.data_state;
-                changes.flow = form.value.flow;
-                updateData(changes).then((res) => {
-                  document.getElementById('hideUpdateConflictsModalBtn').click();
-                  forceData({ tid: changes.tid, rid: changes.id });
-                  if (res.code === 200) {
-                    result.value = res;
-                    data.value = res.data;
-                    init_data.value = JSON.parse(JSON.stringify(res.data));
-                    document.getElementById('showResultModalBtn').click();
-                    handleDiscardStagedData();
-                  } else {
-                    toast({
-                      component: ToastificationContent,
-                      props: {
-                        variant: 'danger',
-                        icon: 'mdi-alert',
-                        text: res.msg,
-                      },
-                    });
-                  }
+        const changes = deepCompare(formdata, init_data.value);
+        if (Object.keys(changes).length) {
+          changes.tid = form.value.id;
+          changes.id = formdata.id;
+          changes.data_state = formdata.data_state;
+          changes.flow = form.value.flow;
+          checkData({ tid: form.value.id, rid: formdata.id }).then(
+            ({ code, data: editing, msg }) => {
+              if (code === 200) {
+                if (editing === null || editing === store.state.user.data.username || force) {
+                  updateData(changes).then((res) => {
+                    document.getElementById('hideUpdateConflictsModalBtn').click();
+                    forceData({ tid: changes.tid, rid: changes.id });
+                    if (res.code === 200) {
+                      result.value = res;
+                      data.value = res.data;
+                      init_data.value = JSON.parse(JSON.stringify(res.data));
+                      document.getElementById('showResultModalBtn').click();
+                      handleDiscardStagedData();
+                    } else {
+                      toast({
+                        component: ToastificationContent,
+                        props: {
+                          variant: 'danger',
+                          icon: 'mdi-alert',
+                          text: res.msg,
+                        },
+                      });
+                    }
+                  });
+                } else {
+                  update_conflicts.value = editing;
+                  document.getElementById('showUpdateConflictsModalBtn').click();
+                }
+              } else {
+                toast({
+                  component: ToastificationContent,
+                  props: {
+                    variant: 'danger',
+                    icon: 'mdi-alert',
+                    text: msg,
+                  },
                 });
               }
-            } else {
-              update_conflicts.value = editing;
-              document.getElementById('showUpdateConflictsModalBtn').click();
-            }
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
+            },
+          );
+        }
       }
     };
 

@@ -283,7 +283,7 @@
                         role="tab"
                         @click.capture.stop
                       >
-                        {{ $t('layout.navbar.notifications.flows') }}
+                        {{ $t('layout.navbar.notifications.approvals') }}
                         <span v-if="flow_notices.length > 0" class="badge bg-danger">
                           {{ flow_notices.length }}
                         </span>
@@ -439,7 +439,14 @@
                             </h6>
                           </span>
                           <div class="fs-13 text-muted">
-                            <p class="mb-1 text-truncate">{{ flow.title }}</p>
+                            <p class="mb-1 text-truncate">
+                              {{
+                                flow.title.replace(
+                                  /Approval/g,
+                                  $t('layout.navbar.notifications.approvals'),
+                                )
+                              }}
+                            </p>
                           </div>
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                             <span>
@@ -451,7 +458,7 @@
                       </div>
                     </div>
                   </div>
-                  <Empty :text="$t('layout.navbar.notifications.flows.empty')" v-else />
+                  <Empty :text="$t('layout.navbar.notifications.approvals.empty')" v-else />
                 </div>
               </div>
             </div>

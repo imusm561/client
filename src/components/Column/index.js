@@ -1,3 +1,4 @@
+import i18n from '@utils/i18n';
 const columns = [
   {
     title: 'layout.navbar.helper.form.column.components.input',
@@ -58,7 +59,7 @@ const columns = [
         editable: '',
         tags: [],
         cfg: {
-          maska: ['+1 (###) ##-##-##', '+1 (###) ###-##-##'],
+          maska: ['+86 1##-####-####', '+86 (###) ####-####'],
           placeholder: '',
         },
         header: '',
@@ -255,7 +256,9 @@ const columns = [
         tags: [],
         cfg: {
           style: 'btn-primary',
-          placeholder: 'Browse',
+          placeholder: i18n.global.t(
+            'layout.navbar.helper.form.column.components.select.file.browse',
+          ),
           accept: '*',
           prefix: '',
           multiple: false,

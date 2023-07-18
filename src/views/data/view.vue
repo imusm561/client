@@ -281,7 +281,9 @@
         <div
           class="p-3 pt-0 border-0 d-flex justify-content-end gap-2"
           v-if="
-            data.id && ((!flow && !form.flow?.length) || (flow && data.data_state === 'drafted'))
+            data.id &&
+            flow === null &&
+            (form.flow === null || form.flow.length === 0 || data.data_state === 'drafted')
           "
         >
           <a

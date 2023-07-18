@@ -1196,8 +1196,8 @@ export default {
       for (let index = 0; index < columns.value.length; index++) {
         const column = columns.value[index];
         await replaceColumnVariables(column);
-        await setColumnConfiguration(column);
         await setColumnRules(column);
+        if (column._visible) await setColumnConfiguration(column);
 
         batch.value.column = [];
         if (

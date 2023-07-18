@@ -296,6 +296,7 @@
   "layout.navbar.helper.form.column.components.select.datetime": "时间",
   "layout.navbar.helper.form.column.components.select.position": "位置",
   "layout.navbar.helper.form.column.components.select.file": "文件",
+  "layout.navbar.helper.form.column.components.select.file.browse": "浏览",
   "layout.navbar.helper.form.column.components.select.switch": "开关",
   "layout.navbar.helper.form.column.components.layout": "布局型组件",
   "layout.navbar.helper.form.column.components.layout.button": "按钮",
@@ -570,8 +571,8 @@
   "layout.navbar.notifications.mails.empty": "暂无新邮件",
   "layout.navbar.notifications.comments": "评论",
   "layout.navbar.notifications.comments.empty": "暂无评论消息",
-  "layout.navbar.notifications.flows": "审批",
-  "layout.navbar.notifications.flows.empty": "暂无审批请求",
+  "layout.navbar.notifications.approvals": "审批",
+  "layout.navbar.notifications.approvals.empty": "暂无审批请求",
 
   "layout.navbar.user.dropdown.profile": "个人信息",
   "layout.navbar.user.dropdown.profil.department": "部门",
