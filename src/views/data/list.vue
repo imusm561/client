@@ -458,9 +458,9 @@ export default {
 
     onMounted(() => {
       watch(
-        () => route.value.params.tid,
-        (newVal, oldVal) => {
-          if (newVal && newVal !== oldVal) {
+        () => route.value.params,
+        (newVal = {}, oldVal = {}) => {
+          if (newVal.tid !== oldVal.tid) {
             ready.getRows = false;
             columnDefs.value = [];
             fetchDataForm();

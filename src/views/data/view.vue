@@ -654,13 +654,16 @@ export default {
 
     onMounted(() => {
       watch(
-        () => route.value.params.rid,
-        (newVal, oldVal) => {
-          if (route.value.name === 'view' && newVal !== oldVal) {
-            fetchDataView(route.value.params.tid, newVal);
+        () => route.value.params,
+        (newVal = {}, oldVal = {}) => {
+          if (
+            route.value.name === 'view' &&
+            (newVal.tid !== oldVal.tid || newVal.rid !== oldVal.rid)
+          ) {
+            fetchDataView(newVal.tid, newVal.rid);
           }
         },
-        { immediate: true },
+        { immediate: true, deep: true },
       );
 
       socket.on('refetchDataView', refetchDataViewHandler);

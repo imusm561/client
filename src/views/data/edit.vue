@@ -766,36 +766,39 @@ export default {
     const initialized = ref(false);
     onMounted(() => {
       watch(
-        () => route.value.params.rid,
-        (newVal, oldVal) => {
+        () => route.value.params,
+        (newVal = {}, oldVal = {}) => {
           if (
             route.value.name === 'edit' &&
-            ((Number(newVal) === 0 &&
+            ((Number(newVal.rid) === 0 &&
               !(
                 store.state.user.data?.tags?.includes('ALL') ||
-                store.state.user.data?.permissions?.[route.value.params.tid]?.create
+                store.state.user.data?.permissions?.[newVal.tid]?.create
               )) ||
-              (Number(newVal) !== 0 &&
+              (Number(newVal.rid) !== 0 &&
                 !(
                   store.state.user.data?.tags?.includes('ALL') ||
-                  store.state.user.data?.permissions?.[route.value.params.tid]?.all ||
-                  store.state.user.data?.permissions?.[route.value.params.tid]?.edit
+                  store.state.user.data?.permissions?.[newVal.tid]?.all ||
+                  store.state.user.data?.permissions?.[newVal.tid]?.edit
                 )))
           ) {
             router.replace({ name: 'permissionDenied' });
             return;
           }
-          if (route.value.name === 'edit' && newVal !== oldVal) {
+          if (
+            route.value.name === 'edit' &&
+            (newVal.tid !== oldVal.tid || newVal.rid !== oldVal.rid)
+          ) {
             if (Number(init_data.value.id))
               forceData({
-                tid: route.value.params.tid,
+                tid: newVal.tid,
                 rid: Number(init_data.value.id),
                 user: null,
               });
-            fetchDataEdit(route.value.params.tid, newVal);
+            fetchDataEdit(newVal.tid, newVal.rid);
           }
         },
-        { immediate: true },
+        { immediate: true, deep: true },
       );
 
       watch(
