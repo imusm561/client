@@ -9,7 +9,7 @@
       v-model="vModel"
     />
     <button
-      v-if="$store.state.sys.cfg.amap && $store.state.sys.cfg.amap.map_key"
+      v-if="$store.state.sys.cfg.amap.js_api"
       type="button"
       class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
       :disabled="disabled"
@@ -108,6 +108,7 @@
 
 <script>
 import { defineComponent, computed, ref, onMounted, onUnmounted } from 'vue';
+import AMapLoader from '@amap/amap-jsapi-loader';
 import store from '@store';
 import i18n from '@utils/i18n';
 import { isLngLat, copyToClipboard } from '@utils';
@@ -143,8 +144,28 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const toast = useToast();
+    let AMap = null;
+    let amap = null;
 
-    onMounted(() => {
+    onMounted(async () => {
+      if (store.state.sys.cfg.amap.js_api) {
+        AMap = await AMapLoader.load({
+          key: store.state.sys.cfg.amap.js_api,
+          version: '2.0',
+          plugins: ['AMap.AutoComplete', 'AMap.PlaceSearch', 'AMap.Geocoder', 'AMap.CitySearch'],
+        });
+
+        amap = new AMap.Map(`amap_${props.id}`, {
+          zoom: 15,
+          showIndoorMap: true,
+          // showIndoorMap: false,
+          // layers: [indoorMap, AMap.createDefaultLayer()],
+        });
+
+        amap.setMapStyle(`amap://styles/${store.state.sys.theme === 'dark' ? 'dark' : 'normal'}`);
+        amap.on('click', onClickMap);
+      }
+
       if (props.id === 'event-location') {
         const amapOffcanvas = document.getElementById(`amapOffcanvas_${props.id}`);
         amapOffcanvas.style['z-index'] = 1080;
@@ -161,20 +182,6 @@ export default defineComponent({
       }
     });
 
-    let interval;
-    let _instance = null;
-    let count = 0;
-    if (store.state.sys.cfg?.amap?.map_key) {
-      interval = setInterval(() => {
-        count += 1;
-        if (window.AMap || count > 100) {
-          clearInterval(interval);
-          _instance = window.AMap;
-        }
-      }, 100);
-    }
-
-    let amap = null;
     let autoComplete = null;
     let placeSearch = null;
     let geoCoder = null;
@@ -209,7 +216,7 @@ export default defineComponent({
       tips.value = [];
       pois.value = [];
 
-      if (!store.state.sys.cfg?.amap?.map_key) {
+      if (!store.state.sys.cfg.amap.js_api) {
         toast({
           component: ToastificationContent,
           props: {
@@ -220,7 +227,8 @@ export default defineComponent({
         });
         return;
       }
-      if (!_instance) {
+
+      if (!AMap) {
         toast({
           component: ToastificationContent,
           props: {
@@ -232,25 +240,12 @@ export default defineComponent({
         return;
       }
 
-      amap =
-        amap ||
-        new _instance.Map(`amap_${props.id}`, {
-          zoom: 15,
-          showIndoorMap: true,
-          // showIndoorMap: false,
-          // layers: [indoorMap, AMap.createDefaultLayer()],
-        });
+      autoComplete = autoComplete || new AMap.AutoComplete();
+      placeSearch = placeSearch || new AMap.PlaceSearch({ extensions: 'all' });
+      geoCoder = geoCoder || new AMap.Geocoder();
+      citysearch = citysearch || new AMap.CitySearch();
 
-      amap.setMapStyle(`amap://styles/${store.state.sys.theme === 'dark' ? 'dark' : 'normal'}`);
-
-      amap.on('click', onClickMap);
-
-      autoComplete = autoComplete || new _instance.AutoComplete();
-      placeSearch = placeSearch || new _instance.PlaceSearch({ extensions: 'all' });
-      geoCoder = geoCoder || new _instance.Geocoder();
-      citysearch = citysearch || new _instance.CitySearch();
-
-      marker = marker || new _instance.Marker();
+      marker = marker || new AMap.Marker();
       marker.setMap(amap);
 
       if (vModel.value) {

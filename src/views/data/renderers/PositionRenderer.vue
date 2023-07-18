@@ -3,7 +3,7 @@
     <i class="mdi mdi-map-marker text-info" />
     <span
       v-if="
-        $store.state.sys.cfg.amap && $store.state.sys.cfg.amap.api_key && isLngLat(params.value)
+        $store.state.sys.cfg.amap && $store.state.sys.cfg.amap.web_service && isLngLat(params.value)
       "
       class="text-secondary cursor-pointer text-decoration-underline"
       @dblclick="handleDblClickLngLat(params.value)"

@@ -37,8 +37,8 @@
   </div>
   <div v-else>
     <img
-      v-if="$store.state.sys.cfg.amap && $store.state.sys.cfg.amap.api_key && isLngLat(value)"
-      :src="`//restapi.amap.com/v3/staticmap?location=${value}&zoom=12&size=700*300&markers=,,:${value}&key=${$store.state.sys.cfg.amap.api_key}`"
+      v-if="$store.state.sys.cfg.amap && $store.state.sys.cfg.amap.web_service && isLngLat(value)"
+      :src="`//restapi.amap.com/v3/staticmap?location=${value}&zoom=12&size=700*300&markers=,,:${value}&key=${$store.state.sys.cfg.amap.web_service}`"
       @dblclick="handleDblClickMap(value)"
       class="img-fluid"
       :alt="value"

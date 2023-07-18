@@ -10,6 +10,7 @@
     "deploy": "cd ../server && chmod +x deploy.sh && cd ../ && ./server/deploy.sh"
   },
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@ckeditor/ckeditor5-alignment": "35.2.1",
     "@ckeditor/ckeditor5-autoformat": "35.2.1",
     "@ckeditor/ckeditor5-basic-styles": "35.2.1",
