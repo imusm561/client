@@ -380,10 +380,9 @@
                     <div
                       v-if="
                         data.id === 0 ||
-                        (flow === null &&
-                          (form.flow === null ||
-                            form.flow.length === 0 ||
-                            init_data.data_state === 'drafted'))
+                        form.flow === null ||
+                        form.flow.length === 0 ||
+                        init_data.data_state === 'drafted'
                       "
                     >
                       <div

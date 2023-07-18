@@ -440,12 +440,7 @@
                           </span>
                           <div class="fs-13 text-muted">
                             <p class="mb-1 text-truncate">
-                              {{
-                                flow.title.replace(
-                                  /Approval/g,
-                                  $t('layout.navbar.notifications.approvals'),
-                                )
-                              }}
+                              {{ flow.title }}
                             </p>
                           </div>
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
