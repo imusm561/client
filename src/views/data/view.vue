@@ -471,7 +471,9 @@
                             "
                           />
                         </div>
-                        <div class="fs-12 text-muted">{{ getUserInfo(item.username)?.post }}</div>
+                        <div class="fs-12 text-muted">
+                          {{ item.datetime || getUserInfo(item.username)?.post }}
+                        </div>
                       </div>
                     </div>
                     <div
