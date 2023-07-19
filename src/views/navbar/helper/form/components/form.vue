@@ -886,11 +886,11 @@
           <div class="modal-body">
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
-                <h4>Delete Form Confirm</h4>
+                <h4>{{ $t('layout.navbar.helper.form.confirmDeleteFormModal.title') }}</h4>
                 <p class="text-muted mx-4 mb-0 mb-2" style="white-space: nowrap">
-                  Please enter
+                  {{ $t('layout.navbar.helper.form.confirmDeleteFormModal.confirm.before') }}
                   <code class="text-primary fw-bold d-block">{{ delete_form.title }}</code>
-                  to verify this operation
+                  {{ $t('layout.navbar.helper.form.confirmDeleteFormModal.confirm.after') }}
                 </p>
                 <input class="form-control" v-model="confirm" :placeholder="delete_form.title" />
               </div>
@@ -908,7 +908,7 @@
                   }
                 "
               >
-                Cancel
+                {{ $t('layout.navbar.helper.form.confirmDeleteFormModal.cancel') }}
               </button>
               <button
                 type="button"
@@ -922,7 +922,7 @@
                   }
                 "
               >
-                Confirm
+                {{ $t('layout.navbar.helper.form.confirmDeleteFormModal.confirm') }}
               </button>
             </div>
           </div>
