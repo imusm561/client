@@ -6,7 +6,7 @@
       :data-bs-target="`#c${item.id}`"
     >
       <i :class="['fs-16 mdi', item.icon || 'mdi-circle-medium']"></i>
-      <span>{{ $t(item.title) }}</span>
+      <span class="text-truncate" style="width: 85%" :title="item.title">{{ $t(item.title) }}</span>
     </span>
     <div class="collapse menu-dropdown" :id="`c${item.id}`">
       <ul class="nav nav-sm flex-column">

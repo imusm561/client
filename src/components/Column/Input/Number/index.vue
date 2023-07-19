@@ -31,7 +31,11 @@
       v-model="value"
       class="d-none"
       :class="{ 'is-invalid': error }"
-      :rules="`${required ? 'required' : ''}`"
+      :rules="
+        [required ? 'required' : null, `between:${column.cfg.min},${column.cfg.max}`]
+          .filter((x) => x != null)
+          .join('|')
+      "
     />
     <span class="invalid-feedback">{{ error }}</span>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>

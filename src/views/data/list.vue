@@ -1130,8 +1130,10 @@ export default {
       if (column.default) column.__default = replaceVariables(column.default, alias.value);
       if (column.cfg?.source)
         column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
-      if (column.cfg?.min) column.cfg.min = replaceVariables(column.cfg.min, alias.value);
-      if (column.cfg?.max) column.cfg.max = replaceVariables(column.cfg.max, alias.value);
+      if (typeof column.cfg?.min === 'string')
+        column.cfg.min = replaceVariables(column.cfg.min, alias.value);
+      if (typeof column.cfg?.max === 'string')
+        column.cfg.max = replaceVariables(column.cfg.max, alias.value);
     };
 
     const setColumnConfiguration = async (column) => {
@@ -1141,11 +1143,11 @@ export default {
           column.cfg.options = await getDataByFormula({}, column.cfg.__source, { value: null });
       }
 
-      if (column.cfg?.min && !column.cfg.min?.includes('data.')) {
+      if (typeof column.cfg?.min === 'string' && !column.cfg.min.includes('data.')) {
         const minDate = await getDataByFormula({}, column.cfg.min);
         if (isNaN(minDate) && !isNaN(Date.parse(minDate))) column.cfg.minDate = minDate;
       }
-      if (column.cfg?.max && !column.cfg.max?.includes('data.')) {
+      if (typeof column.cfg?.max === 'string' && !column.cfg.max.includes('data.')) {
         const maxDate = await getDataByFormula({}, column.cfg.max);
         if (isNaN(maxDate) && !isNaN(Date.parse(maxDate))) column.cfg.maxDate = maxDate;
       }

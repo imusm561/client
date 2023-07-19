@@ -288,8 +288,10 @@ export default {
                     column.cfg?.__source?.includes(`data.${field}`) ||
                     column.cfg?.prefix?.includes(`data.${field}`) ||
                     column.cfg?.href?.includes(`data.${field}`) ||
-                    column.cfg?.min?.includes(`data.${field}`) ||
-                    column.cfg?.max?.includes(`data.${field}`),
+                    (typeof column.cfg?.min === 'string' &&
+                      column.cfg?.min?.includes(`data.${field}`)) ||
+                    (typeof column.cfg?.max === 'string' &&
+                      column.cfg?.max?.includes(`data.${field}`)),
                 )
                 .map(async (column) => {
                   if (
@@ -402,8 +404,10 @@ export default {
         column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
       if (column.cfg?.prefix) column.cfg.prefix = replaceVariables(column.cfg.prefix, alias.value);
       if (column.cfg?.href) column.cfg.href = replaceVariables(column.cfg.href, alias.value);
-      if (column.cfg?.min) column.cfg.min = replaceVariables(column.cfg.min, alias.value);
-      if (column.cfg?.max) column.cfg.max = replaceVariables(column.cfg.max, alias.value);
+      if (typeof column.cfg?.min === 'string')
+        column.cfg.min = replaceVariables(column.cfg.min, alias.value);
+      if (typeof column.cfg?.max === 'string')
+        column.cfg.max = replaceVariables(column.cfg.max, alias.value);
     };
 
     const setColumnConfiguration = async (column) => {
@@ -472,14 +476,14 @@ export default {
         column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
       if (column.cfg?.href) column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
 
-      if (column.cfg?.min) {
+      if (typeof column.cfg?.min === 'string') {
         const minDate = await getDataByFormula(data.value, column.cfg.min);
         if (isNaN(minDate) && !isNaN(Date.parse(minDate))) {
           column.cfg.minDate = minDate;
           column.key = hashData(JSON.stringify(column));
         }
       }
-      if (column.cfg?.max) {
+      if (typeof column.cfg?.max === 'string') {
         const maxDate = await getDataByFormula(data.value, column.cfg.max);
         if (isNaN(maxDate) && !isNaN(Date.parse(maxDate))) {
           column.cfg.maxDate = maxDate;

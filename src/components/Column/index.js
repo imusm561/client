@@ -40,6 +40,8 @@ const columns = [
         tags: [],
         cfg: {
           placeholder: '',
+          min: -99999999,
+          max: 99999999,
         },
         header: '',
         footer: '',

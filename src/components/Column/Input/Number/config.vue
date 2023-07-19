@@ -104,6 +104,30 @@
       <span class="invalid-feedback">{{ errors.default }}</span>
     </div>
 
+    <div class="col-md-6">
+      <label class="form-label">
+        {{ $t('layout.navbar.helper.form.column.config.min') }}
+      </label>
+      <input
+        v-model="column.cfg.min"
+        type="number"
+        :placeholder="$t('layout.navbar.helper.form.column.config.min')"
+        class="form-control"
+      />
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">
+        {{ $t('layout.navbar.helper.form.column.config.max') }}
+      </label>
+      <input
+        v-model="column.cfg.max"
+        type="number"
+        :placeholder="$t('layout.navbar.helper.form.column.config.max')"
+        class="form-control"
+      />
+    </div>
+
     <div class="col-md-12">
       <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.visible') }}</label>
       <input
