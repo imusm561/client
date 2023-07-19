@@ -1,23 +1,19 @@
 <template>
   <div v-if="type === 'DESIGN'">
-    <label class="form-label d-block d-flex align-item-end cursor-move">
-      &nbsp;
-      <span v-if="column.alias" class="badge bg-primary ms-2">{{ column.alias }}</span>
-    </label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
-    <button :class="`btn btn-${column.cfg.style} btn-label`">
+    <button :class="`btn btn-sm btn-${column.cfg.style} btn-label`">
       <i v-if="column.cfg.icon" :class="`mdi ${column.cfg.icon} label-icon`"></i>
       {{ column.name }}
     </button>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
   <div v-else-if="type === 'EDIT'">
-    <label class="form-label d-block" :title="resolveColumnTitle(column)">&nbsp;</label>
     <div v-if="column.header" class="ck ck-content pb-1" v-html="column.header"></div>
     <button
-      :class="`btn btn-${column.cfg.style} btn-label`"
+      :class="`btn btn-sm btn-${column.cfg.style} btn-label`"
       :disabled="!editable"
       @click.prevent="handleClickButton"
+      :title="column.cfg.__href"
     >
       <i v-if="column.cfg.icon" :class="`mdi ${column.cfg.icon} label-icon`"></i>
       {{ column.name }}
@@ -25,11 +21,11 @@
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
   <div v-else>
-    <label class="form-label d-block" :title="resolveColumnTitle(column)">&nbsp;</label>
     <button
       :class="`btn btn-sm btn-${column.cfg.style} btn-label`"
       :disabled="!editable"
       @click.prevent="handleClickButton"
+      :title="column.cfg.__href"
     >
       <i v-if="column.cfg.icon" :class="`mdi ${column.cfg.icon} label-icon`"></i>
       {{ column.name }}
@@ -59,7 +55,13 @@ export default defineComponent({
   },
   setup(props) {
     const handleClickButton = () => {
-      if (props.column.cfg.__href) window.open(props.column.cfg.__href, '_blank');
+      if (props.column.cfg.__href)
+        window.open(
+          props.column.cfg.__href?.charAt(0) === '/'
+            ? props.column.cfg.__href.replace('/', process.env.BASE_URL)
+            : props.column.cfg.__href,
+          '_blank',
+        );
     };
 
     return {

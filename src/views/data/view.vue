@@ -160,8 +160,9 @@
               v-for="tab in tabs.filter(
                 (tab) =>
                   show_empty_value_columns ||
-                  tab.columns.filter((column) => !(column.type && isEmpty(data[column.field])))
-                    .length,
+                  tab.columns.filter(
+                    (column) => column._visible && !(column.type && isEmpty(data[column.field])),
+                  ).length,
               )"
               :key="tab.id"
             >
@@ -174,7 +175,10 @@
                   <div
                     :id="column.field"
                     :key="column.id"
-                    v-if="show_empty_value_columns || !(column.type && isEmpty(data[column.field]))"
+                    v-if="
+                      column._visible &&
+                      (show_empty_value_columns || !(column.type && isEmpty(data[column.field])))
+                    "
                     :class="`col-sm-${column.col} mb-2 mt-2`"
                   >
                     <p
@@ -210,7 +214,8 @@
                       (tab) =>
                         show_empty_value_columns ||
                         tab.columns.filter(
-                          (column) => !(column.type && isEmpty(data[column.field])),
+                          (column) =>
+                            column._visible && !(column.type && isEmpty(data[column.field])),
                         ).length,
                     )"
                     :key="tab.id"
@@ -236,8 +241,9 @@
                 v-for="(tab, index) in tabs.filter(
                   (tab) =>
                     show_empty_value_columns ||
-                    tab.columns.filter((column) => !(column.type && isEmpty(data[column.field])))
-                      .length,
+                    tab.columns.filter(
+                      (column) => column._visible && !(column.type && isEmpty(data[column.field])),
+                    ).length,
                 )"
                 :key="tab.id"
               >
@@ -247,7 +253,8 @@
                       :id="column.field"
                       :key="column.id"
                       v-if="
-                        show_empty_value_columns || !(column.type && isEmpty(data[column.field]))
+                        column._visible &&
+                        (show_empty_value_columns || !(column.type && isEmpty(data[column.field])))
                       "
                       :class="`col-sm-${column.col} mb-2 mt-2`"
                     >
@@ -571,6 +578,7 @@ import {
   getUserInfo,
   resolveColumnTitle,
   replaceVariables,
+  getRulesByFormula,
   generateFlowByCurrentUser,
   getDataByFormula,
   isEmpty,
@@ -769,6 +777,14 @@ export default {
       if (column.cfg?.href) {
         column.cfg.href = replaceVariables(column.cfg.href, alias.value);
         column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
+      }
+
+      if (column.visible) {
+        column.visible = replaceVariables(column.visible, alias.value);
+        const { visible } = await getRulesByFormula(data.value, column);
+        column._visible = visible;
+      } else {
+        column._visible = true;
       }
     };
 

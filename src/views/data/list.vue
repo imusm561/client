@@ -460,7 +460,7 @@ export default {
       watch(
         () => route.value.params,
         (newVal = {}, oldVal = {}) => {
-          if (newVal.tid !== oldVal.tid) {
+          if (newVal.tid && newVal.tid !== oldVal.tid) {
             ready.getRows = false;
             columnDefs.value = [];
             fetchDataForm();
