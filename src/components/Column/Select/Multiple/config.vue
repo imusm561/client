@@ -51,7 +51,7 @@
       </VueSelect>
     </div>
 
-    <div class="col-md-12">
+    <div class="col-md-6">
       <label class="form-label">
         {{ $t('layout.navbar.helper.form.column.config.placeholder') }}
       </label>
@@ -61,6 +61,24 @@
         :placeholder="$t('layout.navbar.helper.form.column.config.placeholder')"
         class="form-control"
       />
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.default') }}</label>
+      <input
+        v-model="column.default"
+        type="text"
+        :placeholder="$t('layout.navbar.helper.form.column.config.default')"
+        :class="['form-control', errors.default && 'is-invalid']"
+      />
+      <Field
+        name="default"
+        v-model="column.default"
+        class="d-none"
+        :class="{ 'is-invalid': errors.default }"
+        rules="exclude:*=="
+      />
+      <span class="invalid-feedback">{{ errors.default }}</span>
     </div>
 
     <div class="col-md-6">
