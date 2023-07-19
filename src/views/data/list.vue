@@ -358,6 +358,7 @@ export default {
     const { route, router } = useRouter();
     const toast = useToast();
     const socket = window.socket;
+    const moment = window.moment;
 
     const form = ref({});
     const alias = ref({});
@@ -502,12 +503,69 @@ export default {
             ready.setCustom = true;
           }
         });
-        gridApi.setFilterModel({
+        const filter = {
           data_state: {
             filterType: 'set',
             values: ['published'], // 'drafted', 'approving'
           },
-        });
+        };
+        for (let key in route.value.query) {
+          const column = columns.value.find((column) => column.alias === key);
+          if (
+            ['InputTextarea', 'InputRichtext', 'InputCode', 'SelectPosition'].includes(
+              column.component,
+            )
+          ) {
+            filter[column.field] = {
+              filterType: 'text',
+              type: 'contains',
+              filter: route.value.query[column.alias],
+            };
+          } else if (
+            ['SelectSingle', 'SelectMultiple', 'SelectTags', 'SelectSwitch', 'SelectFile'].includes(
+              column.component,
+            )
+          ) {
+            filter[column.field] = {
+              filterType: 'set',
+              values: route.value.query[column.alias].split(','),
+            };
+          } else if (['int', 'double', 'float'].includes(column.type)) {
+            filter[column.field] = {
+              filterType: 'number',
+              type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
+              filter: route.value.query[column.alias].split(' to ')[0],
+              filterTo: route.value.query[column.alias].split(' to ')[1],
+            };
+          } else if (['date', 'datetime'].includes(column.type)) {
+            filter[column.field] = {
+              filterType: 'date',
+              type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
+              dateFrom: route.value.query[column.alias].split(' to ')[0],
+              dateTo: route.value.query[column.alias].split(' to ')[1],
+            };
+          } else if (['time'].includes(column.type)) {
+            filter[column.field] = {
+              filterType: 'date',
+              type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
+              dateFrom:
+                moment().format('YYYY-MM-DD') +
+                ' ' +
+                route.value.query[column.alias].split(' to ')[0],
+              dateTo:
+                moment().format('YYYY-MM-DD') +
+                ' ' +
+                route.value.query[column.alias].split(' to ')[1],
+            };
+          } else {
+            filter[column.field] = {
+              filterType: 'text',
+              type: 'equals',
+              filter: route.value.query[column.alias],
+            };
+          }
+        }
+        gridApi.setFilterModel(filter);
         callback && callback();
       } else {
         toast({
@@ -1251,10 +1309,8 @@ export default {
 
     const serverSideDatasource = {
       getRows(params) {
-        if (!ready.getRows) {
+        if (ready.getRows || Object.keys(params.request.filterModel).length) {
           ready.getRows = true;
-          params.successCallback([], 0);
-        } else {
           document.getElementById('handleSetCurrentFilter').click();
           getDataList({ ...{ tid: Number(route.value.params.tid) }, ...params.request })
             .then((res) => {
@@ -1267,6 +1323,8 @@ export default {
           //   console.error(error);
           //   params.failCallback();
           // });
+        } else {
+          params.successCallback([], 0);
         }
       },
     };

@@ -1006,8 +1006,8 @@ export default {
     };
 
     const setColumnConfiguration = async (column) => {
-      if (column.default) {
-        if (Number(data.value.id) === 0 || initialized.value) {
+      if (Number(data.value.id) === 0 || initialized.value) {
+        if (column.default) {
           const val = await getDataByFormula(data.value, column.__default);
           const res =
             column.component === 'SelectTags'
@@ -1037,6 +1037,9 @@ export default {
             column.cfg.placeholder = res;
           else data.value[column.field] = res;
         }
+
+        if (column.alias && route.value.query[column.alias])
+          data.value[column.field] = route.value.query[column.alias];
       }
 
       if (column.cfg?.source) {
