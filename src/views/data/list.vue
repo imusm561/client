@@ -1253,13 +1253,17 @@ export default {
             },
           ]
         : [];
+
+      batch.value.columns = [];
+      batch.value.column = null;
+
       for (let index = 0; index < columns.value.length; index++) {
         const column = columns.value[index];
         await replaceColumnVariables(column);
         await setColumnRules(column);
         if (column._visible) await setColumnConfiguration(column);
 
-        batch.value.column = [];
+        // batch.value.column = [];
         if (
           !column.component.includes('Basic') &&
           column.type &&
