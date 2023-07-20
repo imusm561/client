@@ -900,7 +900,7 @@
                   <span class="col-4 fw-bold">
                     {{ $t('layout.navbar.helper.weixin.detail.strategies.replyContent') }}
                   </span>
-                  <span class="col-8 text-end">
+                  <span class="col-8" style="word-break: break-all; white-space: break-spaces">
                     {{ current_strategy.reply_content }}
                   </span>
                 </div>
