@@ -1160,9 +1160,14 @@ export default {
         !column.editable?.includes('data.')
       ) {
         const { visible, required, editable } = await getRulesByFormula({}, column);
-        column._visible = visible;
+        // column._visible = visible;
         column._required = required;
         column._editable = editable;
+
+        if (column._visible != visible) {
+          column._visible = visible;
+          if (column._visible) await setColumnConfiguration(column);
+        }
       }
     };
 
@@ -1260,8 +1265,8 @@ export default {
       for (let index = 0; index < columns.value.length; index++) {
         const column = columns.value[index];
         await replaceColumnVariables(column);
+        await setColumnConfiguration(column);
         await setColumnRules(column);
-        if (column._visible) await setColumnConfiguration(column);
 
         // batch.value.column = [];
         if (

@@ -300,7 +300,7 @@ export default {
                     column.editable?.includes(`data.${field}`)
                   )
                     await setColumnRules(column);
-                  if (column._visible) await setColumnConfiguration(column);
+                  else await setColumnConfiguration(column);
                 });
             }
           }
@@ -388,8 +388,8 @@ export default {
         for await (let column of tab.children) {
           column.key = hashData(JSON.stringify(column));
           await replaceColumnVariables(column);
+          await setColumnConfiguration(column);
           await setColumnRules(column);
-          if (column._visible) await setColumnConfiguration(column);
         }
         tab.columns = tab.children;
       }
@@ -501,16 +501,19 @@ export default {
       )
         column.key = hashData(JSON.stringify(column));
 
-      column._visible = visible;
+      // column._visible = visible;
       column._required = required;
       column._editable = editable;
 
-      if (!column._visible) {
-        data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
-          column.component,
-        )
-          ? []
-          : null;
+      if (column._visible != visible) {
+        column._visible = visible;
+        if (column._visible) await setColumnConfiguration(column);
+        else
+          data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
+            column.component,
+          )
+            ? []
+            : null;
       }
     };
 
