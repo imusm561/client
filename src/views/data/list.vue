@@ -1410,7 +1410,7 @@ export default {
           icon: '<i class="mdi mdi-refresh fs-14" style="margin-left: 1px;" />',
         });
 
-        if (typeof params.value === 'object') {
+        if (params.value && typeof params.value === 'object') {
           menu.push({
             name: i18n.global.t('data.list.contextMenu.copy'),
             action: () => {
