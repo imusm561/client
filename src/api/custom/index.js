@@ -36,3 +36,15 @@ export const createCustomTheme = (data) => {
 export const updateCustomTheme = (data) => {
   return axios.post('/cor/custom/theme/update', data);
 };
+
+export const getCustomPagination = (params) => {
+  return axios.get('/cor/custom/pagination' + generateApiQuery(params));
+};
+
+export const createCustomPagination = (data) => {
+  return axios.post('/cor/custom/pagination/create', data);
+};
+
+export const updateCustomPagination = (data) => {
+  return axios.post('/cor/custom/pagination/update', data);
+};

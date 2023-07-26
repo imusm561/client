@@ -874,6 +874,7 @@
   "data.list.sideBar.toolPanels.customization": "个性化",
   "data.list.sideBar.toolPanels.customization.search": "搜索...",
   "data.list.sideBar.toolPanels.customization.theme": "主题",
+  "data.list.sideBar.toolPanels.customization.pagination": "分页",
   "data.list.sideBar.toolPanels.customization.filter.system.createdByMe": "我创建的",
   "data.list.sideBar.toolPanels.customization.filter.system.updatedByMe": "我更新的",
   "data.list.sideBar.toolPanels.customization.filter.system.createdBeforeYesterday": "前天创建的",

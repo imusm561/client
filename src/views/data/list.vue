@@ -128,8 +128,9 @@
           :enableCharts="true"
           :sideBar="sideBar"
           :pagination="true"
-          :paginationPageSize="500"
-          :cacheBlockSize="500"
+          :paginateChildRows="true"
+          :paginationPageSize="pagination.pageSize"
+          :cacheBlockSize="pagination.pageSize"
           :serverSideInfiniteScroll="true"
           :statusBar="statusBar"
           :defaultColDef="defaultColDef"
@@ -250,6 +251,9 @@ import {
   getCustomColumn,
   createCustomColumn,
   updateCustomColumn,
+  getCustomPagination,
+  createCustomPagination,
+  updateCustomPagination,
 } from '@api/custom';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -390,6 +394,10 @@ export default {
       store.state.sys.lang === 'zh-cn' ? AG_GRID_LOCALE_ZH_CN : AG_GRID_LOCALE_EN_US,
     );
 
+    const pagination = ref({
+      pageSize: 500,
+    });
+
     const defaultColDef = ref({
       resizable: true,
       sortable: true,
@@ -489,6 +497,12 @@ export default {
         theme.value = _theme || { data: 'alpine' };
         const { data: _customs } = await getCustomColumn({ tid: Number(route.value.params.tid) });
         customs.value = _customs;
+        const { data: _pagination } = await getCustomPagination({
+          tid: Number(route.value.params.tid),
+        });
+        pagination.value = _pagination
+          ? { ..._pagination, ...{ pageSize: _pagination.data } }
+          : { pageSize: 500 };
         await setFormConfiguration();
         await setFormColumnDefs();
         nextTick(() => {
@@ -1326,6 +1340,22 @@ export default {
           getDataList({ ...{ tid: Number(route.value.params.tid) }, ...params.request })
             .then((res) => {
               params.successCallback(res.data.rows, res.data.count);
+              const data = gridApi.paginationGetPageSize();
+              if (data != pagination.value.pageSize) {
+                const tid = Number(route.value.params.tid);
+                if (pagination.value.id) {
+                  updateCustomPagination({
+                    id: pagination.value.id,
+                    tid,
+                    data,
+                  });
+                } else {
+                  createCustomPagination({
+                    tid,
+                    data,
+                  });
+                }
+              }
             })
             .catch(() => {
               params.failCallback();
@@ -1578,6 +1608,8 @@ export default {
       handleSubmitBatchUpdate,
 
       localeText,
+
+      pagination,
 
       defaultColDef,
       columnDefs,

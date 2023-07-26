@@ -72,6 +72,74 @@
     </div>
     <div class="ag-filter-list-panel">
       <div class="ag-filter-toolpanel-group-wrapper">
+        <div class="ag-group ag-filter-toolpanel-group ag-filter-toolpanel-group-level-0">
+          <div
+            class="ag-group-title-bar ag-filter-toolpanel-group-level-0-header ag-filter-toolpanel-header"
+            @click="visible.pagination = !visible.pagination"
+          >
+            <span
+              class="ag-group-title-bar-icon ag-filter-toolpanel-group-title-bar-icon"
+              :class="!visible.pagination && 'ag-hidden'"
+            >
+              <span class="ag-icon ag-icon-tree-open"></span>
+            </span>
+            <span
+              class="ag-group-title-bar-icon ag-filter-toolpanel-group-title-bar-icon"
+              :class="visible.pagination && 'ag-hidden'"
+            >
+              <span class="ag-icon ag-icon-tree-closed"></span>
+            </span>
+            <span
+              class="ag-group-title ag-filter-toolpanel-group-title text-truncate"
+              style="cursor: pointer"
+            >
+              {{ $t('data.list.sideBar.toolPanels.customization.pagination') }} [{{
+                [100, 200, 500, 1000, 2000, 3000, 5000, 10000].length
+              }}]
+            </span>
+          </div>
+          <div v-if="visible.pagination" class="ag-filter-toolpanel-group-container">
+            <div
+              class="ag-filter-toolpanel-group-item"
+              v-for="(size, index) in [100, 200, 500, 1000, 2000, 3000, 5000, 10000]"
+              :key="index"
+            >
+              <div class="ag-filter-toolpanel-header justify-content-between">
+                <span class="text-truncate w-100">
+                  <span
+                    class="ag-header-cell-text ms-3 text-capitalize"
+                    style="cursor: pointer"
+                    @click="handleSetPageSize(size)"
+                  >
+                    {{ size }}
+                  </span>
+                  <span
+                    v-if="params.api.paginationGetPageSize() === size"
+                    class="ag-filter-toolpanel-instance-header-icon"
+                  >
+                    <span class="ag-icon ag-icon-tick"></span>
+                  </span>
+                </span>
+              </div>
+            </div>
+            <div class="ag-filter-toolpanel-search mt-n2">
+              <input
+                type="number"
+                v-model="page"
+                @keyup.enter="handleSetPageNum(page)"
+                class="ag-filter-toolpanel-search-input ag-labeled ag-text-field ag-input-field w-100"
+              />
+              <i
+                class="cursor-pointer fs-16 me-2 text-dark mdi mdi-page-next-outline"
+                @click="handleSetPageNum(page)"
+              ></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ag-filter-list-panel">
+      <div class="ag-filter-toolpanel-group-wrapper">
         <div
           class="ag-group ag-filter-toolpanel-group ag-filter-toolpanel-group-level-0"
           v-for="(item, index) in filters"
@@ -313,9 +381,7 @@ export default defineComponent({
     const { route } = useRouter();
 
     const keyword = ref(null);
-    const visible = reactive({
-      theme: false,
-    });
+    const visible = reactive({});
 
     const system = [
       {
@@ -872,6 +938,17 @@ export default defineComponent({
       if (theme != props.params.api.getTheme()) props.params.api.setTheme(theme);
     };
 
+    const handleSetPageSize = (size) => {
+      if (size != props.params.api.paginationGetPageSize()) {
+        props.params.api.paginationSetPageSize(Number(size));
+        props.params.api.setCacheBlockSize(Number(size));
+      }
+    };
+
+    const handleSetPageNum = (page) => {
+      props.params.api.paginationGoToPage(Number(page) - 1);
+    };
+
     return {
       getUserInfo,
       keyword,
@@ -886,6 +963,8 @@ export default defineComponent({
       delete_filter,
       handleDeleteFilter,
       handleSetTheme,
+      handleSetPageSize,
+      handleSetPageNum,
     };
   },
 });
