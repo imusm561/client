@@ -524,59 +524,67 @@ export default {
           },
         };
         for (let key in route.value.query) {
-          const column = columns.value.find((column) => column.alias === key);
-          if (
-            ['InputTextarea', 'InputRichtext', 'InputCode', 'SelectPosition'].includes(
-              column.component,
-            )
-          ) {
-            filter[column.field] = {
-              filterType: 'text',
-              type: 'contains',
-              filter: route.value.query[column.alias],
-            };
-          } else if (
-            ['SelectSingle', 'SelectMultiple', 'SelectTags', 'SelectSwitch', 'SelectFile'].includes(
-              column.component,
-            )
-          ) {
-            filter[column.field] = {
-              filterType: 'set',
-              values: route.value.query[column.alias].split(','),
-            };
-          } else if (['int', 'double', 'float'].includes(column.type)) {
-            filter[column.field] = {
-              filterType: 'number',
-              type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
-              filter: route.value.query[column.alias].split(' to ')[0],
-              filterTo: route.value.query[column.alias].split(' to ')[1],
-            };
-          } else if (['date', 'datetime'].includes(column.type)) {
-            filter[column.field] = {
-              filterType: 'date',
-              type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
-              dateFrom: route.value.query[column.alias].split(' to ')[0],
-              dateTo: route.value.query[column.alias].split(' to ')[1],
-            };
-          } else if (['time'].includes(column.type)) {
-            filter[column.field] = {
-              filterType: 'date',
-              type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
-              dateFrom:
-                moment().format('YYYY-MM-DD') +
-                ' ' +
-                route.value.query[column.alias].split(' to ')[0],
-              dateTo:
-                moment().format('YYYY-MM-DD') +
-                ' ' +
-                route.value.query[column.alias].split(' to ')[1],
-            };
-          } else {
-            filter[column.field] = {
-              filterType: 'text',
-              type: 'equals',
-              filter: route.value.query[column.alias],
-            };
+          const column = columns.value.find(
+            (column) => column.alias === key || column.field === key,
+          );
+          if (column) {
+            if (
+              ['InputTextarea', 'InputRichtext', 'InputCode', 'SelectPosition'].includes(
+                column.component,
+              )
+            ) {
+              filter[column.field] = {
+                filterType: 'text',
+                type: 'contains',
+                filter: route.value.query[column.alias],
+              };
+            } else if (
+              [
+                'SelectSingle',
+                'SelectMultiple',
+                'SelectTags',
+                'SelectSwitch',
+                'SelectFile',
+              ].includes(column.component)
+            ) {
+              filter[column.field] = {
+                filterType: 'set',
+                values: route.value.query[column.alias].split(','),
+              };
+            } else if (['int', 'double', 'float'].includes(column.type)) {
+              filter[column.field] = {
+                filterType: 'number',
+                type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
+                filter: route.value.query[column.alias].split(' to ')[0],
+                filterTo: route.value.query[column.alias].split(' to ')[1],
+              };
+            } else if (['date', 'datetime'].includes(column.type)) {
+              filter[column.field] = {
+                filterType: 'date',
+                type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
+                dateFrom: route.value.query[column.alias].split(' to ')[0],
+                dateTo: route.value.query[column.alias].split(' to ')[1],
+              };
+            } else if (['time'].includes(column.type)) {
+              filter[column.field] = {
+                filterType: 'date',
+                type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
+                dateFrom:
+                  moment().format('YYYY-MM-DD') +
+                  ' ' +
+                  route.value.query[column.alias].split(' to ')[0],
+                dateTo:
+                  moment().format('YYYY-MM-DD') +
+                  ' ' +
+                  route.value.query[column.alias].split(' to ')[1],
+              };
+            } else {
+              filter[column.field] = {
+                filterType: 'text',
+                type: 'equals',
+                filter: route.value.query[column.alias],
+              };
+            }
           }
         }
         gridApi.setFilterModel(filter);
