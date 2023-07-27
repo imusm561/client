@@ -536,7 +536,7 @@ export default {
               filter[column.field] = {
                 filterType: 'text',
                 type: 'contains',
-                filter: route.value.query[column.alias],
+                filter: route.value.query[key],
               };
             } else if (
               [
@@ -549,40 +549,36 @@ export default {
             ) {
               filter[column.field] = {
                 filterType: 'set',
-                values: route.value.query[column.alias].split(','),
+                values: route.value.query[key].split(','),
               };
             } else if (['int', 'double', 'float'].includes(column.type)) {
               filter[column.field] = {
                 filterType: 'number',
-                type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
-                filter: route.value.query[column.alias].split(' to ')[0],
-                filterTo: route.value.query[column.alias].split(' to ')[1],
+                type: route.value.query[key].includes(' to ') ? 'inRange' : 'equals',
+                filter: route.value.query[key].split(' to ')[0],
+                filterTo: route.value.query[key].split(' to ')[1],
               };
             } else if (['date', 'datetime'].includes(column.type)) {
               filter[column.field] = {
                 filterType: 'date',
-                type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
-                dateFrom: route.value.query[column.alias].split(' to ')[0],
-                dateTo: route.value.query[column.alias].split(' to ')[1],
+                type: route.value.query[key].includes(' to ') ? 'inRange' : 'equals',
+                dateFrom: route.value.query[key].split(' to ')[0],
+                dateTo: route.value.query[key].split(' to ')[1],
               };
             } else if (['time'].includes(column.type)) {
               filter[column.field] = {
                 filterType: 'date',
-                type: route.value.query[column.alias].includes(' to ') ? 'inRange' : 'equals',
+                type: route.value.query[key].includes(' to ') ? 'inRange' : 'equals',
                 dateFrom:
-                  moment().format('YYYY-MM-DD') +
-                  ' ' +
-                  route.value.query[column.alias].split(' to ')[0],
+                  moment().format('YYYY-MM-DD') + ' ' + route.value.query[key].split(' to ')[0],
                 dateTo:
-                  moment().format('YYYY-MM-DD') +
-                  ' ' +
-                  route.value.query[column.alias].split(' to ')[1],
+                  moment().format('YYYY-MM-DD') + ' ' + route.value.query[key].split(' to ')[1],
               };
             } else {
               filter[column.field] = {
                 filterType: 'text',
                 type: 'equals',
-                filter: route.value.query[column.alias],
+                filter: route.value.query[key],
               };
             }
           }
