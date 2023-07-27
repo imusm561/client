@@ -540,6 +540,11 @@ export default {
               };
             } else if (
               [
+                'BasicDataState',
+                'BasicCreatedBy',
+                'BasicUpdatedBy',
+                'BasicAclView',
+                'BasicAclEdit',
                 'SelectSingle',
                 'SelectMultiple',
                 'SelectTags',
