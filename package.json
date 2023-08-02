@@ -3,8 +3,8 @@
   "version": "3.4.1",
   "private": true,
   "scripts": {
-    "serve": "export NODE_ENV=development && vue-cli-service serve",
-    "build": "export NODE_ENV=production && vue-cli-service build",
+    "serve": "cross-env NODE_ENV=development vue-cli-service serve",
+    "build": "cross-env NODE_ENV=production vue-cli-service build",
     "lint": "vue-cli-service lint",
     "prettier": "prettier --write .",
     "deploy": "cd ../server && chmod +x deploy.sh && cd ../ && ./server/deploy.sh"
@@ -86,6 +86,7 @@
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "compression-webpack-plugin": "6.1.1",
+    "cross-env": "^7.0.3",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0",
     "moment-locales-webpack-plugin": "^1.2.0",
