@@ -102,7 +102,7 @@
                     <Form v-slot="{ errors }" @submit="handleResetPassword">
                       <div class="mb-3">
                         <label for="newpassword" class="form-label">
-                          {{ $('public.authentication.forgotPassword.form.newPassword') }}
+                          {{ $t('public.authentication.forgotPassword.form.newPassword') }}
                         </label>
                         <div class="position-relative">
                           <Field
@@ -110,7 +110,7 @@
                             name="newpassword"
                             v-model="newpassword"
                             :placeholder="
-                              $('public.authentication.forgotPassword.form.newPassword')
+                              $t('public.authentication.forgotPassword.form.newPassword')
                             "
                             :class="['form-control', errors.newpassword && 'is-invalid']"
                             rules="required|password"
