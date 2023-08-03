@@ -7,7 +7,7 @@
     "build": "cross-env NODE_ENV=production vue-cli-service build",
     "lint": "vue-cli-service lint",
     "prettier": "prettier --write .",
-    "deploy": "cd ../server && chmod +x deploy.sh && cd ../ && ./server/deploy.sh"
+    "deploy": "cd ../ && chmod +x ./server/deploy.sh && ./server/deploy.sh"
   },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
