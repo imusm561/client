@@ -417,7 +417,7 @@
   "layout.navbar.helper.sql": "Sql",
   "layout.navbar.helper.sql.tip.before": "Use",
   "layout.navbar.helper.sql.tip.after": "to set the table schema.",
-  "layout.navbar.helper.sql.query.error": "You can not use following commands: `USE`, `DROP TABLE`, `DELETE`, `TRUNCATE`, `CREATE TABLE`, `ALTER`",
+  "layout.navbar.helper.sql.query.error": "You can not use following commands: `USE`, `DROP`, `DELETE`, `TRUNCATE`, `CREATE`, `ALTER`",
 
   "layout.navbar.helper.redis": "Redis",
   "layout.navbar.helper.redis.keys": "Keys",

@@ -68,10 +68,10 @@ export default {
 
       if (
         sql.value.toLowerCase().includes('use ') ||
-        sql.value.toLowerCase().includes('drop table') ||
+        sql.value.toLowerCase().includes('drop') ||
         sql.value.toLowerCase().includes('delete ') ||
         sql.value.toLowerCase().includes('truncate ') ||
-        sql.value.toLowerCase().includes('create table') ||
+        sql.value.toLowerCase().includes('create ') ||
         sql.value.toLowerCase().includes('alter ')
       ) {
         toast({

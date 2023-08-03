@@ -417,7 +417,7 @@
   "layout.navbar.helper.sql": "Sql查询",
   "layout.navbar.helper.sql.tip.before": "使用",
   "layout.navbar.helper.sql.tip.after": "替代表前缀",
-  "layout.navbar.helper.sql.query.error": "不可使用以下关键词：`USE`, `DROP TABLE`, `DELETE`, `TRUNCATE`, `CREATE TABLE`, `ALTER`",
+  "layout.navbar.helper.sql.query.error": "不可使用以下关键词：`USE`, `DROP`, `DELETE`, `TRUNCATE`, `CREATE`, `ALTER`",
 
   "layout.navbar.helper.redis": "Redis缓存",
   "layout.navbar.helper.redis.keys": "键名",
