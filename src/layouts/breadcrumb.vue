@@ -2,7 +2,15 @@
   <div class="row d-none d-md-block">
     <div class="col-12">
       <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-        <h4 class="mb-sm-0">{{ $t(title) }}</h4>
+        <h4
+          v-if="['list', 'view', 'edit'].includes($route.name)"
+          class="mb-sm-0 cursor-pointer"
+          data-bs-toggle="modal"
+          data-bs-target="#formInfoModal"
+        >
+          {{ $t(title) }}
+        </h4>
+        <h4 v-else class="mb-sm-0">{{ $t(title) }}</h4>
         <div class="page-title-right">
           <ol class="breadcrumb m-0 justify-content-end">
             <li class="breadcrumb-item text-truncate" style="max-width: 200px">
@@ -21,15 +29,7 @@
             >
               <a :class="{ active: index === items.length - 1 }" :title="$t(item.title)">
                 <i v-if="item.icon" :class="`mdi ${item.icon} me-1`"></i>
-                <span
-                  v-if="['list', 'view', 'edit'].includes($route.name)"
-                  class="cursor-pointer"
-                  data-bs-toggle="modal"
-                  data-bs-target="#formInfoModal"
-                >
-                  {{ $t(item.title) }}
-                </span>
-                <span v-else>
+                <span>
                   {{ $t(item.title) }}
                 </span>
               </a>
