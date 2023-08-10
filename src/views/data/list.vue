@@ -1398,7 +1398,7 @@ export default {
 
     const getContextMenuItems = (params) => {
       const menu = [];
-      if (params.node) {
+      if (params.node?.data?.id) {
         menu.push({
           name: i18n.global.t('data.list.contextMenu.view', {
             data: `${form.value.id}/${params.node?.data?.id}`,
@@ -1440,70 +1440,70 @@ export default {
             icon: '<i class="mdi mdi-square-edit-outline fs-14" style="margin-left: 1px;" />',
           });
         }
+      }
 
+      menu.push({
+        name: i18n.global.t('data.list.contextMenu.refresh'),
+        action: () => {
+          handleRefetchDataList();
+        },
+        icon: '<i class="mdi mdi-refresh fs-14" style="margin-left: 1px;" />',
+      });
+
+      if (params.value && typeof params.value === 'object') {
         menu.push({
-          name: i18n.global.t('data.list.contextMenu.refresh'),
+          name: i18n.global.t('data.list.contextMenu.copy'),
           action: () => {
-            handleRefetchDataList();
+            copyToClipboard(JSON.stringify(params.value));
           },
-          icon: '<i class="mdi mdi-refresh fs-14" style="margin-left: 1px;" />',
+          icon: '<i class="mdi mdi-code-json fs-14" style="margin-left: 1px;" />',
         });
+      }
 
-        if (params.value && typeof params.value === 'object') {
-          menu.push({
-            name: i18n.global.t('data.list.contextMenu.copy'),
-            action: () => {
-              copyToClipboard(JSON.stringify(params.value));
-            },
-            icon: '<i class="mdi mdi-code-json fs-14" style="margin-left: 1px;" />',
-          });
-        }
+      menu.push(
+        'copy',
+        'copyWithHeaders',
+        'copyWithGroupHeaders',
+        'paste',
+        'separator',
+        'chartRange',
+        // 'export', // excelExport
+      );
 
-        menu.push(
-          'copy',
-          'copyWithHeaders',
-          'copyWithGroupHeaders',
-          'paste',
-          'separator',
-          'chartRange',
-          // 'export', // excelExport
-        );
-
-        if (
-          store.state.user.data?.tags?.includes('ALL') ||
-          store.state.user.data?.permissions?.[route.value.params.tid]?.export
-        ) {
-          const menu_export = {
-            name: i18n.global.t('data.list.contextMenu.export'),
-            subMenu: [
-              {
-                name: i18n.global.t('data.list.contextMenu.export.allRows'),
-                action: () => {
-                  gridApi.exportDataAsExcel({
-                    exportedRows: 'all',
-                  });
-                },
-                icon: '<i class="mdi mdi-format-list-bulleted-square fs-14" style="margin-left: 1px;" />',
-              },
-            ],
-            icon: '<i class="mdi mdi-export fs-14" style="margin-left: 1px;" />',
-          };
-
-          if (selectedRows.value.length) {
-            menu_export.subMenu.push({
-              name: i18n.global.tc('data.list.contextMenu.export.selectedRows', {
-                count: selectedRows.value.length,
-              }),
+      if (
+        store.state.user.data?.tags?.includes('ALL') ||
+        store.state.user.data?.permissions?.[route.value.params.tid]?.export
+      ) {
+        const menu_export = {
+          name: i18n.global.t('data.list.contextMenu.export'),
+          subMenu: [
+            {
+              name: i18n.global.t('data.list.contextMenu.export.allRows'),
               action: () => {
                 gridApi.exportDataAsExcel({
-                  onlySelected: true,
+                  exportedRows: 'all',
                 });
               },
-              icon: '<i class="mdi mdi-checkbox-marked-outline fs-14" style="margin-left: 1px;" />',
-            });
-          }
-          menu.push(menu_export);
+              icon: '<i class="mdi mdi-format-list-bulleted-square fs-14" style="margin-left: 1px;" />',
+            },
+          ],
+          icon: '<i class="mdi mdi-export fs-14" style="margin-left: 1px;" />',
+        };
+
+        if (selectedRows.value.length) {
+          menu_export.subMenu.push({
+            name: i18n.global.tc('data.list.contextMenu.export.selectedRows', {
+              count: selectedRows.value.length,
+            }),
+            action: () => {
+              gridApi.exportDataAsExcel({
+                onlySelected: true,
+              });
+            },
+            icon: '<i class="mdi mdi-checkbox-marked-outline fs-14" style="margin-left: 1px;" />',
+          });
         }
+        menu.push(menu_export);
       }
 
       if (
