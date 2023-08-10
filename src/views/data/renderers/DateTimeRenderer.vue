@@ -43,6 +43,7 @@
       </span>
     </span>
   </span>
+  <span v-else></span>
 </template>
 
 <script>

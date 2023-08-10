@@ -47,6 +47,7 @@
       </span>
     </div>
   </span>
+  <span v-else></span>
 </template>
 
 <script>

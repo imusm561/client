@@ -13,6 +13,7 @@
       :checked="params.value"
     />
   </span>
+  <span v-else></span>
 </template>
 <script>
 import { defineComponent, computed } from 'vue';
