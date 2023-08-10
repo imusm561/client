@@ -8,13 +8,13 @@
       <i
         v-if="tabs.length > 1"
         class="mdi fs-16 cursor-pointer text-muted float-end pe-2"
-        :class="no_tabs ? 'mdi-tab' : 'mdi-view-dashboard-outline'"
-        @click="no_tabs = !no_tabs"
+        :class="ribbon_mode ? 'mdi-tab' : 'mdi-ribbon'"
+        @click="ribbon_mode = !ribbon_mode"
       ></i>
     </div>
     <div class="card-body pt-0">
       <Form :id="`zz_${form.id}`" v-slot="{ errors }" @submit="handleSubmitFormData">
-        <div v-if="tabs.length > 1 && no_tabs">
+        <div v-if="tabs.length > 1 && ribbon_mode">
           <div
             :id="tab.field"
             class="p-3 mt-2 border-bottom border-bottom-dashed ribbon-box right"
@@ -250,7 +250,7 @@ export default {
     const pub = ref({});
     const form = ref({});
     const columns = ref([]);
-    const no_tabs = ref(false);
+    const ribbon_mode = ref(false);
     const tabs = ref([]);
     const current_tab = ref(0);
     const alias = ref({});
@@ -575,7 +575,7 @@ export default {
       columns,
       data,
 
-      no_tabs,
+      ribbon_mode,
       tabs,
       current_tab,
 
