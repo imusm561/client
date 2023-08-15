@@ -233,7 +233,6 @@ import i18n from '@utils/i18n';
 import ToastificationContent from '@components/ToastificationContent';
 import Empty from '@components/Empty';
 import CKEditor from '@components/CKEditor';
-import { alias } from '@utils/alias';
 import { columns as components } from '@components/Column';
 
 import InputText from '@components/Column/Input/Text/index.vue';
@@ -669,7 +668,6 @@ export default {
     return {
       getUserInfo,
       components,
-      alias,
 
       columns,
       changes,
