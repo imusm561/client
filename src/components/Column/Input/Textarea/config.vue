@@ -190,7 +190,7 @@ export default defineComponent({
     alias: {
       type: String,
       default: () => {
-        return "";
+        return '';
       },
     },
     errors: {
