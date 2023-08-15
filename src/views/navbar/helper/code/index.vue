@@ -302,7 +302,7 @@ import Breadcrumb from '@layouts/breadcrumb';
 import MonacoEditor from '@components/MonacoEditor';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import i18n from '@utils/i18n';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -357,14 +357,20 @@ export default {
       return false;
     };
 
+    const keydownHandler = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        if (isModified({ toast: false })) handleSaveCode();
+        e.preventDefault();
+      }
+    };
+
     onMounted(() => {
       handleGetCodeDirs();
-      document.onkeydown = (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-          if (isModified({ toast: false })) handleSaveCode();
-          e.preventDefault();
-        }
-      };
+      document.addEventListener('keydown', keydownHandler);
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener('keydown', keydownHandler);
     });
 
     const handleGetCodeDirs = (callback) => {

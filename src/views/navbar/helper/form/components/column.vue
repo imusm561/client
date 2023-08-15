@@ -411,12 +411,12 @@ export default {
           viewAndEditColumnModalShownHandler,
         );
 
-      document.onkeydown = (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-          if (!viewAndEditColumnModal.classList.contains('show')) handleSaveFormColumns();
-          e.preventDefault();
-        }
-      };
+      // document.onkeydown = (e) => {
+      //   if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      //     if (!viewAndEditColumnModal.classList.contains('show')) handleSaveFormColumns();
+      //     e.preventDefault();
+      //   }
+      // };
     });
 
     onUnmounted(() => {
