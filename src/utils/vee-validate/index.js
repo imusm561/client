@@ -90,6 +90,22 @@ defineRule('exclude', (value, [target]) => {
   return !value.includes(target.trim()) || i18n.global.t('vee.validate.exclude', { target });
 });
 
+defineRule('in', (value, [target]) => {
+  target = target.replace(/0x2C/g, ',');
+  if (isEmpty(value)) {
+    return true;
+  }
+  return target.split(',').includes(value) || i18n.global.t('vee.validate.in', { target });
+});
+
+defineRule('notin', (value, [target]) => {
+  target = target.replace(/0x2C/g, ',');
+  if (isEmpty(value)) {
+    return true;
+  }
+  return !target.split(',').includes(value) || i18n.global.t('vee.validate.notin', { target });
+});
+
 defineRule('username', (value) => {
   if (isEmpty(value)) {
     return true;

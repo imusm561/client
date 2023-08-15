@@ -298,6 +298,17 @@
                         :disabled="!!current_form.is_parent"
                         :placeholder="$t('layout.navbar.helper.form.tab.basicInfo.alias')"
                         v-model="current_form.alias"
+                        @dblclick="
+                          () => {
+                            current_form.alias =
+                              current_form.alias ||
+                              $pinyin(current_form.title, { toneType: 'none', type: 'array' })
+                                .map((item) => {
+                                  return item.charAt(0).toUpperCase() + item.slice(1);
+                                })
+                                .join('');
+                          }
+                        "
                       />
                     </div>
                   </div>

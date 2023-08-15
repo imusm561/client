@@ -201,14 +201,12 @@
                     v-model="current_column"
                     :errors="errors"
                     :alias="
-                      alias.filter(
-                        (item) =>
-                          !columns
-                            .map((column) => {
-                              return column.alias;
-                            })
-                            .includes(item),
-                      )
+                      columns
+                        .filter((column) => column.id != current_column.id && column.alias)
+                        .map((column) => {
+                          return column.alias;
+                        })
+                        .join('0x2C')
                     "
                   />
                 </div>

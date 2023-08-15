@@ -7905,6 +7905,11 @@ pinkie@^2.0.0:
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
   integrity sha512-MnUuEycAemtSaeFSjXKW/aroV7akBbY+Sv+RkyqFjgAe73F+MR0TBWKBRDkmfWq/HiFmdavfZ1G7h4SPZXaCSg==
 
+pinyin-pro@^3.16.2:
+  version "3.16.2"
+  resolved "https://registry.yarnpkg.com/pinyin-pro/-/pinyin-pro-3.16.2.tgz#700e02c348820037a17434c284f64237e54c0e8a"
+  integrity sha512-0Q+boRY7u0X7NApcS8ZDLWUw0H8PoopaH4yN/KVqeAFsrRTwhKEbv0bG/ZYwLrQRSfGhWEm5wxl/l4qyVQTrnQ==
+
 pkg-dir@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/pkg-dir/-/pkg-dir-1.0.0.tgz#7a4b508a8d5bb2d629d447056ff4e9c9314cf3d4"

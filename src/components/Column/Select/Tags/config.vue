@@ -37,18 +37,31 @@
 
     <div class="col-md-3 col-sm-6">
       <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.alias') }}</label>
-      <VueSelect
+      <input
         v-model="column.alias"
+        type="text"
         :placeholder="$t('layout.navbar.helper.form.column.config.alias')"
-        :options="alias"
-      >
-        <template v-slot:no-options="{ search, searching }">
-          <template v-if="searching">
-            <span v-html="$t('components.vs.search', { search })"></span>
-          </template>
-          <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
-        </template>
-      </VueSelect>
+        :class="['form-control', errors.alias && 'is-invalid']"
+        @dblclick="
+          () => {
+            column.alias =
+              column.alias ||
+              $pinyin(column.name, { toneType: 'none', type: 'array' })
+                .map((item) => {
+                  return item.charAt(0).toUpperCase() + item.slice(1);
+                })
+                .join('');
+          }
+        "
+      />
+      <Field
+        name="alias"
+        v-model="column.alias"
+        class="d-none"
+        :class="{ 'is-invalid': errors.alias }"
+        :rules="`notin:${alias}`"
+      />
+      <span class="invalid-feedback">{{ errors.alias }}</span>
     </div>
 
     <div class="col-md-6">
@@ -177,9 +190,9 @@ export default defineComponent({
       },
     },
     alias: {
-      type: Array,
+      type: String,
       default: () => {
-        return [];
+        return "";
       },
     },
     errors: {

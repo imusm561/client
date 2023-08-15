@@ -22,6 +22,10 @@ moment.locale(['en-us', 'zh-cn']);
 app.config.globalProperties.$moment = moment;
 window.moment = moment;
 
+import { pinyin } from 'pinyin-pro';
+app.config.globalProperties.$pinyin = pinyin;
+
+
 import io from 'socket.io-client';
 import initSocket from '@utils/socket';
 watch(

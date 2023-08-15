@@ -1016,6 +1016,8 @@
   "vee.validate.length": "This field must be {length} character | This field must be {length} characters",
   "vee.validate.include": "This field must include [{target}]",
   "vee.validate.exclude": "This field must exclude [{target}]",
+  "vee.validate.in": "This field must in [{target}]",
+  "vee.validate.notin": "This field must not in [{target}]",
   "vee.validate.username": "Username must be 4 to 10 lowercase letters",
   "vee.validate.fullname": "Fullname must be 2 to 16 characters",
   "vee.validate.email": "Incorrect email address",

@@ -1016,6 +1016,8 @@
   "vee.validate.length": "此字段值长度必须为{length}个字符",
   "vee.validate.include": "字段值必须包含【{target}】",
   "vee.validate.exclude": "字段值不能包含【{target}】",
+  "vee.validate.in": "字段值必须在【{target}】中",
+  "vee.validate.notin": "字段值不得在【{target}】中",
   "vee.validate.username": "用户名由4-10位小写字母组成",
   "vee.validate.fullname": "全名由2-16位大小写字母，中文，数字组成",
   "vee.validate.email": "邮箱地址错误",
