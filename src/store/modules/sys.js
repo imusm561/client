@@ -32,11 +32,11 @@ export default {
       state.name = value.name;
       state.company = value.company;
       state.beian = value.beian;
-      state.key = value.key;
+      state.public_key = value.public_key;
       state.cfg = JSON.parse(decryptData(value.cfg));
-      if (state.cfg.amap.js_code) {
+      if (state.cfg.amap_js_code) {
         window._AMapSecurityConfig = {
-          securityJsCode: state.cfg.amap.js_code,
+          securityJsCode: state.cfg.amap_js_code,
         };
       }
     },

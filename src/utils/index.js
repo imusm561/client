@@ -196,7 +196,7 @@ export const hashData = (string) => {
 };
 
 export const encryptData = (data) => {
-  let hash = crypto.createHash('md5').update(store.state.sys.key).digest('hex');
+  let hash = crypto.createHash('md5').update(store.state.sys.public_key).digest('hex');
   let key = hash.substring(0, 16);
   let iv = hash.substring(hash.length - 16, hash.length);
   let cipherChunks = [];
@@ -208,7 +208,7 @@ export const encryptData = (data) => {
 };
 
 export const decryptData = (data) => {
-  let hash = crypto.createHash('md5').update(store.state.sys.key).digest('hex');
+  let hash = crypto.createHash('md5').update(store.state.sys.public_key).digest('hex');
   let key = hash.substring(0, 16);
   let iv = hash.substring(hash.length - 16, hash.length);
   let cipherChunks = [];

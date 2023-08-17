@@ -308,11 +308,9 @@
                   <div class="flex-grow-1">
                     <img
                       v-if="
-                        $store.state.sys.cfg.amap &&
-                        $store.state.sys.cfg.amap.web_service &&
-                        isLngLat(current_event.location)
+                        $store.state.sys.cfg.amap_web_service && isLngLat(current_event.location)
                       "
-                      :src="`//restapi.amap.com/v3/staticmap?location=${current_event.location}&zoom=12&size=700*300&markers=,,:${current_event.location}&key=${$store.state.sys.cfg.amap.web_service}`"
+                      :src="`//restapi.amap.com/v3/staticmap?location=${current_event.location}&zoom=12&size=700*300&markers=,,:${current_event.location}&key=${$store.state.sys.cfg.amap_web_service}`"
                       @dblclick="handleDblClickMap(current_event.location)"
                       class="img-fluid"
                       :alt="current_event.location"

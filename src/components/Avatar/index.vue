@@ -9,7 +9,7 @@
           loading="lazy"
         />
         <img
-          v-else-if="$store.state.sys.cfg.use_default_avatar"
+          v-else-if="$store.state.sys.cfg.use_avatar"
           :src="
             user.collapse
               ? require('@/assets/images/avatar/collapse.png')
@@ -56,7 +56,7 @@
       loading="lazy"
     />
     <img
-      v-else-if="$store.state.sys.cfg.use_default_avatar"
+      v-else-if="$store.state.sys.cfg.use_avatar"
       :src="
         typeof user[keyUsername] === 'string'
           ? require(`@/assets/images/avatar/${
