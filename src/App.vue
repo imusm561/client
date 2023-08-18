@@ -131,7 +131,7 @@ export default {
     };
 
     const windowResizeHandler = () => {
-      if (store.state.sys.cfg.water_mark && store.state.user.data.id)
+      if (store.state.sys.cfg.waterMark && store.state.user.data.id)
         setWatermark(
           `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
           moment().format('ll'),

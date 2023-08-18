@@ -51,15 +51,11 @@ export const changePassword = (data) => {
 };
 
 export const updateUser = (data) => {
-  return axios.post('/cor/user/update', data).then(async () => {
-    await getUserData();
-  });
+  return axios.post('/cor/user/update', data);
 };
 
 export const createUser = (data) => {
-  return axios.post('/cor/user/create', data).then(async () => {
-    await getUserData();
-  });
+  return axios.post('/cor/user/create', data);
 };
 
 export const getUserHome = () => {

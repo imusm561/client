@@ -41,7 +41,7 @@ export default {
   mutations: {
     SET_USER(state, value) {
       const moment = window.moment;
-      if (store.state.sys.cfg.water_mark && value.id)
+      if (store.state.sys.cfg.waterMark && value.id)
         setWatermark(`${value.username} - ${value.fullname}`, moment().format('ll'));
       else removeWatermark();
       state.data = value;

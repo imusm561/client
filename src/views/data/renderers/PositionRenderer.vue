@@ -2,7 +2,7 @@
   <span v-if="params.value">
     <i class="mdi mdi-map-marker text-info" />
     <span
-      v-if="$store.state.sys.cfg.amap_web_service && isLngLat(params.value)"
+      v-if="$store.state.sys.cfg.amapWebService && isLngLat(params.value)"
       class="text-secondary cursor-pointer text-decoration-underline"
       @dblclick="handleDblClickLngLat(params.value)"
     >

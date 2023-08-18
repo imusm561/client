@@ -9,7 +9,7 @@
       v-model="vModel"
     />
     <button
-      v-if="$store.state.sys.cfg.amap_js_api"
+      v-if="$store.state.sys.cfg.amapJsApi"
       type="button"
       class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
       :disabled="disabled"
@@ -148,9 +148,9 @@ export default defineComponent({
     let amap = null;
 
     onMounted(async () => {
-      if (store.state.sys.cfg.amap_js_api) {
+      if (store.state.sys.cfg.amapJsApi) {
         AMap = await AMapLoader.load({
-          key: store.state.sys.cfg.amap_js_api,
+          key: store.state.sys.cfg.amapJsApi,
           version: '2.0',
           plugins: ['AMap.AutoComplete', 'AMap.PlaceSearch', 'AMap.Geocoder', 'AMap.CitySearch'],
         });
@@ -216,7 +216,7 @@ export default defineComponent({
       tips.value = [];
       pois.value = [];
 
-      if (!store.state.sys.cfg.amap_js_api) {
+      if (!store.state.sys.cfg.amapJsApi) {
         toast({
           component: ToastificationContent,
           props: {

@@ -264,8 +264,8 @@ import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
 import 'ag-grid-enterprise';
 import { LicenseManager } from 'ag-grid-enterprise';
-if (store.state.sys.cfg?.ag_grid_license)
-  LicenseManager.setLicenseKey(store.state.sys.cfg.ag_grid_license);
+if (store.state.sys.cfg?.agGridLicense)
+  LicenseManager.setLicenseKey(store.state.sys.cfg.agGridLicense);
 import AG_GRID_LOCALE_EN_US from '@utils/i18n/ag-gird/en-us.json';
 import AG_GRID_LOCALE_ZH_CN from '@utils/i18n/ag-gird/zh-cn.json';
 import CustomizationToolPanle from './panels/CustomizationToolPanle.vue';

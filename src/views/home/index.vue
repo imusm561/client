@@ -4,7 +4,7 @@
     <div class="row">
       <div class="col-12">
         <div
-          v-if="$store.state.user.data.is_initial_password"
+          v-if="$store.state.user.data.weak"
           class="alert alert-danger alert-solid alert-label-icon d-flex align-items-center"
         >
           <i class="mdi mdi-alert-outline text-light me-2 fs-16 label-icon"></i>

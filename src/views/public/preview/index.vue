@@ -39,7 +39,7 @@ export default {
           file.value = { ...file.value, ...data };
           if (file.value.category === 'office') {
             file.value.url = `${
-              store.state.sys.cfg.office_viewer || '//view.officeapps.live.com/op/view.aspx?src='
+              store.state.sys.cfg.officeViewer || '//view.officeapps.live.com/op/view.aspx?src='
             }${encodeURIComponent(`${location.origin}${file.value.url}`)}`;
           }
           if (file.value.category === 'unknown') {

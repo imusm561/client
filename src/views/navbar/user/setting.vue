@@ -138,6 +138,18 @@
                   {{ $t('layout.navbar.user.dropdown.setting.appNotification') }}
                 </a>
               </li>
+              <li v-if="$store.state.user.data.id === 1" class="nav-item">
+                <a
+                  class="nav-link"
+                  :class="{ active: $route.query.tab === 'sys_configuration' }"
+                  data-bs-toggle="tab"
+                  href="#sysConfiguration"
+                  role="tab"
+                >
+                  <i class="far fa-envelope"></i>
+                  {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration') }}
+                </a>
+              </li>
             </ul>
           </div>
           <div class="card-body p-4">
@@ -328,7 +340,7 @@
                     </div>
                     <div class="col-lg-12">
                       <div class="mb-3 pb-2">
-                        <label for="exampleFormControlTextarea" class="form-label">
+                        <label for="about" class="form-label">
                           {{ $t('layout.navbar.user.dropdown.setting.personalDetails.about') }}
                         </label>
                         <textarea
@@ -609,6 +621,386 @@
                   </div>
                 </div>
               </div>
+              <div
+                v-if="$store.state.user.data.id === 1"
+                class="tab-pane"
+                :class="{ active: $route.query.tab === 'sys_configuration' }"
+                id="sysConfiguration"
+                role="tabpanel"
+              >
+                <Form v-slot="{ errors }" @submit="handleSaveUserInfo">
+                  <div class="row">
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="name" class="form-label">
+                          {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.name') }}
+                        </label>
+                        <Field
+                          name="name"
+                          v-model="user.config.name"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.name')
+                          "
+                          :class="['form-control', errors.name && 'is-invalid']"
+                          rules="required"
+                        />
+                        <span class="invalid-feedback">{{ errors.name }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="company" class="form-label">
+                          {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.company') }}
+                        </label>
+                        <Field
+                          name="company"
+                          v-model="user.config.company"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.company')
+                          "
+                          :class="['form-control', errors.company && 'is-invalid']"
+                          rules="required"
+                        />
+                        <span class="invalid-feedback">{{ errors.company }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="beian" class="form-label">
+                          {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.beian') }}
+                        </label>
+                        <Field
+                          name="beian"
+                          v-model="user.config.beian"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.beian')
+                          "
+                          :class="['form-control', errors.beian && 'is-invalid']"
+                          rules="required"
+                        />
+                        <span class="invalid-feedback">{{ errors.beian }}</span>
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <div class="mb-3 pb-2">
+                        <label for="agGridLicense" class="form-label">
+                          {{
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.agGridLicense')
+                          }}
+                        </label>
+                        <textarea
+                          class="form-control"
+                          v-model="user.config.agGridLicense"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.agGridLicense')
+                          "
+                          rows="3"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="aliyunAccessKeyId" class="form-label">
+                          {{
+                            $t(
+                              'layout.navbar.user.dropdown.setting.sysConfiguration.aliyunAccessKeyId',
+                            )
+                          }}
+                        </label>
+                        <Field
+                          name="aliyunAccessKeyId"
+                          v-model="user.config.aliyunAccessKeyId"
+                          :placeholder="
+                            $t(
+                              'layout.navbar.user.dropdown.setting.sysConfiguration.aliyunAccessKeyId',
+                            )
+                          "
+                          :class="['form-control', errors.aliyunAccessKeyId && 'is-invalid']"
+                        />
+                        <span class="invalid-feedback">{{ errors.aliyunAccessKeyId }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="aliyunAccessKeySecret" class="form-label">
+                          {{
+                            $t(
+                              'layout.navbar.user.dropdown.setting.sysConfiguration.aliyunAccessKeySecret',
+                            )
+                          }}
+                        </label>
+                        <Field
+                          name="aliyunAccessKeySecret"
+                          v-model="user.config.aliyunAccessKeySecret"
+                          :placeholder="
+                            $t(
+                              'layout.navbar.user.dropdown.setting.sysConfiguration.aliyunAccessKeySecret',
+                            )
+                          "
+                          :class="['form-control', errors.aliyunAccessKeySecret && 'is-invalid']"
+                        />
+                        <span class="invalid-feedback">{{ errors.aliyunAccessKeySecret }}</span>
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <div class="mb-3">
+                        <label for="aliyunSmsTemplates" class="form-label">
+                          {{
+                            $t(
+                              'layout.navbar.user.dropdown.setting.sysConfiguration.aliyunSmsTemplates',
+                            )
+                          }}
+                        </label>
+                        <MonacoEditor
+                          v-model="user.config.aliyunSmsTemplates"
+                          :class="{
+                            'is-invalid':
+                              errors.aliyunSmsTemplates || syntax_error.aliyunSmsTemplates,
+                          }"
+                          @error="($event) => (syntax_error.aliyunSmsTemplates = $event)"
+                          language="json"
+                        />
+                        <Field
+                          name="aliyunSmsTemplates"
+                          v-model="user.config.aliyunSmsTemplates"
+                          :placeholder="
+                            $t(
+                              'layout.navbar.user.dropdown.setting.sysConfiguration.aliyunSmsTemplates',
+                            )
+                          "
+                          class="d-none"
+                          :class="{
+                            'is-invalid':
+                              errors.aliyunSmsTemplates || syntax_error.aliyunSmsTemplates,
+                          }"
+                        />
+                        <span class="invalid-feedback">
+                          {{ errors.aliyunSmsTemplates || syntax_error.aliyunSmsTemplates }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="amapJsApi" class="form-label">
+                          {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.amapJsApi') }}
+                        </label>
+                        <Field
+                          name="amapJsApi"
+                          v-model="user.config.amapJsApi"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.amapJsApi')
+                          "
+                          :class="['form-control', errors.amapJsApi && 'is-invalid']"
+                        />
+                        <span class="invalid-feedback">{{ errors.amapJsApi }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="amapJsCode" class="form-label">
+                          {{
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.amapJsCode')
+                          }}
+                        </label>
+                        <Field
+                          name="amapJsCode"
+                          v-model="user.config.amapJsCode"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.amapJsCode')
+                          "
+                          :class="['form-control', errors.amapJsCode && 'is-invalid']"
+                        />
+                        <span class="invalid-feedback">{{ errors.amapJsCode }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="amapWebService" class="form-label">
+                          {{
+                            $t(
+                              'layout.navbar.user.dropdown.setting.sysConfiguration.amapWebService',
+                            )
+                          }}
+                        </label>
+                        <Field
+                          name="amapWebService"
+                          v-model="user.config.amapWebService"
+                          :placeholder="
+                            $t(
+                              'layout.navbar.user.dropdown.setting.sysConfiguration.amapWebService',
+                            )
+                          "
+                          :class="['form-control', errors.amapWebService && 'is-invalid']"
+                        />
+                        <span class="invalid-feedback">{{ errors.amapWebService }}</span>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="officeViewer" class="form-label">
+                          {{
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.officeViewer')
+                          }}
+                        </label>
+                        <Field
+                          name="officeViewer"
+                          v-model="user.config.officeViewer"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.officeViewer')
+                          "
+                          :class="['form-control', errors.officeViewer && 'is-invalid']"
+                          rules="required"
+                        />
+                        <span class="invalid-feedback">{{ errors.officeViewer }}</span>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="useAvatar" class="form-label">
+                          {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.useAvatar') }}
+                        </label>
+                        <VueSelect
+                          v-model="user.config.useAvatar"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.useAvatar')
+                          "
+                          :options="[true, false]"
+                          :clearable="false"
+                        >
+                          <template v-slot:no-options="{ search, searching }">
+                            <template v-if="searching">
+                              <span v-html="$t('components.vs.search', { search })"></span>
+                            </template>
+                            <em v-else style="opacity: 0.5">
+                              {{ $t('components.vs.searchOption') }}
+                            </em>
+                          </template>
+                        </VueSelect>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="waterMark" class="form-label">
+                          {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.waterMark') }}
+                        </label>
+                        <VueSelect
+                          v-model="user.config.waterMark"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.waterMark')
+                          "
+                          :options="[true, false]"
+                          :clearable="false"
+                        >
+                          <template v-slot:no-options="{ search, searching }">
+                            <template v-if="searching">
+                              <span v-html="$t('components.vs.search', { search })"></span>
+                            </template>
+                            <em v-else style="opacity: 0.5">
+                              {{ $t('components.vs.searchOption') }}
+                            </em>
+                          </template>
+                        </VueSelect>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="mail" class="form-label">
+                          {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.mail') }}
+                        </label>
+                        <MonacoEditor
+                          v-model="user.config.mail"
+                          :class="{ 'is-invalid': errors.mail || syntax_error.mail }"
+                          @error="($event) => (syntax_error.mail = $event)"
+                          language="json"
+                        />
+                        <Field
+                          name="mail"
+                          v-model="user.config.mail"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.mail')
+                          "
+                          class="d-none"
+                          :class="{ 'is-invalid': errors.mail || syntax_error.mail }"
+                          rules="required"
+                        />
+                        <span class="invalid-feedback">
+                          {{ errors.mail || syntax_error.mail }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+                        <label for="task" class="form-label">
+                          {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.task') }}
+                        </label>
+                        <MonacoEditor
+                          v-model="user.config.task"
+                          :class="{ 'is-invalid': errors.task || syntax_error.task }"
+                          @error="($event) => (syntax_error.task = $event)"
+                          language="json"
+                        />
+                        <Field
+                          name="task"
+                          v-model="user.config.task"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.task')
+                          "
+                          class="d-none"
+                          :class="{ 'is-invalid': errors.task || syntax_error.task }"
+                          rules="required"
+                        />
+                        <span class="invalid-feedback">
+                          {{ errors.task || syntax_error.task }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="mb-3">
+                        <label for="vars" class="form-label">
+                          {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.vars') }}
+                        </label>
+                        <MonacoEditor
+                          v-model="user.config.vars"
+                          :class="{ 'is-invalid': errors.vars || syntax_error.vars }"
+                          @error="($event) => (syntax_error.vars = $event)"
+                          language="json"
+                        />
+                        <Field
+                          name="vars"
+                          v-model="user.config.vars"
+                          :placeholder="
+                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.vars')
+                          "
+                          class="d-none"
+                          :class="{ 'is-invalid': errors.vars || syntax_error.vars }"
+                        />
+                        <span class="invalid-feedback">
+                          {{ errors.vars || syntax_error.vars }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="hstack gap-2 justify-content-end">
+                        <button
+                          type="submit"
+                          class="btn btn-primary"
+                          :disabled="Object.keys(errors).length"
+                        >
+                          <i class="mdi mdi-content-save-outline" />
+                          {{ $t('layout.navbar.user.dropdown.setting.save') }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </Form>
+              </div>
             </div>
           </div>
         </div>
@@ -704,7 +1096,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, reactive } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
 import { VueCropper } from 'vue-cropper';
@@ -716,12 +1108,14 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import FlatPickr from '@components/FlatPickr';
 import Avatar from '@components/Avatar';
+import MonacoEditor from '@components/MonacoEditor';
 import uaParser from 'ua-parser-js';
 export default {
   components: {
     FlatPickr,
     Avatar,
     VueCropper,
+    MonacoEditor,
   },
   setup() {
     const { router } = useRouter();
@@ -838,7 +1232,7 @@ export default {
       if (Object.keys(changes).length) {
         changes.id = user.value.id;
         updateUser(changes).then(() => {
-          user.value = JSON.parse(JSON.stringify(store.state.user.data));
+          // user.value = JSON.parse(JSON.stringify(store.state.user.data));
           toast({
             component: ToastificationContent,
             props: {
@@ -872,6 +1266,14 @@ export default {
         }
       });
     };
+
+    const syntax_error = reactive({
+      aliyunSmsTemplates: null,
+      mail: null,
+      task: null,
+      vars: null,
+    });
+
     return {
       user,
 
@@ -894,6 +1296,8 @@ export default {
       handleUploadAvatar,
       handleSaveUserInfo,
       handleChangePassword,
+
+      syntax_error,
     };
   },
 };
