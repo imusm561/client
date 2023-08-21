@@ -13,7 +13,7 @@ export default {
   },
   getters: {
     logo(state) {
-      return `logo-${state.theme == 'light' ? 'dark' : 'light'}`;
+      return `logo-${state.theme == 'light' ? 'light' : 'dark'}`;
     },
   },
   mutations: {

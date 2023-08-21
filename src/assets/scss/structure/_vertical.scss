@@ -348,21 +348,21 @@
   }
 
   .logo-dark {
-    display: none;
+    display: inline-block;
   }
 
   .logo-light {
-    display: inline-block;
+    display: none;
   }
 }
 
 [data-theme='light'] {
   .logo-dark {
-    display: inline-block;
+    display: none;
   }
 
   .logo-light {
-    display: none;
+    display: inline-block;
   }
 }
 

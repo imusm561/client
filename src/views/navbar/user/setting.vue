@@ -9,18 +9,18 @@
                 <Avatar :data="user" size="xl" thumbnail />
                 <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
                   <input
-                    id="profile-img-file-input"
+                    id="avatar-input"
                     type="file"
                     accept="image/*"
-                    class="profile-img-file-input"
+                    class="d-none"
                     @click="
                       (e) => {
                         e.target.value = '';
                       }
                     "
-                    @change="handleFileInput"
+                    @change="handleInputAvatar"
                   />
-                  <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">
+                  <label for="avatar-input" class="profile-photo-edit avatar-xs">
                     <span class="avatar-title rounded-circle bg-light text-body">
                       <i class="mdi mdi-camera fs-16"></i>
                     </span>
@@ -681,6 +681,95 @@
                         <span class="invalid-feedback">{{ errors.beian }}</span>
                       </div>
                     </div>
+
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="favicon-input">
+                          <label class="form-label d-block">
+                            {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.favicon') }}
+                          </label>
+                          <img
+                            id="favicon"
+                            :src="`${BASE_URL}favicon.ico`"
+                            alt="favicon.ico"
+                            height="45"
+                          />
+                        </label>
+                        <input
+                          id="favicon-input"
+                          type="file"
+                          accept="image/x-icon"
+                          class="d-none"
+                          @click="
+                            (e) => {
+                              e.target.value = '';
+                            }
+                          "
+                          @change="handleInputFavicon"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="logo-light-input">
+                          <label class="form-label d-block">
+                            {{
+                              $t('layout.navbar.user.dropdown.setting.sysConfiguration.logoLight')
+                            }}
+                          </label>
+                          <img
+                            id="logo-light"
+                            class="logo-img"
+                            :src="`${BASE_URL}static/img/logo/logo-light.png`"
+                            alt="logo"
+                            height="45"
+                          />
+                        </label>
+                        <input
+                          id="logo-light-input"
+                          type="file"
+                          accept="image/png"
+                          class="d-none"
+                          @click="
+                            (e) => {
+                              e.target.value = '';
+                            }
+                          "
+                          @change="handleInputLogoLight"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-lg-4">
+                      <div class="mb-3">
+                        <label for="logo-dark-input">
+                          <label class="form-label d-block">
+                            {{
+                              $t('layout.navbar.user.dropdown.setting.sysConfiguration.logoDark')
+                            }}
+                          </label>
+                          <img
+                            id="logo-dark"
+                            class="logo-img"
+                            :src="`${BASE_URL}static/img/logo/logo-dark.png`"
+                            alt="logo"
+                            height="45"
+                          />
+                        </label>
+                        <input
+                          id="logo-dark-input"
+                          type="file"
+                          accept="image/png"
+                          class="d-none"
+                          @click="
+                            (e) => {
+                              e.target.value = '';
+                            }
+                          "
+                          @change="handleInputLogoDark"
+                        />
+                      </div>
+                    </div>
+
                     <div class="col-12">
                       <div class="mb-3 pb-2">
                         <label for="agGridLicense" class="form-label">
@@ -1007,12 +1096,12 @@
       </div>
     </div>
     <button
-      id="showAvatarCropperModalBtn"
+      id="showCropperModalBtn"
       class="d-none"
       data-bs-toggle="modal"
-      data-bs-target="#avatarCropperModal"
+      data-bs-target="#cropperModal"
     />
-    <div id="avatarCropperModal" class="modal fade zoomIn">
+    <div id="cropperModal" class="modal fade zoomIn">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
@@ -1077,15 +1166,15 @@
             </div>
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
               <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">
-                {{ $t('layout.navbar.user.dropdown.setting.avatarCropperModal.cancel') }}
+                {{ $t('layout.navbar.user.dropdown.setting.cropperModal.cancel') }}
               </button>
               <button
                 type="button"
                 class="btn w-sm btn-danger"
                 data-bs-dismiss="modal"
-                @click="handleUploadAvatar"
+                @click="handleUploadFile"
               >
-                {{ $t('layout.navbar.user.dropdown.setting.avatarCropperModal.submit') }}
+                {{ $t('layout.navbar.user.dropdown.setting.cropperModal.submit') }}
               </button>
             </div>
           </div>
@@ -1103,6 +1192,7 @@ import { VueCropper } from 'vue-cropper';
 import 'vue-cropper/dist/index.css';
 import { base64ToFile } from '@utils';
 import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
+import { uploadFavicon, uploadLogo } from '@api/sys';
 import { useRouter, clearUserData, deepCompare, hashData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -1184,7 +1274,11 @@ export default {
       mode: 'cover',
     });
 
-    const handleFileInput = (e) => {
+    const handleInputAvatar = (e) => {
+      option.value.type = 'avatar';
+      option.value.fixed = true;
+      option.value.fixedBox = true;
+      option.value.canMoveBox = false;
       option.value.file = e.target.files[0];
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -1195,35 +1289,120 @@ export default {
           data = e.target.result;
         }
         option.value.img = data;
-        document.getElementById('showAvatarCropperModalBtn').click();
+        document.getElementById('showCropperModalBtn').click();
       };
       reader.readAsDataURL(option.value.file);
     };
 
-    const handleUploadAvatar = () => {
+    const handleInputFavicon = (e) => {
+      const formData = new FormData();
+      formData.append('favicon', e.target.files[0], e.target.files[0].name);
+      uploadFavicon(formData).then(({ code, msg }) => {
+        if (code === 200) {
+          const ico = document.getElementById('favicon');
+          ico.src = ico.src.split('.ico')[0] + `.ico?t=${new Date().getTime()}`;
+          const favicon = document.querySelector('link[rel="icon"]');
+          if (favicon)
+            favicon.href = favicon.href.split('.ico')[0] + `.ico?t=${new Date().getTime()}`;
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    };
+
+    const handleInputLogoLight = (e) => {
+      option.value.type = 'light';
+      option.value.fixed = false;
+      option.value.fixedBox = false;
+      option.value.canMoveBox = true;
+      option.value.file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        let data;
+        if (typeof e.target.result === 'object') {
+          data = window.URL.createObjectURL(new Blob([e.target.result]));
+        } else {
+          data = e.target.result;
+        }
+        option.value.img = data;
+        document.getElementById('showCropperModalBtn').click();
+      };
+      reader.readAsDataURL(option.value.file);
+    };
+
+    const handleInputLogoDark = (e) => {
+      option.value.type = 'dark';
+      option.value.fixed = false;
+      option.value.fixedBox = false;
+      option.value.canMoveBox = true;
+      option.value.file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        let data;
+        if (typeof e.target.result === 'object') {
+          data = window.URL.createObjectURL(new Blob([e.target.result]));
+        } else {
+          data = e.target.result;
+        }
+        option.value.img = data;
+        document.getElementById('showCropperModalBtn').click();
+      };
+      reader.readAsDataURL(option.value.file);
+    };
+
+    const handleUploadFile = () => {
       cropper.value.getCropData((data) => {
-        const avatar = base64ToFile(
+        const file = base64ToFile(
           data,
           `${option.value.file.name.substring(0, option.value.file.name.lastIndexOf('.'))}[${
             option.value.autoCropWidth
           }x${option.value.autoCropHeight}].${option.value.outputType}`,
         );
         const formData = new FormData();
-        formData.append('avatar', avatar, avatar.name);
-        uploadAvatar(formData).then(({ code, msg, data }) => {
-          if (code === 200) {
-            user.value.avatar = data.url;
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
+        if (option.value.type === 'avatar') {
+          formData.append('avatar', file, file.name);
+          uploadAvatar(formData).then(({ code, msg, data }) => {
+            if (code === 200) {
+              user.value.avatar = data.url;
+            } else {
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: msg,
+                },
+              });
+            }
+          });
+        } else {
+          formData.append('logo', file, file.name);
+          formData.append('type', option.value.type);
+          uploadLogo(formData).then(({ code, msg }) => {
+            if (code === 200) {
+              const logoImgs = document.querySelectorAll('.logo-img');
+              logoImgs.forEach((img) => {
+                img.src = img.src.split('.png')[0] + `.png?t=${new Date().getTime()}`;
+              });
+            } else {
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: msg,
+                },
+              });
+            }
+          });
+        }
       });
     };
 
@@ -1292,8 +1471,11 @@ export default {
 
       cropper,
       option,
-      handleFileInput,
-      handleUploadAvatar,
+      handleInputAvatar,
+      handleInputFavicon,
+      handleInputLogoLight,
+      handleInputLogoDark,
+      handleUploadFile,
       handleSaveUserInfo,
       handleChangePassword,
 
