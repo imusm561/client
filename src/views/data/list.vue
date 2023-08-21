@@ -2,7 +2,7 @@
   <div>
     <Breadcrumb :key="$route" />
     <div class="card">
-      <div class="card-body d-flex flex-column pt-0" style="height: fit-content">
+      <div v-if="form.id" class="card-body d-flex flex-column pt-0" style="height: fit-content">
         <div class="mt-2 mb-2">
           <div v-if="form.description" class="ck ck-content p-0" v-html="form.description" />
           <div class="d-flex justify-content-end gap-2">
@@ -99,7 +99,18 @@
             </button>
           </div>
         </div>
+        <div v-if="form.html" class="d-flex flex-column">
+          <iframe :id="`iframe_${form.id}`" class="iframe-height"></iframe>
+          <Pagination
+            class="p-2 pb-0"
+            :total="pagination.totalCount"
+            :page-num="pagination.pageNum"
+            :page-size="pagination.pageSize"
+            @changed="handlePaginationChange"
+          />
+        </div>
         <AgGridVue
+          v-else
           :key="$route.params.tid"
           class="ag-height"
           :class="
@@ -258,6 +269,7 @@ import {
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Breadcrumb from '@layouts/breadcrumb';
+import Pagination from '@components/Pagination';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'ag-grid-community/styles/ag-theme-balham.css';
@@ -320,6 +332,7 @@ import SelectSwitch from '@components/Column/Select/Switch/index.vue';
 export default {
   components: {
     Breadcrumb,
+    Pagination,
     AgGridVue,
     CustomizationToolPanle,
     agDateInput: DateTimeFilter,
@@ -493,103 +506,118 @@ export default {
         form.value = data.form;
         alias.value = data.alias;
         columns.value = data.columns.filter((column) => !column.tags.includes('hideInDataList'));
-        const { data: _theme } = await getCustomTheme({ tid: Number(route.value.params.tid) });
-        theme.value = _theme || { data: 'alpine' };
-        const { data: _customs } = await getCustomColumn({ tid: Number(route.value.params.tid) });
-        customs.value = _customs;
-        const { data: _pagination } = await getCustomPagination({
-          tid: Number(route.value.params.tid),
-        });
-        pagination.value = _pagination
-          ? { ..._pagination, ...{ pageSize: _pagination.data } }
-          : { pageSize: 500 };
-        await setFormConfiguration();
-        await setFormColumnDefs();
-        nextTick(() => {
-          if (customs.value) {
-            customs.value.data.forEach((custom, index) => {
-              gridColumnApi.moveColumn(custom.colId, index);
-            });
-            setTimeout(() => {
-              ready.setCustom = true;
-            }, 1000);
-          } else {
-            ready.setCustom = true;
-          }
-        });
-        const filter = {
-          data_state: {
-            filterType: 'set',
-            values: ['published'], // 'drafted', 'approving'
-          },
-        };
-        for (let key in route.value.query) {
-          const column = columns.value.find(
-            (column) => column.alias === key || column.field === key,
-          );
-          if (column) {
-            if (
-              ['InputTextarea', 'InputRichtext', 'InputCode', 'SelectPosition'].includes(
-                column.component,
-              )
-            ) {
-              filter[column.field] = {
-                filterType: 'text',
-                type: 'contains',
-                filter: route.value.query[key],
-              };
-            } else if (
-              [
-                'BasicDataState',
-                'BasicCreatedBy',
-                'BasicUpdatedBy',
-                'BasicAclView',
-                'BasicAclEdit',
-                'SelectSingle',
-                'SelectMultiple',
-                'SelectTags',
-                'SelectSwitch',
-                'SelectFile',
-              ].includes(column.component)
-            ) {
-              filter[column.field] = {
-                filterType: 'set',
-                values: route.value.query[key].split(','),
-              };
-            } else if (['int', 'double', 'float'].includes(column.type)) {
-              filter[column.field] = {
-                filterType: 'number',
-                type: route.value.query[key].includes(' to ') ? 'inRange' : 'equals',
-                filter: route.value.query[key].split(' to ')[0],
-                filterTo: route.value.query[key].split(' to ')[1],
-              };
-            } else if (['date', 'datetime'].includes(column.type)) {
-              filter[column.field] = {
-                filterType: 'date',
-                type: route.value.query[key].includes(' to ') ? 'inRange' : 'equals',
-                dateFrom: route.value.query[key].split(' to ')[0],
-                dateTo: route.value.query[key].split(' to ')[1],
-              };
-            } else if (['time'].includes(column.type)) {
-              filter[column.field] = {
-                filterType: 'date',
-                type: route.value.query[key].includes(' to ') ? 'inRange' : 'equals',
-                dateFrom:
-                  moment().format('YYYY-MM-DD') + ' ' + route.value.query[key].split(' to ')[0],
-                dateTo:
-                  moment().format('YYYY-MM-DD') + ' ' + route.value.query[key].split(' to ')[1],
-              };
+        if (form.value.html) {
+          nextTick(() => {
+            const iframe = document.getElementById(`iframe_${form.value.id}`);
+            iframe.contentWindow.document.open();
+            iframe.contentWindow.document.write(form.value.html);
+            iframe.contentWindow.document.close();
+            iframe.onload = () => {
+              handlePaginationChange({
+                pageNum: 1,
+                pageSize: 100,
+              });
+            };
+          });
+        } else {
+          const { data: _theme } = await getCustomTheme({ tid: Number(route.value.params.tid) });
+          theme.value = _theme || { data: 'alpine' };
+          const { data: _customs } = await getCustomColumn({ tid: Number(route.value.params.tid) });
+          customs.value = _customs;
+          const { data: _pagination } = await getCustomPagination({
+            tid: Number(route.value.params.tid),
+          });
+          pagination.value = _pagination
+            ? { ..._pagination, ...{ pageSize: _pagination.data } }
+            : { pageSize: 500 };
+          await setFormConfiguration();
+          await setFormColumnDefs();
+          nextTick(() => {
+            if (customs.value) {
+              customs.value.data.forEach((custom, index) => {
+                gridColumnApi.moveColumn(custom.colId, index);
+              });
+              setTimeout(() => {
+                ready.setCustom = true;
+              }, 1000);
             } else {
-              filter[column.field] = {
-                filterType: 'text',
-                type: 'equals',
-                filter: route.value.query[key],
-              };
+              ready.setCustom = true;
+            }
+          });
+          const filter = {
+            data_state: {
+              filterType: 'set',
+              values: ['published'], // 'drafted', 'approving'
+            },
+          };
+          for (let key in route.value.query) {
+            const column = columns.value.find(
+              (column) => column.alias === key || column.field === key,
+            );
+            if (column) {
+              if (
+                ['InputTextarea', 'InputRichtext', 'InputCode', 'SelectPosition'].includes(
+                  column.component,
+                )
+              ) {
+                filter[column.field] = {
+                  filterType: 'text',
+                  type: 'contains',
+                  filter: route.value.query[key],
+                };
+              } else if (
+                [
+                  'BasicDataState',
+                  'BasicCreatedBy',
+                  'BasicUpdatedBy',
+                  'BasicAclView',
+                  'BasicAclEdit',
+                  'SelectSingle',
+                  'SelectMultiple',
+                  'SelectTags',
+                  'SelectSwitch',
+                  'SelectFile',
+                ].includes(column.component)
+              ) {
+                filter[column.field] = {
+                  filterType: 'set',
+                  values: route.value.query[key].split(','),
+                };
+              } else if (['int', 'double', 'float'].includes(column.type)) {
+                filter[column.field] = {
+                  filterType: 'number',
+                  type: route.value.query[key].includes(' to ') ? 'inRange' : 'equals',
+                  filter: route.value.query[key].split(' to ')[0],
+                  filterTo: route.value.query[key].split(' to ')[1],
+                };
+              } else if (['date', 'datetime'].includes(column.type)) {
+                filter[column.field] = {
+                  filterType: 'date',
+                  type: route.value.query[key].includes(' to ') ? 'inRange' : 'equals',
+                  dateFrom: route.value.query[key].split(' to ')[0],
+                  dateTo: route.value.query[key].split(' to ')[1],
+                };
+              } else if (['time'].includes(column.type)) {
+                filter[column.field] = {
+                  filterType: 'date',
+                  type: route.value.query[key].includes(' to ') ? 'inRange' : 'equals',
+                  dateFrom:
+                    moment().format('YYYY-MM-DD') + ' ' + route.value.query[key].split(' to ')[0],
+                  dateTo:
+                    moment().format('YYYY-MM-DD') + ' ' + route.value.query[key].split(' to ')[1],
+                };
+              } else {
+                filter[column.field] = {
+                  filterType: 'text',
+                  type: 'equals',
+                  filter: route.value.query[key],
+                };
+              }
             }
           }
+          gridApi.setFilterModel(filter);
+          callback && callback();
         }
-        gridApi.setFilterModel(filter);
-        callback && callback();
       } else {
         toast({
           component: ToastificationContent,
@@ -1606,6 +1634,43 @@ export default {
       });
     };
 
+    const handlePaginationChange = ({ pageNum, pageSize }) => {
+      pagination.value.pageNum = pageNum;
+      pagination.value.pageSize = pageSize;
+      getDataListForHtml();
+    };
+
+    const getDataListForHtml = () => {
+      getDataList({
+        tid: Number(route.value.params.tid),
+        pageNum: pagination.value.pageNum,
+        pageSize: pagination.value.pageSize,
+      }).then(({ code, data, msg }) => {
+        if (code === 200) {
+          const iframe = document.getElementById(`iframe_${form.value.id}`);
+          const message = JSON.parse(
+            JSON.stringify({
+              form: form.value,
+              alias: alias.value,
+              columns: columns.value,
+              list: data.rows,
+            }),
+          );
+          iframe.contentWindow.postMessage(message);
+          pagination.value.totalCount = data.count;
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    };
+
     return {
       form,
       columns,
@@ -1644,6 +1709,7 @@ export default {
       handleDeselectAllRows,
 
       handleFileInput,
+      handlePaginationChange,
     };
   },
 };
