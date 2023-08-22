@@ -719,7 +719,7 @@
                           </label>
                           <img
                             id="logo-light"
-                            class="logo-img"
+                            class="sys-logo"
                             :src="`${BASE_URL}static/img/logo/logo-light.png`"
                             alt="logo"
                             height="45"
@@ -749,7 +749,7 @@
                           </label>
                           <img
                             id="logo-dark"
-                            class="logo-img"
+                            class="sys-logo"
                             :src="`${BASE_URL}static/img/logo/logo-dark.png`"
                             alt="logo"
                             height="45"
@@ -1192,7 +1192,7 @@ import { VueCropper } from 'vue-cropper';
 import 'vue-cropper/dist/index.css';
 import { base64ToFile } from '@utils';
 import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
-import { uploadFavicon, uploadLogo } from '@api/sys';
+import { uploadSysFile } from '@api/sys';
 import { useRouter, clearUserData, deepCompare, hashData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -1296,13 +1296,14 @@ export default {
 
     const handleInputFavicon = (e) => {
       const formData = new FormData();
-      formData.append('favicon', e.target.files[0], e.target.files[0].name);
-      uploadFavicon(formData).then(({ code, msg }) => {
+      formData.append('file', e.target.files[0], e.target.files[0].name);
+      formData.append('filename', 'favicon.ico');
+      uploadSysFile(formData).then(({ code, msg }) => {
         if (code === 200) {
           const ico = document.getElementById('favicon');
-          ico.src = ico.src.split('.ico')[0] + `.ico?t=${new Date().getTime()}`;
+          if (ico?.src) ico.src = ico.src.split('.ico')[0] + `.ico?t=${new Date().getTime()}`;
           const favicon = document.querySelector('link[rel="icon"]');
-          if (favicon)
+          if (favicon?.href)
             favicon.href = favicon.href.split('.ico')[0] + `.ico?t=${new Date().getTime()}`;
         } else {
           toast({
@@ -1318,7 +1319,7 @@ export default {
     };
 
     const handleInputLogoLight = (e) => {
-      option.value.type = 'light';
+      option.value.type = 'logo-light';
       option.value.fixed = false;
       option.value.fixedBox = false;
       option.value.canMoveBox = true;
@@ -1338,7 +1339,7 @@ export default {
     };
 
     const handleInputLogoDark = (e) => {
-      option.value.type = 'dark';
+      option.value.type = 'logo-dark';
       option.value.fixed = false;
       option.value.fixedBox = false;
       option.value.canMoveBox = true;
@@ -1383,13 +1384,13 @@ export default {
             }
           });
         } else {
-          formData.append('logo', file, file.name);
-          formData.append('type', option.value.type);
-          uploadLogo(formData).then(({ code, msg }) => {
+          formData.append('file', file, file.name);
+          formData.append('filename', `${option.value.type}.png`);
+          uploadSysFile(formData).then(({ code, msg }) => {
             if (code === 200) {
-              const logoImgs = document.querySelectorAll('.logo-img');
+              const logoImgs = document.querySelectorAll('.sys-logo');
               logoImgs.forEach((img) => {
-                img.src = img.src.split('.png')[0] + `.png?t=${new Date().getTime()}`;
+                if (img?.src) img.src = img.src.split('.png')[0] + `.png?t=${new Date().getTime()}`;
               });
             } else {
               toast({

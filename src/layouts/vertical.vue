@@ -7,7 +7,7 @@
         <div class="navbar-brand-box">
           <router-link to="/" :class="['logo', logo]">
             <img
-              class="logo-img"
+              class="sys-logo"
               :src="`${BASE_URL}static/img/logo/${logo}.png`"
               alt="logo"
               height="45"

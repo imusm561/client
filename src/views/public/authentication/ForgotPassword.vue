@@ -7,7 +7,7 @@
             <div class="text-center mb-3">
               <router-link to="/" class="d-inline-block auth-logo">
                 <img
-                  class="logo-img"
+                  class="sys-logo"
                   :src="`${BASE_URL}static/img/logo/${logo}.png`"
                   :alt="logo"
                   height="55"
