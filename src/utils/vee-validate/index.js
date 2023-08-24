@@ -110,7 +110,7 @@ defineRule('username', (value) => {
   if (isEmpty(value)) {
     return true;
   }
-  const regExp = /^[a-z]{4,10}$/;
+  const regExp = /^[a-z0-9_-]{4,20}$/;
   return regExp.test(String(value)) || i18n.global.t('vee.validate.username');
 });
 
@@ -118,7 +118,7 @@ defineRule('fullname', (value) => {
   if (isEmpty(value)) {
     return true;
   }
-  const regExp = /^[a-zA-Z\u4e00-\u9fa50-9]{2,16}$/;
+  const regExp = /^[ A-Za-z\u4e00-\u9fa5]{2,20}$/;
   return regExp.test(String(value)) || i18n.global.t('vee.validate.fullname');
 });
 
@@ -142,6 +142,6 @@ defineRule('password', (value) => {
   if (isEmpty(value)) {
     return true;
   }
-  const regExp = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()?,.]).{8,}/;
+  const regExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()?,.]).{8,}$/;
   return regExp.test(String(value)) || i18n.global.t('vee.validate.password');
 });
