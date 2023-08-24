@@ -1039,7 +1039,7 @@
   "vee.validate.in": "字段值必须在【{target}】中",
   "vee.validate.notin": "字段值不得在【{target}】中",
   "vee.validate.username": "用户名由4-20位小写字母，数字，横杠组成",
-  "vee.validate.fullname": "全名由2-20位大小写字母，中文组成",
+  "vee.validate.fullname": "全名由2-20位大小写字母或中文组成",
   "vee.validate.email": "邮箱地址错误",
   "vee.validate.phone": "手机号格式错误",
   "vee.validate.password": "密码由8位及以上大小写字母，数字，特殊字符组成"

@@ -192,7 +192,7 @@
                             $t('layout.navbar.user.dropdown.setting.personalDetails.fullname')
                           "
                           :class="['form-control', errors.fullname && 'is-invalid']"
-                          rules="required"
+                          rules="required|fullname"
                         />
                         <span class="invalid-feedback">{{ errors.fullname }}</span>
                       </div>
