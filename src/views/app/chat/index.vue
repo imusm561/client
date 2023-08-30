@@ -617,6 +617,7 @@ export default {
           created_at: data.created_at,
           sender: data.sender,
           receiver: data.receiver,
+          type: data.type,
           message: data.message,
           quote: data.quote,
           receiver_read: current_chat.value.username === data.sender ? true : false,
@@ -634,6 +635,7 @@ export default {
                   created_at: data.created_at,
                   sender: data.sender,
                   receiver: data.receiver,
+                  type: data.type,
                   message: data.message,
                   quote: data.quote,
                   receiver_read: false,
@@ -819,12 +821,19 @@ export default {
     const message = ref('');
 
     const handleKeyDownEvent = (e) => {
-      if (e.keyCode == 13) {
-        if (!e.metaKey) {
-          e.preventDefault();
-          handleSendMsg();
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (e.ctrlKey || e.metaKey) {
+          const startPos = e.target.selectionStart;
+          const endPos = e.target.selectionEnd;
+          message.value =
+            message.value.substring(0, startPos) + '\n' + message.value.substring(endPos);
+          nextTick(() => {
+            e.target.selectionStart = startPos + 1;
+            e.target.selectionEnd = startPos + 1;
+          });
         } else {
-          message.value = message.value + '\n';
+          handleSendMsg();
         }
       }
     };
@@ -1012,7 +1021,6 @@ export default {
       handleClickFileInput,
       handleFileAdded,
       handleCompletedFile,
-      handleSendMsg,
       handleClickQuote,
       handleWithdrawMsg,
       handleDelChat,
