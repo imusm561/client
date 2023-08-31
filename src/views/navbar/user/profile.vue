@@ -380,7 +380,7 @@
                                   ),
                                 },
                                 images: images.map((image) => {
-                                  return `${process.env.BASE_URL}cor/file/load/${image.uuid}`;
+                                  return `${BASE_URL}cor/file/load/${image.uuid}`;
                                 }),
                               });
                             }
