@@ -202,7 +202,7 @@
                         >
                           {{ log.method }}
                         </span>
-                        {{ log.ip.replace('::ffff:', '') }}
+                        {{ log?.ip?.replace('::ffff:', '') }}
                       </small>
                     </div>
                   </div>

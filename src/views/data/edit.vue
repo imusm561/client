@@ -938,7 +938,7 @@ export default {
       const HasTabs = FormColumns.find((column) => column.component === 'LayoutTab') ? true : false;
 
       if (Number(data.value.id) === 0) {
-        for await (let column of BasicColumns) {
+        BasicColumns.forEach((column) => {
           if (column.field === 'acl_view') {
             data.value.acl_view = Array.from(
               new Set([
@@ -966,7 +966,37 @@ export default {
           }
           if (column.field === 'data_state' && form.value.flow?.length)
             data.value.data_state = 'drafted';
-        }
+        });
+
+        // for await (let column of BasicColumns) {
+        //   if (column.field === 'acl_view') {
+        //     data.value.acl_view = Array.from(
+        //       new Set([
+        //         ...(form.value.acl_view.length
+        //           ? form.value.acl_view
+        //           : getUserLeaders(store.state.user.data)),
+        //         ...(form.value.flow?.length
+        //           ? form.value.flow
+        //               .map((item) => {
+        //                 return item.users.map((user) => {
+        //                   return user.username;
+        //                 });
+        //               })
+        //               .flat()
+        //           : []),
+        //       ]),
+        //     );
+        //   }
+        //   if (column.field === 'acl_edit') {
+        //     data.value.acl_edit = form.value.flow?.length
+        //       ? [store.state.user.data.username]
+        //       : form.value.acl_edit.length
+        //       ? form.value.acl_edit
+        //       : [store.state.user.data.username];
+        //   }
+        //   if (column.field === 'data_state' && form.value.flow?.length)
+        //     data.value.data_state = 'drafted';
+        // }
       }
 
       tabs.value = [];
@@ -983,15 +1013,28 @@ export default {
           columns: [],
         });
 
-      for (let tab of tabs.value) {
-        for await (let column of tab.children) {
+      // for (let tab of tabs.value) {
+      //   for await (let column of tab.children) {
+      //     column.key = hashData(JSON.stringify(column));
+      //     await replaceColumnVariables(column);
+      //     await setColumnConfiguration(column);
+      //     await setColumnRules(column);
+      //   }
+      //   tab.columns = tab.children;
+      // }
+
+      tabs.value.forEach((tab) => {
+        tab.children.forEach(async (column) => {
+          column._visible = true;
+          column._required = false;
+          column._editable = true;
           column.key = hashData(JSON.stringify(column));
           await replaceColumnVariables(column);
           await setColumnConfiguration(column);
           await setColumnRules(column);
-        }
+        });
         tab.columns = tab.children;
-      }
+      });
     };
 
     const replaceColumnVariables = (column) => {

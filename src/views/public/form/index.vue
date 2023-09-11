@@ -358,7 +358,7 @@ export default {
       const HasTabs = FormColumns.find((column) => column.component === 'LayoutTab') ? true : false;
 
       if (Number(data.value.id) === 0) {
-        for (let column of BasicColumns) {
+        BasicColumns.forEach((column) => {
           if (column.field === 'acl_view' && form.value.acl_view.length)
             data.value.acl_view = Array.from(
               new Set([...form.value.acl_view, ...(data.value.acl_view || [])]),
@@ -367,7 +367,18 @@ export default {
             data.value.acl_edit = Array.from(
               new Set([...form.value.acl_edit, ...(data.value.acl_edit || [])]),
             );
-        }
+        });
+
+        // for (let column of BasicColumns) {
+        //   if (column.field === 'acl_view' && form.value.acl_view.length)
+        //     data.value.acl_view = Array.from(
+        //       new Set([...form.value.acl_view, ...(data.value.acl_view || [])]),
+        //     );
+        //   if (column.field === 'acl_edit' && form.value.acl_edit.length)
+        //     data.value.acl_edit = Array.from(
+        //       new Set([...form.value.acl_edit, ...(data.value.acl_edit || [])]),
+        //     );
+        // }
       }
 
       tabs.value = [];
@@ -384,15 +395,28 @@ export default {
           columns: [],
         });
 
-      for (let tab of tabs.value) {
-        for await (let column of tab.children) {
+      // for (let tab of tabs.value) {
+      //   for await (let column of tab.children) {
+      //     column.key = hashData(JSON.stringify(column));
+      //     await replaceColumnVariables(column);
+      //     await setColumnConfiguration(column);
+      //     await setColumnRules(column);
+      //   }
+      //   tab.columns = tab.children;
+      // }
+
+      tabs.value.forEach((tab) => {
+        tab.children.forEach(async (column) => {
+          column._visible = true;
+          column._required = false;
+          column._editable = true;
           column.key = hashData(JSON.stringify(column));
           await replaceColumnVariables(column);
           await setColumnConfiguration(column);
           await setColumnRules(column);
-        }
+        });
         tab.columns = tab.children;
-      }
+      });
     };
 
     const replaceColumnVariables = (column) => {
