@@ -1261,6 +1261,7 @@ export default {
                     },
                   });
                 } else document.getElementById('hideBatchUpdateModalModalBtn').click();
+                selectedRows.value = [];
               } else {
                 toast({
                   component: ToastificationContent,
