@@ -80,7 +80,7 @@
                   {{ item.title }}
                 </span>
                 <div class="dropdown-divider"></div>
-                <span class="dropdown-item cursor-pointer" @click="handleDeselectAllRows()">
+                <span class="dropdown-item cursor-pointer" @click="handleDeselectAllRows">
                   {{ $tc('data.list.header.deselect', { count: selectedRows.length }) }}
                 </span>
               </div>
@@ -1261,7 +1261,7 @@ export default {
                     },
                   });
                 } else document.getElementById('hideBatchUpdateModalModalBtn').click();
-                selectedRows.value = [];
+                handleDeselectAllRows();
               } else {
                 toast({
                   component: ToastificationContent,
