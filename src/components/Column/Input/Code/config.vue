@@ -1,6 +1,6 @@
 <template>
   <div class="row g-3">
-    <div class="col-md-3 col-sm-6">
+    <div class="col-md-6">
       <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.name') }}</label>
       <input
         v-model="column.name"
@@ -19,6 +19,52 @@
     </div>
 
     <div class="col-md-3 col-sm-6">
+      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.col') }}</label>
+      <VueSelect
+        v-model="column.col"
+        :placeholder="$t('layout.navbar.helper.form.column.config.col')"
+        :options="[4, 5, 6, 7, 8, 12]"
+        :clearable="false"
+      >
+        <template v-slot:no-options="{ search, searching }">
+          <template v-if="searching">
+            <span v-html="$t('components.vs.search', { search })"></span>
+          </template>
+          <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+        </template>
+      </VueSelect>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.alias') }}</label>
+      <input
+        v-model="column.alias"
+        type="text"
+        :placeholder="$t('layout.navbar.helper.form.column.config.alias')"
+        :class="['form-control', errors.alias && 'is-invalid']"
+        @dblclick="
+          () => {
+            column.alias =
+              column.alias ||
+              $pinyin(column.name, { toneType: 'none', type: 'array' })
+                .map((item) => {
+                  return item.charAt(0).toUpperCase() + item.slice(1);
+                })
+                .join('');
+          }
+        "
+      />
+      <Field
+        name="alias"
+        v-model="column.alias"
+        class="d-none"
+        :class="{ 'is-invalid': errors.alias }"
+        :rules="`notin:${alias}`"
+      />
+      <span class="invalid-feedback">{{ errors.alias }}</span>
+    </div>
+
+    <div class="col-md-6">
       <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.language') }}</label>
       <VueSelect
         v-model="column.cfg.language"
@@ -124,12 +170,19 @@
       </VueSelect>
     </div>
 
-    <div class="col-md-3 col-sm-6">
-      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.col') }}</label>
+    <div class="col-md-6">
+      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.type') }}</label>
       <VueSelect
-        v-model="column.col"
-        :placeholder="$t('layout.navbar.helper.form.column.config.col')"
-        :options="[4, 5, 6, 7, 8, 12]"
+        v-model="column.type"
+        :placeholder="$t('layout.navbar.helper.form.column.config.type')"
+        :options="[
+          { label: 'Text', value: 'text' },
+          { label: 'Tiny Text', value: 'tinytext' },
+          { label: 'Medium Text', value: 'mediumtext' },
+          { label: 'Long Text', value: 'longtext' },
+        ]"
+        :reduce="(item) => item.value"
+        label="label"
         :clearable="false"
       >
         <template v-slot:no-options="{ search, searching }">
@@ -139,35 +192,6 @@
           <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
         </template>
       </VueSelect>
-    </div>
-
-    <div class="col-md-3 col-sm-6">
-      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.alias') }}</label>
-      <input
-        v-model="column.alias"
-        type="text"
-        :placeholder="$t('layout.navbar.helper.form.column.config.alias')"
-        :class="['form-control', errors.alias && 'is-invalid']"
-        @dblclick="
-          () => {
-            column.alias =
-              column.alias ||
-              $pinyin(column.name, { toneType: 'none', type: 'array' })
-                .map((item) => {
-                  return item.charAt(0).toUpperCase() + item.slice(1);
-                })
-                .join('');
-          }
-        "
-      />
-      <Field
-        name="alias"
-        v-model="column.alias"
-        class="d-none"
-        :class="{ 'is-invalid': errors.alias }"
-        :rules="`notin:${alias}`"
-      />
-      <span class="invalid-feedback">{{ errors.alias }}</span>
     </div>
 
     <div class="col-md-12">
