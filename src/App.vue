@@ -89,21 +89,6 @@ export default {
     const { route, router } = useRouter();
     const moment = window.moment;
 
-    window.onscroll = () => {
-      if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-        document.getElementById('back-to-top').style.display = 'block';
-      } else {
-        document.getElementById('back-to-top').style.display = 'none';
-        document.getElementById('back-to-top').classList.remove('active');
-      }
-    };
-
-    const backToTop = () => {
-      document.getElementById('back-to-top').classList.add('active');
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-    };
-
     const documentVisibilitychangeHandler = async () => {
       if (document.visibilityState === 'visible') {
         const token = jwt.decode(
@@ -130,6 +115,12 @@ export default {
       }
     };
 
+    const backToTop = () => {
+      document.getElementById('back-to-top').classList.add('active');
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    };
+
     const windowResizeHandler = () => {
       if (store.state.sys.cfg.waterMark && store.state.user.data.id)
         setWatermark(
@@ -138,14 +129,26 @@ export default {
         );
     };
 
+    const windowScrollHandler = () => {
+      console.log(document.body.scrollTop, document.documentElement.scrollTop);
+      if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+        document.getElementById('back-to-top').style.display = 'block';
+      } else {
+        document.getElementById('back-to-top').style.display = 'none';
+        document.getElementById('back-to-top').classList.remove('active');
+      }
+    };
+
     onMounted(() => {
       document.addEventListener('visibilitychange', documentVisibilitychangeHandler);
       window.addEventListener('resize', windowResizeHandler);
+      window.addEventListener('scroll', windowScrollHandler);
     });
 
     onUnmounted(() => {
       document.removeEventListener('visibilitychange', documentVisibilitychangeHandler);
       window.removeEventListener('resize', windowResizeHandler);
+      window.removeEventListener('scroll', windowScrollHandler);
     });
 
     const resolveLayoutVariant = computed(() => {
