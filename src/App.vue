@@ -130,7 +130,6 @@ export default {
     };
 
     const windowScrollHandler = () => {
-      console.log(document.body.scrollTop, document.documentElement.scrollTop);
       if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
         document.getElementById('back-to-top').style.display = 'block';
       } else {

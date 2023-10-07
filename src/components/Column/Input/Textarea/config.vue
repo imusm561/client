@@ -82,6 +82,29 @@
     </div>
 
     <div class="col-md-6">
+      <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.type') }}</label>
+      <VueSelect
+        v-model="column.type"
+        :placeholder="$t('layout.navbar.helper.form.column.config.type')"
+        :options="[
+          { label: 'Tiny Text', value: 'tinytext' },
+          { label: 'Text', value: 'text' },
+          { label: 'Medium Text', value: 'mediumtext' },
+        ]"
+        :reduce="(item) => item.value"
+        label="label"
+        :clearable="false"
+      >
+        <template v-slot:no-options="{ search, searching }">
+          <template v-if="searching">
+            <span v-html="$t('components.vs.search', { search })"></span>
+          </template>
+          <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+        </template>
+      </VueSelect>
+    </div>
+
+    <div class="col-md-6">
       <label class="form-label">
         {{ $t('layout.navbar.helper.form.column.config.placeholder') }}
       </label>
@@ -93,15 +116,17 @@
       />
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-12">
       <label class="form-label">{{ $t('layout.navbar.helper.form.column.config.default') }}</label>
-      <input
+      <textarea
         v-model="column.default"
-        type="text"
+        rows="3"
         :placeholder="$t('layout.navbar.helper.form.column.config.default')"
         :class="['form-control', errors.default && 'is-invalid']"
       />
       <Field
+        as="textarea"
+        rows="3"
         name="default"
         v-model="column.default"
         class="d-none"

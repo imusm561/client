@@ -24,10 +24,9 @@
         v-model="column.type"
         :placeholder="$t('layout.navbar.helper.form.column.config.type')"
         :options="[
-          { label: 'Text', value: 'text' },
           { label: 'Tiny Text', value: 'tinytext' },
+          { label: 'Text', value: 'text' },
           { label: 'Medium Text', value: 'mediumtext' },
-          { label: 'Long Text', value: 'longtext' },
         ]"
         :reduce="(item) => item.value"
         label="label"
