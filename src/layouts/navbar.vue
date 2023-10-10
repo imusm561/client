@@ -572,7 +572,7 @@ import {
   decryptData,
   copyToClipboard,
 } from '@utils';
-import { setWatermark, removeWatermark } from '@utils/watermark';
+import { setWatermark } from '@utils/watermark';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
 import SearchResultPanel from '@components/SearchResultPanel';
@@ -912,7 +912,6 @@ export default {
       set: (value) => {
         store.commit('sys/TOGGLE_LANG', value);
         if (store.state.sys.cfg.waterMark && store.state.user.data.id) {
-          removeWatermark();
           setWatermark(
             `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
             moment().format('ll'),

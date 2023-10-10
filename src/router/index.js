@@ -48,6 +48,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  sessionStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubtk`);
+  sessionStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`);
   NProgress.start();
   let interval;
   interval = setInterval(() => {

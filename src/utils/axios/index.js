@@ -41,7 +41,7 @@ instance.interceptors.request.use(
     );
     if (access_token) config.headers.Authorization = `Bearer ${access_token}`;
 
-    let public_token = sessionStorage.getItem('publicToken');
+    let public_token = sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubtk`);
     if (public_token) config.headers.Authorization = `Bearer ${public_token}`;
 
     return config;

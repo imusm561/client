@@ -313,8 +313,8 @@ export default {
       const { code, data: res, msg } = await getPubForm({ uuid });
       if (code === 200) {
         initialized.value = false;
-        sessionStorage.setItem('publicToken', res.token);
-        sessionStorage.setItem('publicUsername', res.username);
+        sessionStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubtk`, res.token);
+        sessionStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`, res.username);
         socket.emit('login', { username: res.username });
         pub.value = res.pub;
         document.title = pub.value.title;

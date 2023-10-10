@@ -288,7 +288,9 @@ export const replaceVariables = (expr, alias) => {
         alias?.[variable]
           ? `data.${alias[variable]}`
           : variable === 'username' || variable === 'fullname'
-          ? store.state.user.data?.[variable] || sessionStorage.getItem('publicUsername') || item
+          ? sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`) ||
+            store.state.user.data?.[variable] ||
+            item
           : store.state.user.data?.[variable] || store.state.sys?.[variable] || item,
       );
     });
@@ -410,11 +412,11 @@ export const getDataByFormula = async (
           return store.state.org.users.map((user) => {
             return { text: user.fullname, value: user.username };
           });
-        } else if (sessionStorage.getItem('publicUsername')) {
+        } else if (sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`)) {
           return [
             {
-              text: sessionStorage.getItem('publicUsername'),
-              value: sessionStorage.getItem('publicUsername'),
+              text: sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`),
+              value: sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`),
             },
           ];
         } else {

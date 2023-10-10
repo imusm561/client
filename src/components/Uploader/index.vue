@@ -569,7 +569,9 @@ export default defineComponent({
       options.accept = props.accept;
       options.placeholder = props.placeholder;
       options.multiple = props.multiple;
-      options.username = sessionStorage.getItem('publicUsername') || store.state.user.data.username;
+      options.username =
+        sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`) ||
+        store.state.user.data.username;
       qrcode.value = options.code = Math.random().toString(36).slice(-6);
       let url = `${location.origin}${process.env.BASE_URL}uploader/${encodeURIComponent(
         encryptData(JSON.stringify(options)),
