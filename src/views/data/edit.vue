@@ -22,7 +22,7 @@
             v-if="tabs.length > 1"
             class="mdi fs-16 cursor-pointer text-muted pe-2"
             :class="ribbon_mode ? 'mdi-tab' : 'mdi-ribbon'"
-            @click="ribbon_mode = !ribbon_mode"
+            @click="handleToggleRibbonMode"
           ></i>
           <i
             class="mdi mdi-refresh fs-16 cursor-pointer text-muted pe-2"
@@ -875,6 +875,10 @@ export default {
       }
     };
 
+    const handleToggleRibbonMode = () => {
+      ribbon_mode.value = !ribbon_mode.value;
+    };
+
     const handleRefetchDataEdit = () => {
       fetchDataEdit(form.value.id, data.value.id);
     };
@@ -1355,6 +1359,7 @@ export default {
       titles,
 
       fetchDataEdit,
+      handleToggleRibbonMode,
       handleRefetchDataEdit,
       fetchDataTitle,
       handleSelectDataTitle,

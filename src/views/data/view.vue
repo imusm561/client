@@ -38,7 +38,7 @@
             v-if="tabs.length > 1"
             class="mdi fs-16 cursor-pointer text-muted pe-2"
             :class="ribbon_mode ? 'mdi-tab' : 'mdi-ribbon'"
-            @click="ribbon_mode = !ribbon_mode"
+            @click="handleToggleRibbonMode"
           ></i>
           <i
             v-if="
@@ -717,6 +717,10 @@ export default {
       form.value.flow = form.value.flow.length ? generateFlowByCurrentUser(form.value.flow) : null;
     };
 
+    const handleToggleRibbonMode = () => {
+      ribbon_mode.value = !ribbon_mode.value;
+    };
+
     const handleRefetchDataView = () => {
       fetchDataView(form.value.id, data.value.id);
     };
@@ -830,6 +834,7 @@ export default {
       show_empty_value_columns,
       titles,
 
+      handleToggleRibbonMode,
       handleRefetchDataView,
       fetchDataTitle,
 

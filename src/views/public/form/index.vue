@@ -9,7 +9,7 @@
         v-if="tabs.length > 1"
         class="mdi fs-16 cursor-pointer text-muted float-end pe-2"
         :class="ribbon_mode ? 'mdi-tab' : 'mdi-ribbon'"
-        @click="ribbon_mode = !ribbon_mode"
+        @click="handleToggleRibbonMode"
       ></i>
     </div>
     <div class="card-body pt-0">
@@ -343,6 +343,10 @@ export default {
       fetchPubForm(route.value.params.uuid);
     };
 
+    const handleToggleRibbonMode = () => {
+      ribbon_mode.value = !ribbon_mode.value;
+    };
+
     const setFormConfiguration = () => {
       if (form.value.script) form.value.script = replaceVariables(form.value.script, alias.value);
       if (form.value.style) {
@@ -605,6 +609,8 @@ export default {
 
       fetchPubForm,
       handleRefetchPubForm,
+      handleToggleRibbonMode,
+
       handleSelecterSearch,
 
       setColumnConfiguration,
