@@ -1,6 +1,6 @@
 {
   "name": "lcdp",
-  "version": "3.4.1",
+  "version": "3.4.2",
   "private": true,
   "scripts": {
     "serve": "cross-env NODE_ENV=development vue-cli-service serve",
@@ -65,18 +65,18 @@
     "ua-parser-js": "^1.0.2",
     "v-viewer": "^3.0.10",
     "vee-validate": "^4.5.11",
-    "vue": "3.2.39",
+    "vue": "3.3.4",
     "vue-cropper": "^1.0.5",
     "vue-draggable-next": "^2.1.1",
     "vue-flatpickr-component": "^9.0.5",
     "vue-i18n": "^9.2.2",
-    "vue-router": "^4.0.16",
+    "vue-router": "4.2.5",
     "vue-select": "^4.0.0-beta.3",
     "vue-simple-uploader": "^1.0.0-beta.5",
     "vue-toastification": "^2.0.0-rc.5",
     "vue3-apexcharts": "^1.4.1",
     "vue3-calendar-heatmap": "^2.0.0",
-    "vuex": "^4.0.2"
+    "vuex": "4.1.0"
   },
   "devDependencies": {
     "@ckeditor/ckeditor5-dev-utils": "27.1.0",
