@@ -240,7 +240,6 @@
                         )
                       "
                       @check="handleNodeChecked"
-                      :expand-on-click-node="false"
                       :default-expanded-keys="generateDefaultCheckedKeys()"
                       :default-checked-keys="generateDefaultCheckedKeys()"
                     >

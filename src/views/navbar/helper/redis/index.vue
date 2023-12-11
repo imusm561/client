@@ -22,7 +22,6 @@
               @node-collapse="(data) => handleNodeToggle(data, false)"
               node-key="key"
               :draggable="false"
-              :expand-on-click-node="false"
               @node-click="handleClickKey"
             >
               <template #default="{ node }">
