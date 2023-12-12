@@ -20,3 +20,7 @@ export const updateDept = (data) => {
     await getDepts();
   });
 };
+
+export const dropDept = (data) => {
+  return axios.post('/cor/dept/drop', data);
+};

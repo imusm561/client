@@ -13,6 +13,10 @@
         default-expand-all
         :expand-on-click-node="false"
         @node-click="handleSelectDept"
+        draggable
+        :allow-drop="allowDrop"
+        :allow-drag="allowDrag"
+        @node-drop="handleDropDept"
       >
         <template #default="{ node }">
           <span class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2">
@@ -93,7 +97,7 @@
 
 <script>
 import { computed, ref } from 'vue';
-import { createDept, updateDept } from '@api/dept';
+import { createDept, updateDept, dropDept } from '@api/dept';
 import store from '@store';
 import i18n from '@utils/i18n';
 import { listToTree, getChildrenById } from '@utils';
@@ -128,6 +132,47 @@ export default {
           emit('setDepts', depts);
         }
       }, 200);
+    };
+
+    const allowDrop = (draggingNode, dropNode, type) => {
+      if (dropNode.data.id === 1) {
+        return type === 'inner';
+      } else {
+        return true;
+      }
+    };
+    
+    const allowDrag = (draggingNode) => {
+      return draggingNode.data.id != 1;
+    };
+
+    const handleDropDept = (draggingNode, dropNode, type) => {
+      const updates = [];
+      if (type == 'inner') {
+        dropNode.childNodes.forEach((node, index) => {
+          const update = { id: node.data.id, pid: dropNode.data.id, sort: index + 1 };
+          const origin = store.state.org.depts.find((dept) => dept.id === update.id);
+          if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
+        });
+      } else {
+        dropNode.parent.childNodes.forEach((node, index) => {
+          const update = { id: node.data.id, pid: dropNode.parent.data.id, sort: index + 1 };
+          const origin = store.state.org.depts.find((dept) => dept.id === update.id);
+          if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
+        });
+      }
+      dropDept({ depts: updates }).then(({ code, msg }) => {
+        if (code != 200) {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
     };
 
     const handleEditDept = (node) => {
@@ -218,6 +263,9 @@ export default {
     return {
       tree,
       handleSelectDept,
+      allowDrop,
+      allowDrag,
+      handleDropDept,
       handleEditDept,
       handleAddDept,
       handleSaveDeptName,
