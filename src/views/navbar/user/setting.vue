@@ -947,15 +947,36 @@
 
                     <div class="col-lg-4">
                       <div class="mb-3">
-                        <label for="useAvatar" class="form-label">
-                          {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.useAvatar') }}
+                        <label for="useDefaultAvatar" class="form-label">
+                          {{
+                            $t(
+                              'layout.navbar.user.dropdown.setting.sysConfiguration.useDefaultAvatar',
+                            )
+                          }}
                         </label>
                         <VueSelect
-                          v-model="user.config.useAvatar"
+                          v-model="user.config.useDefaultAvatar"
                           :placeholder="
-                            $t('layout.navbar.user.dropdown.setting.sysConfiguration.useAvatar')
+                            $t(
+                              'layout.navbar.user.dropdown.setting.sysConfiguration.useDefaultAvatar',
+                            )
                           "
-                          :options="[true, false]"
+                          :options="[
+                            {
+                              label: $t(
+                                'layout.navbar.user.dropdown.setting.sysConfiguration.useDefaultAvatar.true',
+                              ),
+                              value: true,
+                            },
+                            {
+                              label: $t(
+                                'layout.navbar.user.dropdown.setting.sysConfiguration.useDefaultAvatar.false',
+                              ),
+                              value: false,
+                            },
+                          ]"
+                          :reduce="(item) => item.value"
+                          label="label"
                           :clearable="false"
                         >
                           <template v-slot:no-options="{ search, searching }">
@@ -980,7 +1001,22 @@
                           :placeholder="
                             $t('layout.navbar.user.dropdown.setting.sysConfiguration.waterMark')
                           "
-                          :options="[true, false]"
+                          :options="[
+                            {
+                              label: $t(
+                                'layout.navbar.user.dropdown.setting.sysConfiguration.waterMark.true',
+                              ),
+                              value: true,
+                            },
+                            {
+                              label: $t(
+                                'layout.navbar.user.dropdown.setting.sysConfiguration.waterMark.false',
+                              ),
+                              value: false,
+                            },
+                          ]"
+                          :reduce="(item) => item.value"
+                          label="label"
                           :clearable="false"
                         >
                           <template v-slot:no-options="{ search, searching }">

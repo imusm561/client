@@ -125,7 +125,12 @@
       <VueSelect
         v-model="column.cfg.multiple"
         :placeholder="$t('layout.navbar.helper.form.column.config.multiple')"
-        :options="[true, false]"
+        :options="[
+          { label: $t('layout.navbar.helper.form.column.config.multiple.true'), value: true },
+          { label: $t('layout.navbar.helper.form.column.config.multiple.false'), value: false },
+        ]"
+        :reduce="(item) => item.value"
+        label="label"
         :clearable="false"
       >
         <template v-slot:no-options="{ search, searching }">
@@ -142,7 +147,12 @@
       <VueSelect
         v-model="column.cfg.qrable"
         :placeholder="$t('layout.navbar.helper.form.column.config.qrable')"
-        :options="[true, false]"
+        :options="[
+          { label: $t('layout.navbar.helper.form.column.config.qrable.true'), value: true },
+          { label: $t('layout.navbar.helper.form.column.config.qrable.false'), value: false },
+        ]"
+        :reduce="(item) => item.value"
+        label="label"
         :clearable="false"
       >
         <template v-slot:no-options="{ search, searching }">

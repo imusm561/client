@@ -22,12 +22,20 @@ input:-webkit-autofill {
 }
 
 .bg-avatar {
-  background-color: #eae3f5;
+  background-color: #858585;
+}
+
+.bg-default-avatar {
+  background-color: #dbdbdb;
 }
 
 [data-theme='dark'] {
   .bg-avatar {
     background-color: #9c9c9c;
+  }
+
+  .bg-default-avatar {
+    background-color: #c9c9c9;
   }
 }
 
