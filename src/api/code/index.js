@@ -32,3 +32,7 @@ export const renameCode = (data) => {
 export const saveCode = (data) => {
   return axios.post('/cor/code/save', data);
 };
+
+export const dropCode = (data) => {
+  return axios.post('/cor/code/drop', data);
+};

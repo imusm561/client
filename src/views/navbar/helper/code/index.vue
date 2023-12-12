@@ -24,8 +24,10 @@
               @node-expand="(data) => handleNodeToggle(data, true)"
               @node-collapse="(data) => handleNodeToggle(data, false)"
               node-key="path"
-              :draggable="false"
-              :expand-on-click-node="false"
+              draggable
+              :allow-drop="allowDrop"
+              :allow-drag="allowDrag"
+              @node-drop="handleDropCode"
               @node-click="handleClickPath"
             >
               <template #default="{ node }">
@@ -316,6 +318,7 @@ import {
   deleteCode,
   renameCode,
   saveCode,
+  dropCode,
 } from '@api/code';
 export default {
   components: {
@@ -529,6 +532,41 @@ export default {
         if (index != -1) defaultExpandKeys.value.splice(index, 1);
       }
       removeChildrenKeys(data);
+    };
+
+    const allowDrop = (draggingNode, dropNode, type) => {
+      console.log(draggingNode, dropNode);
+      return (
+        type === 'inner' &&
+        dropNode.data.type === 'directory' &&
+        dropNode.data.path != 'public' &&
+        !dropNode.data.children.some((item) => item.name === draggingNode.data.name)
+      );
+    };
+
+    const allowDrag = (draggingNode) => {
+      return !['logs', 'public', 'public/client', 'scripts', 'scripts'].includes(
+        draggingNode.data.path,
+      );
+    };
+
+    const handleDropCode = (draggingNode, dropNode) => {
+      dropCode({ source: draggingNode.data, destination: dropNode.data.path }).then(
+        ({ code, msg }) => {
+          if (code === 200) {
+            handleGetCodeDirs();
+          } else {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: msg,
+              },
+            });
+          }
+        },
+      );
     };
 
     let timer = null;
@@ -824,6 +862,9 @@ export default {
       handleGetCodeDirs,
       defaultExpandKeys,
       handleNodeToggle,
+      allowDrop,
+      allowDrag,
+      handleDropCode,
       handleClickPath,
       getUserInfo,
       handleEditFileName,
