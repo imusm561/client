@@ -216,6 +216,7 @@
   "layout.navbar.helper.forms.empty": "暂无表单",
   "layout.navbar.helper.form.create": "由{user}创建于{time}",
   "layout.navbar.helper.form.update": "由{user}更新于{time}",
+  "layout.navbar.helper.form.copy": "复制",
   "layout.navbar.helper.form.modified": "请先保存表单设计！",
   "layout.navbar.helper.form.confirmBackupFormDataModal.title": "备份表单确认",
   "layout.navbar.helper.form.confirmBackupFormDataModal.confirm.before": "请输入",

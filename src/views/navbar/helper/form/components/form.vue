@@ -47,6 +47,11 @@
                     ></i>
                     <i
                       v-if="!node.data.children"
+                      class="cursor-pointer fs-16 text-success mdi mdi-mdi mdi-content-copy"
+                      @click.stop="handleCopyForm(node)"
+                    ></i>
+                    <i
+                      v-if="!node.data.children"
                       class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline"
                       @click.stop="handleConfirmDelForm(node)"
                       data-bs-toggle="modal"
@@ -1359,9 +1364,9 @@ export default {
       }
     };
 
-    const handleDropForm = (draggingNode, dropNode, dropType) => {
+    const handleDropForm = (draggingNode, dropNode, type) => {
       const updates = [];
-      if (dropType == 'inner') {
+      if (type == 'inner') {
         dropNode.childNodes.forEach((node, index) => {
           const update = { id: node.data.id, pid: dropNode.data.id, sort: index + 1 };
           const origin = forms.value.find((form) => form.id === update.id);
@@ -1383,6 +1388,39 @@ export default {
       dropForm({ forms: updates }).then(({ code, msg }) => {
         if (code === 200) {
           fetchForms(draggingNode.data.id);
+          getUserData();
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    };
+
+    const handleCopyForm = (node) => {
+      const data = JSON.parse(JSON.stringify(node.data));
+      data.tid = data.id;
+      delete data.id;
+      delete data.uuid;
+      delete data.created_at;
+      delete data.created_by;
+      delete data.updated_at;
+      delete data.updated_by;
+      delete data.route;
+      delete data.flow;
+      delete data.alias;
+      data.data_state = 'published';
+      data.title = `${data.title}-${i18n.global.t('layout.navbar.helper.form.copy')}`;
+      data.sort = data.sort - 1;
+
+      createForm(data).then(({ code, data, msg }) => {
+        if (code === 200) {
+          fetchForms(data.id);
           getUserData();
         } else {
           toast({
@@ -1823,6 +1861,7 @@ export default {
       handleEditFormTitle,
       handleSaveFormTitle,
       handleDropForm,
+      handleCopyForm,
       handleConfirmDelForm,
       handleDelForm,
 

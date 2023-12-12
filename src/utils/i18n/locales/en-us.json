@@ -216,6 +216,7 @@
   "layout.navbar.helper.forms.empty": "Empty",
   "layout.navbar.helper.form.create": "Created by {user} At {time}",
   "layout.navbar.helper.form.update": "Updated by {user} At {time}",
+  "layout.navbar.helper.form.copy": "Copy",
   "layout.navbar.helper.form.modified": "Save Form First!",
   "layout.navbar.helper.form.confirmBackupFormDataModal.title": "Backup Form Confirm",
   "layout.navbar.helper.form.confirmBackupFormDataModal.confirm.before": "Please enter",
