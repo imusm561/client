@@ -24,7 +24,7 @@
           </div>
         </div>
         <div v-if="chats.length" class="chat-message-list mb-4">
-          <div class="list-unstyled chat-list chat-user-list">
+          <div class="list-unstyled chat-item chat-user-list">
             <li
               class
               v-for="chat in chats"
@@ -84,7 +84,7 @@
           </div>
         </div>
         <div class="chat-message-list">
-          <div class="list-unstyled chat-list chat-user-list">
+          <div class="list-unstyled chat-item chat-user-list">
             <li
               class
               v-for="contact in contacts"
@@ -205,149 +205,153 @@
                       {{ $t('app.chat.loading') }}
                     </button>
                   </li>
-                  <li
-                    v-for="(data, index) in current_chat.chat_data"
-                    :key="index"
-                    :class="{
-                      right: data.sender == $store.state.user.data.username,
-                      left: data.sender == current_chat.username,
-                    }"
-                    class="chat-list"
-                  >
-                    <div class="conversation-list">
-                      <!-- <div
+                  <template v-for="(data, index) in current_chat.chat_data" :key="index">
+                    <small
+                      class="text-muted chat-date time"
+                      v-if="
+                        index === 0 ||
+                        (index > 0 &&
+                          $moment(current_chat.chat_data[index].created_at).format('YYYYMMDD') !=
+                            $moment(current_chat.chat_data[index - 1].created_at).format(
+                              'YYYYMMDD',
+                            )) ||
+                        (index === current_chat.chat_data.length - 1 &&
+                          $moment(current_chat.chat_data[index].created_at).format('YYYYMMDD') !=
+                            $moment().format('YYYYMMDD'))
+                      "
+                    >
+                      {{ $moment(data.created_at).format('ll') }}
+                      {{ $moment(data.created_at).format('dddd') }}
+                    </small>
+                    <li
+                      :class="{
+                        right: data.sender == $store.state.user.data.username,
+                        left: data.sender == current_chat.username,
+                      }"
+                      class="chat-item"
+                    >
+                      <div class="conversation-list">
+                        <!-- <div
                         class="chat-avatar"
                         v-if="data.sender != $store.state.user.data.username"
                       >
                         <Avatar :data="current_chat" />
                       </div> -->
-                      <div class="user-chat-content">
-                        <div class="ctext-wrap">
-                          <div class="ctext-wrap-content">
-                            <span v-if="data.quote && data.quote.id" class="mb-0 ctext-content">
-                              <span class="d-flex justify-content-between">
-                                <p class="me-3">
-                                  “
-                                  {{ getUserInfo(data.quote.sender).fullname }}
-                                </p>
-                                <small class="text-muted time">
-                                  <span
-                                    v-if="
-                                      $moment(data.quote.created_at).format('YYYYMMDD') !=
-                                      $moment().format('YYYYMMDD')
-                                    "
-                                  >
-                                    {{ $moment(data.created_at).format('lll') }}
-                                  </span>
-                                  <span v-else>{{ $moment(data.created_at).format('HH:mm') }}</span>
-                                </small>
+                        <div class="user-chat-content">
+                          <div class="ctext-wrap">
+                            <div class="ctext-wrap-content">
+                              <span v-if="data.quote && data.quote.id" class="mb-0 ctext-content">
+                                <span class="d-flex justify-content-between">
+                                  <p class="me-3">
+                                    “
+                                    {{ getUserInfo(data.quote.sender).fullname }}
+                                  </p>
+                                  <small class="text-muted time">
+                                    <span
+                                      v-if="
+                                        $moment(data.quote.created_at).format('YYYYMMDD') !=
+                                        $moment().format('YYYYMMDD')
+                                      "
+                                    >
+                                      {{ $moment(data.created_at).format('lll') }}
+                                    </span>
+                                    <span v-else>
+                                      {{ $moment(data.created_at).format('HH:mm') }}
+                                    </span>
+                                  </small>
+                                </span>
+                                <Message
+                                  :item="data.quote"
+                                  @viewImage="
+                                    () => {
+                                      const file = JSON.parse(decryptData(data.quote.message));
+                                      if (file.category === 'image')
+                                        $viewerApi({
+                                          options: {
+                                            focus: false,
+                                            movable: false,
+                                            initialViewIndex: 0,
+                                          },
+                                          images: [`${BASE_URL}cor/file/load/${file.uuid}`],
+                                        });
+                                    }
+                                  "
+                                />
+                                <hr />
                               </span>
                               <Message
-                                :item="data.quote"
+                                :item="data"
                                 @viewImage="
                                   () => {
-                                    const file = JSON.parse(decryptData(data.quote.message));
-                                    if (file.category === 'image')
-                                      $viewerApi({
-                                        options: {
-                                          focus: false,
-                                          movable: false,
-                                          initialViewIndex: 0,
-                                        },
-                                        images: [`${BASE_URL}cor/file/load/${file.uuid}`],
-                                      });
+                                    const file = JSON.parse(decryptData(data.message));
+                                    const images = current_chat.chat_data
+                                      .filter((item) => item.type === 'file')
+                                      .map((item) => {
+                                        return JSON.parse(decryptData(item.message));
+                                      })
+                                      .filter((image) => image.category === 'image');
+                                    $viewerApi({
+                                      options: {
+                                        focus: false,
+                                        movable: false,
+                                        initialViewIndex: images.findIndex(
+                                          (image) => image.uuid == file.uuid,
+                                        ),
+                                      },
+                                      images: images.map((image) => {
+                                        return `${BASE_URL}cor/file/load/${image.uuid}`;
+                                      }),
+                                    });
                                   }
                                 "
                               />
-                              <hr />
-                            </span>
-                            <Message
-                              :item="data"
-                              @viewImage="
-                                () => {
-                                  const file = JSON.parse(decryptData(data.message));
-                                  const images = current_chat.chat_data
-                                    .filter((item) => item.type === 'file')
-                                    .map((item) => {
-                                      return JSON.parse(decryptData(item.message));
-                                    })
-                                    .filter((image) => image.category === 'image');
-                                  $viewerApi({
-                                    options: {
-                                      focus: false,
-                                      movable: false,
-                                      initialViewIndex: images.findIndex(
-                                        (image) => image.uuid == file.uuid,
-                                      ),
-                                    },
-                                    images: images.map((image) => {
-                                      return `${BASE_URL}cor/file/load/${image.uuid}`;
-                                    }),
-                                  });
-                                }
-                              "
-                            />
-                          </div>
-                          <div class="dropdown align-self-start message-box-drop">
-                            <a
-                              class="dropdown-toggle"
-                              role="button"
-                              @click="handleClickQuote(data)"
-                            >
-                              <i class="mdi mdi-comment-quote-outline text-muted align-bottom"></i>
-                            </a>
-                          </div>
-                          <div class="conversation-name">
-                            <small class="text-muted time">
+                            </div>
+                            <div class="dropdown align-self-start message-box-drop">
+                              <a
+                                class="dropdown-toggle fs-13"
+                                role="button"
+                                @click="handleClickQuote(data)"
+                              >
+                                <i
+                                  class="mdi mdi-comment-quote-outline text-muted align-bottom"
+                                ></i>
+                              </a>
+                            </div>
+                            <div class="conversation-name">
+                              <small class="text-muted time">
+                                <span>{{ $moment(data.created_at).format('HH:mm') }}</span>
+                              </small>
+                              <span class="text-success check-message-icon">
+                                <i
+                                  :class="`mdi mdi-${
+                                    data.id === 0
+                                      ? 'spin mdi-loading'
+                                      : data.receiver_read
+                                      ? 'check-all'
+                                      : 'check'
+                                  } align-bottom`"
+                                ></i>
+                              </span>
                               <span
                                 v-if="
-                                  index === 0 ||
-                                  (index > 0 &&
-                                    $moment(current_chat.chat_data[index].created_at).format(
-                                      'YYYYMMDD',
-                                    ) !=
-                                      $moment(current_chat.chat_data[index - 1].created_at).format(
-                                        'YYYYMMDD',
-                                      )) ||
-                                  (index === current_chat.chat_data.length - 1 &&
-                                    $moment(current_chat.chat_data[index].created_at).format(
-                                      'YYYYMMDD',
-                                    ) != $moment().format('YYYYMMDD'))
+                                  data.id &&
+                                  ($moment().valueOf() - $moment(data.created_at).valueOf()) /
+                                    1000 <
+                                    120 &&
+                                  data.sender === $store.state.user.data.username &&
+                                  !data.receiver_read
                                 "
+                                class="text-primary check-message-icon cursor-pointer"
+                                @click="handleWithdrawMsg(data)"
                               >
-                                {{ $moment(data.created_at).format('llll') }}
+                                <i class="mdi mdi-restart align-bottom"></i>
                               </span>
-                              <span v-else>{{ $moment(data.created_at).format('HH:mm') }}</span>
-                            </small>
-                            <span class="text-success check-message-icon">
-                              <i
-                                :class="`mdi mdi-${
-                                  data.id === 0
-                                    ? 'spin mdi-loading'
-                                    : data.receiver_read
-                                    ? 'check-all'
-                                    : 'check'
-                                } align-bottom`"
-                              ></i>
-                            </span>
-                            <span
-                              v-if="
-                                data.id &&
-                                ($moment().valueOf() - $moment(data.created_at).valueOf()) / 1000 <
-                                  120 &&
-                                data.sender === $store.state.user.data.username &&
-                                !data.receiver_read
-                              "
-                              class="text-primary check-message-icon cursor-pointer"
-                              @click="handleWithdrawMsg(data)"
-                            >
-                              <i class="mdi mdi-restart align-bottom"></i>
-                            </span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </li>
+                    </li>
+                  </template>
                 </ul>
               </div>
             </div>

@@ -608,11 +608,14 @@ export default {
     };
 
     const handleChangeTaskProgress = (e) => {
-      for (let index = 0; index < statuses.value.length; index++) {
-        const status = statuses.value[index];
-        if (status.condition({ progress: Number(e.target.value || 0) })) {
-          current_task.value.status = status.value;
-          break;
+      const current = statuses.value.find((item) => item.value === current_task.value.status);
+      if (!current.condition({ progress: Number(e.target.value || 0) })) {
+        for (let index = 0; index < statuses.value.length; index++) {
+          const status = statuses.value[index];
+          if (status.condition({ progress: Number(e.target.value || 0) })) {
+            current_task.value.status = status.value;
+            break;
+          }
         }
       }
     };

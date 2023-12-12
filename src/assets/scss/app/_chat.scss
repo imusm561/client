@@ -19,7 +19,12 @@
   }
 }
 
-.chat-list {
+.chat-date {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10px;
+}
+.chat-item {
   margin: 0;
 
   > li {
@@ -204,7 +209,7 @@
     }
   }
 
-  .chat-list {
+  .chat-item {
     &.left {
       .check-message-icon {
         display: none;
@@ -307,9 +312,8 @@
     .conversation-name {
       font-weight: $font-weight-medium;
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
+      align-items: flex-start;
+      gap: 5px;
     }
 
     .dropdown {
@@ -396,7 +400,7 @@
           order: 2;
           background-color: $chat-content-bg;
           color: $chat-content-color;
-          text-align: right;
+          text-align: left;
           box-shadow: $box-shadow-lg;
 
           .replymessage-block {
