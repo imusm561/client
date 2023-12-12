@@ -247,16 +247,15 @@
                                     {{ getUserInfo(data.quote.sender).fullname }}
                                   </p>
                                   <small class="text-muted time">
-                                    <span
-                                      v-if="
-                                        $moment(data.quote.created_at).format('YYYYMMDD') !=
-                                        $moment().format('YYYYMMDD')
-                                      "
-                                    >
-                                      {{ $moment(data.created_at).format('lll') }}
-                                    </span>
-                                    <span v-else>
-                                      {{ $moment(data.created_at).format('HH:mm') }}
+                                    <span>
+                                      {{
+                                        $moment(data.quote.created_at).format(
+                                          $moment(data.quote.created_at).format('YYYYMMDD') !=
+                                            $moment().format('YYYYMMDD')
+                                            ? 'llll'
+                                            : 'HH:mm',
+                                        )
+                                      }}
                                     </span>
                                   </small>
                                 </span>
