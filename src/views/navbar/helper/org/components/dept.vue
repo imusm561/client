@@ -141,7 +141,7 @@ export default {
         return true;
       }
     };
-    
+
     const allowDrag = (draggingNode) => {
       return draggingNode.data.id != 1;
     };
