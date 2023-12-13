@@ -341,7 +341,7 @@ export default defineComponent({
         if (categories[category].includes(file.extension)) fileCategory = category;
       }
       file['category'] = fileCategory;
-      emit('file-added', file);
+      emit('file-add', file);
       computeFile(file);
       nextTick(() => {
         setTimeout(() => {
