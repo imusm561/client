@@ -295,6 +295,42 @@ input:-webkit-autofill {
   opacity: 0 !important;
 }
 
+.ag-theme-alpine {
+  .single-avatar {
+    height: 40px;
+    .avatar-title {
+      margin-top: 0px;
+    }
+  }
+  .multiple-avatar {
+    .avatar-title {
+      margin-top: 4px;
+    }
+  }
+}
+
+.ag-theme-balham {
+  .single-avatar {
+    margin-top: -0.2px;
+    .avatar-title {
+      margin-top: -1px;
+    }
+  }
+  .multiple-avatar {
+    margin-top: 0px;
+    .avatar-title {
+      margin-top: 1px;
+    }
+  }
+}
+
+.single-avatar,
+.multiple-avatar {
+  img {
+    margin-bottom: 3px;
+  }
+}
+
 #activeChart {
   .apexcharts-legend-text {
     margin: 6px 4px 0 4px;

@@ -1,6 +1,6 @@
 <template>
   <span v-if="theme === 'alpine'">
-    <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)">
+    <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)" class="multiple-avatar">
       <Avatar
         v-if="Array.isArray(params.value)"
         :data="
@@ -12,7 +12,7 @@
       />
     </span>
     <span v-else>
-      <span v-if="user" class="d-flex align-items-center">
+      <span v-if="user" class="single-avatar d-flex align-items-center">
         <Avatar :data="user" size="xs" />
         <span class="d-flex flex-column ms-1" style="line-height: 100%">
           <span class="fs-14">{{ user.fullname }}</span>
@@ -22,10 +22,9 @@
     </span>
   </span>
   <span v-else style="line-height: inherit" class="align-items-center d-flex">
-    <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)">
+    <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)" class="multiple-avatar">
       <Avatar
         v-if="Array.isArray(params.value)"
-        style="margin-top: -1px"
         :data="
           params.value.length
             ? $store.state.org.users.filter((user) => params.value.includes(user.username))
@@ -35,8 +34,8 @@
       />
     </span>
     <span v-else>
-      <span v-if="user" class="d-flex align-items-center">
-        <Avatar style="margin-top: -1px" :data="user" size="xxs" />
+      <span v-if="user" class="single-avatar d-flex align-items-center">
+        <Avatar :data="user" size="xxs" />
         <span class="ms-1">
           {{ user.fullname }}
           <small class="text-muted">[{{ user.username }}]</small>

@@ -51,7 +51,7 @@
     <img
       v-if="user[keyAvatar]"
       :src="`${BASE_URL}${user[keyAvatar]}`"
-      :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail && 'img-thumbnail'}`"
+      :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail ? 'img-thumbnail' : ''}`"
       loading="lazy"
     />
     <img
@@ -71,13 +71,15 @@
             }.png`)
           : require(`@/assets/images/avatar/${user[keyUsername] === 0 ? 'all' : 'group'}.png`)
       "
-      :class="`avatar-${size} rounded-circle bg-default-avatar p-1 ${thumbnail && 'img-thumbnail'}`"
+      :class="`avatar-${size} rounded-circle bg-default-avatar p-1 ${
+        thumbnail ? 'img-thumbnail' : ''
+      }`"
       loading="lazy"
     />
     <div v-else :class="`avatar-${size} rounded-circle`">
       <div
         :class="`avatar-title rounded-circle bg-avatar text-light ${fs[size]} ${
-          thumbnail && 'img-thumbnail'
+          thumbnail ? 'img-thumbnail' : ''
         }`"
       >
         {{
