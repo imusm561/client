@@ -1314,13 +1314,11 @@ export default {
       batch.value.columns = [];
       batch.value.column = null;
 
-      for (let index = 0; index < columns.value.length; index++) {
-        const column = columns.value[index];
-        await replaceColumnVariables(column);
-        await setColumnConfiguration(column);
-        await setColumnRules(column);
+      columns.value.forEach((column) => {
+        replaceColumnVariables(column);
+        setColumnConfiguration(column);
+        setColumnRules(column);
 
-        // batch.value.column = [];
         if (
           !column.component.includes('Basic') &&
           column.type &&
@@ -1345,7 +1343,8 @@ export default {
           if (hasTab) defs[defs.length - 1].children.push(generateColumnDef(column));
           else defs.push(generateColumnDef(column));
         }
-      }
+      });
+
       columnDefs.value = defs;
     };
 
