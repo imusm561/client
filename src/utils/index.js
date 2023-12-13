@@ -567,3 +567,25 @@ export const generateFlowByCurrentUser = (flow) => {
     return [];
   }
 };
+
+export const debounce = (fn, delay) => {
+  let timer = null;
+  return (...param) => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn(...param);
+    }, delay);
+  };
+};
+
+export const throttle = (fn, delay) => {
+  let timer = null;
+  return (...params) => {
+    if (!timer) {
+      timer = setTimeout(() => {
+        fn(...params);
+        timer = null;
+      }, delay);
+    }
+  };
+};

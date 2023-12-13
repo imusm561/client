@@ -571,6 +571,7 @@ import {
   replaceHtml,
   decryptData,
   copyToClipboard,
+  debounce,
 } from '@utils';
 import { setWatermark } from '@utils/watermark';
 import Avatar from '@components/Avatar';
@@ -603,7 +604,7 @@ export default {
         icon: [],
       },
     });
-    const handleSearch = () => {
+    const handleSearch = debounce(() => {
       if (!search.keyword) return;
       search.keyword = search.keyword.trim();
 
@@ -668,7 +669,7 @@ export default {
         search.keyword.length > 2
           ? icons.filter((icon) => icon.name?.toLowerCase().includes(search.keyword?.toLowerCase()))
           : [];
-    };
+    }, 500);
 
     const handleEnter = () => {
       if (!search.keyword) return;

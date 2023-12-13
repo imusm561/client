@@ -426,7 +426,7 @@ import { VueDraggableNext } from 'vue-draggable-next';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import store from '@store';
-import { replaceHtml, getUserInfo } from '@utils';
+import { replaceHtml, getUserInfo, debounce } from '@utils';
 import FlatPickr from '@components/FlatPickr';
 import Avatar from '@components/Avatar';
 import UsersSelector from '@components/UsersSelector';
@@ -607,7 +607,7 @@ export default {
       current_task.value.relates = current_task.value.status;
     };
 
-    const handleChangeTaskProgress = (e) => {
+    const handleChangeTaskProgress = debounce((e) => {
       const current = statuses.value.find((item) => item.value === current_task.value.status);
       if (!current.condition({ progress: Number(e.target.value || 0) })) {
         for (let index = 0; index < statuses.value.length; index++) {
@@ -618,7 +618,7 @@ export default {
           }
         }
       }
-    };
+    }, 500);
 
     const handleSubmitTask = () => {
       if (current_task.value.id) {

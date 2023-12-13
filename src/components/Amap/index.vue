@@ -111,7 +111,7 @@ import { defineComponent, computed, ref, onMounted, onUnmounted } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import store from '@store';
 import i18n from '@utils/i18n';
-import { isLngLat, copyToClipboard } from '@utils';
+import { isLngLat, copyToClipboard, debounce } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 export default defineComponent({
@@ -316,7 +316,7 @@ export default defineComponent({
       if (search_str.value) handleSearchTips();
     };
 
-    const handleSearchTips = (e) => {
+    const handleSearchTips = debounce((e) => {
       tips.value = [];
       pois.value = [];
       autoComplete.search(e?.target?.value || search_str.value, (status, result) => {
@@ -324,7 +324,7 @@ export default defineComponent({
           tips.value = result.tips;
         }
       });
-    };
+    }, 500);
 
     const handleClickTip = (option) => {
       tips.value = [];
