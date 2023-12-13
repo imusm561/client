@@ -153,13 +153,13 @@
       id="code-file-input"
       class="d-none"
       type="file"
+      multiple
       @click="
         (e) => {
           e.target.value = '';
         }
       "
       @change="handleFileInput"
-      accept="application/zip"
     />
 
     <div class="modal fade" id="codeDiffModal" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -754,8 +754,10 @@ export default {
     };
     const handleFileInput = (e) => {
       const formData = new FormData();
-      formData.append('file', e.target.files[0], e.target.files[0].name);
       formData.append('folder', folder.value);
+      Array.from(e.target.files).forEach((file) => {
+        formData.append('file', file, file.name);
+      });
       uploadCode(formData).then(async ({ code, msg }) => {
         if (code === 200) {
           e.target.value = null;
