@@ -52,6 +52,10 @@ export default {
       'color:#f7bc60;',
     );
 
+    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent))
+      document.documentElement.setAttribute('data-safari', 'true');
+    else document.documentElement.removeAttribute('data-safari');
+
     const isRouterAlive = ref(true);
     const reload = () => {
       isRouterAlive.value = false;

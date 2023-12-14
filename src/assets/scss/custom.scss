@@ -324,6 +324,21 @@ input:-webkit-autofill {
   }
 }
 
+[data-safari='true'] .ag-theme-balham {
+  .single-avatar {
+    margin-top: 0.8px;
+    .avatar-title {
+      margin-top: -2px;
+    }
+  }
+  .multiple-avatar {
+    margin-top: 1px;
+    .avatar-title {
+      margin-top: 0px;
+    }
+  }
+}
+
 .single-avatar,
 .multiple-avatar {
   img {
