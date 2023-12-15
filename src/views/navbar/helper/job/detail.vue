@@ -92,6 +92,7 @@
           <div class="card-body">
             <h5>{{ $t('layout.navbar.helper.job.detail.config') }}</h5>
             <MonacoEditor
+              :key="job.id"
               v-model="job.config"
               :options="{
                 readOnly: true,
@@ -223,6 +224,7 @@
           data-bs-dismiss="offcanvas"
         />
         <MonacoEditor
+          :key="current_log.id"
           v-model="current_log.data"
           language="json"
           :options="{

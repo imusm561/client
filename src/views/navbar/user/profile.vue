@@ -465,6 +465,7 @@
           data-bs-dismiss="offcanvas"
         />
         <MonacoEditor
+          :key="current_activity.id"
           v-model="current_activity.data"
           language="json"
           :options="{

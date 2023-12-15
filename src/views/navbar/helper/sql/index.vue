@@ -32,6 +32,7 @@
             data-bs-dismiss="offcanvas"
           />
           <MonacoEditor
+            :key="sql"
             v-model="res"
             language="json"
             :options="{

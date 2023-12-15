@@ -252,6 +252,7 @@
                 height: calc(100% - 2rem - 27.5px);
                 width: calc(100% - 32px);
               "
+              :key="account.id"
               v-model="account.config"
               :options="{
                 readOnly: true,
@@ -452,6 +453,7 @@
           data-bs-dismiss="offcanvas"
         />
         <MonacoEditor
+          :key="current_bind.id"
           v-model="current_bind.userinfo"
           language="json"
           :options="{

@@ -48,6 +48,7 @@
             <div class="d-flex flex-column" style="height: 100%">
               <span class="fs-16">{{ current.key || '*' }}</span>
               <MonacoEditor
+                :key="current.key"
                 v-model="current.detail"
                 language="json"
                 :options="{
@@ -78,6 +79,7 @@
           data-bs-dismiss="offcanvas"
         />
         <MonacoEditor
+          :key="current.key"
           v-model="current.detail"
           language="json"
           :options="{
