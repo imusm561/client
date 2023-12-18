@@ -2,6 +2,7 @@ import { watch } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
 import { clearUserData, getUserInfo, replaceHtml, decryptData } from '@utils';
+import { getSysInfo } from '@api/sys';
 import { getUserData } from '@api/user';
 import router from '@router';
 import { useToast } from 'vue-toastification';
@@ -188,6 +189,12 @@ const initSocket = (socket) => {
         },
       });
     }
+  });
+
+  socket.on('refetchSysInfo', () => {
+    getSysInfo().then(({ code, data }) => {
+      if (code === 200) store.commit('sys/UPDATE_SYS_INFO', data);
+    });
   });
 
   socket.on('refetchUserData', (data = {}) => {
