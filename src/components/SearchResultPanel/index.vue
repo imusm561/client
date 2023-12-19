@@ -67,7 +67,7 @@
             <span>{{ $t(item.title) }}</span>
           </span>
           <span
-            v-if="item?.badge?.text"
+            v-if="item.rid === undefined && item?.badge?.text"
             :class="['badge', 'rounded-pill', `bg-${item.badge.variant || 'primary'}`]"
           >
             {{ item.badge.text }}
@@ -88,7 +88,7 @@
             <span>{{ $t(item.title) }}</span>
           </span>
           <span
-            v-if="item?.badge?.text"
+            v-if="item.rid === undefined && item?.badge?.text"
             :class="['badge', 'rounded-pill', `bg-${item.badge.variant || 'primary'}`]"
           >
             {{ item.badge.text }}
@@ -107,14 +107,16 @@
             <span>{{ $t(item.title) }}</span>
           </span>
           <span
-            v-if="item?.badge?.text"
+            v-if="item.rid === undefined && item?.badge?.text"
             :class="['badge', 'rounded-pill', `bg-${item.badge.variant || 'primary'}`]"
           >
             {{ item.badge.text }}
           </span>
           <span
             v-else-if="
-              $store.state.user.notices[item.id] && $store.state.user.notices[item.id].length
+              item.rid === undefined &&
+              $store.state.user.notices[item.id] &&
+              $store.state.user.notices[item.id].length
             "
             :class="['badge', 'rounded-pill', `bg-${item?.badge?.variant || 'primary'}`]"
           >
@@ -122,6 +124,7 @@
           </span>
           <span
             v-else-if="
+              item.rid === undefined &&
               $store.state.user.notices.flow?.filter((flow) => flow.tid === item.id)?.length
             "
             :class="['badge', 'rounded-pill', `bg-${item?.badge?.variant || 'primary'}`]"
@@ -138,7 +141,7 @@
             <span>{{ $t(item.title) }}</span>
           </span>
           <span
-            v-if="item?.badge?.text"
+            v-if="item.rid === undefined && item?.badge?.text"
             :class="['badge', 'rounded-pill', `bg-${item.badge.variant || 'primary'}`]"
           >
             {{ item.badge.text }}

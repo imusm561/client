@@ -650,6 +650,7 @@ export default {
         search.result.form = search.result.form
           .filter((form) => form.route && !form.redirect && form.status && form.id === tid)
           .map((form) => {
+            form.rid = rid;
             form.title = `${form.title}/${rid}`;
             form.route = {
               path: rid === 0 ? `/data/edit/${tid}/${rid}` : `/data/view/${tid}/${rid}`,
