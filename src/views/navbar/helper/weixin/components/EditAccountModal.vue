@@ -45,32 +45,7 @@
                       "
                       :reduce="(item) => item.value"
                       label="text"
-                      :options="[
-                        {
-                          text: $t(
-                            'layout.navbar.helper.weixin.EditAccountModal.form.serviceType.serviceAccount',
-                          ),
-                          value: 'serviceAccount',
-                        },
-                        {
-                          text: $t(
-                            'layout.navbar.helper.weixin.EditAccountModal.form.serviceType.subscriptionAccount',
-                          ),
-                          value: 'subscriptionAccount',
-                        },
-                        {
-                          text: $t(
-                            'layout.navbar.helper.weixin.EditAccountModal.form.serviceType.miniProgram',
-                          ),
-                          value: 'miniProgram',
-                        },
-                        {
-                          text: $t(
-                            'layout.navbar.helper.weixin.EditAccountModal.form.serviceType.wechatWork',
-                          ),
-                          value: 'wechatWork',
-                        },
-                      ]"
+                      :options="serviceTypeOptions"
                       :clearable="false"
                     >
                       <template v-slot:no-options="{ search, searching }">
@@ -307,6 +282,7 @@ import CKEditor from '@components/CKEditor';
 import MonacoEditor from '@components/MonacoEditor';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
+import useWeixin from '../useWeixin';
 
 export default {
   components: {
@@ -325,6 +301,7 @@ export default {
     const toast = useToast();
     const account = ref({});
     const syntax_error = ref(null);
+    const { serviceTypeOptions } = useWeixin();
 
     watch(
       () => props.data,
@@ -372,6 +349,7 @@ export default {
 
     return {
       account,
+      serviceTypeOptions,
       syntax_error,
       handleSubmitAccount,
     };

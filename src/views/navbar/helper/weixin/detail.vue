@@ -91,31 +91,37 @@
             </div>
             <div class="pt-2 border-top border-top">
               <div class="row">
-                <div class="col-lg-4">
+                <div class="col-lg-5">
                   <dl class="row mb-0">
-                    <dt class="col-sm-4 text-uppercase">
+                    <dt class="col-sm-5 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.title') }}
                     </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.title }}</dd>
-                    <dt class="col-sm-4 text-uppercase">
+                    <dd class="col-sm-7 mb-3">{{ account.title }}</dd>
+                    <dt class="col-sm-5 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.serviceType') }}
                     </dt>
-                    <dd class="col-sm-8 mb-3">
+                    <dd class="col-sm-7 mb-3">
                       {{
                         $t(`layout.navbar.helper.weixin.detail.serviceType.${account.service_type}`)
                       }}
                     </dd>
-                    <dt class="col-sm-4 text-uppercase">
+                    <dt class="col-sm-5 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.soid') }}
                     </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.soid }}</dd>
-                    <dt class="col-sm-4 text-uppercase">
+                    <dd class="col-sm-7 mb-3">{{ account.soid }}</dd>
+                    <dt class="col-sm-5 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.email') }}
                     </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.email }}</dd>
+                    <dd class="col-sm-7 mb-3">{{ account.email }}</dd>
+                  </dl>
+                  <dl v-if="['serviceAccount'].includes(account.service_type)" class="row mb-0">
+                    <dt class="col-sm-4 text-uppercase">
+                      {{ $t('layout.navbar.helper.weixin.detail.mchId') }}
+                    </dt>
+                    <dd class="col-sm-8 mb-3">{{ account.mch_id || '&nbsp;' }}</dd>
                   </dl>
                 </div>
-                <div class="col-lg-8">
+                <div class="col-lg-7">
                   <dl
                     v-if="['serviceAccount', 'subscriptionAccount'].includes(account.service_type)"
                     class="row mb-0"
@@ -140,10 +146,6 @@
                     <dd class="col-sm-8 mb-3">{{ account.app_secret || '&nbsp;' }}</dd>
                   </dl>
                   <dl v-if="['serviceAccount'].includes(account.service_type)" class="row mb-0">
-                    <dt class="col-sm-4 text-uppercase">
-                      {{ $t('layout.navbar.helper.weixin.detail.mchId') }}
-                    </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.mch_id || '&nbsp;' }}</dd>
                     <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.apiKey') }}
                     </dt>
