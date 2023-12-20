@@ -118,6 +118,13 @@ export default function useWeixin() {
       value: 'script',
       for: ['serviceAccount', 'subscriptionAccount', 'miniProgram'],
     },
+    {
+      text: i18n.global.t(
+        'layout.navbar.helper.weixin.detail.strategies.replyType.transfer_customer_service',
+      ),
+      value: 'transfer_customer_service',
+      for: ['serviceAccount', 'subscriptionAccount'],
+    },
   ];
 
   return {

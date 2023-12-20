@@ -538,6 +538,7 @@
   "layout.navbar.helper.weixin.detail.strategies.replyType.music": "音乐消息",
   "layout.navbar.helper.weixin.detail.strategies.replyType.news": "图文消息",
   "layout.navbar.helper.weixin.detail.strategies.replyType.script": "动态脚本",
+  "layout.navbar.helper.weixin.detail.strategies.replyType.transfer_customer_service": "转发到客服",
   "layout.navbar.helper.weixin.detail.strategies.replyScope": "回复范围",
   "layout.navbar.helper.weixin.detail.strategies.replyContent": "回复内容",
   "layout.navbar.helper.weixin.detail.strategies.description": "策略描述",

@@ -538,6 +538,7 @@
   "layout.navbar.helper.weixin.detail.strategies.replyType.music": "Music",
   "layout.navbar.helper.weixin.detail.strategies.replyType.news": "News",
   "layout.navbar.helper.weixin.detail.strategies.replyType.script": "Script",
+  "layout.navbar.helper.weixin.detail.strategies.replyType.transfer_customer_service": "Transfer Customer Service",
   "layout.navbar.helper.weixin.detail.strategies.replyScope": "Reply Scope",
   "layout.navbar.helper.weixin.detail.strategies.replyContent": "Reply Content",
   "layout.navbar.helper.weixin.detail.strategies.description": "Description",
