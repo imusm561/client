@@ -49,7 +49,7 @@ export default [
     component: () => import('@/views/navbar/helper/weixin'),
   },
   {
-    path: '/helper/weixin/:soid',
+    path: '/helper/weixin/:id',
     name: 'weixinDetail',
     meta: { title: 'layout.navbar.helper.weixin.detail', auth: ['OE'] },
     component: () => import('@/views/navbar/helper/weixin/detail'),

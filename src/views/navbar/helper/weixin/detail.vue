@@ -2,7 +2,7 @@
   <div v-if="account.id">
     <Breadcrumb :key="$route" />
     <div class="row">
-      <div class="col-xl-8">
+      <div :class="account.service_type === '3rdPartyPlatform' ? 'col-12' : 'col-xl-8'">
         <div class="card card-height-100">
           <div class="card-body pb-0">
             <div class="align-items-center d-flex justify-content-between">
@@ -105,51 +105,71 @@
                         $t(`layout.navbar.helper.weixin.detail.serviceType.${account.service_type}`)
                       }}
                     </dd>
-                    <dt class="col-sm-5 text-uppercase">
-                      {{ $t('layout.navbar.helper.weixin.detail.soid') }}
-                    </dt>
-                    <dd class="col-sm-7 mb-3">{{ account.soid }}</dd>
-                    <dt class="col-sm-5 text-uppercase">
-                      {{ $t('layout.navbar.helper.weixin.detail.email') }}
-                    </dt>
-                    <dd class="col-sm-7 mb-3">{{ account.email }}</dd>
-                  </dl>
-                  <dl v-if="['serviceAccount'].includes(account.service_type)" class="row mb-0">
-                    <dt class="col-sm-4 text-uppercase">
-                      {{ $t('layout.navbar.helper.weixin.detail.mchId') }}
-                    </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.mch_id || '&nbsp;' }}</dd>
+                    <template v-if="account.service_type != '3rdPartyPlatform'">
+                      <dt class="col-sm-5 text-uppercase">
+                        {{ $t('layout.navbar.helper.weixin.detail.soid') }}
+                      </dt>
+                      <dd class="col-sm-7 mb-3">{{ account.soid }}</dd>
+                    </template>
+                    <template v-if="!account.platform">
+                      <dt class="col-sm-5 text-uppercase">
+                        {{ $t('layout.navbar.helper.weixin.detail.email') }}
+                      </dt>
+                      <dd class="col-sm-7 mb-3">{{ account.email }}</dd>
+                    </template>
+                    <template
+                      v-if="['serviceAccount'].includes(account.service_type)"
+                      class="row mb-0"
+                    >
+                      <dt class="col-sm-5 text-uppercase">
+                        {{ $t('layout.navbar.helper.weixin.detail.mchId') }}
+                      </dt>
+                      <dd class="col-sm-6 mb-3">{{ account.mch_id || '-' }}</dd>
+                    </template>
                   </dl>
                 </div>
                 <div class="col-lg-7">
-                  <dl
-                    v-if="['serviceAccount', 'subscriptionAccount'].includes(account.service_type)"
-                    class="row mb-0"
-                  >
-                    <dt class="col-sm-4 text-uppercase">
-                      {{ $t('layout.navbar.helper.weixin.detail.token') }}
-                    </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.token || '&nbsp;' }}</dd>
-                    <dt class="col-sm-4 text-uppercase">
-                      {{ $t('layout.navbar.helper.weixin.detail.encodingAESKey') }}
-                    </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.encoding_aes_key || '&nbsp;' }}</dd>
-                  </dl>
                   <dl class="row mb-0">
+                    <template
+                      v-if="
+                        !account.platform &&
+                        ['serviceAccount', 'subscriptionAccount'].includes(account.service_type)
+                      "
+                    >
+                      <dt class="col-sm-4 text-uppercase">
+                        {{ $t('layout.navbar.helper.weixin.detail.token') }}
+                      </dt>
+                      <dd class="col-sm-8 mb-3">{{ account.token || '-' }}</dd>
+                      <dt class="col-sm-4 text-uppercase">
+                        {{ $t('layout.navbar.helper.weixin.detail.encodingAESKey') }}
+                      </dt>
+                      <dd class="col-sm-8 mb-3">{{ account.encoding_aes_key || '-' }}</dd>
+                    </template>
+                    <template v-if="account.platform">
+                      <dt class="col-sm-4 text-uppercase">
+                        {{ $t('layout.navbar.helper.weixin.detail.platform') }}
+                      </dt>
+                      <dd class="col-sm-8 mb-3">
+                        {{ accounts.find((item) => item.app_id === account.platform)?.title }}
+                      </dd>
+                    </template>
+
                     <dt class="col-sm-4 text-uppercase">
                       {{ $t('layout.navbar.helper.weixin.detail.appId') }}
                     </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.app_id || '&nbsp;' }}</dd>
-                    <dt class="col-sm-4 text-uppercase">
-                      {{ $t('layout.navbar.helper.weixin.detail.appSecret') }}
-                    </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.app_secret || '&nbsp;' }}</dd>
-                  </dl>
-                  <dl v-if="['serviceAccount'].includes(account.service_type)" class="row mb-0">
-                    <dt class="col-sm-4 text-uppercase">
-                      {{ $t('layout.navbar.helper.weixin.detail.apiKey') }}
-                    </dt>
-                    <dd class="col-sm-8 mb-3">{{ account.api_key || '&nbsp;' }}</dd>
+                    <dd class="col-sm-8 mb-3">{{ account.app_id || '-' }}</dd>
+                    <template v-if="!account.platform">
+                      <dt class="col-sm-4 text-uppercase">
+                        {{ $t('layout.navbar.helper.weixin.detail.appSecret') }}
+                      </dt>
+                      <dd class="col-sm-8 mb-3">{{ account.app_secret || '-' }}</dd>
+                    </template>
+                    <template v-if="['serviceAccount'].includes(account.service_type)">
+                      <dt class="col-sm-4 text-uppercase">
+                        {{ $t('layout.navbar.helper.weixin.detail.apiKey') }}
+                      </dt>
+                      <dd class="col-sm-8 mb-3">{{ account.api_key || '-' }}</dd>
+                    </template>
                   </dl>
                 </div>
               </div>
@@ -165,20 +185,38 @@
                     ></i>
                   </dt>
                   <dd class="col-sm-9 mb-3" style="word-break: break-all">
-                    {{ account.access_token || '&nbsp;' }}
+                    {{ account.access_token || '-' }}
                   </dd>
                   <dt class="col-sm-3 text-uppercase">
-                    {{ $t('layout.navbar.helper.weixin.detail.accessTokenTme') }}
+                    {{ $t('layout.navbar.helper.weixin.detail.accessTokenTime') }}
                   </dt>
                   <dd class="col-sm-9 mb-3">
                     {{
                       account.access_token_time
                         ? $moment(account.access_token_time).format('llll')
-                        : '&nbsp;'
+                        : '-'
                     }}
                   </dd>
                 </dl>
-                <dl class="row mb-0">
+                <dl class="row mb-0" v-if="account.service_type === '3rdPartyPlatform'">
+                  <dt class="col-sm-3 text-uppercase">
+                    {{ $t('layout.navbar.helper.weixin.detail.refreshToken') }}
+                  </dt>
+                  <dd class="col-sm-9 mb-3" style="word-break: break-all">
+                    {{ account.refresh_token || '-' }}
+                  </dd>
+                  <dt class="col-sm-3 text-uppercase">
+                    {{ $t('layout.navbar.helper.weixin.detail.refreshTokenTime') }}
+                  </dt>
+                  <dd class="col-sm-9 mb-3">
+                    {{
+                      account.refresh_token_time
+                        ? $moment(account.refresh_token_time).format('llll')
+                        : '-'
+                    }}
+                  </dd>
+                </dl>
+                <dl class="row mb-0" v-else>
                   <dt class="col-sm-3 text-uppercase">
                     {{ $t('layout.navbar.helper.weixin.detail.jsapiTicket') }}
                     <i
@@ -187,7 +225,7 @@
                     ></i>
                   </dt>
                   <dd class="col-sm-9 mb-3" style="word-break: break-all">
-                    {{ account.jsapi_ticket || '&nbsp;' }}
+                    {{ account.jsapi_ticket || '-' }}
                   </dd>
                   <dt class="col-sm-3 text-uppercase">
                     {{ $t('layout.navbar.helper.weixin.detail.jsapiTicketTime') }}
@@ -196,7 +234,7 @@
                     {{
                       account.jsapi_ticket_time
                         ? $moment(account.jsapi_ticket_time).format('llll')
-                        : '&nbsp;'
+                        : '-'
                     }}
                   </dd>
                 </dl>
@@ -229,7 +267,7 @@
           </div>
         </div>
       </div>
-      <div class="col-xl-4">
+      <div :class="account.service_type === '3rdPartyPlatform' ? 'col-12' : 'col-xl-4'">
         <div class="card card-height-100" style="min-height: 40vh">
           <div class="card-body">
             <div class="align-items-center d-flex justify-content-between">
@@ -245,6 +283,12 @@
                     class="fs-16 mdi mdi-refresh text-info"
                     @click="handleRefreshAccount('menu')"
                   ></i>
+                </button>
+                <button
+                  class="btn btn-sm p-0 ms-2"
+                  v-if="account.service_type === '3rdPartyPlatform'"
+                >
+                  <i class="fs-16 mdi mdi-qrcode-scan text-info" @click="handleAuthorize()"></i>
                 </button>
               </div>
             </div>
@@ -265,7 +309,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" v-if="account.service_type != '3rdPartyPlatform'">
       <div class="card-header">
         <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0">
           <li class="nav-item">
@@ -1032,7 +1076,7 @@
       </div>
     </div>
 
-    <EditAccountModal :data="_account" @submit="fetchAccountInfo()" />
+    <EditAccountModal :data="_account" :accounts="accounts" @submit="fetchAccountInfo()" />
     <DeleteAccountModal :data="_account" @confirm="$router.replace({ name: 'weixin' })" />
   </div>
 </template>
@@ -1049,6 +1093,7 @@ import {
   updateStrategy,
   refreshAccount,
   getQRCode,
+  getAuthUrl,
 } from '@api/weixin';
 import { useToast } from 'vue-toastification';
 import useWeixin from './useWeixin';
@@ -1074,13 +1119,16 @@ export default {
     const { msgTypeOptions, replyTypeOptions } = useWeixin();
 
     const toast = useToast();
+    const accounts = ref([]);
     const account = ref({});
     const _account = ref({});
 
-    const fetchAccountInfo = () => {
-      getAccountDetail({ soid: route.value.params.soid }).then(({ code, data, msg }) => {
+    const fetchAccountInfo = (callback) => {
+      getAccountDetail({ id: route.value.params.id }).then(({ code, data, msg }) => {
         if (code === 200) {
-          account.value = data;
+          accounts.value = data.accounts;
+          account.value = data.account;
+          callback && callback();
         } else {
           toast({
             component: ToastificationContent,
@@ -1117,7 +1165,7 @@ export default {
     const binds = ref([]);
     const fetchBindBinds = () => {
       getBinds({
-        soid: route.value.params.soid,
+        soid: account.value.soid,
         pageNum: pagination.binds.pageNum,
         pageSize: pagination.binds.pageSize,
       }).then(({ code, data, msg }) => {
@@ -1140,7 +1188,7 @@ export default {
     const strategies = ref([]);
     const fetchStrategies = () => {
       getStrategies({
-        soid: route.value.params.soid,
+        soid: account.value.soid,
         pageNum: pagination.strategies.pageNum,
         pageSize: pagination.strategies.pageSize,
       }).then(({ code, data, msg }) => {
@@ -1165,9 +1213,12 @@ export default {
     };
 
     onMounted(() => {
-      fetchAccountInfo();
-      fetchBindBinds();
-      fetchStrategies();
+      fetchAccountInfo(() => {
+        if (account.value.soid) {
+          fetchBindBinds();
+          fetchStrategies();
+        }
+      });
 
       const viewAndEditStrategyModal = document.getElementById('viewAndEditStrategyModal');
       if (viewAndEditStrategyModal)
@@ -1301,7 +1352,7 @@ export default {
     };
 
     const handleRefreshAccount = (key) => {
-      refreshAccount({ key, soid: account.value.soid }).then((res) => {
+      refreshAccount({ key, id: account.value.id }).then((res) => {
         if (res.code === 200) {
           // fetchAccountInfo();
           if (res?.data?.data) account.value[key] = res.data.data;
@@ -1316,6 +1367,30 @@ export default {
             },
           });
         }
+      });
+    };
+
+    const handleAuthorize = () => {
+      getAuthUrl({
+        appid: account.value.app_id,
+        redirect: `${location.origin}${process.env.BASE_URL}cor/weixin/auth/${account.value.app_id}`,
+      }).then(({ code, data: href }) => {
+        if (code === 200) {
+          let a = document.createElement('a');
+          a.href = href;
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'success',
+              icon: 'mdi-alert',
+              text: account.value.soid,
+            },
+          });
       });
     };
 
@@ -1346,6 +1421,7 @@ export default {
     };
 
     return {
+      accounts,
       account,
       _account,
       fetchAccountInfo,
@@ -1377,6 +1453,7 @@ export default {
       handleSubmitStrategy,
 
       handleRefreshAccount,
+      handleAuthorize,
 
       qr,
       handleGenerateQr,

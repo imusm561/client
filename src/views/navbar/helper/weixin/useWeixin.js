@@ -13,6 +13,10 @@ export default function useWeixin() {
       text: i18n.global.t('layout.navbar.helper.weixin.serviceType.miniProgram'),
       value: 'miniProgram',
     },
+    {
+      text: i18n.global.t('layout.navbar.helper.weixin.serviceType.3rdPartyPlatform'),
+      value: '3rdPartyPlatform',
+    },
     // {
     //   text: i18n.global.t('layout.navbar.helper.weixin.serviceType.wechatWork'),
     //   value: 'wechatWork',

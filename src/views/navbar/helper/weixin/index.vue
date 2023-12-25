@@ -73,7 +73,12 @@
                   <h5
                     class="mb-0 fs-14 cursor-pointer"
                     :title="`#${account.id}`"
-                    @click="$router.push({ name: 'weixinDetail', params: { soid: account.soid } })"
+                    @click="
+                      $router.push({
+                        name: 'weixinDetail',
+                        params: { id: account.id },
+                      })
+                    "
                   >
                     {{ account.title }}
                   </h5>
@@ -100,8 +105,14 @@
                   </h5>
                 </div>
                 <div class="col-7">
-                  <p class="text-muted mb-1">{{ $t('layout.navbar.helper.weixin.soid') }}</p>
-                  <h5 class="fs-12 text-nowrap text-truncate">{{ account.soid }}</h5>
+                  <template v-if="account.service_type === '3rdPartyPlatform'">
+                    <p class="text-muted mb-1">{{ $t('layout.navbar.helper.weixin.appId') }}</p>
+                    <h5 class="fs-12 text-nowrap text-truncate">{{ account.app_id }}</h5>
+                  </template>
+                  <template v-else>
+                    <p class="text-muted mb-1">{{ $t('layout.navbar.helper.weixin.soid') }}</p>
+                    <h5 class="fs-12 text-nowrap text-truncate">{{ account.soid }}</h5>
+                  </template>
                 </div>
               </div>
             </div>
@@ -122,14 +133,22 @@
 
           <div class="card-footer bg-transparent border-top-dashed p-2">
             <div class="d-flex justify-content-between">
-              <div class="text-muted">
-                <i class="mdi mdi-script-text-outline"></i>
-                {{ account.strategies.length }}
-              </div>
-              <div class="text-muted">
-                <i class="mdi mdi-shield-account-outline"></i>
-                {{ account.binds.length }}
-              </div>
+              <template v-if="account.service_type === '3rdPartyPlatform'">
+                <div class="text-muted">
+                  <i class="mdi mdi-account-child-outline"></i>
+                  {{ accounts.filter((item) => item.platform === account.app_id).length }}
+                </div>
+              </template>
+              <template v-else>
+                <div class="text-muted">
+                  <i class="mdi mdi-script-text-outline"></i>
+                  {{ account.strategies.length }}
+                </div>
+                <div class="text-muted">
+                  <i class="mdi mdi-shield-account-outline"></i>
+                  {{ account.binds.length }}
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -137,7 +156,7 @@
     </div>
 
     <Empty :text="$t('layout.navbar.helper.weixin.empty')" v-else />
-    <EditAccountModal :data="current_account" @submit="fetchAccounts()" />
+    <EditAccountModal :data="current_account" :accounts="accounts" @submit="fetchAccounts()" />
     <DeleteAccountModal :data="current_account" @confirm="fetchAccounts()" />
   </div>
 </template>

@@ -18,7 +18,7 @@ if (appid !== null && scope !== null && (code === null || state === null)) redir
 
 const getWeixinUserInfo = (callback) => {
   if (appid !== null && scope !== null && code !== null && state !== null) {
-    const apiURL = 'https://www.imusm.cn/lcdp/cor/weixin/authorize';
+    const apiURL = 'https://www.imusm.cn/lcdp/cor/weixin/auth/web';
     const params = new URLSearchParams();
     params.append('appid', appid);
     params.append('code', code);
