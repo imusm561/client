@@ -251,7 +251,6 @@
                       </label>
                       <VueSelect
                         v-model="current_form.status"
-                        :disabled="!!current_form.is_parent"
                         :placeholder="$t('layout.navbar.helper.form.tab.basicInfo.status')"
                         :reduce="(item) => item.value"
                         label="text"
