@@ -40,7 +40,7 @@ input:-webkit-autofill {
 }
 
 .img-thumbnail {
-  padding: 0.06rem !important;
+  padding: 0;
 }
 
 .file-icon {
@@ -295,12 +295,10 @@ input:-webkit-autofill {
   opacity: 0 !important;
 }
 
-.ag-theme-alpine {
+.ag-theme-alpine,
+.ag-theme-alpine-dark {
   .single-avatar {
     height: 40px;
-    .avatar-title {
-      margin-top: 0px;
-    }
   }
   .multiple-avatar {
     .avatar-title {
@@ -309,32 +307,16 @@ input:-webkit-autofill {
   }
 }
 
-.ag-theme-balham {
+.ag-theme-balham,
+.ag-theme-balham-dark {
   .single-avatar {
-    margin-top: -0.2px;
     .avatar-title {
       margin-top: -1px;
     }
   }
   .multiple-avatar {
-    margin-top: 0px;
     .avatar-title {
       margin-top: 1px;
-    }
-  }
-}
-
-[data-safari='true'] .ag-theme-balham {
-  .single-avatar {
-    margin-top: 0.8px;
-    .avatar-title {
-      margin-top: -2px;
-    }
-  }
-  .multiple-avatar {
-    margin-top: 1px;
-    .avatar-title {
-      margin-top: 0px;
     }
   }
 }
@@ -342,7 +324,7 @@ input:-webkit-autofill {
 .single-avatar,
 .multiple-avatar {
   img {
-    margin-bottom: 3px;
+    margin-bottom: 2.4px;
   }
 }
 
