@@ -46,7 +46,3 @@ export const updateStrategy = (data) => {
 export const refreshAccount = (data) => {
   return axios.post('/cor/weixin/refresh', data);
 };
-
-export const getAuthUrl = (params) => {
-  return axios.get('/cor/weixin/auth/url' + generateApiQuery(params));
-};

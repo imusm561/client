@@ -81,6 +81,13 @@
                     </button>
                   </Form>
                 </div>
+                <button
+                  v-if="account.service_type === '3rdPartyPlatform'"
+                  class="btn btn-sm p-0 ms-2"
+                  @click="handleAuthorize"
+                >
+                  <i class="fs-16 mdi mdi-qrcode-scan text-info"></i>
+                </button>
                 <button class="btn btn-sm p-0 ms-2" @click="handleEditAccount">
                   <i class="fs-16 mdi mdi-square-edit-outline text-info"></i>
                 </button>
@@ -267,7 +274,7 @@
           </div>
         </div>
       </div>
-      <div :class="account.service_type === '3rdPartyPlatform' ? 'col-12' : 'col-xl-4'">
+      <div v-if="account.service_type != '3rdPartyPlatform'" class="col-xl-4">
         <div class="card card-height-100" style="min-height: 40vh">
           <div class="card-body">
             <div class="align-items-center d-flex justify-content-between">
@@ -283,12 +290,6 @@
                     class="fs-16 mdi mdi-refresh text-info"
                     @click="handleRefreshAccount('menu')"
                   ></i>
-                </button>
-                <button
-                  class="btn btn-sm p-0 ms-2"
-                  v-if="account.service_type === '3rdPartyPlatform'"
-                >
-                  <i class="fs-16 mdi mdi-qrcode-scan text-info" @click="handleAuthorize()"></i>
                 </button>
               </div>
             </div>
@@ -1093,7 +1094,6 @@ import {
   updateStrategy,
   refreshAccount,
   getQRCode,
-  getAuthUrl,
 } from '@api/weixin';
 import { useToast } from 'vue-toastification';
 import useWeixin from './useWeixin';
@@ -1371,27 +1371,15 @@ export default {
     };
 
     const handleAuthorize = () => {
-      getAuthUrl({
-        appid: account.value.app_id,
-        redirect: `${location.origin}${process.env.BASE_URL}cor/weixin/auth/${account.value.app_id}`,
-      }).then(({ code, data: href }) => {
-        if (code === 200) {
-          let a = document.createElement('a');
-          a.href = href;
-          a.target = '_blank';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        } else
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-alert',
-              text: account.value.soid,
-            },
-          });
-      });
+      const api = `${location.origin}${process.env.BASE_URL}cor/weixin/auth/url`;
+      const appid = account.value.app_id;
+      const redirect = `${location.origin}${process.env.BASE_URL}cor/weixin/auth/${appid}`;
+      const a = document.createElement('a');
+      a.href = `${api}?appid=${appid}&redirect=${encodeURIComponent(redirect)}`;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     };
 
     const qr = reactive({
