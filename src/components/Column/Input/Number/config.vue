@@ -25,8 +25,9 @@
         :placeholder="$t('layout.navbar.helper.form.column.config.type')"
         :options="[
           { label: 'Int', value: 'int' },
-          { label: 'Double', value: 'double' },
           { label: 'Float', value: 'float' },
+          { label: 'Double', value: 'double' },
+          { label: 'Decimal', value: 'decimal' },
         ]"
         :reduce="(item) => item.value"
         label="label"

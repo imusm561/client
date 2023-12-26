@@ -583,7 +583,7 @@ export default {
                   filterType: 'set',
                   values: route.value.query[key].split(','),
                 };
-              } else if (['int', 'double', 'float'].includes(column.type)) {
+              } else if (['int', 'float', 'double', 'decimal'].includes(column.type)) {
                 filter[column.field] = {
                   filterType: 'number',
                   type: route.value.query[key].includes(' to ') ? 'inRange' : 'equals',
@@ -943,7 +943,7 @@ export default {
         };
       }
 
-      if (['int', 'double', 'float'].includes(column.type)) {
+      if (['int', 'float', 'double', 'decimal'].includes(column.type)) {
         columnDef.filter = 'agNumberColumnFilter';
       }
 

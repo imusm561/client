@@ -79,7 +79,7 @@
         :clearable="false"
         @option:selected="
           () => {
-            column.type = column.cfg.type === 'number' ? 'double' : 'varchar';
+            column.type = column.cfg.type === 'number' ? 'int' : 'varchar';
             column.length = column.type === 'varchar' ? 255 : null;
           }
         "

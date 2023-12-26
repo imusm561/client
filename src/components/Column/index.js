@@ -30,7 +30,7 @@ const columns = [
         name: 'layout.navbar.helper.form.column.components.input.number',
         component: 'InputNumber',
         col: 6,
-        type: 'double',
+        type: 'int',
         length: null,
         default: '',
         alias: null,
