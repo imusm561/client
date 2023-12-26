@@ -86,7 +86,7 @@
                   class="btn btn-sm p-0 ms-2"
                   @click="handleAuthorize"
                 >
-                  <i class="fs-16 mdi mdi-qrcode-scan text-info"></i>
+                  <i class="fs-16 mdi mdi-shield-key-outline text-success"></i>
                 </button>
                 <button class="btn btn-sm p-0 ms-2" @click="handleEditAccount">
                   <i class="fs-16 mdi mdi-square-edit-outline text-info"></i>
