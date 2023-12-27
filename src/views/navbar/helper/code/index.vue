@@ -629,7 +629,9 @@ export default {
           (node.data.type === 'directory' &&
             (node.data.name === 'node_modules' ||
               (node.parent.data.name === 'logs' &&
-                (node.data.name === 'pm2' || node.data.name === 'mysqldump')))))
+                (node.data.name === 'code' ||
+                  node.data.name === 'mysqldump' ||
+                  node.data.name === 'pm2')))))
       ) {
         node.parent.data.children.splice(
           node.parent.data.children.findIndex((item) => !item.name),
