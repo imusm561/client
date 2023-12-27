@@ -49,6 +49,7 @@ export default {
             document.body.appendChild(downloadElement);
             downloadElement.click();
             document.body.removeChild(downloadElement);
+            window.close();
           }
         }
       });
