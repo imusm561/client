@@ -1,6 +1,6 @@
 <template>
   <span v-if="params.value">
-    <span v-if="theme === 'alpine'" class="d-flex align-items-center">
+    <span v-if="['alpine', 'quartz'].includes(theme)" class="d-flex align-items-center">
       <i class="fs-32 mdi mdi-calendar-clock text-secondary" />
       <span class="d-flex flex-column ms-1" style="line-height: 100%">
         <span class="fs-14">

@@ -2420,23 +2420,24 @@ address@^1.1.2:
   resolved "https://registry.yarnpkg.com/address/-/address-1.2.0.tgz#d352a62c92fee90f89a693eccd2a8b2139ab02d9"
   integrity sha512-tNEZYz5G/zYunxFm7sfhAxkXEuLj3K6BKwv6ZURlsF6yiUQ65z0Q2wZW9L5cPUl9ocofGvXOdFYbFHp0+6MOig==
 
-ag-grid-community@^28.2.0, ag-grid-community@~28.2.0:
-  version "28.2.0"
-  resolved "https://registry.yarnpkg.com/ag-grid-community/-/ag-grid-community-28.2.0.tgz#3ea2be65c4ca930f0be5998d998684dc65132b66"
-  integrity sha512-mL55V1H7c8zMWv3aumARCoU6ilDzN5lB69bFY9lhC2mzbvL/DyNWpX1v417IRidt2bHsVfQewPs6DOMkav7fqg==
+ag-grid-community@^31.0.1, ag-grid-community@~31.0.1:
+  version "31.0.1"
+  resolved "https://registry.yarnpkg.com/ag-grid-community/-/ag-grid-community-31.0.1.tgz#26022b29a7b90a0515076837d630ac9cd24cf28d"
+  integrity sha512-RZQlW1DTOJHsUR/tnbnTJQKgAnDlHi05YYyTe5AgNor/1TlX1hoYdcqrGsJjvcHQgTjeEgzWOL0yf+KcqXZzxg==
 
-ag-grid-enterprise@^28.2.0:
-  version "28.2.0"
-  resolved "https://registry.yarnpkg.com/ag-grid-enterprise/-/ag-grid-enterprise-28.2.0.tgz#8100201bb091f248756802baccd4346573e8b3fd"
-  integrity sha512-h8bq7FbjvN90de0Dihay+HMznEcJ1H1EnBU6nuYaIRHwDucN51qrvcvpJTUY6lmKYyk0PqCOemoVl5m9YK6z1w==
-
-ag-grid-vue3@^28.2.0:
-  version "28.2.0"
-  resolved "https://registry.yarnpkg.com/ag-grid-vue3/-/ag-grid-vue3-28.2.0.tgz#599489790243ff31103617dc0327d08b98ac9413"
-  integrity sha512-E4xJDsnGHBtK7VRXJcfuQ7nq33jmot5SYbjXTObe4mIh/Xvx1xCCCXFiQ7rszl4T9jrXuz5ERGZPk1p05nSFiQ==
+ag-grid-enterprise@^31.0.1:
+  version "31.0.1"
+  resolved "https://registry.yarnpkg.com/ag-grid-enterprise/-/ag-grid-enterprise-31.0.1.tgz#022b88d1f95fa18b8187eb94204e374ade2f816d"
+  integrity sha512-VAL6np/dDBywZSOcIyssSj9IEzN+FsKSOrDD5V97P7fiPLE2RWNPuaj/5cLOUuuelUpffu6KK2/9U6KFBVmXoA==
   dependencies:
-    ag-grid-community "~28.2.0"
-    vue "^3.0.0"
+    ag-grid-community "~31.0.1"
+
+ag-grid-vue3@^31.0.1:
+  version "31.0.1"
+  resolved "https://registry.yarnpkg.com/ag-grid-vue3/-/ag-grid-vue3-31.0.1.tgz#cc093995fdd96512834ef25191b727c47feb2b2c"
+  integrity sha512-+eSvIl5SEk30dZwVbOBwilsUW8rvA+CRxl2aptklvi+IyOstT9AGAaHGHmkBFmgYk6t0KHcna/j9JjLnea8s5Q==
+  dependencies:
+    ag-grid-community "~31.0.1"
 
 aggregate-error@^3.0.0:
   version "3.1.0"
@@ -10477,7 +10478,7 @@ vue3-calendar-heatmap@^2.0.0:
   dependencies:
     tippy.js "^6.3.7"
 
-vue@3.2.39, vue@^3.0.0:
+vue@3.2.39:
   version "3.2.39"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.39.tgz#de071c56c4c32c41cbd54e55f11404295c0dd62d"
   integrity sha512-tRkguhRTw9NmIPXhzk21YFBqXHT2t+6C6wPOgQ50fcFVWnPdetmRqbmySRHznrYjX2E47u0cGlKGcxKZJ38R/g==

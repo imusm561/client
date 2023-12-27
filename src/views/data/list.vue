@@ -140,13 +140,13 @@
           :sideBar="sideBar"
           :pagination="true"
           :paginateChildRows="true"
+          :paginationPageSizeSelector="[100, 200, 500, 1000, 2000, 3000, 5000, 10000]"
           :paginationPageSize="pagination.pageSize"
           :cacheBlockSize="pagination.pageSize"
           :serverSideInfiniteScroll="true"
           :statusBar="statusBar"
           :defaultColDef="defaultColDef"
           @grid-ready="onGridReady"
-          :getRowId="getRowId"
           :overlayLoadingTemplate="overlayLoadingTemplate"
           @columnVisible="handleColumnChange"
           @columnPinned="handleColumnChange"
@@ -271,6 +271,7 @@ import ToastificationContent from '@components/ToastificationContent';
 import Breadcrumb from '@layouts/breadcrumb';
 import Pagination from '@components/Pagination';
 import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-quartz.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
@@ -278,8 +279,8 @@ import 'ag-grid-enterprise';
 import { LicenseManager } from 'ag-grid-enterprise';
 if (store.state.sys.cfg?.agGridLicense)
   LicenseManager.setLicenseKey(store.state.sys.cfg.agGridLicense);
-import AG_GRID_LOCALE_EN_US from '@utils/i18n/ag-gird/en-us.json';
-import AG_GRID_LOCALE_ZH_CN from '@utils/i18n/ag-gird/zh-cn.json';
+import { AG_GRID_LOCALE_EN_US } from '@utils/i18n/ag-gird/en-us.js';
+import { AG_GRID_LOCALE_ZH_CN } from '@utils/i18n/ag-gird/zh-cn.js';
 import CustomizationToolPanle from './panels/CustomizationToolPanle.vue';
 import IdRenderer from './renderers/IdRenderer.vue';
 import DataStateRenderer from './renderers/DataStateRenderer.vue';
@@ -1348,10 +1349,6 @@ export default {
       columnDefs.value = defs;
     };
 
-    const getRowId = (params) => {
-      return params.data.id || params.data[Object.keys(params.data)[0]]; // Math.random().toString(36).slice(-6)
-    };
-
     const getRowClass = (params) => {
       switch (params?.data?.data_state) {
         case 'published':
@@ -1376,7 +1373,10 @@ export default {
           document.getElementById('handleSetCurrentFilter').click();
           getDataList({ ...{ tid: Number(route.value.params.tid) }, ...params.request })
             .then((res) => {
-              params.successCallback(res.data.rows, res.data.count);
+              params.success({
+                rowData: res.data.rows || [],
+                rowCount: res.data.count || 0,
+              });
               const data = gridApi.paginationGetPageSize();
               if (data != pagination.value.pageSize) {
                 const tid = Number(route.value.params.tid);
@@ -1395,14 +1395,13 @@ export default {
               }
             })
             .catch(() => {
-              params.failCallback();
+              params.fail();
             });
-          // .catch((error) => {
-          //   console.error(error);
-          //   params.failCallback();
-          // });
         } else {
-          params.successCallback([], 0);
+          params.success({
+            rowData: [],
+            rowCount: 0,
+          });
         }
       },
     };
@@ -1697,7 +1696,6 @@ export default {
 
       onGridReady,
       handleColumnChange,
-      getRowId,
       serverSideDatasource,
 
       setColumnConfiguration,

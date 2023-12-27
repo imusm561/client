@@ -1,14 +1,16 @@
 <template>
   <span
     v-if="typeof params.value === 'boolean'"
-    :class="`form-check form-switch mt-${theme === 'alpine' ? '2' : '1'} form-switch-${
-      params._column.cfg.style
-    } form-switch-${theme === 'alpine' ? 'md' : 'sm'}`"
+    :class="`form-check form-switch mt-${
+      ['alpine', 'quartz'].includes(theme) ? '2' : '1'
+    } form-switch-${params._column.cfg.style} form-switch-${
+      ['alpine', 'quartz'].includes(theme) ? 'md' : 'sm'
+    }`"
   >
     <input
       type="checkbox"
       class="form-check-input"
-      :style="{ 'margin-top': theme === 'alpine' ? '2px' : '' }"
+      :style="{ 'margin-top': ['alpine', 'quartz'].includes(theme) ? '2px' : '' }"
       disabled
       :checked="params.value"
     />

@@ -1,5 +1,5 @@
 <template>
-  <span v-if="theme === 'alpine'">
+  <span v-if="['alpine', 'quartz'].includes(theme)">
     <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)" class="multiple-avatar">
       <Avatar
         v-if="Array.isArray(params.value)"

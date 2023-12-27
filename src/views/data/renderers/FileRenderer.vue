@@ -13,8 +13,8 @@
           class="bg-light rounded cursor-pointer overflow-hidden"
           style="box-shadow: 0px 3px 5px 0px rgba(30, 32, 37, 0.3)"
           :style="{
-            height: theme === 'alpine' ? '32px' : '20px',
-            width: theme === 'alpine' ? '32px' : '20px',
+            height: ['alpine', 'quartz'].includes(theme) ? '32px' : '20px',
+            width: ['alpine', 'quartz'].includes(theme) ? '32px' : '20px',
           }"
           @click="
             handleClickImage(() => {
@@ -38,7 +38,7 @@
           v-else
           class="bg-light rounded cursor-pointer overflow-hidden"
           :class="[
-            theme === 'alpine' ? 'file-icon' : 'file-icon file-icon-md',
+            ['alpine', 'quartz'].includes(theme) ? 'file-icon' : 'file-icon file-icon-md',
             $fileIcons.getClassWithColor(file.name),
           ]"
           style="box-shadow: 0px 3px 5px 0px rgba(30, 32, 37, 0.3)"

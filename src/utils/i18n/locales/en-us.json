@@ -911,7 +911,6 @@
   "data.list.sideBar.toolPanels.customization": "Customization",
   "data.list.sideBar.toolPanels.customization.search": "Search...",
   "data.list.sideBar.toolPanels.customization.theme": "Theme",
-  "data.list.sideBar.toolPanels.customization.pagination": "Pagination",
   "data.list.sideBar.toolPanels.customization.filter.system.createdByMe": "Created By Me",
   "data.list.sideBar.toolPanels.customization.filter.system.updatedByMe": "Updated By Me",
   "data.list.sideBar.toolPanels.customization.filter.system.createdBeforeYesterday": "Created Before Yesterday",
