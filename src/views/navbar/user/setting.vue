@@ -925,7 +925,7 @@
                       </div>
                     </div>
 
-                    <div class="col-lg-4">
+                    <div class="col-lg-6">
                       <div class="mb-3">
                         <label for="officeViewer" class="form-label">
                           {{
@@ -945,53 +945,7 @@
                       </div>
                     </div>
 
-                    <div class="col-lg-4">
-                      <div class="mb-3">
-                        <label for="useDefaultAvatar" class="form-label">
-                          {{
-                            $t(
-                              'layout.navbar.user.dropdown.setting.sysConfiguration.useDefaultAvatar',
-                            )
-                          }}
-                        </label>
-                        <VueSelect
-                          v-model="user.config.useDefaultAvatar"
-                          :placeholder="
-                            $t(
-                              'layout.navbar.user.dropdown.setting.sysConfiguration.useDefaultAvatar',
-                            )
-                          "
-                          :options="[
-                            {
-                              label: $t(
-                                'layout.navbar.user.dropdown.setting.sysConfiguration.useDefaultAvatar.true',
-                              ),
-                              value: true,
-                            },
-                            {
-                              label: $t(
-                                'layout.navbar.user.dropdown.setting.sysConfiguration.useDefaultAvatar.false',
-                              ),
-                              value: false,
-                            },
-                          ]"
-                          :reduce="(item) => item.value"
-                          label="label"
-                          :clearable="false"
-                        >
-                          <template v-slot:no-options="{ search, searching }">
-                            <template v-if="searching">
-                              <span v-html="$t('components.vs.search', { search })"></span>
-                            </template>
-                            <em v-else style="opacity: 0.5">
-                              {{ $t('components.vs.searchOption') }}
-                            </em>
-                          </template>
-                        </VueSelect>
-                      </div>
-                    </div>
-
-                    <div class="col-lg-4">
+                    <div class="col-lg-6">
                       <div class="mb-3">
                         <label for="waterMark" class="form-label">
                           {{ $t('layout.navbar.user.dropdown.setting.sysConfiguration.waterMark') }}

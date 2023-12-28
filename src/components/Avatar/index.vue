@@ -8,28 +8,6 @@
           :class="`avatar-${size} rounded-circle bg-avatar img-thumbnail`"
           loading="lazy"
         />
-        <img
-          v-else-if="$store.state.sys.cfg.useDefaultAvatar"
-          :src="
-            user.collapse
-              ? require('@/assets/images/avatar/collapse.png')
-              : typeof user[keyUsername] === 'string'
-              ? require(`@/assets/images/avatar/${
-                  user[keyUsername] === '@system'
-                    ? 'system'
-                    : user[keyUsername] === 'admin'
-                    ? 'admin'
-                    : user.gender === 1
-                    ? 'male'
-                    : user.gender === 0
-                    ? 'female'
-                    : 'user'
-                }.png`)
-              : require(`@/assets/images/avatar/${user[keyUsername] === 0 ? 'all' : 'group'}.png`)
-          "
-          :class="`avatar-${size} rounded-circle bg-default-avatar p-1 img-thumbnail`"
-          loading="lazy"
-        />
         <div v-else :class="`avatar-${size} rounded-circle`">
           <div
             :class="`avatar-title rounded-circle bg-avatar text-light ${fs[size]} img-thumbnail`"
@@ -52,28 +30,6 @@
       v-if="user[keyAvatar]"
       :src="`${BASE_URL}${user[keyAvatar]}`"
       :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail ? 'img-thumbnail' : ''}`"
-      loading="lazy"
-    />
-    <img
-      v-else-if="$store.state.sys.cfg.useDefaultAvatar"
-      :src="
-        typeof user[keyUsername] === 'string'
-          ? require(`@/assets/images/avatar/${
-              user[keyUsername] === '@system'
-                ? 'system'
-                : user[keyUsername] === 'admin'
-                ? 'admin'
-                : user.gender === 1
-                ? 'male'
-                : user.gender === 0
-                ? 'female'
-                : 'user'
-            }.png`)
-          : require(`@/assets/images/avatar/${user[keyUsername] === 0 ? 'all' : 'group'}.png`)
-      "
-      :class="`avatar-${size} rounded-circle bg-default-avatar p-1 ${
-        thumbnail ? 'img-thumbnail' : ''
-      }`"
       loading="lazy"
     />
     <div v-else :class="`avatar-${size} rounded-circle`">
