@@ -14,7 +14,6 @@
 <script>
 import { defineComponent, ref } from 'vue';
 import store from '@store';
-import i18n from '@utils/i18n';
 import Avatar from '@components/Avatar';
 export default defineComponent({
   components: {
@@ -22,10 +21,7 @@ export default defineComponent({
   },
   setup(props) {
     const user = ref(null);
-    if (props.params.value === null)
-      user.value = ['BasicCreatedBy', 'BasicUpdatedBy'].includes(props.params._column.component)
-        ? null
-        : { username: 0, fullname: i18n.global.t('data.list.filter.user.userAll') };
+    if (props.params.value === null) user.value = null;
     else if (props.params.value === '@system')
       user.value = { username: '@system', fullname: 'System' };
     else if (props.params.value.includes('@pub'))

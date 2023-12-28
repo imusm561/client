@@ -6,7 +6,7 @@
         :data="
           params.value.length
             ? $store.state.org.users.filter((user) => params.value.includes(user.username))
-            : [{ username: 0, fullname: $t('data.list.renderer.user.userAll') }]
+            : []
         "
         size="xs"
       />
@@ -28,7 +28,7 @@
         :data="
           params.value.length
             ? $store.state.org.users.filter((user) => params.value.includes(user.username))
-            : [{ username: 0, fullname: $t('data.list.renderer.user.userAll') }]
+            : []
         "
         size="xxs"
       />

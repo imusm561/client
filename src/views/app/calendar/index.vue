@@ -151,7 +151,7 @@
                     <label class="form-label">
                       {{ $t('app.calendar.viewAndEditEventModal.form.users') }}
                     </label>
-                    <UsersSelector
+                    <UserSelector
                       v-model="current_event.users"
                       :placeholder="$t('app.calendar.viewAndEditEventModal.form.users')"
                       :class="[errors.users && 'is-invalid']"
@@ -443,14 +443,14 @@ import zhCn from '@fullcalendar/core/locales/zh-cn';
 import { getEvents, createEvent, updateEvent } from '@api/app/calendar';
 import FlatPickr from '@components/FlatPickr';
 import Amap from '@components/Amap';
-import UsersSelector from '@components/UsersSelector';
+import UserSelector from '@components/UserSelector';
 import i18n from '@utils/i18n';
 export default {
   components: {
     FullCalendar,
     FlatPickr,
     Amap,
-    UsersSelector,
+    UserSelector,
   },
   setup() {
     const toast = useToast();

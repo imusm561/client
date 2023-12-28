@@ -76,6 +76,7 @@
     "vue-toastification": "^2.0.0-rc.5",
     "vue3-apexcharts": "^1.4.1",
     "vue3-calendar-heatmap": "^2.0.0",
+    "vue3-treeselect": "^0.1.10",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

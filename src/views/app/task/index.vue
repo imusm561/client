@@ -303,7 +303,7 @@
 
                   <div class="col-12">
                     <label class="form-label">{{ $t('app.task.editTaskModal.form.users') }}</label>
-                    <UsersSelector
+                    <UserSelector
                       v-model="current_task.users"
                       :placeholder="$t('app.task.editTaskModal.form.users')"
                       :class="[errors.users && 'is-invalid']"
@@ -429,7 +429,7 @@ import store from '@store';
 import { replaceHtml, getUserInfo, debounce } from '@utils';
 import FlatPickr from '@components/FlatPickr';
 import Avatar from '@components/Avatar';
-import UsersSelector from '@components/UsersSelector';
+import UserSelector from '@components/UserSelector';
 import useTask from './useTask';
 export default {
   components: {
@@ -437,7 +437,7 @@ export default {
     CKEditor,
     FlatPickr,
     Avatar,
-    UsersSelector,
+    UserSelector,
   },
   setup() {
     const toast = useToast();

@@ -386,7 +386,7 @@
                 id="to_list"
                 :class="`fs-12 ${showMoreUsers ? '' : 'text-truncate'}`"
                 :title="
-                  resolveUsers(vs.to)
+                  resolveUsers(current_mail.to)
                     .map((item) => {
                       return item.label;
                     })
@@ -396,33 +396,35 @@
                 {{ $t('app.mail.detail.to') }}:
                 <span
                   style="word-break: break-all"
-                  v-for="(item, index) in resolveUsers(vs.to)"
+                  v-for="(item, index) in resolveUsers(current_mail.to)"
                   :key="index"
                   :title="item.title"
                 >
-                  {{ item.label }}{{ index === resolveUsers(vs.to).length - 1 ? '' : ', ' }}
+                  {{ item.label
+                  }}{{ index === resolveUsers(current_mail.to).length - 1 ? '' : ', ' }}
                 </span>
               </div>
               <div
                 id="cc_list"
                 class="accordion-collapse collapse fs-12"
                 :title="
-                  resolveUsers(vs.cc)
+                  resolveUsers(current_mail.cc)
                     .map((item) => {
                       return item.label;
                     })
                     .join(',')
                 "
               >
-                <span v-if="vs.cc.length">
+                <span v-if="current_mail.cc.length">
                   {{ $t('app.mail.detail.cc') }}:
                   <span
                     style="word-break: break-all"
-                    v-for="(item, index) in resolveUsers(vs.cc)"
+                    v-for="(item, index) in resolveUsers(current_mail.cc)"
                     :key="index"
                     :title="item.title"
                   >
-                    {{ item.label }}{{ index === resolveUsers(vs.cc).length - 1 ? '' : ', ' }}
+                    {{ item.label
+                    }}{{ index === resolveUsers(current_mail.cc).length - 1 ? '' : ', ' }}
                   </span>
                 </span>
               </div>
@@ -494,208 +496,36 @@
                         </b>
                       </div>
                     </label>
-                    <VueSelect
-                      v-model="vs.to"
-                      multiple
-                      :close-on-select="false"
+                    <UserSelector
+                      :key="JSON.stringify([...new_mail.cc, ...new_mail.bcc])"
+                      v-model="new_mail.to"
+                      :disable-list="[...new_mail.cc, ...new_mail.bcc]"
                       :placeholder="$t('app.mail.composeModal.form.to')"
                       :class="errors.to && 'is-invalid'"
-                      :reduce="(item) => item.value"
-                      label="label"
-                      :options="options4to"
-                      :selectable="
-                        (option) =>
-                          vs.to.includes(0)
-                            ? option.value === 0
-                            : option.users
-                            ? option.users
-                                .map((user) => {
-                                  return user.username;
-                                })
-                                .filter((v) => [...new_mail.cc, ...new_mail.bcc].includes(v))
-                                .length === 0
-                            : !(
-                                (!vs.to.includes(option.value) &&
-                                  new_mail.to.includes(option.value)) ||
-                                vs.cc.includes(option.value) ||
-                                new_mail.cc.includes(option.value) ||
-                                vs.bcc.includes(option.value) ||
-                                new_mail.bcc.includes(option.value)
-                              )
-                      "
-                      @option:selected="handleSelectValue('to')"
-                      @option:deselected="handleSelectValue('to')"
-                    >
-                      <template #option="data">
-                        <div class="d-flex align-items-center">
-                          <Avatar
-                            class="me-2"
-                            :data="data"
-                            size="xxs"
-                            key-username="value"
-                            key-fullname="label"
-                          />
-                          <span class="ml-50 align-middle">{{ data.label }}</span>
-                        </div>
-                      </template>
-
-                      <template #selected-option="data">
-                        <div class="d-flex align-items-center">
-                          <Avatar
-                            class="me-2"
-                            :data="data"
-                            size="xxs"
-                            key-username="value"
-                            key-fullname="label"
-                          />
-                          <span class="ml-50 align-middle">{{ data.label }}</span>
-                        </div>
-                      </template>
-
-                      <template v-slot:no-options="{ search, searching }">
-                        <template v-if="searching">
-                          <span v-html="$t('components.vs.search', { search })"></span>
-                        </template>
-                        <em v-else style="opacity: 0.5">{{ $t('components.vs.searchUser') }}</em>
-                      </template>
-                    </VueSelect>
+                    />
                     <Field name="to" v-model="new_mail.to" rules="required" class="d-none" />
                     <span class="invalid-feedback">{{ errors.to }}</span>
                   </div>
                   <div class="collapse" id="CcRecipientsCollapse">
                     <div class="col-12">
                       <label>{{ $t('app.mail.composeModal.form.cc') }}:</label>
-                      <VueSelect
-                        v-model="vs.cc"
-                        multiple
-                        :close-on-select="false"
+                      <UserSelector
+                        :key="JSON.stringify([...new_mail.to, ...new_mail.bcc])"
+                        v-model="new_mail.cc"
+                        :disable-list="[...new_mail.to, ...new_mail.bcc]"
                         :placeholder="$t('app.mail.composeModal.form.cc')"
-                        :reduce="(item) => item.value"
-                        label="label"
-                        :options="options4cc"
-                        :disabled="vs.to.includes(0)"
-                        :selectable="
-                          (option) =>
-                            option.users
-                              ? option.users
-                                  .map((user) => {
-                                    return user.username;
-                                  })
-                                  .filter((v) => [...new_mail.to, ...new_mail.bcc].includes(v))
-                                  .length === 0
-                              : !(
-                                  (!vs.cc.includes(option.value) &&
-                                    new_mail.cc.includes(option.value)) ||
-                                  vs.to.includes(option.value) ||
-                                  new_mail.to.includes(option.value) ||
-                                  vs.bcc.includes(option.value) ||
-                                  new_mail.bcc.includes(option.value)
-                                )
-                        "
-                        @option:selected="handleSelectValue('cc')"
-                        @option:deselected="handleSelectValue('cc')"
-                      >
-                        <template #option="data">
-                          <div class="d-flex align-items-center">
-                            <Avatar
-                              class="me-2"
-                              :data="data"
-                              size="xxs"
-                              key-username="value"
-                              key-fullname="label"
-                            />
-                            <span class="ml-50 align-middle">{{ data.label }}</span>
-                          </div>
-                        </template>
-
-                        <template #selected-option="data">
-                          <div class="d-flex align-items-center">
-                            <Avatar
-                              class="me-2"
-                              :data="data"
-                              size="xxs"
-                              key-username="value"
-                              key-fullname="label"
-                            />
-                            <span class="ml-50 align-middle">{{ data.label }}</span>
-                          </div>
-                        </template>
-
-                        <template v-slot:no-options="{ search, searching }">
-                          <template v-if="searching">
-                            <span v-html="$t('components.vs.search', { search })"></span>
-                          </template>
-                          <em v-else style="opacity: 0.5">{{ $t('components.vs.searchUser') }}</em>
-                        </template>
-                      </VueSelect>
+                      />
                     </div>
                   </div>
                   <div class="collapse" id="BccRecipientsCollapse">
                     <div class="col-12">
                       <label>{{ $t('app.mail.composeModal.form.bcc') }}:</label>
-                      <VueSelect
-                        v-model="vs.bcc"
-                        multiple
-                        :close-on-select="false"
+                      <UserSelector
+                        :key="JSON.stringify([...new_mail.to, ...new_mail.cc])"
+                        v-model="new_mail.bcc"
+                        :disable-list="[...new_mail.to, ...new_mail.cc]"
                         :placeholder="$t('app.mail.composeModal.form.bcc')"
-                        :reduce="(item) => item.value"
-                        label="label"
-                        :options="options4bcc"
-                        :disabled="vs.to.includes(0)"
-                        :selectable="
-                          (option) =>
-                            option.users
-                              ? option.users
-                                  .map((user) => {
-                                    return user.username;
-                                  })
-                                  .filter((v) => [...new_mail.to, ...new_mail.cc].includes(v))
-                                  .length === 0
-                              : !(
-                                  (!vs.bcc.includes(option.value) &&
-                                    new_mail.bcc.includes(option.value)) ||
-                                  vs.to.includes(option.value) ||
-                                  new_mail.to.includes(option.value) ||
-                                  vs.cc.includes(option.value) ||
-                                  new_mail.cc.includes(option.value)
-                                )
-                        "
-                        @option:selected="handleSelectValue('bcc')"
-                        @option:deselected="handleSelectValue('bcc')"
-                      >
-                        <template #option="data">
-                          <div class="d-flex align-items-center">
-                            <Avatar
-                              class="me-2"
-                              :data="data"
-                              size="xxs"
-                              key-username="value"
-                              key-fullname="label"
-                            />
-                            <span class="ml-50 align-middle">{{ data.label }}</span>
-                          </div>
-                        </template>
-
-                        <template #selected-option="data">
-                          <div class="d-flex align-items-center">
-                            <Avatar
-                              class="me-2"
-                              :data="data"
-                              size="xxs"
-                              key-username="value"
-                              key-fullname="label"
-                            />
-                            <span class="ml-50 align-middle">{{ data.label }}</span>
-                          </div>
-                        </template>
-
-                        <template v-slot:no-options="{ search, searching }">
-                          <template v-if="searching">
-                            <span v-html="$t('components.vs.search', { search })"></span>
-                          </template>
-                          <em v-else style="opacity: 0.5">{{ $t('components.vs.searchUser') }}</em>
-                        </template>
-                      </VueSelect>
+                      />
                     </div>
                   </div>
                   <div class="col-12">
@@ -951,12 +781,14 @@ import Uploader from '@components/Uploader';
 import { getMail, getMails, createMail, updateMail } from '@api/app/mail';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
+import UserSelector from '@components/UserSelector';
 import Avatar from '@components/Avatar';
 import i18n from '@utils/i18n';
 export default {
   components: {
     CKEditor,
     Uploader,
+    UserSelector,
     Avatar,
   },
   setup() {
@@ -979,143 +811,6 @@ export default {
       important: [],
       read: [],
     });
-
-    const all = [
-      {
-        value: 0,
-        label: i18n.global.t('app.mail.composeModal.userAll'),
-        title: i18n.global.t('app.mail.composeModal.userAll'),
-      },
-    ];
-    const users = JSON.parse(JSON.stringify(store.state.org.users))
-      .filter((user) => user.username != store.state.user.data.username)
-      .map((user) => {
-        return {
-          value: user.username,
-          label: user.fullname,
-          dept: user.dept,
-          avatar: user.avatar,
-          gender: user.gender,
-        };
-      });
-    const depts = JSON.parse(JSON.stringify(store.state.org.depts))
-      .map((dept) => {
-        return {
-          value: dept.id,
-          label: dept.name,
-          users: users
-            .filter(
-              (user) => user.username != store.state.user.data.username && user.dept === dept.id,
-            )
-            .map((user) => {
-              return {
-                username: user.value,
-                fullname: user.label,
-              };
-            }),
-        };
-      })
-      .filter((dept) => dept.users.length != 0);
-
-    const options4to = ref([...(users.length ? all : []), ...depts, ...users]);
-    const options4cc = ref([...depts, ...users]);
-    const options4bcc = ref([...depts, ...users]);
-
-    const vs = ref({
-      to: [],
-      cc: [],
-      bcc: [],
-    });
-
-    const handleSelectValue = (field) => {
-      new_mail.value[field] = [];
-      if (vs.value.to.includes(0)) {
-        vs.value.to = [0];
-        new_mail.value.to = users.map((user) => {
-          return user.value;
-        });
-        new_mail.value.cc = [];
-        vs.value.cc = [];
-        new_mail.value.bcc = [];
-        vs.value.bcc = [];
-      } else {
-        vs.value[field].forEach((value) => {
-          if (typeof value === 'number') {
-            const dept = depts.find((dept) => dept.value === value);
-            new_mail.value[field] = [
-              ...new_mail.value[field],
-              ...dept.users.map((user) => {
-                return user.username;
-              }),
-            ];
-            vs.value[field] = vs.value[field].filter(
-              (item) =>
-                !dept.users
-                  .map((user) => {
-                    return user.username;
-                  })
-                  .includes(item),
-            );
-          } else {
-            new_mail.value[field].push(value);
-          }
-        });
-        depts
-          .filter((dept) => !vs.value[field].includes(dept.value))
-          .forEach((dept) => {
-            if (
-              dept.users
-                .map((user) => {
-                  return user.username;
-                })
-                .every((username) => vs.value[field].includes(username))
-            ) {
-              vs.value[field].push(dept.value);
-              vs.value[field] = vs.value[field].filter(
-                (item) =>
-                  !dept.users
-                    .map((user) => {
-                      return user.username;
-                    })
-                    .includes(item),
-              );
-            }
-          });
-        if (field === 'to' && depts.every((dept) => vs.value[field].includes(dept.value)))
-          vs.value.to = [0];
-      }
-    };
-
-    const randerVsUsers = (mail) => {
-      ['to', 'cc', 'bcc'].forEach((field) => {
-        vs.value[field] = JSON.parse(JSON.stringify(mail[field] || []));
-        if (mail[field] && mail[field].length === 0) vs.value[field] = [];
-        else if (mail[field] && mail[field].length === users.length) vs.value[field] = [0];
-        else {
-          JSON.parse(JSON.stringify(depts))
-            .reverse()
-            .forEach((dept) => {
-              if (
-                dept.users
-                  .map((user) => {
-                    return user.username;
-                  })
-                  .every((username) => vs.value[field].includes(username))
-              ) {
-                vs.value[field].unshift(dept.value);
-                vs.value[field] = vs.value[field].filter(
-                  (item) =>
-                    !dept.users
-                      .map((user) => {
-                        return user.username;
-                      })
-                      .includes(item),
-                );
-              }
-            });
-        }
-      });
-    };
 
     const menus = reactive([
       {
@@ -1249,12 +944,10 @@ export default {
 
     const ccRecipientsCollapseHiddenHandler = () => {
       new_mail.value.cc = [];
-      vs.value.cc = [];
     };
 
     const bccRecipientsCollapseHiddenHandler = () => {
       new_mail.value.bcc = [];
-      vs.value.bcc = [];
     };
 
     const composeModalShowHandler = () => {
@@ -1485,7 +1178,7 @@ export default {
       return (arr) => {
         return arr.map((item) => {
           if (item == 0) {
-            return all[0];
+            return;
           } else if (!Number(item)) {
             const user = getUserInfo(item);
             return {
@@ -1521,7 +1214,6 @@ export default {
         handleCloseMail();
         new_mail.value = JSON.parse(JSON.stringify(mail));
         new_mail.value.key = Math.random().toString(36).slice(-6);
-        randerVsUsers(new_mail.value);
         setTimeout(() => {
           document.getElementById('showDraftMailModalBtn').click();
         }, 100);
@@ -1556,7 +1248,6 @@ export default {
           });
         }
         current_mail.value = mail;
-        randerVsUsers(current_mail.value);
         document.body.classList.add('email-detail-show');
         setTimeout(() => {
           const mailCcListEl = document.getElementById('cc_list');
@@ -1600,7 +1291,6 @@ export default {
         );
       }
       handleCloseMail();
-      randerVsUsers(new_mail.value);
     };
 
     const handleSubmitMail = (data_state) => {
@@ -1634,7 +1324,6 @@ export default {
     };
 
     const handleReply = (mail) => {
-      randerVsUsers(mail);
       new_mail.value = {
         to: [mail.created_by],
         cc: [],
@@ -1643,14 +1332,14 @@ export default {
         content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(
           mail.created_at,
         ).format('llll')}<br/><b>To:</b> ${resolveUsers
-          .value(vs.value.to)
+          .value(mail.to)
           .map((item) => {
             return item.label;
           })
           .join(', ')}<br/>${
           mail.cc.length
             ? `<b>Cc:</b> ${resolveUsers
-                .value(vs.value.cc)
+                .value(mail.cc)
                 .map((item) => {
                   return item.label;
                 })
@@ -1664,7 +1353,6 @@ export default {
         important: [],
         read: [],
       };
-      randerVsUsers(new_mail.value);
       document.getElementById('showComposeModalBtn').click();
     };
     const handleReply2All = (mail, confirmed) => {
@@ -1672,7 +1360,6 @@ export default {
         document.getElementById('showReply2AllConfirmModalBtn').click();
         return;
       }
-      randerVsUsers(mail);
       new_mail.value = {
         to: [
           ...[mail.created_by],
@@ -1684,14 +1371,14 @@ export default {
         content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(
           mail.created_at,
         ).format('llll')}<br/><b>To:</b> ${resolveUsers
-          .value(vs.value.to)
+          .value(mail.to)
           .map((item) => {
             return item.label;
           })
           .join(', ')}<br/>${
-          vs.value.cc.length
+          mail.cc.length
             ? `<b>Cc:</b> ${resolveUsers
-                .value(vs.value.cc)
+                .value(mail.cc)
                 .map((item) => {
                   return item.label;
                 })
@@ -1705,7 +1392,6 @@ export default {
         important: [],
         read: [],
       };
-      randerVsUsers(new_mail.value);
       if (new_mail.value.cc.length) {
         document.getElementById('CcRecipientsCollapse').classList.add('show');
       }
@@ -1735,7 +1421,6 @@ export default {
           important: [],
           read: [],
         };
-        randerVsUsers(new_mail.value);
         localStorage.removeItem(
           `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
             `app_mail_${store.state.user.data.username}_staged`,
@@ -1753,15 +1438,10 @@ export default {
 
     return {
       new_mail,
-      options4to,
-      options4cc,
-      options4bcc,
-      vs,
       menus,
       labels,
       fetchMails,
       replaceHtml,
-      handleSelectValue,
       handleClickMenuBtn,
       handleClickMailWrapper,
       mails,

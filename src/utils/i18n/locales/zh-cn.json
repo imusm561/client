@@ -814,7 +814,6 @@
   "app.mail.detail.markStar": "标星",
   "app.mail.detail.attachments": "附件",
   "app.mail.composeModal.newMail": "新邮件",
-  "app.mail.composeModal.userAll": "所有人",
   "app.mail.composeModal.form.to": "收件人",
   "app.mail.composeModal.form.cc": "抄送",
   "app.mail.composeModal.form.bcc": "密送",
@@ -897,8 +896,6 @@
   "data.list.filter.blank": "空白",
   "data.list.filter.switch.true": "是",
   "data.list.filter.switch.false": "否",
-  "data.list.filter.user.userAll": "所有人",
-  "data.list.renderer.user.userAll": "所有人",
   "data.list.cellEdit.error": "此类型字段不支持列表编辑",
   "data.list.cellEdit.conflicts": "更新冲突：{user}正在编辑这条数据",
   "data.list.batchUpdate.conflicts": "批量更新冲突：{count}条数据【{ids}】正在被其他用户编辑中",
@@ -957,7 +954,6 @@
   "data.view.create": "创建",
   "data.view.logs": "日志",
   "data.view.comments": "评论",
-  "data.view.userAll": "所有人",
 
   "data.edit.create": "创建",
   "data.edit.submit": "提交",
@@ -1018,7 +1014,8 @@
   "components.uploader.cancel.duplicate": "{name}已在上传列表中",
   "components.uploader.cancel.empty": "{name}为空文件",
 
-  "components.userSelector.userAll": "所有人",
+  "components.vst.noOptionsText": "没有可用的选项",
+  "components.vst.noResultsText": "未找到结果...",
 
   "components.vs.search": "未找到与 <em>{search}</em> 相关的内容",
   "components.vs.searchRule": "至少输入 <em>3</em> 个字符",

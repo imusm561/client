@@ -344,7 +344,7 @@
                       <label class="form-label">
                         {{ $t('layout.navbar.helper.form.tab.basicInfo.aclView') }}
                       </label>
-                      <UsersSelector
+                      <UserSelector
                         v-model="current_form.acl_view"
                         :disabled="isParentOrHasRedirect(current_form)"
                         :placeholder="
@@ -358,7 +358,7 @@
                       <label class="form-label">
                         {{ $t('layout.navbar.helper.form.tab.basicInfo.aclEdit') }}
                       </label>
-                      <UsersSelector
+                      <UserSelector
                         v-model="current_form.acl_edit"
                         :disabled="isParentOrHasRedirect(current_form)"
                         :placeholder="
@@ -1120,7 +1120,7 @@ import ToastificationContent from '@components/ToastificationContent';
 import { icons } from '@utils/icons';
 import CKEditor from '@components/CKEditor';
 import Avatar from '@components/Avatar';
-import UsersSelector from '@components/UsersSelector';
+import UserSelector from '@components/UserSelector';
 import MonacoEditor from '@components/MonacoEditor';
 import FlatPickr from '@components/FlatPickr';
 import { VueDraggableNext } from 'vue-draggable-next';
@@ -1129,7 +1129,7 @@ export default {
     ElTree,
     CKEditor,
     Avatar,
-    UsersSelector,
+    UserSelector,
     MonacoEditor,
     FlatPickr,
     draggable: VueDraggableNext,

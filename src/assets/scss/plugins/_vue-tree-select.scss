@@ -1,0 +1,123 @@
+//
+// vue-tree-select.scss
+//
+
+@import 'vue3-treeselect/dist/vue3-treeselect';
+@import 'vue-select/src/scss/global/_variables.scss';
+
+.vue-treeselect {
+  .vue-treeselect__control {
+    padding-left: 3px;
+    padding-right: 3px;
+    height: $input-height;
+    border-width: $input-border-width;
+    border-radius: $input-border-radius;
+    border-color: $input-border-color;
+    background-color: $input-bg;
+    &:hover {
+      border-color: $input-border-color !important;
+    }
+  }
+
+  &.is-invalid {
+    .vue-treeselect__menu,
+    .vue-treeselect__control {
+      border-color: #f06548 !important;
+      &:hover {
+        border-color: #f06548 !important;
+      }
+    }
+  }
+
+  &.vue-treeselect--disabled {
+    .vue-treeselect__control {
+      cursor: not-allowed;
+      color: $gray-600 !important;
+      background-color: $input-disabled-bg;
+    }
+  }
+}
+
+.vue-treeselect--has-value .vue-treeselect__multi-value {
+  margin-bottom: 2px;
+}
+
+.vue-treeselect__multi-value-item-container {
+  padding-top: 2px;
+  padding-right: 2px;
+  position: relative;
+  z-index: 1;
+  .vue-treeselect__multi-value-item {
+    padding: 2px 0;
+    .vue-treeselect__value-remove {
+      padding-left: 0px;
+      border-left: none;
+      &:hover {
+        color: unset;
+      }
+    }
+  }
+}
+
+.vue-treeselect__checkbox {
+  width: 16px;
+  height: 16px;
+}
+
+.vue-treeselect__check-mark,
+.vue-treeselect__minus-mark {
+  left: 3px;
+  top: 3px;
+}
+
+.vue-treeselect__input-container {
+  font-size: 14px !important;
+  margin-left: 6px;
+}
+.vue-treeselect__placeholder {
+  padding: 0 0 0 0.7rem;
+  font-weight: 400;
+  color: $input-placeholder-color;
+}
+
+.vue-treeselect__input {
+  height: 22px;
+}
+
+.vue-treeselect__menu {
+  border-width: $input-border-width;
+  box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.1);
+  background: $dropdown-bg;
+}
+
+.vue-treeselect__menu,
+.vue-treeselect--open .vue-treeselect__control {
+  border-color: $input-focus-border-color !important;
+  &:hover {
+    border-color: $input-focus-border-color !important;
+  }
+}
+
+.vue-treeselect__option {
+  height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.vue-treeselect__option--highlight {
+  background: #96c0e6;
+}
+
+[data-theme='dark'] {
+  .vue-treeselect__option--highlight {
+    background: #543b64;
+  }
+
+  .vue-treeselect__multi-value-item {
+    background: #543b64;
+    color: #fff;
+    .vue-treeselect__value-remove {
+      color: #fff;
+    }
+  }
+}

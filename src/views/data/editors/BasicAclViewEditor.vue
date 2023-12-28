@@ -1,13 +1,13 @@
 <template>
-  <UsersSelector v-model="value" :placeholder="$t('data.column.BasicAclEdit')" />
+  <UserSelector v-model="value" :placeholder="$t('data.column.BasicAclEdit')" />
 </template>
 
 <script>
 import { defineComponent, ref } from 'vue';
-import UsersSelector from '@components/UsersSelector';
+import UserSelector from '@components/UserSelector';
 export default defineComponent({
   components: {
-    UsersSelector,
+    UserSelector,
   },
   setup(props) {
     const value = ref(props.params.value);

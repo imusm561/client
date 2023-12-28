@@ -1,5 +1,5 @@
 <template>
-  <UsersSelector
+  <UserSelector
     v-model="value"
     :disabled="params._form.flow.length > 0"
     :placeholder="$t(data.column.BasicAclView)"
@@ -8,10 +8,10 @@
 
 <script>
 import { defineComponent, ref } from 'vue';
-import UsersSelector from '@components/UsersSelector';
+import UserSelector from '@components/UserSelector';
 export default defineComponent({
   components: {
-    UsersSelector,
+    UserSelector,
   },
   setup(props) {
     const value = ref(props.params.value);

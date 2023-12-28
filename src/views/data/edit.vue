@@ -133,7 +133,7 @@
               </h5>
               <h5 key="acl_view" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                 <label class="form-label">{{ $t('data.column.BasicAclView') }}</label>
-                <UsersSelector
+                <UserSelector
                   v-model="data.acl_view"
                   :placeholder="$t('data.column.BasicAclView')"
                   :class="[errors.acl_view && 'is-invalid']"
@@ -159,7 +159,7 @@
               </h5>
               <h5 key="acl_edit" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                 <label class="form-label">{{ $t('data.column.BasicAclEdit') }}</label>
-                <UsersSelector
+                <UserSelector
                   v-model="data.acl_edit"
                   :disabled="!!form.flow?.length"
                   :placeholder="$t('data.column.BasicAclEdit')"
@@ -341,7 +341,7 @@
                     </h5>
                     <h5 key="acl_view" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                       <label class="form-label">{{ $t('data.column.BasicAclView') }}</label>
-                      <UsersSelector
+                      <UserSelector
                         v-model="data.acl_view"
                         :placeholder="$t('data.column.BasicAclView')"
                         :class="[errors.acl_view && 'is-invalid']"
@@ -367,7 +367,7 @@
                     </h5>
                     <h5 key="acl_edit" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                       <label class="form-label">{{ $t('data.column.BasicAclEdit') }}</label>
-                      <UsersSelector
+                      <UserSelector
                         v-model="data.acl_edit"
                         :disabled="!!form.flow?.length"
                         :placeholder="$t('data.column.BasicAclEdit')"
@@ -694,7 +694,7 @@ import { getDataEdit, getDataTitle, createData, checkData, forceData, updateData
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import i18n from '@utils/i18n';
-import UsersSelector from '@components/UsersSelector';
+import UserSelector from '@components/UserSelector';
 import Avatar from '@components/Avatar';
 
 import InputText from '@components/Column/Input/Text/index.vue';
@@ -719,7 +719,7 @@ import LayoutTab from '@components/Column/Layout/Tab/index.vue';
 export default {
   components: {
     Breadcrumb,
-    UsersSelector,
+    UserSelector,
     Avatar,
 
     InputText,

@@ -814,7 +814,6 @@
   "app.mail.detail.markStar": "Mark Star",
   "app.mail.detail.attachments": "Attachments",
   "app.mail.composeModal.newMail": "New Mail",
-  "app.mail.composeModal.userAll": "All",
   "app.mail.composeModal.form.to": "To",
   "app.mail.composeModal.form.cc": "Cc",
   "app.mail.composeModal.form.bcc": "Bcc",
@@ -897,8 +896,6 @@
   "data.list.filter.blank": "(Blanks)",
   "data.list.filter.switch.true": "TRUE",
   "data.list.filter.switch.false": "FALSE",
-  "data.list.filter.user.userAll": "All",
-  "data.list.renderer.user.userAll": "All",
   "data.list.cellEdit.error": "This type of field dose not support cell editing...",
   "data.list.cellEdit.conflicts": "Update Conflicts: {user} is editing this data",
   "data.list.batchUpdate.conflicts": "Batch Update Conflicts: {count} data [{ids}] is being edited by another user | Batch Update Conflicts: {count} data [{ids}] are being edited by another user",
@@ -957,7 +954,6 @@
   "data.view.create": "Create",
   "data.view.logs": "Logs",
   "data.view.comments": "Comments",
-  "data.view.userAll": "All",
 
   "data.edit.create": "Create",
   "data.edit.submit": "Submit",
@@ -1018,7 +1014,8 @@
   "components.uploader.cancel.duplicate": "{name} is already in the upload list",
   "components.uploader.cancel.empty": "{name} is empty",
 
-  "components.userSelector.userAll": "All",
+  "components.vst.noOptionsText": "No options available.",
+  "components.vst.noResultsText": "No results found...",
 
   "components.vs.search": "No results found for <em>{search}</em>.",
   "components.vs.searchRule": "Enter at least <em>3</em> letters.",

@@ -796,9 +796,9 @@ export default {
 
     const resolveUsers = computed(() => {
       return (users) => {
-        return users && users.length
+        return users?.length
           ? store.state.org.users.filter((user) => users.includes(user.username))
-          : [{ username: 0, fullname: i18n.global.t('data.view.userAll') }];
+          : [];
       };
     });
 

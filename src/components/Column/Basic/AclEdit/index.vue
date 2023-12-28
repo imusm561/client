@@ -3,7 +3,7 @@
     <label class="form-label" :title="resolveColumnTitle(column)">
       {{ $t('data.column.BasicAclEdit') }}
     </label>
-    <UsersSelector
+    <UserSelector
       :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
       v-model="value"
       :disabled="!editable"
@@ -15,10 +15,10 @@
 <script>
 import { defineComponent, computed } from 'vue';
 import { resolveColumnTitle } from '@utils';
-import UsersSelector from '@components/UsersSelector';
+import UserSelector from '@components/UserSelector';
 export default defineComponent({
   components: {
-    UsersSelector,
+    UserSelector,
   },
   props: {
     column: {
