@@ -39,7 +39,11 @@
 }
 
 .vue-treeselect--has-value .vue-treeselect__multi-value {
-  margin-bottom: 2px;
+  margin-bottom: 0;
+}
+
+.vue-treeselect__value-container {
+  padding-bottom: 2px;
 }
 
 .vue-treeselect__multi-value-item-container {
