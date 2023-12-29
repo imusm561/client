@@ -1,5 +1,9 @@
 <template>
-  <UserSelector v-model="value" :placeholder="$t('data.column.BasicAclEdit')" />
+  <UserSelector
+    :key="`editor_acl_view_${params._form.id}`"
+    v-model="value"
+    :placeholder="$t('data.column.BasicAclView')"
+  />
 </template>
 
 <script>

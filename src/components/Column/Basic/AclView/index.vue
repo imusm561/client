@@ -4,6 +4,7 @@
       {{ $t('data.column.BasicAclView') }}
     </label>
     <UserSelector
+      :key="`${column.field}${editable ? '_enable' : '_disabled'}`"
       :id="`${column.field}${editable ? '_enable' : '_disabled'}`"
       v-model="value"
       :disabled="!editable"

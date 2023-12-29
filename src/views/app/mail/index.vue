@@ -497,7 +497,7 @@
                       </div>
                     </label>
                     <UserSelector
-                      :key="JSON.stringify([...new_mail.cc, ...new_mail.bcc])"
+                      :key="`mail_${JSON.stringify([...new_mail.cc, ...new_mail.bcc])}`"
                       v-model="new_mail.to"
                       :disable-list="[...new_mail.cc, ...new_mail.bcc]"
                       :placeholder="$t('app.mail.composeModal.form.to')"
@@ -510,7 +510,7 @@
                     <div class="col-12">
                       <label>{{ $t('app.mail.composeModal.form.cc') }}:</label>
                       <UserSelector
-                        :key="JSON.stringify([...new_mail.to, ...new_mail.bcc])"
+                        :key="`mail_${JSON.stringify([...new_mail.to, ...new_mail.bcc])}`"
                         v-model="new_mail.cc"
                         :disable-list="[...new_mail.to, ...new_mail.bcc]"
                         :placeholder="$t('app.mail.composeModal.form.cc')"
@@ -521,7 +521,7 @@
                     <div class="col-12">
                       <label>{{ $t('app.mail.composeModal.form.bcc') }}:</label>
                       <UserSelector
-                        :key="JSON.stringify([...new_mail.to, ...new_mail.cc])"
+                        :key="`mail_${JSON.stringify([...new_mail.to, ...new_mail.cc])}`"
                         v-model="new_mail.bcc"
                         :disable-list="[...new_mail.to, ...new_mail.cc]"
                         :placeholder="$t('app.mail.composeModal.form.bcc')"

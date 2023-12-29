@@ -152,6 +152,7 @@
                       {{ $t('app.calendar.viewAndEditEventModal.form.users') }}
                     </label>
                     <UserSelector
+                      :key="`calendar_${current_event.id || current_event.key}`"
                       v-model="current_event.users"
                       :placeholder="$t('app.calendar.viewAndEditEventModal.form.users')"
                       :class="[errors.users && 'is-invalid']"
@@ -750,6 +751,8 @@ export default {
 
     const handleCreateEvent = () => {
       current_event.value = {
+        key: Math.random().toString(36).slice(-6),
+
         title: '',
         description: '',
 

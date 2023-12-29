@@ -134,6 +134,7 @@
               <h5 key="acl_view" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                 <label class="form-label">{{ $t('data.column.BasicAclView') }}</label>
                 <UserSelector
+                  :key="`data_${form.id}_${data.id}_acl_view`"
                   v-model="data.acl_view"
                   :placeholder="$t('data.column.BasicAclView')"
                   :class="[errors.acl_view && 'is-invalid']"
@@ -160,6 +161,7 @@
               <h5 key="acl_edit" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                 <label class="form-label">{{ $t('data.column.BasicAclEdit') }}</label>
                 <UserSelector
+                  :key="`data_${form.id}_${data.id}_acl_edit`"
                   v-model="data.acl_edit"
                   :disabled="!!form.flow?.length"
                   :placeholder="$t('data.column.BasicAclEdit')"
@@ -342,6 +344,7 @@
                     <h5 key="acl_view" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                       <label class="form-label">{{ $t('data.column.BasicAclView') }}</label>
                       <UserSelector
+                        :key="`data_${form.id}_${data.id}_acl_view`"
                         v-model="data.acl_view"
                         :placeholder="$t('data.column.BasicAclView')"
                         :class="[errors.acl_view && 'is-invalid']"
@@ -368,6 +371,7 @@
                     <h5 key="acl_edit" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                       <label class="form-label">{{ $t('data.column.BasicAclEdit') }}</label>
                       <UserSelector
+                        :key="`data_${form.id}_${data.id}_acl_edit`"
                         v-model="data.acl_edit"
                         :disabled="!!form.flow?.length"
                         :placeholder="$t('data.column.BasicAclEdit')"

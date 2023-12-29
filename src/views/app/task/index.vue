@@ -304,6 +304,7 @@
                   <div class="col-12">
                     <label class="form-label">{{ $t('app.task.editTaskModal.form.users') }}</label>
                     <UserSelector
+                      :key="`task_${current_task.id || current_task.key}`"
                       v-model="current_task.users"
                       :placeholder="$t('app.task.editTaskModal.form.users')"
                       :class="[errors.users && 'is-invalid']"

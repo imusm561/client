@@ -1,8 +1,9 @@
 <template>
   <UserSelector
+    :key="`editor_acl_edit_${params._form.id}`"
     v-model="value"
+    :placeholder="$t('data.column.BasicAclEdit')"
     :disabled="params._form.flow.length > 0"
-    :placeholder="$t(data.column.BasicAclView)"
   />
 </template>
 
