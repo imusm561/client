@@ -646,19 +646,21 @@ export default {
       };
       gridApi.setTheme = async (data) => {
         const tid = Number(route.value.params.tid);
-        if (theme.value.id) {
-          await updateCustomTheme({
-            id: theme.value.id,
-            tid,
-            data,
-          });
-          theme.value.data = data;
-        } else {
-          const { data: _theme } = await createCustomTheme({
-            tid,
-            data,
-          });
-          theme.value = _theme;
+        if (tid) {
+          if (theme.value.id) {
+            await updateCustomTheme({
+              id: theme.value.id,
+              tid,
+              data,
+            });
+            theme.value.data = data;
+          } else {
+            const { data: _theme } = await createCustomTheme({
+              tid,
+              data,
+            });
+            theme.value = _theme;
+          }
         }
         await setFormColumnDefs();
         ready.setCustom = false;
@@ -682,24 +684,26 @@ export default {
     const handleColumnChange = () => {
       if (!ready.setCustom) return;
       const tid = Number(route.value.params.tid);
-      const data = gridColumnApi.getColumnState();
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(async () => {
-        if (customs.value) {
-          await updateCustomColumn({
-            id: customs.value.id,
-            tid,
-            data,
-          });
-          customs.value.data = data;
-        } else {
-          const { data: _customs } = await createCustomColumn({
-            tid,
-            data,
-          });
-          customs.value = _customs;
-        }
-      }, 500);
+      if (tid) {
+        const data = gridColumnApi.getColumnState();
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(async () => {
+          if (customs.value) {
+            await updateCustomColumn({
+              id: customs.value.id,
+              tid,
+              data,
+            });
+            customs.value.data = data;
+          } else {
+            const { data: _customs } = await createCustomColumn({
+              tid,
+              data,
+            });
+            customs.value = _customs;
+          }
+        }, 500);
+      }
     };
 
     const generateColumnDef = (column) => {
