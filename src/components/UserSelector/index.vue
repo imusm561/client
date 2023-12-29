@@ -26,12 +26,15 @@
           id: username,
           label: fullname,
           raw: { avatar },
+          isDisabled,
         },
       }"
     >
       <div class="ms-1 d-flex align-items-center">
         <Avatar class="me-2" :data="{ username, fullname, avatar }" size="xxs" />
-        <span class="ms-1 align-middle text-dark">{{ fullname }}</span>
+        <span class="ms-1 align-middle" :class="isDisabled ? 'text-muted' : 'text-dark'">
+          {{ fullname }}
+        </span>
       </div>
     </template>
     <template
