@@ -13,7 +13,7 @@ $vs-component-placeholder-color: $body-color;
 
 //  Active State
 $vs-state-active-bg: rgba($primary, 0.12);
-$vs-state-active-color: $primary !important;
+$vs-state-active-color: unset !important;
 
 // Border
 $vs-border-width: $input-border-width;
@@ -21,7 +21,6 @@ $vs-border-radius: $input-border-radius;
 $vs-border-color: $input-border-color;
 
 //  Selected
-$vs-selected-bg: $primary;
 $vs-selected-border-width: 0;
 
 // Dropdown
@@ -39,7 +38,7 @@ $vs-dropdown-box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.1);
   color: $input-color;
   margin: 0;
   padding: 0 0 0 0.9rem;
-  line-height: 2.6 !important;
+  // line-height: 2.6 !important;
 }
 
 .vs--disabled .vs__dropdown-toggle,
@@ -50,14 +49,19 @@ $vs-dropdown-box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.1);
   color: $gray-600 !important;
   background-color: $input-disabled-bg;
   cursor: not-allowed;
-
   i {
     display: none;
   }
 }
 
+[data-theme='light'] {
+  .vs--disabled .vs__selected {
+    border: 1px solid #e5e5e5;
+    background-color: #fff !important;
+  }
+}
 .vs__selected-options {
-  padding: 0;
+  padding: 1.5px;
 }
 
 .vs__dropdown-toggle {
@@ -96,9 +100,8 @@ $vs-dropdown-box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.1);
 
 .vs__dropdown-option--disabled {
   &.vs__dropdown-option--selected {
-    background: $primary !important;
+    background: #039be5 !important;
   }
-
   opacity: 0.5;
 }
 
@@ -119,12 +122,10 @@ $vs-dropdown-box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.1);
 
 .vs__dropdown-option--selected {
   color: $white;
-  background-color: $primary;
+  background-color: #039be5;
   position: relative;
-
   &.vs__dropdown-option--highlight {
     color: $white !important;
-    background-color: $primary !important;
   }
 }
 
@@ -146,14 +147,18 @@ $vs-dropdown-box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.1);
 
 // Selected Color. It don't have any variable to override. (text in tag)
 .vs__selected {
-  color: $white;
+  background-color: #e3f2fd;
+  color: $input-color;
   padding: 0 0 0 0.9rem;
   margin: 0;
   word-break: break-word;
   line-height: 2.3 !important;
+  i {
+    font-size: 9px;
+  }
 
   .vs__deselect {
-    color: $white;
+    color: $input-color;
   }
 
   // Single select selected text
@@ -166,16 +171,26 @@ $vs-dropdown-box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.1);
   }
 }
 
+[data-theme='dark'] {
+  .v-select {
+    &:not(.vs--single) {
+      .vs__selected {
+        background-color: #543b64;
+      }
+    }
+  }
+}
+
 .v-select {
   background-color: $input-bg;
   min-height: $input-height;
 
   &:not(.vs--single) {
     .vs__selected {
-      border-radius: 3px;
+      border-radius: 2px;
       padding: 0 0.6em;
-      font-size: 0.8rem;
-      margin: 3px;
+      font-size: 12px;
+      margin: 1.5px;
     }
   }
 
@@ -193,10 +208,4 @@ $vs-dropdown-box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.1);
   border-bottom-left-radius: $vs-border-radius;
   border-bottom-right-radius: $vs-border-radius;
   box-shadow: $input-focus-box-shadow;
-}
-
-[data-theme='dark'] {
-  .vs__dropdown-option--highlight {
-    color: $white !important;
-  }
 }

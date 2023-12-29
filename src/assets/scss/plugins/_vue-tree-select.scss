@@ -3,7 +3,6 @@
 //
 
 @import 'vue3-treeselect/dist/vue3-treeselect';
-@import 'vue-select/src/scss/global/_variables.scss';
 
 .vue-treeselect {
   .vue-treeselect__control {
@@ -39,7 +38,7 @@
 }
 
 .vue-treeselect--has-value .vue-treeselect__multi-value {
-  margin-bottom: 0;
+  margin-bottom: 1px;
 }
 
 .vue-treeselect__value-container {
@@ -47,13 +46,15 @@
 }
 
 .vue-treeselect__multi-value-item-container {
-  padding-top: 2px;
-  padding-right: 2px;
+  padding-top: 3px;
+  padding-right: 3px;
   position: relative;
   z-index: 1;
   .vue-treeselect__multi-value-item {
-    padding: 2px 0;
+    padding: 1.5px 0;
+    color: $input-color;
     .vue-treeselect__value-remove {
+      color: $input-color;
       padding-left: 0px;
       border-left: none;
       &:hover {
@@ -109,19 +110,21 @@
 }
 
 .vue-treeselect__option--highlight {
-  background: #96c0e6;
+  background: rgba($primary, 0.12);
+}
+
+.vue-treeselect--disabled .vue-treeselect__multi-value-item {
+  span {
+    color: $gray-600 !important;
+  }
 }
 
 [data-theme='dark'] {
-  .vue-treeselect__option--highlight {
+  .vue-treeselect__multi-value-item {
     background: #543b64;
   }
 
-  .vue-treeselect__multi-value-item {
-    background: #543b64;
-    color: #fff;
-    .vue-treeselect__value-remove {
-      color: #fff;
-    }
+  .vue-treeselect--disabled .vue-treeselect__multi-value-item {
+    border-color: #543b64 !important;
   }
 }
