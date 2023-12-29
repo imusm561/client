@@ -32,7 +32,7 @@
     >
       <div class="ms-1 d-flex align-items-center">
         <Avatar class="me-2" :data="{ username, fullname, avatar }" size="xxs" />
-        <span class="ms-n1 align-middle">{{ fullname }}</span>
+        <span class="ms-1 align-middle">{{ fullname }}</span>
       </div>
     </template>
     <template
@@ -46,7 +46,7 @@
     >
       <div class="d-flex align-items-center">
         <Avatar class="me-2" :data="{ username, fullname, avatar }" size="xxs" />
-        <span class="ms-n1 align-middle">{{ fullname }}</span>
+        <span class="ms-1 align-middle">{{ fullname }}</span>
       </div>
     </template>
   </TreeSelect>
