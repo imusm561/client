@@ -325,6 +325,12 @@ input:-webkit-autofill {
   }
 }
 
+.ag-paging-page-size {
+  @media (max-width: 576px) {
+    display: none;
+  }
+}
+
 #activeChart {
   .apexcharts-legend-text {
     margin: 6px 4px 0 4px;
