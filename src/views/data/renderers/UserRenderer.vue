@@ -1,6 +1,6 @@
 <template>
   <span v-if="['alpine', 'quartz'].includes(theme)">
-    <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)" class="multiple-avatar">
+    <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)" class="ag-avatar">
       <Avatar
         v-if="Array.isArray(params.value)"
         :data="
@@ -11,18 +11,17 @@
         size="xs"
       />
     </span>
-    <span v-else>
-      <span v-if="user" class="single-avatar d-flex align-items-center">
-        <Avatar :data="user" size="xs" />
-        <span class="d-flex flex-column ms-1" style="line-height: 100%">
-          <span class="fs-14">{{ user.fullname }}</span>
-          <span class="fs-10 text-muted">{{ user.username }}</span>
-        </span>
+    <span v-else-if="user" class="ag-avatar d-flex align-items-center">
+      <Avatar :data="user" size="xs" />
+      <span class="d-flex flex-column ms-1">
+        <span class="fs-14">{{ user.fullname }}</span>
+        <span class="fs-10 text-muted">{{ user.username }}</span>
       </span>
     </span>
   </span>
-  <span v-else style="line-height: inherit" class="align-items-center d-flex">
-    <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)" class="multiple-avatar">
+
+  <span v-else>
+    <span v-if="['acl_view', 'acl_edit'].includes(params._column.field)" class="ag-avatar">
       <Avatar
         v-if="Array.isArray(params.value)"
         :data="
@@ -33,13 +32,11 @@
         size="xxs"
       />
     </span>
-    <span v-else>
-      <span v-if="user" class="single-avatar d-flex align-items-center">
-        <Avatar :data="user" size="xxs" />
-        <span class="ms-1">
-          {{ user.fullname }}
-          <small class="text-muted">[{{ user.username }}]</small>
-        </span>
+    <span v-else-if="user" class="ag-avatar d-flex align-items-center">
+      <Avatar :data="user" size="xxs" />
+      <span class="ms-1">
+        {{ user.fullname }}
+        <small class="text-muted">[{{ user.username }}]</small>
       </span>
     </span>
   </span>

@@ -295,15 +295,22 @@ input:-webkit-autofill {
   opacity: 0 !important;
 }
 
+.ag-avatar {
+  line-height: initial;
+  .avatar-group {
+    img {
+      vertical-align: unset;
+    }
+  }
+}
+
 .ag-theme-quartz,
 .ag-theme-quartz-dark,
 .ag-theme-alpine,
 .ag-theme-alpine-dark {
-  .single-avatar {
-    height: 40px;
-  }
-  .multiple-avatar {
-    .avatar-title {
+  .ag-avatar {
+    margin-top: 3px;
+    .avatar-group {
       margin-top: 4px;
     }
   }
@@ -311,20 +318,10 @@ input:-webkit-autofill {
 
 .ag-theme-balham,
 .ag-theme-balham-dark {
-  .single-avatar {
-    margin-top: -1px;
-  }
-  .multiple-avatar {
-    .avatar-title {
+  .ag-avatar {
+    .avatar-group {
       margin-top: 1px;
     }
-  }
-}
-
-.single-avatar,
-.multiple-avatar {
-  img {
-    margin-bottom: 2.4px;
   }
 }
 

@@ -1,38 +1,36 @@
 <template>
   <div v-if="isGroup" class="avatar-group">
     <span v-for="(user, index) in users" :key="index" class="avatar-group-item cursor-pointer">
-      <div :title="user[keyFullname]">
-        <img
-          v-if="user[keyAvatar]"
-          :src="`${BASE_URL}${user[keyAvatar]}`"
-          :class="`avatar-${size} rounded-circle bg-avatar img-thumbnail`"
-          loading="lazy"
-        />
-        <div v-else :class="`avatar-${size} rounded-circle`">
-          <div
-            :class="`avatar-title rounded-circle bg-avatar text-light ${fs[size]} img-thumbnail`"
-          >
-            {{
-              user.collapse
-                ? user[keyUsername]
-                : typeof user[keyUsername] === 'string'
-                ? user[keyFullname] &&
-                  user[keyFullname].charAt(user[keyFullname].length - 1).toUpperCase()
-                : user[keyFullname] && user[keyFullname].charAt(0).toUpperCase()
-            }}
-          </div>
+      <img
+        :title="user[keyFullname]"
+        v-if="user[keyAvatar]"
+        :src="`${BASE_URL}${user[keyAvatar]}`"
+        :class="`avatar-${size} rounded-circle bg-avatar img-thumbnail`"
+        loading="lazy"
+      />
+      <div v-else :title="user[keyFullname]" :class="`avatar-${size} rounded-circle`">
+        <div :class="`avatar-title rounded-circle bg-avatar text-light ${fs[size]} img-thumbnail`">
+          {{
+            user.collapse
+              ? user[keyUsername]
+              : typeof user[keyUsername] === 'string'
+              ? user[keyFullname] &&
+                user[keyFullname].charAt(user[keyFullname].length - 1).toUpperCase()
+              : user[keyFullname] && user[keyFullname].charAt(0).toUpperCase()
+          }}
         </div>
       </div>
     </span>
   </div>
-  <div v-else :title="user[keyFullname]">
+  <template v-else>
     <img
+      :title="user[keyFullname]"
       v-if="user[keyAvatar]"
       :src="`${BASE_URL}${user[keyAvatar]}`"
       :class="`avatar-${size} rounded-circle bg-avatar ${thumbnail ? 'img-thumbnail' : ''}`"
       loading="lazy"
     />
-    <div v-else :class="`avatar-${size} rounded-circle`">
+    <div v-else :title="user[keyFullname]" :class="`avatar-${size} rounded-circle`">
       <div
         :class="`avatar-title rounded-circle bg-avatar text-light ${fs[size]} ${
           thumbnail ? 'img-thumbnail' : ''
@@ -46,7 +44,7 @@
         }}
       </div>
     </div>
-  </div>
+  </template>
 </template>
 
 <script>
