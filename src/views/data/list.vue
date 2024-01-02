@@ -712,18 +712,47 @@ export default {
       const tid = Number(route.value.params.tid);
       if (data && tid) {
         if (data != pagination.value.pageSize) {
-          if (pagination.value.id) {
-            updateCustomPagination({
-              id: pagination.value.id,
-              tid,
-              data,
-            });
-          } else {
-            createCustomPagination({
-              tid,
-              data,
-            });
-          }
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(async () => {
+            if (pagination.value.id) {
+              updateCustomPagination({
+                id: pagination.value.id,
+                tid,
+                data,
+              }).then(({ code, msg }) => {
+                if (code === 200) {
+                  pagination.value.pageSize = data;
+                } else {
+                  toast({
+                    component: ToastificationContent,
+                    props: {
+                      variant: 'danger',
+                      icon: 'mdi-alert',
+                      text: msg,
+                    },
+                  });
+                }
+              });
+            } else {
+              createCustomPagination({
+                tid,
+                data,
+              }).then(({ code, data, msg }) => {
+                if (code === 200) {
+                  pagination.value = { ...data, ...{ pageSize: data.data } };
+                } else {
+                  toast({
+                    component: ToastificationContent,
+                    props: {
+                      variant: 'danger',
+                      icon: 'mdi-alert',
+                      text: msg,
+                    },
+                  });
+                }
+              });
+            }
+          }, 500);
         }
       }
     };
