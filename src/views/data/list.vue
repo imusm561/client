@@ -1548,6 +1548,24 @@ export default {
               action: () => {
                 gridApi.exportDataAsExcel({
                   exportedRows: 'all',
+                  processCellCallback: (params) => {
+                    const column = columns.value.find(
+                      (column) => column.field === params.column.colId,
+                    );
+                    if (['SelectFile'].includes(column.component))
+                      return JSON.stringify(params.value);
+                    else if (
+                      ['BasicAclView', 'BasicAclEdit', 'SelectMultiple', 'SelectTags'].includes(
+                        column.component,
+                      )
+                    )
+                      return params.value
+                        .map((item) => {
+                          return typeof item === 'string' ? item.replace(/,/g, '0x2C') : item;
+                        })
+                        .toString();
+                    else return params.value;
+                  },
                 });
               },
               icon: '<i class="mdi mdi-format-list-bulleted-square fs-14" style="margin-left: 1px;" />',
@@ -1564,6 +1582,24 @@ export default {
             action: () => {
               gridApi.exportDataAsExcel({
                 onlySelected: true,
+                processCellCallback: (params) => {
+                  const column = columns.value.find(
+                    (column) => column.field === params.column.colId,
+                  );
+                  if (['SelectFile'].includes(column.component))
+                    return JSON.stringify(params.value);
+                  else if (
+                    ['BasicAclView', 'BasicAclEdit', 'SelectMultiple', 'SelectTags'].includes(
+                      column.component,
+                    )
+                  )
+                    return params.value
+                      .map((item) => {
+                        return typeof item === 'string' ? item.replace(/,/g, '0x2C') : item;
+                      })
+                      .toString();
+                  else return params.value;
+                },
               });
             },
             icon: '<i class="mdi mdi-checkbox-marked-outline fs-14" style="margin-left: 1px;" />',
