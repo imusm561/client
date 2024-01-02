@@ -148,12 +148,13 @@
           :defaultColDef="defaultColDef"
           @grid-ready="onGridReady"
           :overlayLoadingTemplate="overlayLoadingTemplate"
-          @columnVisible="handleColumnChange"
-          @columnPinned="handleColumnChange"
-          @columnResized="handleColumnChange"
-          @columnMoved="handleColumnChange"
-          @sortChanged="handleColumnChange"
-          @columnRowGroupChanged="handleColumnChange"
+          @columnVisible="handleColumnChanged"
+          @columnPinned="handleColumnChanged"
+          @columnResized="handleColumnChanged"
+          @columnMoved="handleColumnChanged"
+          @sortChanged="handleColumnChanged"
+          @columnRowGroupChanged="handleColumnChanged"
+          @paginationChanged="handlePaginationChanged"
         ></AgGridVue>
       </div>
 
@@ -681,7 +682,7 @@ export default {
     };
 
     let timer = null;
-    const handleColumnChange = () => {
+    const handleColumnChanged = () => {
       if (!ready.setCustom) return;
       const tid = Number(route.value.params.tid);
       if (tid) {
@@ -703,6 +704,27 @@ export default {
             customs.value = _customs;
           }
         }, 500);
+      }
+    };
+
+    const handlePaginationChanged = (params) => {
+      const data = params.api.paginationGetPageSize();
+      const tid = Number(route.value.params.tid);
+      if (data && tid) {
+        if (data != pagination.value.pageSize) {
+          if (pagination.value.id) {
+            updateCustomPagination({
+              id: pagination.value.id,
+              tid,
+              data,
+            });
+          } else {
+            createCustomPagination({
+              tid,
+              data,
+            });
+          }
+        }
       }
     };
 
@@ -1381,22 +1403,6 @@ export default {
                 rowData: res.data.rows || [],
                 rowCount: res.data.count || 0,
               });
-              const data = gridApi.paginationGetPageSize();
-              if (data != pagination.value.pageSize) {
-                const tid = Number(route.value.params.tid);
-                if (pagination.value.id) {
-                  updateCustomPagination({
-                    id: pagination.value.id,
-                    tid,
-                    data,
-                  });
-                } else {
-                  createCustomPagination({
-                    tid,
-                    data,
-                  });
-                }
-              }
             })
             .catch(() => {
               params.fail();
@@ -1610,20 +1616,18 @@ export default {
         },
       });
       importData(formData).then(({ code, msg, data }) => {
+        toast.clear();
+        e.target.value = null;
         if (code === 200) {
-          e.target.value = null;
           gridApi.refreshServerSide({ purge: true });
-          setTimeout(() => {
-            gridApi.hideOverlay();
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'success',
-                icon: 'mdi-check-circle',
-                text: i18n.global.tc('data.list.import.success', { count: data }),
-              },
-            });
-          }, 200);
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'success',
+              icon: 'mdi-check-circle',
+              text: i18n.global.tc('data.list.import.success', { count: data }),
+            },
+          });
         } else {
           toast({
             component: ToastificationContent,
@@ -1634,6 +1638,7 @@ export default {
             },
           });
         }
+        gridApi.hideOverlay();
       });
     };
 
@@ -1699,7 +1704,8 @@ export default {
       overlayLoadingTemplate,
 
       onGridReady,
-      handleColumnChange,
+      handleColumnChanged,
+      handlePaginationChanged,
       serverSideDatasource,
 
       setColumnConfiguration,
