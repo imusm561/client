@@ -27,10 +27,14 @@
                   </label>
                 </div>
               </div>
-              <h5 class="fs-16 mb-1 text-capitalize">
-                {{ user.fullname }}
-              </h5>
-              <p class="text-muted mb-0">{{ user.post }}</p>
+              <h5 class="fs-16 mb-1 text-capitalize">{{ user.fullname }}</h5>
+              <p class="text-muted mb-0">
+                <span class="text-capitalize">{{ user.post }}</span>
+                @
+                <span class="text-capitalize">
+                  {{ $store.state.org.depts.find((dept) => dept.id === user.dept)?.name }}
+                </span>
+              </p>
             </div>
           </div>
         </div>

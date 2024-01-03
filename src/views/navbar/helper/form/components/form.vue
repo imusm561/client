@@ -492,8 +492,8 @@
                           data-bs-toggle="collapse"
                           :data-bs-target="`#flow_${index}`"
                         >
-                          <div class="d-flex">
-                            <div class="flex-shrink-0 ms-2">
+                          <div class="d-flex align-items-center justify-content-between me-2">
+                            <div class="flex-shrink-0">
                               <h6 class="fs-14 mb-0">
                                 <i class="mdi mdi-drag ms-n1 mover cursor-move fs-16"></i>
                                 {{ index + 1 }}# {{ item.title }}
@@ -516,8 +516,6 @@
                             </div>
                             <Avatar
                               v-if="item.users.length"
-                              :key="resolveFlowUsers(item)"
-                              class="ms-2"
                               :data="resolveFlowUsers(item)"
                               size="xs"
                             />
@@ -635,15 +633,15 @@
                               >
                                 <template #option="data">
                                   <div class="d-flex align-items-center">
-                                    <Avatar class="me-2" :data="data" size="xxs" />
-                                    <span class="ml-50 align-middle">{{ data.fullname }}</span>
+                                    <Avatar :data="data" size="xxs" />
+                                    <span class="ml-50 align-middle ms-1">{{ data.fullname }}</span>
                                   </div>
                                 </template>
 
                                 <template #selected-option="data">
                                   <div class="d-flex align-items-center">
-                                    <Avatar class="me-2" :data="data" size="xxs" />
-                                    <span class="ml-50 align-middle">{{ data.fullname }}</span>
+                                    <Avatar :data="data" size="xxs" />
+                                    <span class="ml-50 align-middle ms-1">{{ data.fullname }}</span>
                                   </div>
                                 </template>
 

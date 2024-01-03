@@ -375,7 +375,7 @@
               <div class="flex-shrink-0">
                 <Avatar :data="getUserInfo(flow.created_by)" size="xs" />
               </div>
-              <div class="flex-grow-1 ms-3">
+              <div class="flex-grow-1 ms-2">
                 <span>
                   <div class="fw-medium fs-10">
                     {{ getUserInfo(flow.created_by).fullname }}
@@ -392,7 +392,7 @@
                     </span>
                   </small>
                 </span>
-                <div class="mt-2">
+                <div class="mt-1">
                   <blockquote class="blockquote mb-0 pb-1 ps-2 pt-1">
                     {{ $t('data.view.flow.creation') }}
                     <small
@@ -434,7 +434,7 @@
                   #{{ nidx + 1 }}
                 </div>
               </div>
-              <div class="flex-grow-1 ms-3">
+              <div class="flex-grow-1 ms-2">
                 <span>
                   <div class="fw-medium fs-10">{{ node.title }}</div>
                   <small class="text-muted">
@@ -458,9 +458,9 @@
                       'border-danger': item.comment && !item.pass,
                     }"
                   >
-                    <div class="d-flex">
-                      <Avatar class="me-2" :data="getUserInfo(item.username)" size="xs" />
-                      <div>
+                    <div class="d-flex align-items-center">
+                      <Avatar :data="getUserInfo(item.username)" size="xs" />
+                      <div class="ms-1">
                         <div class="fw-medium text-dark">
                           {{ getUserInfo(item.username).fullname }}
                           <i
@@ -471,7 +471,7 @@
                             "
                           />
                         </div>
-                        <div class="fs-12 text-muted">
+                        <div class="fs-10 text-muted">
                           {{ item.datetime || getUserInfo(item.username)?.post }}
                         </div>
                       </div>
@@ -519,7 +519,7 @@
                         </button>
                       </div>
                     </div>
-                    <div v-else>
+                    <div v-else class="mt-1">
                       <blockquote v-if="item.comment" class="blockquote mb-0 pb-1 ps-2 pt-1">
                         {{ item.comment }}
                       </blockquote>

@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex p-2 shadow border mt-1" :id="`comment_${comment.id}`">
     <Avatar :data="getUserInfo(comment.created_by)" />
-    <div class="flex-grow-1 ms-3">
+    <div class="flex-grow-1 ms-1">
       <div class="fw-medium fs-10">
         {{ getUserInfo(comment.created_by).fullname }}
         <i

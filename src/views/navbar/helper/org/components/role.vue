@@ -82,7 +82,7 @@
                   </span>
                 </div>
                 <div class="flex-shrink-0">
-                  <Avatar :key="resolveRoleUsers(role)" :data="resolveRoleUsers(role)" size="xxs" />
+                  <Avatar :data="resolveRoleUsers(role)" size="xxs" />
                 </div>
               </div>
             </div>

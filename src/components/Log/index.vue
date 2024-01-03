@@ -7,7 +7,7 @@
             <div class="flex-shrink-0">
               <Avatar :data="getUserInfo(log.created_by)" size="xs" />
             </div>
-            <div class="flex-grow-1 ms-3">
+            <div class="flex-grow-1 ms-2">
               <span>
                 <span class="d-block fw-medium">
                   {{ getUserInfo(log.created_by).fullname }}

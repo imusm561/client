@@ -33,15 +33,15 @@
           >
             <template #option="data">
               <div class="d-flex align-items-center">
-                <Avatar class="me-2" :data="data" size="xxs" />
-                <span class="ml-50 align-middle">{{ data.fullname }}</span>
+                <Avatar :data="data" size="xxs" />
+                <span class="ml-50 align-middle ms-1">{{ data.fullname }}</span>
               </div>
             </template>
 
             <template #selected-option="data">
               <div class="d-flex align-items-center">
-                <Avatar class="me-2" :data="data" size="xxs" />
-                <span class="ml-50 align-middle">{{ data.fullname }}</span>
+                <Avatar :data="data" size="xxs" />
+                <span class="ml-50 align-middle ms-1">{{ data.fullname }}</span>
               </div>
             </template>
 

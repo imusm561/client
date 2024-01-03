@@ -13,15 +13,15 @@
         >
           <template #option="data">
             <div class="d-flex align-items-center">
-              <Avatar class="me-2" :data="data" size="xxs" />
-              <span class="ml-50 align-middle">{{ data.fullname }}</span>
+              <Avatar :data="data" size="xxs" />
+              <span class="ml-50 align-middle ms-1">{{ data.fullname }}</span>
             </div>
           </template>
 
           <template #selected-option="data">
             <div class="d-flex align-items-center">
-              <Avatar class="me-2" :data="data" size="xxs" />
-              <span class="ml-50 align-middle">{{ data.fullname }}</span>
+              <Avatar :data="data" size="xxs" />
+              <span class="ml-50 align-middle ms-1">{{ data.fullname }}</span>
             </div>
           </template>
 
@@ -44,15 +44,15 @@
           >
             <template #option="data">
               <div class="d-flex align-items-center">
-                <Avatar class="me-2" :data="data" size="xxs" />
-                <span class="ml-50 align-middle">{{ data.fullname }}</span>
+                <Avatar :data="data" size="xxs" />
+                <span class="ml-50 align-middle ms-1">{{ data.fullname }}</span>
               </div>
             </template>
 
             <template #selected-option="data">
               <div class="d-flex align-items-center">
-                <Avatar class="me-2" :data="data" size="xxs" />
-                <span class="ml-50 align-middle">{{ data.fullname }}</span>
+                <Avatar :data="data" size="xxs" />
+                <span class="ml-50 align-middle ms-1">{{ data.fullname }}</span>
               </div>
             </template>
 
@@ -114,69 +114,77 @@
               <tr v-for="log in logs" :key="log.id">
                 <td style="white-space: nowrap">#{{ log.id }}</td>
                 <td style="white-space: nowrap">
-                  <div class="d-flex gap-2 align-items-center">
-                    <div>
-                      <Avatar :data="getUserInfo(log.created_by)" />
-                    </div>
-                    <div>
-                      <div>{{ getUserInfo(log.created_by).fullname }}</div>
-                      <small>{{ log.created_by }}</small>
-                    </div>
+                  <div class="d-flex align-items-center">
+                    <Avatar :data="getUserInfo(log.created_by)" />
+                    <span class="d-flex flex-column ms-1">
+                      <span class="fs-14">{{ getUserInfo(log.created_by).fullname }}</span>
+                      <span class="fs-10 text-muted">{{ getUserInfo(log.created_by).post }}</span>
+                    </span>
                   </div>
                 </td>
                 <td style="white-space: nowrap">
-                  <div class="d-flex gap-2 align-items-center">
+                  <div class="d-flex align-items-center">
                     <i class="fs-32 mb-n2 mt-n2 mdi mdi-calendar-clock text-primary" />
-                    <div>
-                      <div>{{ $moment(log.created_at).format('ll') }}</div>
-                      <small>{{ $moment(log.created_at).format('LTS') }}</small>
-                    </div>
+                    <span class="d-flex flex-column ms-1">
+                      <span class="fs-14">{{ $moment(log.created_at).format('ll') }}</span>
+                      <span class="fs-10">
+                        {{ $moment(log.created_at).format('LTS') }}
+                      </span>
+                    </span>
                   </div>
                 </td>
                 <td style="white-space: nowrap">
-                  <div class="d-flex gap-2 align-items-center">
+                  <div class="d-flex align-items-center">
                     <i
                       class="fs-32 mb-n2 mt-n2 mdi"
                       :class="resolveDeviceIcon(uaParser(log.agent).device.type || 'desktop')"
                     />
-                    <div>
-                      <div class="text-capitalize">
+                    <span class="d-flex flex-column ms-1">
+                      <span class="fs-14 text-capitalize">
                         {{ uaParser(log.agent).device.type || 'desktop' }}
-                      </div>
-                      <small>
+                      </span>
+                      <span class="fs-10">
                         {{ uaParser(log.agent).device.vendor }}
                         {{ uaParser(log.agent).device.model }}
                         {{ uaParser(log.agent).cpu.architecture }}
-                      </small>
-                    </div>
+                      </span>
+                    </span>
                   </div>
                 </td>
                 <td style="white-space: nowrap">
-                  <div class="d-flex gap-2 align-items-center">
+                  <div class="d-flex align-items-center">
                     <i
                       class="fs-32 mb-n2 mt-n2 mdi"
                       :class="reslovOsIcon(uaParser(log.agent).os.name)"
                     />
-                    <div>
-                      <div class="text-capitalize">{{ uaParser(log.agent).os.name }}</div>
-                      <small>{{ uaParser(log.agent).os.version }}</small>
-                    </div>
+                    <span class="d-flex flex-column ms-1">
+                      <span class="fs-14 text-capitalize">
+                        {{ uaParser(log.agent).os.name }}
+                      </span>
+                      <span class="fs-10">
+                        {{ uaParser(log.agent).os.version }}
+                      </span>
+                    </span>
                   </div>
                 </td>
                 <td style="white-space: nowrap">
-                  <div class="d-flex gap-2 align-items-center">
+                  <div class="d-flex align-items-center">
                     <i
                       class="fs-32 mb-n2 mt-n2 mdi"
                       :class="resolveBrowserIcon(uaParser(log.agent).browser.name)"
                     />
-                    <div>
-                      <div>{{ uaParser(log.agent).browser.name }}</div>
-                      <small>v{{ uaParser(log.agent).browser.version }}</small>
-                    </div>
+                    <span class="d-flex flex-column ms-1">
+                      <span class="fs-14">
+                        {{ uaParser(log.agent).browser.name }}
+                      </span>
+                      <span class="fs-10">
+                        {{ uaParser(log.agent).browser.version }}
+                      </span>
+                    </span>
                   </div>
                 </td>
                 <td style="white-space: nowrap">
-                  <div class="d-flex gap-2 align-items-center">
+                  <div class="d-flex align-items-center">
                     <i
                       class="fs-32 mb-n2 mt-n2 mdi"
                       :class="
@@ -185,14 +193,14 @@
                           : 'text-info mdi-file-download'
                       "
                     />
-                    <div>
-                      <div
-                        class="cursor-pointer text-secondary text-decoration-underline"
+                    <span class="d-flex flex-column ms-1">
+                      <span
+                        class="fs-14 cursor-pointer text-secondary text-decoration-underline"
                         @click="handleViewLogData(log)"
                       >
                         {{ log.url }}
-                      </div>
-                      <small>
+                      </span>
+                      <span class="fs-10">
                         <span
                           class="badge text-uppercase"
                           :class="{
@@ -203,8 +211,8 @@
                           {{ log.method }}
                         </span>
                         {{ log?.ip?.replace('::ffff:', '') }}
-                      </small>
-                    </div>
+                      </span>
+                    </span>
                   </div>
                 </td>
               </tr>

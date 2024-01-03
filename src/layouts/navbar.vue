@@ -307,12 +307,12 @@
                       :key="index"
                     >
                       <div class="d-flex">
-                        <Avatar class="me-3" :data="item.user" />
-                        <div class="flex-1 w-50" @click="handleClickChatNotice(item)">
+                        <Avatar :data="item.user" />
+                        <div class="flex-1 w-50 ms-1" @click="handleClickChatNotice(item)">
                           <span class="stretched-link">
                             <h6 class="mt-0 mb-1 fs-13 fw-semibold">{{ item.user.fullname }}</h6>
                           </span>
-                          <div class="fs-13 text-muted">
+                          <div class="fs-10 text-muted">
                             <p class="mb-1 text-truncate">
                               {{
                                 item.chat_data[0].type === 'file'
@@ -356,14 +356,14 @@
                       :key="index"
                     >
                       <div class="d-flex">
-                        <Avatar class="me-3" :data="getUserInfo(mail.created_by)" />
-                        <div class="flex-1 w-50" @click="handleClickMailNotice(mail)">
+                        <Avatar :data="getUserInfo(mail.created_by)" />
+                        <div class="flex-1 w-50 ms-1" @click="handleClickMailNotice(mail)">
                           <span class="stretched-link">
                             <h6 class="mt-0 mb-1 fs-13 fw-semibold">
                               {{ getUserInfo(mail.created_by).fullname }}
                             </h6>
                           </span>
-                          <div class="fs-13 text-muted">
+                          <div class="fs-10 text-muted">
                             <p class="mb-1 text-truncate">{{ mail.subject }}</p>
                           </div>
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
@@ -392,14 +392,14 @@
                       :key="index"
                     >
                       <div class="d-flex">
-                        <Avatar class="me-3" :data="getUserInfo(comment.created_by)" />
-                        <div class="flex-1 w-50" @click="handleClickCommentNotice(comment)">
+                        <Avatar :data="getUserInfo(comment.created_by)" />
+                        <div class="flex-1 w-50 ms-1" @click="handleClickCommentNotice(comment)">
                           <span class="stretched-link">
                             <h6 class="mt-0 mb-1 fs-13 fw-semibold">
                               {{ getUserInfo(comment.created_by).fullname }}
                             </h6>
                           </span>
-                          <div class="fs-13 text-muted">
+                          <div class="fs-10 text-muted">
                             <p class="mb-1 text-truncate">{{ replaceHtml(comment.content) }}</p>
                           </div>
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
@@ -428,17 +428,14 @@
                       :key="index"
                     >
                       <div class="d-flex">
-                        <Avatar
-                          class="me-3"
-                          :data="getUserInfo(flow.updated_by || flow.created_by)"
-                        />
-                        <div class="flex-1 w-50" @click="handleClickFlowNotice(flow)">
+                        <Avatar :data="getUserInfo(flow.updated_by || flow.created_by)" />
+                        <div class="flex-1 w-50 ms-1" @click="handleClickFlowNotice(flow)">
                           <span class="stretched-link">
                             <h6 class="mt-0 mb-1 fs-13 fw-semibold">
                               {{ getUserInfo(flow.updated_by || flow.created_by).fullname }}
                             </h6>
                           </span>
-                          <div class="fs-13 text-muted">
+                          <div class="fs-10 text-muted">
                             <p class="mb-1 text-truncate">
                               {{ flow.title }}
                             </p>

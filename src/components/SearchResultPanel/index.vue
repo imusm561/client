@@ -29,16 +29,16 @@
         </h6>
       </div>
       <div
-        class="d-flex dropdown-item notify-item py-2 cursor-pointer"
+        class="d-flex align-items-center dropdown-item notify-item py-2 cursor-pointer"
         v-for="user in result.user"
         :key="user.id"
         @click="$router.push({ name: 'chat', query: { contact: user.username } })"
       >
-        <Avatar :data="user" class="me-2" />
-        <div class="flex-1">
-          <h6 class="m-0">{{ user.username }}</h6>
-          <span class="fs-11 mb-0 text-muted">{{ user.post }}</span>
-        </div>
+        <Avatar :data="user" size="xs" />
+        <span class="d-flex flex-column ms-1">
+          <span class="fs-14">{{ user.fullname }}</span>
+          <span class="fs-10 text-muted">{{ user.post }}</span>
+        </span>
       </div>
     </div>
 

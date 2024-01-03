@@ -41,7 +41,7 @@
                   <span class="user-status"></span>
                   <Avatar :data="chat" thumbnail />
                 </div>
-                <div class="flex-grow-1 overflow-hidden" style="line-height: 100%">
+                <div class="flex-grow-1 overflow-hidden ms-n1 mt-1" style="line-height: 100%">
                   <div class="fs-14 text-dark">{{ chat.fullname }}</div>
                   <div class="fs-10 mt-1 text-muted text-truncate">
                     {{
@@ -100,7 +100,7 @@
                   <span class="user-status"></span>
                   <Avatar :data="contact" thumbnail />
                 </div>
-                <span class="d-flex flex-column w-75" style="line-height: 100%">
+                <span class="d-flex flex-column w-75 ms-n1 mt-1" style="line-height: 100%">
                   <span class="fs-14 text-dark">{{ contact.fullname }}</span>
                   <span class="mt-1 fs-10 text-muted text-truncate">{{ contact.post }}</span>
                 </span>
@@ -141,7 +141,7 @@
                           ></span>
                           <Avatar size="sm" :data="current_chat" thumbnail />
                         </div>
-                        <div class="flex-grow-1 overflow-hidden">
+                        <div class="flex-grow-1 overflow-hidden mt-1">
                           <h5 class="text-truncate mb-0 fs-16">
                             <a
                               class="text-reset username"

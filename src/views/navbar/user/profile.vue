@@ -14,7 +14,7 @@
                     <div class="col-md">
                       <div>
                         <h4 class="fw-bold">
-                          {{ $store.state.user.data.fullname }} - {{ $store.state.user.data.post }}
+                          {{ $store.state.user.data.fullname }}
                         </h4>
                         <div class="hstack gap-3 flex-wrap">
                           <div>

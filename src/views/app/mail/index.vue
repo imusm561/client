@@ -379,8 +379,8 @@
           </div>
 
           <div class="d-flex align-items-center text-muted">
-            <Avatar class="me-3" :data="current_mail.sender" />
-            <div class="flex-grow-1 overflow-hidden">
+            <Avatar :data="current_mail.sender" />
+            <div class="flex-grow-1 overflow-hidden ms-1">
               <h5 class="fs-14 text-truncate mb-0">{{ current_mail.sender.fullname }}</h5>
               <div
                 id="to_list"
