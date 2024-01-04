@@ -1357,6 +1357,15 @@ export default {
           // fetchAccountInfo();
           if (res?.data?.data) account.value[key] = res.data.data;
           if (res?.data?.time) account.value[`${key}_time`] = res.data.time;
+          if (key === 'menu')
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'success',
+                icon: 'mdi-check-circle',
+                text: JSON.stringify(res.data),
+              },
+            });
         } else {
           toast({
             component: ToastificationContent,
