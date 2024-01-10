@@ -1187,7 +1187,7 @@ import 'vue-cropper/dist/index.css';
 import { base64ToFile } from '@utils';
 import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
 import { uploadSysFile } from '@api/sys';
-import { useRouter, clearUserData, deepCompare, hashData } from '@utils';
+import { useRouter, clearUserData, getChanges, hashData } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import FlatPickr from '@components/FlatPickr';
@@ -1402,7 +1402,7 @@ export default {
     };
 
     const handleSaveUserInfo = () => {
-      const changes = deepCompare(user.value, store.state.user.data);
+      const changes = getChanges(user.value, store.state.user.data);
       if (Object.keys(changes).length) {
         changes.id = user.value.id;
         updateUser(changes).then(() => {

@@ -1112,7 +1112,7 @@ import i18n from '@utils/i18n';
 import { getForms, createForm, updateForm, dropForm, backupForm, truncateForm } from '@api/form';
 import { getPubs, createPub, updatePub } from '@api/pub';
 import { getUserData } from '@api/user';
-import { listToTree, deepCompare, useRouter, getUserInfo } from '@utils';
+import { listToTree, getChanges, useRouter, getUserInfo } from '@utils';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
 import { useToast } from 'vue-toastification';
@@ -1165,7 +1165,7 @@ export default {
           if (!isParentOrHasRedirect(current_form.value)) fetchPubs(newVal.id);
         }
         const server_form = forms.value.find((form) => form.id === newVal.id);
-        changes.value = deepCompare(newVal, server_form);
+        changes.value = getChanges(newVal, server_form);
         delete changes.value.is_parent;
       },
       { immediate: true, deep: true },
@@ -1750,7 +1750,7 @@ export default {
       const data = JSON.parse(JSON.stringify(current_pub.value));
       delete data.duration;
       if (data.id) {
-        const changes = deepCompare(
+        const changes = getChanges(
           data,
           pubs.value.find((pub) => pub.id === data.id),
         );

@@ -825,7 +825,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
 import { getUserList, updateUser, createUser } from '@api/user';
-import { deepCompare, getUserInfo } from '@utils';
+import { getChanges, getUserInfo } from '@utils';
 import FlatPickr from '@components/FlatPickr';
 import Pagination from '@components/Pagination';
 import Avatar from '@components/Avatar';
@@ -1077,7 +1077,7 @@ export default {
         return;
       }
       if (current_user.value.id) {
-        const changes = deepCompare(current_user.value, getUserInfo(current_user.value.id, 'id'));
+        const changes = getChanges(current_user.value, getUserInfo(current_user.value.id, 'id'));
         if (Object.keys(changes).length) {
           changes.id = current_user.value.id;
           updateUser(changes).then(() => {

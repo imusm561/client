@@ -686,7 +686,7 @@ import {
   replaceVariables,
   getDataByFormula,
   getRulesByFormula,
-  deepCompare,
+  getChanges,
   getUserLeaders,
   generateFlowByCurrentUser,
   getUserInfo,
@@ -800,7 +800,7 @@ export default {
         () => formData.value,
         (newVal, oldVal) => {
           if (initialized.value) {
-            const changes = deepCompare(newVal || {}, oldVal || {});
+            const changes = getChanges(newVal || {}, oldVal || {});
             for (let field in changes) {
               columns.value
                 .filter(
@@ -1163,7 +1163,7 @@ export default {
 
     const handleSelectDataTitle = (e) => {
       // data.value.id = init_data.value.id;
-      // const changes = deepCompare(data.value, init_data.value);
+      // const changes = getChanges(data.value, init_data.value);
       // if (Object.keys(changes).length) {
       //   toast({
       //     component: ToastificationContent,
@@ -1235,7 +1235,7 @@ export default {
           }
         });
       } else {
-        const changes = deepCompare(formdata, init_data.value);
+        const changes = getChanges(formdata, init_data.value);
         if (Object.keys(changes).length) {
           changes.tid = form.value.id;
           changes.id = formdata.id;
@@ -1325,7 +1325,7 @@ export default {
     const cancel_edit_confirm = ref(null);
     const handleCancelEdit = (callback) => {
       cancel_edit_confirm.value = null;
-      const changes = deepCompare(data.value, init_data.value);
+      const changes = getChanges(data.value, init_data.value);
       if (Object.keys(changes).length === 0) {
         callback(true);
       } else {

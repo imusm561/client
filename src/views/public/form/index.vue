@@ -193,7 +193,7 @@ import {
   replaceVariables,
   getDataByFormula,
   getRulesByFormula,
-  deepCompare,
+  getChanges,
   hashData,
 } from '@utils';
 
@@ -276,7 +276,7 @@ export default {
         () => formData.value,
         (newVal, oldVal) => {
           if (initialized.value) {
-            const changes = deepCompare(newVal || {}, oldVal || {});
+            const changes = getChanges(newVal || {}, oldVal || {});
             for (let field in changes) {
               columns.value
                 .filter(

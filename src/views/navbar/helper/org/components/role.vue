@@ -448,7 +448,7 @@
 import { ref, computed, onMounted } from 'vue';
 import store from '@store';
 import i18n from '@utils/i18n';
-import { listToTree, deepCompare, copyToClipboard, pasteFromClipboard } from '@utils';
+import { listToTree, getChanges, copyToClipboard, pasteFromClipboard } from '@utils';
 import { createRole, updateRole } from '@api/role';
 import { getForms } from '@api/form';
 import { ElTree } from 'element-plus';
@@ -643,7 +643,7 @@ export default {
       }
 
       if (current_role.value.id) {
-        const changes = deepCompare(
+        const changes = getChanges(
           current_role.value,
           store.state.org.roles.find((role) => role.id === current_role.value.id),
         );

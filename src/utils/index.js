@@ -2,6 +2,7 @@ import { getCurrentInstance, reactive, toRefs, watch } from 'vue';
 import store from '@store';
 import crypto from 'crypto';
 import { getDataDefault, getDataSource, getDataValue } from '@api/data';
+import { isEqual } from 'lodash'; // isObject, isArray
 
 export const isEmpty = (value) => {
   if (value === null || value === undefined || value === '') {
@@ -141,24 +142,19 @@ export const randomVariant = () => {
   return variants[Math.floor(Math.random() * (variants.length - 1))];
 };
 
-import transform from 'lodash/transform';
-import isEqual from 'lodash/isEqual';
-import isObject from 'lodash/isObject';
-import isArray from 'lodash/isArray';
-// import difference from 'lodash/difference';
-export const deepCompare = (newObj, oldObj) => {
-  const changes = (object, base) => {
-    return transform(object, (result, value, key) => {
-      if (!isEqual(value, base[key])) {
-        if (isArray(value)) {
-          result[key] = value; // difference(value, base[key]);
-        } else if (isObject(value) && isObject(base[key])) {
-          result[key] = value; // changes(value, base[key]);
-        } else {
-          result[key] = value;
-        }
+export const getChanges = (newObj, oldObj) => {
+  const changes = (obj1, obj2) => {
+    const result = {};
+    for (let key in obj1) {
+      const val1 = obj1[key];
+      const val2 = obj2[key];
+      if (!isEqual(val1, val2)) {
+        result[key] = val1;
+        // if (isArray(value)) result[key] = val1.filter((val) => !val2.includes(val));
+        // else if (isObject(value) && isObject(obj2[key])) result[key] = changes(value, obj2[key]);
+        // else result[key] = value;
       }
-    });
+    }
   };
   return changes(newObj, oldObj);
 };

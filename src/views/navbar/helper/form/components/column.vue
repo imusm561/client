@@ -226,7 +226,7 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { VueDraggableNext } from 'vue-draggable-next';
 import store from '@store';
-import { deepCompare, copyToClipboard, pasteFromClipboard, getUserInfo } from '@utils';
+import { getChanges, copyToClipboard, pasteFromClipboard, getUserInfo } from '@utils';
 import { getColumns, createColumns, updateColumns } from '@api/column';
 import { useToast } from 'vue-toastification';
 import i18n from '@utils/i18n';
@@ -379,7 +379,7 @@ export default {
         existe_columns.forEach((cloumn) => {
           let server_item = server_columns.find((item) => item.id === cloumn.id);
           let existe_item = existe_columns.find((item) => item.id === cloumn.id);
-          if (Object.keys(deepCompare(existe_item, server_item)).length)
+          if (Object.keys(getChanges(existe_item, server_item)).length)
             changes.value.update.push(cloumn);
         });
 

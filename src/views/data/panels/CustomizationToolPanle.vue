@@ -295,7 +295,7 @@
 
 <script>
 import { defineComponent, onMounted, onUnmounted, ref, reactive } from 'vue';
-import { useRouter, deepCompare, getUserInfo } from '@utils';
+import { useRouter, getChanges, getUserInfo } from '@utils';
 import { getCustomFilter, createCustomFilter, updateCustomFilter } from '@api/custom';
 import MonacoEditor from '@components/MonacoEditor';
 import store from '@store';
@@ -775,8 +775,8 @@ export default defineComponent({
       else {
         const filter = _filters.value.find(
           (filter) =>
-            Object.keys(deepCompare(filterModel, filter.data)).length === 0 &&
-            Object.keys(deepCompare(filter.data, filterModel)).length === 0,
+            Object.keys(getChanges(filterModel, filter.data)).length === 0 &&
+            Object.keys(getChanges(filter.data, filterModel)).length === 0,
         );
         current_filter.value = filter || {};
       }
