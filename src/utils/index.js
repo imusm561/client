@@ -2,7 +2,7 @@ import { getCurrentInstance, reactive, toRefs, watch } from 'vue';
 import store from '@store';
 import crypto from 'crypto';
 import { getDataDefault, getDataSource, getDataValue } from '@api/data';
-import { isEqual } from 'lodash'; // isObject, isArray
+import { transform, isEqual } from 'lodash'; // isObject, isArray
 
 export const isEmpty = (value) => {
   if (value === null || value === undefined || value === '') {
@@ -144,17 +144,16 @@ export const randomVariant = () => {
 
 export const getChanges = (newObj, oldObj) => {
   const changes = (obj1, obj2) => {
-    const result = {};
-    for (let key in obj1) {
-      const val1 = obj1[key];
+    return transform(obj1, (result, value, key) => {
+      const val1 = value;
       const val2 = obj2[key];
       if (!isEqual(val1, val2)) {
         result[key] = val1;
-        // if (isArray(value)) result[key] = val1.filter((val) => !val2.includes(val));
-        // else if (isObject(value) && isObject(obj2[key])) result[key] = changes(value, obj2[key]);
-        // else result[key] = value;
+        // if (isArray(val1)) result[key] = val1.filter((val) => !val2.includes(val));
+        // else if (isObject(val1) && isObject(val2)) result[key] = changes(val1, val2);
+        // else result[key] = val1;
       }
-    }
+    });
   };
   return changes(newObj, oldObj);
 };
