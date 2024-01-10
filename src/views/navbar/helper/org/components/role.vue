@@ -45,7 +45,7 @@
                   <div class="flex-grow-1">
                     <h6 class="text-muted mb-0">
                       <span class="text-secondary">
-                        {{ role.id === 1 ? forms.length : getCheckedMenuCount(role.permissions) }}
+                        {{ getCheckedMenuCount(role.permissions) }}
                       </span>
                       / {{ forms.length }}
                     </h6>
@@ -55,11 +55,7 @@
                   <div
                     class="progress-bar bg-soft-primary"
                     :style="{
-                      width: `${
-                        ((role.id === 1 ? forms.length : getCheckedMenuCount(role.permissions)) /
-                          forms.length) *
-                        100
-                      }%`,
+                      width: `${(getCheckedMenuCount(role.permissions) / forms.length) * 100}%`,
                     }"
                   ></div>
                 </div>
