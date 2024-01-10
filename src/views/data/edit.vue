@@ -774,16 +774,8 @@ export default {
           if (
             route.value.name === 'edit' &&
             ((Number(newVal.rid) === 0 &&
-              !(
-                store.state.user.data?.tags?.includes('ALL') ||
-                store.state.user.data?.permissions?.[newVal.tid]?.create
-              )) ||
-              (Number(newVal.rid) !== 0 &&
-                !(
-                  store.state.user.data?.tags?.includes('ALL') ||
-                  store.state.user.data?.permissions?.[newVal.tid]?.all ||
-                  store.state.user.data?.permissions?.[newVal.tid]?.edit
-                )))
+              !store.state.user.data?.permissions?.[newVal.tid]?.create) ||
+              (Number(newVal.rid) !== 0 && !store.state.user.data?.permissions?.[newVal.tid]?.edit))
           ) {
             router.replace({ name: 'permissionDenied' });
             return;
@@ -897,9 +889,7 @@ export default {
       getDataTitle(params).then(({ code, data, msg }) => {
         if (code === 200) {
           titles.value = [
-            ...(store.state.user.data.tags.includes('ALL') ||
-            store.state.user.data.permissions?.[form.value.id]?.create ||
-            false
+            ...(store.state.user.data.permissions?.[form.value.id]?.create
               ? [{ id: 0, title: i18n.global.t('data.edit.create') }]
               : []),
             ...data,

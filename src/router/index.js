@@ -77,32 +77,27 @@ router.beforeEach((to, from, next) => {
             } else {
               if (
                 ['list', 'view', 'edit'].includes(to.name) &&
-                store.state.user.forms.some((form) => Number(form.pid) === Number(to.params?.tid))
+                (store.state.user.forms.some(
+                  (form) => Number(form.pid) === Number(to.params?.tid),
+                ) ||
+                  !store.state.user.forms.find(
+                    (form) => Number(form.id) === Number(to.params?.tid),
+                  ))
               ) {
                 next({ name: 'notFound' });
               } else if (
                 (['list', 'view', 'edit'].includes(to.name) &&
-                  !(
-                    store.state.user.data.tags.includes('ALL') ||
-                    store.state.user.data.permissions?.[Number(to.params?.tid)]?.checked
-                  )) ||
+                  !store.state.user.data.permissions?.[Number(to.params?.tid)]?.checked) ||
                 (['edit'].includes(to.name) &&
                   Number(to.params?.rid) === 0 &&
-                  !(
-                    store.state.user.data.tags.includes('ALL') ||
-                    store.state.user.data.permissions?.[Number(to.params?.tid)]?.create
-                  )) ||
+                  !store.state.user.data.permissions?.[Number(to.params?.tid)]?.create) ||
                 (['edit'].includes(to.name) &&
                   Number(to.params?.rid) !== 0 &&
-                  !(
-                    store.state.user.data.tags.includes('ALL') ||
-                    store.state.user.data.permissions?.[Number(to.params?.tid)]?.all ||
-                    store.state.user.data.permissions?.[Number(to.params?.tid)]?.edit
-                  )) ||
+                  !store.state.user.data.permissions?.[Number(to.params?.tid)]?.edit) ||
                 (to?.meta?.auth &&
                   !(
                     store.state.user.data.tags.includes('ALL') ||
-                    to?.meta?.auth.every((tag) => store.state.user.data.tags.includes(tag))
+                    to.meta.auth.every((tag) => store.state.user.data.tags.includes(tag))
                   ))
               ) {
                 next({ name: 'permissionDenied' });

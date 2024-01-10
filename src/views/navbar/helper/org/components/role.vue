@@ -171,7 +171,7 @@
                       :placeholder="
                         $t('layout.navbar.helper.org.role.editOrCreateRoleModal.form.tags')
                       "
-                      :options="['HRD', 'OE', 'DBA']"
+                      :options="['HR', 'OE', 'DBA']"
                     >
                       <template v-slot:no-options="{ search, searching }">
                         <template v-if="searching">
@@ -288,6 +288,7 @@
                                 <input
                                   class="form-check-input"
                                   type="checkbox"
+                                  :disabled="current_role.permissions[node.data.id].all"
                                   v-model="current_role.permissions[node.data.id].create"
                                 />
                                 <label class="form-check-label">
@@ -302,6 +303,7 @@
                                 <input
                                   class="form-check-input"
                                   type="checkbox"
+                                  :disabled="current_role.permissions[node.data.id].all"
                                   v-model="current_role.permissions[node.data.id].edit"
                                 />
                                 <label class="form-check-label">
@@ -316,6 +318,7 @@
                                 <input
                                   class="form-check-input"
                                   type="checkbox"
+                                  :disabled="current_role.permissions[node.data.id].all"
                                   v-model="current_role.permissions[node.data.id].batch"
                                 />
                                 <label class="form-check-label">
@@ -326,24 +329,11 @@
                                   }}
                                 </label>
                               </div>
-                              <div class="form-check form-check-danger ms-3">
-                                <input
-                                  class="form-check-input"
-                                  type="checkbox"
-                                  v-model="current_role.permissions[node.data.id].all"
-                                />
-                                <label class="form-check-label">
-                                  {{
-                                    $t(
-                                      'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.all',
-                                    )
-                                  }}
-                                </label>
-                              </div>
                               <div class="form-check form-check-info ms-3">
                                 <input
                                   class="form-check-input"
                                   type="checkbox"
+                                  :disabled="current_role.permissions[node.data.id].all"
                                   v-model="current_role.permissions[node.data.id].export"
                                 />
                                 <label class="form-check-label">
@@ -358,12 +348,27 @@
                                 <input
                                   class="form-check-input"
                                   type="checkbox"
+                                  :disabled="current_role.permissions[node.data.id].all"
                                   v-model="current_role.permissions[node.data.id].import"
                                 />
                                 <label class="form-check-label">
                                   {{
                                     $t(
                                       'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.import',
+                                    )
+                                  }}
+                                </label>
+                              </div>
+                              <div class="form-check form-check-danger ms-3">
+                                <input
+                                  class="form-check-input"
+                                  type="checkbox"
+                                  v-model="current_role.permissions[node.data.id].all"
+                                />
+                                <label class="form-check-label">
+                                  {{
+                                    $t(
+                                      'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.all',
                                     )
                                   }}
                                 </label>
@@ -532,9 +537,9 @@ export default {
             create: current_role.value.permissions[form.id]?.create || false,
             edit: current_role.value.permissions[form.id]?.edit || false,
             batch: current_role.value.permissions[form.id]?.batch || false,
-            all: current_role.value.permissions[form.id]?.all || false,
             export: current_role.value.permissions[form.id]?.export || false,
             import: current_role.value.permissions[form.id]?.import || false,
+            all: current_role.value.permissions[form.id]?.all || false,
           };
         } else {
           delete current_role.value.permissions[form.id];
@@ -648,6 +653,19 @@ export default {
         );
         if (Object.keys(changes).length) {
           changes.id = current_role.value.id;
+          if (store.state.user.data.id != 1 && changes.tags) {
+            const newTags = changes.tags.filter(
+              (n) =>
+                !store.state.org.roles
+                  .find((role) => role.id === current_role.value.id)
+                  .tags.includes(n),
+            );
+            changes.tags = changes.tags.map((tag) => {
+              return newTags.includes(tag) && ['HR', 'OE', 'DBA'].includes(tag)
+                ? `*${tag.toLowerCase()}`
+                : tag;
+            });
+          }
           updateRole(changes).then(() => {
             document.getElementById('hideEditOrCreateRoleModalBtn').click();
           });
@@ -655,6 +673,11 @@ export default {
           document.getElementById('hideEditOrCreateRoleModalBtn').click();
         }
       } else {
+        if (store.state.user.data.id != 1) {
+          current_role.value.tags = current_role.value.tags.map((tag) => {
+            return ['HR', 'OE', 'DBA'].includes(tag) ? `*${tag.toLowerCase()}` : tag;
+          });
+        }
         createRole(current_role.value).then(() => {
           document.getElementById('hideEditOrCreateRoleModalBtn').click();
         });

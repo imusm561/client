@@ -8,8 +8,7 @@
           <div class="d-flex justify-content-end gap-2">
             <div
               v-if="
-                ($store.state.user.data?.tags?.includes('ALL') ||
-                  $store.state.user.data?.permissions?.[$route.params.tid]?.batch) &&
+                $store.state.user.data?.permissions?.[$route.params.tid]?.batch &&
                 selectedRows.length &&
                 (!form.flow || form.flow?.length === 0) &&
                 selectedRows.every((row) => !['archived', 'approving'].includes(row.data_state))
@@ -86,10 +85,7 @@
               </div>
             </div>
             <button
-              v-if="
-                $store.state.user.data?.tags?.includes('ALL') ||
-                $store.state.user.data?.permissions?.[$route.params.tid]?.create
-              "
+              v-if="$store.state.user.data?.permissions?.[$route.params.tid]?.create"
               type="button"
               class="btn btn-sm btn-primary"
               @click="$router.push({ name: 'edit', params: { tid: $route.params.tid, rid: 0 } })"
@@ -897,15 +893,13 @@ export default {
             ) &&
           (column?.tags?.includes('cellEdit') ||
             ['BasicDataState', 'BasicAclView', 'BasicAclEdit'].includes(column.component)) &&
-          (store.state.user.data?.tags?.includes('ALL') ||
-            store.state.user.data?.permissions?.[route.value.params.tid]?.all ||
-            (store.state.user.data?.permissions?.[route.value.params.tid]?.edit &&
-              (params.data.created_by === store.state.user.data.username ||
-                params.data.updated_by === store.state.user.data.username ||
-                params.data.acl_edit.includes(store.state.user.data.username) ||
-                (params.data.acl_edit.length === 0 &&
-                  params.data.acl_view.includes(store.state.user.data.username)) ||
-                (params.data.acl_view.length === 0 && params.data.acl_edit.length === 0))))
+          store.state.user.data?.permissions?.[route.value.params.tid]?.edit &&
+          (params.data.created_by === store.state.user.data.username ||
+            params.data.updated_by === store.state.user.data.username ||
+            params.data.acl_edit.includes(store.state.user.data.username) ||
+            (params.data.acl_edit.length === 0 &&
+              params.data.acl_view.includes(store.state.user.data.username)) ||
+            (params.data.acl_view.length === 0 && params.data.acl_edit.length === 0))
         ) {
           if (['InputRichtext', 'InputCode', 'SelectFile'].includes(column.component)) {
             toast({
@@ -1481,16 +1475,13 @@ export default {
 
         if (
           (!form.value.flow?.length || params.node?.data?.data_state === 'drafted') &&
-          (store.state.user.data?.tags?.includes('ALL') ||
-            store.state.user.data?.permissions?.[route.value.params.tid]?.all ||
-            (store.state.user.data?.permissions?.[route.value.params.tid]?.edit &&
-              (params.node?.data?.created_by === store.state.user.data.username ||
-                params.node?.data?.updated_by === store.state.user.data.username ||
-                params.node?.data?.acl_edit.includes(store.state.user.data.username) ||
-                (params.node?.data?.acl_edit.length === 0 &&
-                  params.node?.data?.acl_view.includes(store.state.user.data.username)) ||
-                (params.node?.data?.acl_view.length === 0 &&
-                  params.node?.data?.acl_edit.length === 0))))
+          store.state.user.data?.permissions?.[route.value.params.tid]?.edit &&
+          (params.node?.data?.created_by === store.state.user.data.username ||
+            params.node?.data?.updated_by === store.state.user.data.username ||
+            params.node?.data?.acl_edit.includes(store.state.user.data.username) ||
+            (params.node?.data?.acl_edit.length === 0 &&
+              params.node?.data?.acl_view.includes(store.state.user.data.username)) ||
+            (params.node?.data?.acl_view.length === 0 && params.node?.data?.acl_edit.length === 0))
         ) {
           menu.push({
             name: i18n.global.t('data.list.contextMenu.edit', {
@@ -1536,10 +1527,7 @@ export default {
         // 'export', // excelExport
       );
 
-      if (
-        store.state.user.data?.tags?.includes('ALL') ||
-        store.state.user.data?.permissions?.[route.value.params.tid]?.export
-      ) {
+      if (store.state.user.data?.permissions?.[route.value.params.tid]?.export) {
         const menu_export = {
           name: i18n.global.t('data.list.contextMenu.export'),
           subMenu: [
@@ -1610,8 +1598,7 @@ export default {
 
       if (
         !form.value.flow?.length &&
-        (store.state.user.data?.tags?.includes('ALL') ||
-          store.state.user.data?.permissions?.[route.value.params.tid]?.import)
+        store.state.user.data?.permissions?.[route.value.params.tid]?.import
       ) {
         const menu_import = {
           name: i18n.global.t('data.list.contextMenu.import'),

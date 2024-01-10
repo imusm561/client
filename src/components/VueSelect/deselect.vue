@@ -1,5 +1,5 @@
 <template>
-  <i class="mdi mdi-close" />
+  <i class="mdi mdi-close" title="" />
 </template>
 <script>
 export default {

@@ -3,7 +3,7 @@ export default [
   {
     path: '/helper/org',
     name: 'org',
-    meta: { title: 'layout.navbar.helper.org', auth: ['HRD'] },
+    meta: { title: 'layout.navbar.helper.org', auth: ['HR'] },
     component: () => import('@/views/navbar/helper/org'),
   },
   {
