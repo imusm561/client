@@ -12,7 +12,7 @@ import 'element-plus/es/components/loading/style/css';
 const loading = { instance: null, count: 0, interval: null };
 const initSocket = (socket) => {
   const toast = useToast();
-  let connection = -1;
+  // let connection = -1;
   socket.on('connect', () => {
     watch(
       () => store.state.user.data.username,
@@ -31,18 +31,18 @@ const initSocket = (socket) => {
       loading.interval = null;
       loading.count = 0;
     }
-    if (connection === 0) {
-      toast({
-        component: ToastificationContent,
-        props: {
-          variant: 'success',
-          icon: 'mdi-lan-connect',
-          title: i18n.global.t('socket.connected.toast.title'),
-          text: i18n.global.t('socket.connected.toast.text'),
-        },
-      });
-    }
-    connection = 1;
+    // if (connection === 0) {
+    //   toast({
+    //     component: ToastificationContent,
+    //     props: {
+    //       variant: 'success',
+    //       icon: 'mdi-lan-connect',
+    //       title: i18n.global.t('socket.connected.toast.title'),
+    //       text: i18n.global.t('socket.connected.toast.text'),
+    //     },
+    //   });
+    // }
+    // connection = 1;
   });
 
   socket.on('forcedLogout', async () => {
@@ -211,7 +211,7 @@ const initSocket = (socket) => {
   });
 
   socket.on('disconnect', () => {
-    connection = 0;
+    // connection = 0;
     loading.instance = ElLoading.service({
       lock: true,
       customClass: 'el-loading',
@@ -224,15 +224,15 @@ const initSocket = (socket) => {
       loading.count += 1;
       loading.instance.text.value = `${i18n.global.t('socket.disconnect.loading')}${loading.count}`;
     }, 1000);
-    toast({
-      component: ToastificationContent,
-      props: {
-        variant: 'danger',
-        icon: 'mdi-lan-disconnect',
-        title: i18n.global.t('socket.disconnect.toast.title'),
-        text: i18n.global.t('socket.disconnect.toast.text'),
-      },
-    });
+    // toast({
+    //   component: ToastificationContent,
+    //   props: {
+    //     variant: 'danger',
+    //     icon: 'mdi-lan-disconnect',
+    //     title: i18n.global.t('socket.disconnect.toast.title'),
+    //     text: i18n.global.t('socket.disconnect.toast.text'),
+    //   },
+    // });
   });
 };
 

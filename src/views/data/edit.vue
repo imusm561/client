@@ -817,7 +817,7 @@ export default {
                     (typeof column.cfg?.max === 'string' &&
                       column.cfg?.max?.includes(`data.${field}`)),
                 )
-                .map(async (column) => {
+                .forEach(async (column) => {
                   if (
                     column.visible?.includes(`data.${field}`) ||
                     column.required?.includes(`data.${field}`) ||
@@ -920,13 +920,14 @@ export default {
 
     const resolveFlowUsers = computed(() => {
       return (users) => {
-        return store.state.org.users.filter((user) =>
-          users
-            .map((user) => {
-              return user.username;
-            })
-            .includes(user.username),
-        );
+        return users.map((username) => {
+          return (
+            store.state.org.users.find((user) => user.username === username) || {
+              username: username,
+              fullname: username,
+            }
+          );
+        });
       };
     });
 

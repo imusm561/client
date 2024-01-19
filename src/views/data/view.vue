@@ -4,7 +4,7 @@
     <div class="card ribbon-box">
       <span
         v-if="flow"
-        class="ribbon-two ribbon-two-primary"
+        class="ribbon-two ribbon-two-primary print-hidden"
         :class="
           flow.status === 1
             ? 'ribbon-two-success'
@@ -28,7 +28,7 @@
           }}
         </span>
       </span>
-      <div class="card-header border-0 p-2 pb-0">
+      <div class="card-header border-0 p-2 pb-0 print-hidden">
         <span class="float-end">
           <i
             class="mdi mdi-format-list-text fs-16 cursor-pointer text-muted pe-2"
@@ -59,7 +59,7 @@
       <div class="card-body pt-0 pb-0">
         <VueSelect
           v-model="data.id"
-          class="mt-2"
+          class="mt-2 print-hidden"
           :reduce="(item) => item.id"
           label="title"
           @search="fetchDataTitle"
@@ -85,7 +85,7 @@
           <div class="p-3 pb-0">
             <div class="row">
               <div class="col-sm-6">
-                <h1>#{{ data.id }}</h1>
+                <h4>#{{ data.id }}</h4>
                 <h6 class="d-flex align-items-center">
                   <span
                     class="text-muted me-1"
@@ -100,7 +100,12 @@
                   >
                     {{ $t('data.column.BasicAclView') }}:&nbsp;
                   </span>
-                  <Avatar :data="resolveUsers(data.acl_view)" size="xxs" />
+                  <Avatar
+                    v-if="data.acl_view.length"
+                    :data="resolveUsers(data.acl_view)"
+                    size="xxs"
+                  />
+                  <span v-else>-</span>
                 </h6>
                 <h6 class="d-flex align-items-center">
                   <span
@@ -116,7 +121,12 @@
                   >
                     {{ $t('data.column.BasicAclEdit') }}:&nbsp;
                   </span>
-                  <Avatar :data="resolveUsers(data.acl_edit)" size="xxs" />
+                  <Avatar
+                    v-if="data.acl_edit.length"
+                    :data="resolveUsers(data.acl_edit)"
+                    size="xxs"
+                  />
+                  <span v-else>-</span>
                 </h6>
               </div>
               <div class="col-sm-6">
@@ -302,7 +312,7 @@
                   data.acl_view.includes($store.state.user.data.username)) ||
                 (data.acl_view.length === 0 && data.acl_edit.length === 0))
             "
-            class="btn btn-sm btn-primary"
+            class="btn btn-sm btn-primary print-hidden"
             @click="
               $router.push({ name: 'edit', params: { tid: $route.params.tid, rid: data.id } })
             "
@@ -313,7 +323,7 @@
         </div>
       </div>
     </div>
-    <div class="card">
+    <div class="card print-hidden">
       <div class="card-header">
         <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0">
           <li class="nav-item">
@@ -793,8 +803,15 @@ export default {
 
     const resolveUsers = computed(() => {
       return (users) => {
-        return users?.length
-          ? store.state.org.users.filter((user) => users.includes(user.username))
+        return Array.isArray(users)
+          ? users.map((username) => {
+              return (
+                store.state.org.users.find((user) => user.username === username) || {
+                  username: username,
+                  fullname: username,
+                }
+              );
+            })
           : [];
       };
     });
@@ -843,3 +860,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#print {
+  h6 {
+    line-height: initial;
+  }
+}
+</style>

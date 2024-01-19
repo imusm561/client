@@ -250,6 +250,10 @@ input:-webkit-autofill {
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
   }
+
+  .print-hidden {
+    display: none;
+  }
 }
 
 .adaptive {

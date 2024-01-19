@@ -5,7 +5,14 @@
         v-if="Array.isArray(params.value)"
         :data="
           params.value.length
-            ? $store.state.org.users.filter((user) => params.value.includes(user.username))
+            ? params.value.map((username) => {
+                return (
+                  $store.state.org.users.find((user) => user.username === username) || {
+                    username: username,
+                    fullname: username,
+                  }
+                );
+              })
             : []
         "
         size="xs"
@@ -26,7 +33,14 @@
         v-if="Array.isArray(params.value)"
         :data="
           params.value.length
-            ? $store.state.org.users.filter((user) => params.value.includes(user.username))
+            ? params.value.map((username) => {
+                return (
+                  $store.state.org.users.find((user) => user.username === username) || {
+                    username: username,
+                    fullname: username,
+                  }
+                );
+              })
             : []
         "
         size="xxs"
@@ -64,7 +78,11 @@ export default defineComponent({
           username: props.params.value,
           fullname: props.params.value.replace('@pub_', 'Pub_'),
         };
-      else user.value = store.state.org.users.find((user) => user.username === props.params.value);
+      else
+        user.value = store.state.org.users.find((user) => user.username === props.params.value) || {
+          username: props.params.value,
+          fullname: props.params.value,
+        };
     }
     return {
       theme,
