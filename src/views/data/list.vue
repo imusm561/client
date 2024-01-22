@@ -630,7 +630,7 @@ export default {
 
     const setFormConfiguration = () => {
       if (form.value.script) form.value.script = replaceVariables(form.value.script, alias.value);
-      form.value.flow = form.value.flow.length ? generateFlowByCurrentUser(form.value.flow) : null;
+      form.value.flow = form.value.flow?.length ? generateFlowByCurrentUser(form.value.flow) : null;
     };
 
     let gridApi = null;

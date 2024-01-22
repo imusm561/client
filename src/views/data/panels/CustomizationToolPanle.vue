@@ -771,14 +771,16 @@ export default defineComponent({
 
     const handleSetCurrentFilter = () => {
       const filterModel = props.params.api.getFilterModel();
-      if (Object.keys(filterModel).length === 0) current_filter.value = {};
-      else {
-        const filter = _filters.value.find(
-          (filter) =>
-            Object.keys(getChanges(filterModel, filter.data)).length === 0 &&
-            Object.keys(getChanges(filter.data, filterModel)).length === 0,
-        );
-        current_filter.value = filter || {};
+      if (filterModel) {
+        if (Object.keys(filterModel).length === 0) current_filter.value = {};
+        else {
+          const filter = _filters.value.find(
+            (filter) =>
+              Object.keys(getChanges(filterModel, filter.data)).length === 0 &&
+              Object.keys(getChanges(filter.data, filterModel)).length === 0,
+          );
+          current_filter.value = filter || {};
+        }
       }
     };
 
