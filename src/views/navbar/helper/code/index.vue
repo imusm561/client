@@ -751,15 +751,32 @@ export default {
       document.getElementById('code-file-input').click();
     };
     const handleFileInput = (e) => {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-upload',
+          text: i18n.global.t('layout.navbar.helper.code.uploading'),
+        },
+      });
       const formData = new FormData();
       formData.append('folder', folder.value);
       Array.from(e.target.files).forEach((file) => {
         formData.append('file', file, file.name);
       });
       uploadCode(formData).then(async ({ code, msg }) => {
+        toast.clear();
         if (code === 200) {
           e.target.value = null;
           handleGetCodeDirs();
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'success',
+              icon: 'mdi-check-circle',
+              text: i18n.global.t('layout.navbar.helper.code.upload.success'),
+            },
+          });
         } else {
           toast({
             component: ToastificationContent,
@@ -776,17 +793,26 @@ export default {
     const installing = ref(null);
     const handleInstallPackage = (node) => {
       if (installing.value) return;
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-package-down',
+          text: i18n.global.t('layout.navbar.helper.code.package.installing'),
+        },
+      });
       installing.value = node.key;
       installPackage({ path: node.parent.data.path }).then(async ({ code, msg }) => {
         installing.value = null;
         handleGetCodeDirs();
+        toast.clear();
         if (code === 200) {
           toast({
             component: ToastificationContent,
             props: {
               variant: 'success',
               icon: 'mdi-check-circle',
-              text: msg,
+              text: i18n.global.t('layout.navbar.helper.code.package.install.success'),
             },
           });
         } else {
@@ -835,7 +861,7 @@ export default {
             props: {
               variant: 'success',
               icon: 'mdi-check-circle',
-              text: i18n.global.t('layout.navbar.helper.code.modified.success'),
+              text: i18n.global.t('layout.navbar.helper.code.modify.success'),
             },
           });
         } else {
