@@ -614,6 +614,7 @@ export default {
 
     const handleEditFileName = (node) => {
       if (isModified({ toast: true })) return;
+      if (node.data.path.startsWith('logs/pm2')) return;
       clearTimeout(timer);
       node.data._name = node.data.name;
       node.data.edit = true;
@@ -625,10 +626,7 @@ export default {
 
       if (
         !node.data._name &&
-        (!node.data.name ||
-          (node.data.type === 'directory' &&
-            (node.data.name === 'node_modules' ||
-              (node.parent.data.name === 'logs' && node.data.name === 'pm2'))))
+        (!node.data.name || (node.data.type === 'directory' && node.data.name === 'node_modules'))
       ) {
         node.parent.data.children.splice(
           node.parent.data.children.findIndex((item) => !item.name),
@@ -642,9 +640,7 @@ export default {
         node.data._name &&
         (!node.data.name ||
           node.data.name === node.data._name ||
-          (node.data.type === 'directory' &&
-            (node.data.name === 'node_modules' ||
-              (node.parent.data.name === 'logs' && node.data.name === 'pm2'))))
+          (node.data.type === 'directory' && node.data.name === 'node_modules'))
       ) {
         node.data.name = node.data._name;
         delete node.data._name;
