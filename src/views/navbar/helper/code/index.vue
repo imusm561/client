@@ -47,9 +47,7 @@
                     <span
                       v-else
                       @dblclick="
-                        dirs.some((dir) => node.data.path.includes(dir)) &&
-                          !dirs.includes(node.data.path) &&
-                          handleEditFileName(node)
+                        dirs.some((dir) => node.data.path.includes(dir)) && handleEditFileName(node)
                       "
                     >
                       <i
@@ -66,11 +64,11 @@
                     v-if="!isEditing && dirs.some((dir) => node.data.path.includes(dir))"
                     class="tree-node-actions ms-3"
                   >
-                    <i
+                    <!-- <i
                       v-if="node.data.type === 'directory'"
                       class="cursor-pointer fs-16 text-primary mdi mdi-plus-box-outline ms-1"
                       @click.stop="handleCreate(node)"
-                    ></i>
+                    ></i> -->
                     <i
                       v-if="node.data.type === 'directory'"
                       class="cursor-pointer fs-16 text-primary mdi mdi-cloud-upload-outline ms-1"
@@ -530,7 +528,6 @@ export default {
     };
 
     const allowDrop = (draggingNode, dropNode, type) => {
-      console.log(draggingNode, dropNode);
       return (
         type === 'inner' &&
         dropNode.data.type === 'directory' &&
@@ -618,56 +615,74 @@ export default {
 
     const handleSaveFileName = (node) => {
       node.data.name = node.data.name.trim();
+      node.data._path = node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name;
 
-      if (node.data._name) {
-        if (!node.data.name || node.data.name === node.data._name) {
-          node.data.name = node.data._name;
-          delete node.data._name;
-          delete node.data.edit;
-          isEditing.value = false;
-          return;
-        }
+      if (!node.data.name || node.data.name === node.data._name) {
+        node.data.name = node.data._name;
+        delete node.data._name;
+        delete node.data.edit;
+        isEditing.value = false;
+        return;
+      }
 
-        if (node.data.name.includes('/') || node.data.name === 'node_modules') {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.code.name.illegal'),
-            },
-          });
-          focusInputEl();
-          return;
-        }
+      if (
+        node.data._path.includes('/node_modules/') ||
+        node.data._path.endsWith('/node_modules') ||
+        (node.data.type === 'file' && node.data.name.includes('/')) ||
+        (((node.data.type === 'directory' && node.data.name.includes('/')) ||
+          dirs.value.includes(node.data.path)) &&
+          (node.data.name === `${node.data._name}/` ||
+            !node.data.name.startsWith(`${node.data._name}/`)))
+      ) {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: i18n.global.t('layout.navbar.helper.code.name.illegal'),
+          },
+        });
+        focusInputEl();
+        return;
+      }
 
-        if (node.parent.data.children?.some((item) => !item.edit && item.name === node.data.name)) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.code.name.duplicate'),
-            },
-          });
-          focusInputEl();
-          return;
-        }
+      if (
+        list.value.find((item) => item.path === node.data._path) ||
+        list.value.find((item) => item.type === 'file' && node.data._path.includes(`${item.path}/`))
+      ) {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: i18n.global.t('layout.navbar.helper.code.name.duplicate'),
+          },
+        });
+        focusInputEl();
+        return;
+      }
 
+      if (node.data.name.includes('/')) {
         const data = {
-          old: node.data.path,
-          new: node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name,
+          type: node.data.name.endsWith('/') ? 'directory' : 'file',
+          name: (node.data.name.endsWith('/')
+            ? node.data.name.slice(0, -1)
+            : node.data.name
+          ).replace(`${node.data._name}/`, ''),
+          path: node.data.path,
         };
-        renameCode(data).then(({ code, msg }) => {
-          if (code === 200) {
+        createCode(data).then((res) => {
+          if (res.code === 200) {
             delete node.data._name;
             delete node.data.edit;
             isEditing.value = false;
             handleGetCodeDirs(() => {
-              if (current.value.path === data.old) {
-                const NODE = reftree.value.getNode(data.new);
-                if (NODE) handleClickPath(NODE.data);
-              }
+              nextTick(() => {
+                const NODE = reftree.value.getNode(res.data.path);
+                handleClickPath(NODE.data);
+                reftree.value.setCurrentKey(NODE.data.path);
+                reftree.value.store.nodesMap[NODE.data.path].expanded = true;
+              });
             });
           } else {
             toast({
@@ -675,93 +690,41 @@ export default {
               props: {
                 variant: 'danger',
                 icon: 'mdi-alert',
-                text: msg,
+                text: res.msg,
               },
             });
           }
         });
       } else {
-        node.data.type = node.data.name.endsWith('/') ? 'directory' : 'file';
-        if (node.data.name.endsWith('/')) {
-          node.data.type = 'directory';
-          node.data.name = node.data.name.slice(0, -1);
-        } else node.data.type = 'file';
-
-        if (!node.data.name) {
-          node.parent.data.children.splice(
-            node.parent.data.children.findIndex((item) => !item.name),
-            1,
-          );
-          isEditing.value = false;
-          return;
-        }
-
-        if (node.data.name === 'node_modules' || node.data.name.endsWith('/node_modules')) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.code.name.illegal'),
-            },
-          });
-          if (node.data.type === 'directory') node.data.name = node.data.name + '/';
-          focusInputEl();
-          return;
-        }
-
-        if (list.value.find((item) => item.path === `${node.data.path}/${node.data.name}`)) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.code.name.duplicate'),
-            },
-          });
-          if (node.data.type === 'directory') node.data.name = node.data.name + '/';
-          focusInputEl();
-          return;
-        }
-
-        createCode({ type: node.data.type, name: node.data.name, path: node.data.path }).then(
-          ({ code, data, msg }) => {
-            if (code === 200) {
-              delete node.data.edit;
-              isEditing.value = false;
-              handleGetCodeDirs();
-              if (node.data.type === 'file') {
-                let interval;
-                interval = setInterval(() => {
-                  const node = reftree.value.getNode(data.path);
-                  if (node) {
-                    clearInterval(interval);
-                    handleClickPath(node.data);
-                  }
-                }, 100);
-              }
-            } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
+        const data = {
+          old: node.data.path,
+          new: node.data._path,
+        };
+        renameCode(data).then((res) => {
+          if (res.code === 200) {
+            delete node.data._name;
+            delete node.data.edit;
+            isEditing.value = false;
+            handleGetCodeDirs(() => {
+              nextTick(() => {
+                const NODE = reftree.value.getNode(data.new);
+                handleClickPath(NODE.data);
+                reftree.value.setCurrentKey(NODE.data.path);
+                reftree.value.store.nodesMap[NODE.data.path].expanded = true;
               });
-            }
-          },
-        );
+            });
+          } else {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: res.msg,
+              },
+            });
+          }
+        });
       }
-    };
-
-    const handleCreate = (node) => {
-      if (isModified({ toast: true })) return;
-      const child = { name: '', path: node.data.path, edit: true };
-      if (!node.data.children) node.data.children = [];
-      node.data.children.push(child);
-      node.expanded = true;
-      focusInputEl();
     };
 
     const folder = ref(null);
@@ -914,7 +877,6 @@ export default {
       getUserInfo,
       handleEditFileName,
       handleSaveFileName,
-      handleCreate,
       handleUpload,
       handleFileInput,
       installing,
