@@ -68,13 +68,8 @@
                   >
                     <i
                       v-if="node.data.type === 'directory'"
-                      class="cursor-pointer fs-16 text-primary mdi mdi-folder-plus-outline ms-1"
-                      @click.stop="handleCreate('directory', node)"
-                    ></i>
-                    <i
-                      v-if="node.data.type === 'directory'"
-                      class="cursor-pointer fs-16 text-primary mdi mdi-file-plus-outline ms-1"
-                      @click.stop="handleCreate('file', node)"
+                      class="cursor-pointer fs-16 text-primary mdi mdi-plus-box-outline ms-1"
+                      @click.stop="handleCreate(node)"
                     ></i>
                     <i
                       v-if="node.data.type === 'directory'"
@@ -624,58 +619,127 @@ export default {
     const handleSaveFileName = (node) => {
       node.data.name = node.data.name.trim();
 
-      if (
-        !node.data._name &&
-        (!node.data.name || (node.data.type === 'directory' && node.data.name === 'node_modules'))
-      ) {
-        node.parent.data.children.splice(
-          node.parent.data.children.findIndex((item) => !item.name),
-          1,
-        );
-        isEditing.value = false;
-        return;
-      }
+      if (node.data._name) {
+        if (!node.data.name || node.data.name === node.data._name) {
+          node.data.name = node.data._name;
+          delete node.data._name;
+          delete node.data.edit;
+          isEditing.value = false;
+          return;
+        }
 
-      if (
-        node.data._name &&
-        (!node.data.name ||
-          node.data.name === node.data._name ||
-          (node.data.type === 'directory' && node.data.name === 'node_modules'))
-      ) {
-        node.data.name = node.data._name;
-        delete node.data._name;
-        delete node.data.edit;
-        isEditing.value = false;
-        return;
-      }
+        if (node.data.name.includes('/') || node.data.name === 'node_modules') {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: i18n.global.t('layout.navbar.helper.code.name.illegal'),
+            },
+          });
+          focusInputEl();
+          return;
+        }
 
-      if (node.parent.data.children?.some((item) => !item.edit && item.name === node.data.name)) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.code.create.error'),
-          },
+        if (node.parent.data.children?.some((item) => !item.edit && item.name === node.data.name)) {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: i18n.global.t('layout.navbar.helper.code.name.duplicate'),
+            },
+          });
+          focusInputEl();
+          return;
+        }
+
+        const data = {
+          old: node.data.path,
+          new: node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name,
+        };
+        renameCode(data).then(({ code, msg }) => {
+          if (code === 200) {
+            delete node.data._name;
+            delete node.data.edit;
+            isEditing.value = false;
+            handleGetCodeDirs(() => {
+              if (current.value.path === data.old) {
+                const NODE = reftree.value.getNode(data.new);
+                if (NODE) handleClickPath(NODE.data);
+              }
+            });
+          } else {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: msg,
+              },
+            });
+          }
         });
-        focusInputEl();
       } else {
-        if (node.data._name) {
-          const data = {
-            old: node.data.path,
-            new: node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name,
-          };
-          renameCode(data).then(({ code, msg }) => {
+        node.data.type = node.data.name.endsWith('/') ? 'directory' : 'file';
+        if (node.data.name.endsWith('/')) {
+          node.data.type = 'directory';
+          node.data.name = node.data.name.slice(0, -1);
+        } else node.data.type = 'file';
+
+        if (!node.data.name) {
+          node.parent.data.children.splice(
+            node.parent.data.children.findIndex((item) => !item.name),
+            1,
+          );
+          isEditing.value = false;
+          return;
+        }
+
+        if (node.data.name === 'node_modules' || node.data.name.endsWith('/node_modules')) {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: i18n.global.t('layout.navbar.helper.code.name.illegal'),
+            },
+          });
+          if (node.data.type === 'directory') node.data.name = node.data.name + '/';
+          focusInputEl();
+          return;
+        }
+
+        if (list.value.find((item) => item.path === `${node.data.path}/${node.data.name}`)) {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: i18n.global.t('layout.navbar.helper.code.name.duplicate'),
+            },
+          });
+          if (node.data.type === 'directory') node.data.name = node.data.name + '/';
+          focusInputEl();
+          return;
+        }
+
+        createCode({ type: node.data.type, name: node.data.name, path: node.data.path }).then(
+          ({ code, data, msg }) => {
             if (code === 200) {
-              delete node.data._name;
               delete node.data.edit;
               isEditing.value = false;
-              handleGetCodeDirs(() => {
-                if (current.value.path === data.old) {
-                  const NODE = reftree.value.getNode(data.new);
-                  if (NODE) handleClickPath(NODE.data);
-                }
-              });
+              handleGetCodeDirs();
+              if (node.data.type === 'file') {
+                let interval;
+                interval = setInterval(() => {
+                  const node = reftree.value.getNode(data.path);
+                  if (node) {
+                    clearInterval(interval);
+                    handleClickPath(node.data);
+                  }
+                }, 100);
+              }
             } else {
               toast({
                 component: ToastificationContent,
@@ -686,59 +750,18 @@ export default {
                 },
               });
             }
-          });
-        } else {
-          createCode({ type: node.data.type, name: node.data.name, path: node.data.path }).then(
-            ({ code, data, msg }) => {
-              if (code === 200) {
-                delete node.data.edit;
-                isEditing.value = false;
-                handleGetCodeDirs();
-                if (node.data.type === 'file') {
-                  let interval;
-                  interval = setInterval(() => {
-                    const node = reftree.value.getNode(data.path);
-                    if (node) {
-                      clearInterval(interval);
-                      handleClickPath(node.data);
-                    }
-                  }, 100);
-                }
-              } else {
-                toast({
-                  component: ToastificationContent,
-                  props: {
-                    variant: 'danger',
-                    icon: 'mdi-alert',
-                    text: msg,
-                  },
-                });
-              }
-            },
-          );
-        }
+          },
+        );
       }
     };
 
-    const handleCreate = (type, node = null) => {
+    const handleCreate = (node) => {
       if (isModified({ toast: true })) return;
-      const name = `${Math.random().toString(36).slice(-6)}${type === 'file' ? '.txt' : ''}`;
-      if (node) {
-        const child = { name: '', type, path: node.data.path, edit: true };
-        if (!node.data.children) node.data.children = [];
-        node.data.children.push(child);
-        node.expanded = true;
-        focusInputEl();
-      } else {
-        list.value.push({ type, path: name });
-        setTimeout(() => {
-          const node = reftree.value.getNode(name);
-          node.data.name = '';
-          node.data.path = '';
-          node.data.edit = true;
-          focusInputEl();
-        }, 10);
-      }
+      const child = { name: '', path: node.data.path, edit: true };
+      if (!node.data.children) node.data.children = [];
+      node.data.children.push(child);
+      node.expanded = true;
+      focusInputEl();
     };
 
     const folder = ref(null);
