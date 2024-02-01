@@ -62,15 +62,16 @@ export default {
 
     provide('reload', reload);
 
+    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const theme = localStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`);
-    if (new Date().getHours() > 6 && new Date().getHours() < 18) {
-      if (theme === 'light')
-        localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`);
-      store.commit('sys/TOGGLE_THEME', theme || 'light');
-    } else {
+    if (prefersDarkMode) {
       if (theme === 'dark')
         localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`);
       store.commit('sys/TOGGLE_THEME', theme || 'dark');
+    } else {
+      if (theme === 'light')
+        localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`);
+      store.commit('sys/TOGGLE_THEME', theme || 'light');
     }
 
     const locale =
