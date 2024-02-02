@@ -1540,11 +1540,11 @@ export default {
                     const column = columns.value.find(
                       (column) => column.field === params.column.colId,
                     );
-                    if (['SelectFile'].includes(column.component))
+                    if (['SelectFile'].includes(column?.component))
                       return JSON.stringify(params.value);
                     else if (
                       ['BasicAclView', 'BasicAclEdit', 'SelectMultiple', 'SelectTags'].includes(
-                        column.component,
+                        column?.component,
                       )
                     )
                       return params.value
@@ -1574,11 +1574,11 @@ export default {
                   const column = columns.value.find(
                     (column) => column.field === params.column.colId,
                   );
-                  if (['SelectFile'].includes(column.component))
+                  if (['SelectFile'].includes(column?.component))
                     return JSON.stringify(params.value);
                   else if (
                     ['BasicAclView', 'BasicAclEdit', 'SelectMultiple', 'SelectTags'].includes(
-                      column.component,
+                      column?.component,
                     )
                   )
                     return params.value
