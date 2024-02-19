@@ -990,11 +990,11 @@ export default {
         contact: current_chat.value.username,
       }).then(({ code, msg }) => {
         if (code === 200) {
-          current_chat.value = {};
           const idx = _chats.value.findIndex(
             (chat) => chat.username === current_chat.value.username,
           );
           _chats.value.splice(idx, 1);
+          current_chat.value = {};
         } else
           toast({
             component: ToastificationContent,
