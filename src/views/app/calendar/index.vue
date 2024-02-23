@@ -746,7 +746,7 @@ export default {
           viewAndEditEventModalHiddenHandler,
         );
       }
-      socket.removeListener('refetchEvents', refetchEventsHandler);
+      socket.off('refetchEvents', refetchEventsHandler);
     });
 
     const handleCreateEvent = () => {

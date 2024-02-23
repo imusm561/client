@@ -687,7 +687,7 @@ export default {
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchDataView', refetchDataViewHandler);
+      socket.off('refetchDataView', refetchDataViewHandler);
     });
 
     const fetchDataView = async (tid, rid) => {

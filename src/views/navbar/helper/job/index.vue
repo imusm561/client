@@ -180,7 +180,7 @@ export default {
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchJobs', refetchJobsHandler);
+      socket.off('refetchJobs', refetchJobsHandler);
     });
 
     const jobs = ref([]);

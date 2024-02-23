@@ -1063,7 +1063,7 @@ export default {
         ?.querySelector('.simplebar-content-wrapper');
       if (list) list.removeEventListener('scroll', scrollHandler);
 
-      socket.removeListener('refetchMails', refetchMailsHandler);
+      socket.off('refetchMails', refetchMailsHandler);
       const mailCcListEl = document.getElementById('cc_list');
       if (mailCcListEl) {
         mailCcListEl.removeEventListener('show.bs.collapse', mailCcListElShowHandler);

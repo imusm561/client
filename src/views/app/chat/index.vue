@@ -743,9 +743,9 @@ export default {
     });
 
     onUnmounted(() => {
-      socket.removeListener('receiverReadMsg', receiverReadMsgHandler);
-      socket.removeListener('receiveMsg', receiveMsgHandler);
-      socket.removeListener('withdrawMsg', withdrawMsgHandler);
+      socket.off('receiverReadMsg', receiverReadMsgHandler);
+      socket.off('receiveMsg', receiveMsgHandler);
+      socket.off('withdrawMsg', withdrawMsgHandler);
 
       const chatConversationList = document
         .getElementById('user-chat')

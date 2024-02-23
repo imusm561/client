@@ -718,7 +718,7 @@ export default defineComponent({
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchFilter', refetchFilterHandler);
+      socket.off('refetchFilter', refetchFilterHandler);
     });
 
     const fetchFormFilters = () => {

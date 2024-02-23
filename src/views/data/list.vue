@@ -494,7 +494,7 @@ export default {
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchDataList', refetchDataListHandler);
+      socket.off('refetchDataList', refetchDataListHandler);
     });
 
     const fetchDataForm = async (callback) => {

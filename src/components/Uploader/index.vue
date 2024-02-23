@@ -554,7 +554,7 @@ export default defineComponent({
     });
 
     onUnmounted(() => {
-      socket.removeListener('fileChanged', fileChangedHandler);
+      socket.off('fileChanged', fileChangedHandler);
       const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
       if (uploadDropdownMenu) {
         uploadDropdownMenu.removeEventListener('show.bs.dropdown', uploadDropdownMenuShowHandler);

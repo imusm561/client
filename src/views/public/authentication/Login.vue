@@ -342,8 +342,8 @@ export default {
     });
 
     onUnmounted(() => {
-      socket.removeListener('QRCodeScan', QRCodeScanHandler);
-      socket.removeListener('QRCodeLogin', QRCodeLoginHandler);
+      socket.off('QRCodeScan', QRCodeScanHandler);
+      socket.off('QRCodeLogin', QRCodeLoginHandler);
     });
 
     const username = ref('');

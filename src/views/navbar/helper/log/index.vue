@@ -333,7 +333,7 @@ export default {
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchLogs', refetchLogsHandler);
+      socket.off('refetchLogs', refetchLogsHandler);
     });
 
     const fetchLogs = () => {

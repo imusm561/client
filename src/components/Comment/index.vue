@@ -214,7 +214,7 @@ export default defineComponent({
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchComments', refetchCommentsHandler);
+      socket.off('refetchComments', refetchCommentsHandler);
     });
 
     const comment = ref({

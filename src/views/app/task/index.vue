@@ -558,7 +558,7 @@ export default {
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchTasks', refetchTasksHandler);
+      socket.off('refetchTasks', refetchTasksHandler);
       statuses.value.forEach((status) => {
         const list = document
           .getElementById(`task-${status.value}`)

@@ -468,8 +468,8 @@ export default {
     });
 
     onUnmounted(() => {
-      socket.removeListener('refetchJobInfo', refetchJobInfoHandler);
-      socket.removeListener('refetchJobLog', refetchJobLogHandler);
+      socket.off('refetchJobInfo', refetchJobInfoHandler);
+      socket.off('refetchJobLog', refetchJobLogHandler);
     });
 
     const temp_job = ref({});
