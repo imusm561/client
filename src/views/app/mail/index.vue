@@ -989,11 +989,9 @@ export default {
               : 'draft'
             : 'inbox';
           mails.label = data.label?.length ? data.label[0] : 'all';
-          nextTick(() => {
-            setTimeout(() => {
-              handleOpenMail(data);
-            }, 500);
-          });
+          setTimeout(() => {
+            handleOpenMail(data);
+          }, 500);
         } else {
           toast({
             component: ToastificationContent,
@@ -1214,9 +1212,7 @@ export default {
         handleCloseMail();
         new_mail.value = JSON.parse(JSON.stringify(mail));
         new_mail.value.key = Math.random().toString(36).slice(-6);
-        setTimeout(() => {
-          document.getElementById('showDraftMailModalBtn').click();
-        }, 100);
+        nextTick(() => document.getElementById('showDraftMailModalBtn').click());
       } else {
         store.commit('user/DEL_NOTICE', {
           app: 'mail',
@@ -1249,26 +1245,26 @@ export default {
         }
         current_mail.value = mail;
         document.body.classList.add('email-detail-show');
-        setTimeout(() => {
+        nextTick(() => {
           const mailCcListEl = document.getElementById('cc_list');
           if (mailCcListEl) {
             mailCcListEl.addEventListener('show.bs.collapse', mailCcListElShowHandler);
             mailCcListEl.addEventListener('hide.bs.collapse', mailCcListElHideHandler);
           }
-        }, 100);
+        });
       }
     };
 
     const handleCloseMail = () => {
       const mailCcListEl = document.getElementById('cc_list');
-      setTimeout(() => {
+      nextTick(() => {
         if (mailCcListEl) {
           mailCcListEl.removeEventListener('show.bs.collapse', mailCcListElShowHandler);
           mailCcListEl.removeEventListener('hide.bs.collapse', mailCcListElHideHandler);
         }
         showMoreUsers.value = false;
         current_mail.value = {};
-      }, 100);
+      });
       document.body.classList.remove('email-detail-show');
     };
 

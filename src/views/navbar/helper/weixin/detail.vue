@@ -1083,7 +1083,7 @@
 </template>
 <script>
 import Breadcrumb from '@layouts/breadcrumb';
-import { onMounted, onUnmounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref, nextTick } from 'vue';
 import { useRouter, getUserInfo, replaceHtml } from '@utils';
 import {
   getAccountDetail,
@@ -1240,9 +1240,7 @@ export default {
     const handleEditAccount = () => {
       _account.value = JSON.parse(JSON.stringify(account.value));
       _account.value.key = Math.random().toString(36).slice(-6);
-      setTimeout(() => {
-        document.getElementById('showEditAccountModalBtn').click();
-      }, 10);
+      nextTick(() => document.getElementById('showEditAccountModalBtn').click());
     };
 
     const handleDeleteAccount = () => {

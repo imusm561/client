@@ -344,16 +344,14 @@ export default defineComponent({
       emit('file-add', file);
       computeFile(file);
       nextTick(() => {
-        setTimeout(() => {
-          const fileList = document
-            .getElementById('file-list')
-            ?.querySelector('.simplebar-content-wrapper');
-          if (fileList)
-            fileList.scrollTo({
-              top: fileList.scrollHeight,
-              behavior: 'smooth',
-            });
-        }, 100);
+        const fileList = document
+          .getElementById('file-list')
+          ?.querySelector('.simplebar-content-wrapper');
+        if (fileList)
+          fileList.scrollTo({
+            top: fileList.scrollHeight,
+            behavior: 'smooth',
+          });
       });
     };
 

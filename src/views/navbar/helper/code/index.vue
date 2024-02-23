@@ -597,20 +597,14 @@ export default {
       }
     };
 
-    const focusInputEl = () => {
-      isEditing.value = true;
-      setTimeout(() => {
-        document.getElementById('node_edit').focus();
-      }, 50);
-    };
-
     const handleEditFileName = (node) => {
       if (isModified({ toast: true })) return;
       if (node.data.path.startsWith('logs/pm2')) return;
       clearTimeout(timer);
       node.data._name = node.data.name;
       node.data.edit = true;
-      focusInputEl();
+      isEditing.value = true;
+      nextTick(() => document.getElementById('node_edit').focus());
     };
 
     const handleSaveFileName = (node) => {
@@ -642,7 +636,8 @@ export default {
             text: i18n.global.t('layout.navbar.helper.code.name.illegal'),
           },
         });
-        focusInputEl();
+        isEditing.value = true;
+        nextTick(() => document.getElementById('node_edit').focus());
         return;
       }
 
@@ -658,7 +653,8 @@ export default {
             text: i18n.global.t('layout.navbar.helper.code.name.duplicate'),
           },
         });
-        focusInputEl();
+        isEditing.value = true;
+        nextTick(() => document.getElementById('node_edit').focus());
         return;
       }
 

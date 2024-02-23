@@ -101,7 +101,7 @@
                     {{ $t('data.column.BasicAclView') }}:&nbsp;
                   </span>
                   <Avatar
-                    v-if="data.acl_view.length"
+                    v-if="data.acl_view?.length"
                     :data="resolveUsers(data.acl_view)"
                     size="xxs"
                   />
@@ -122,7 +122,7 @@
                     {{ $t('data.column.BasicAclEdit') }}:&nbsp;
                   </span>
                   <Avatar
-                    v-if="data.acl_edit.length"
+                    v-if="data.acl_edit?.length"
                     :data="resolveUsers(data.acl_edit)"
                     size="xxs"
                   />
@@ -308,9 +308,9 @@
               (data.created_by === $store.state.user.data.username ||
                 data.updated_by === $store.state.user.data.username ||
                 data.acl_edit.includes($store.state.user.data.username) ||
-                (data.acl_edit.length === 0 &&
+                (data.acl_edit?.length === 0 &&
                   data.acl_view.includes($store.state.user.data.username)) ||
-                (data.acl_view.length === 0 && data.acl_edit.length === 0))
+                (data.acl_view?.length === 0 && data.acl_edit?.length === 0))
             "
             class="btn btn-sm btn-primary print-hidden"
             @click="

@@ -1229,11 +1229,6 @@ export default {
     });
 
     let timer = null;
-    const focusInputEl = () => {
-      setTimeout(() => {
-        document.getElementById('node_edit').focus();
-      }, 50);
-    };
 
     const isModified = (items, notify = false) => {
       if (Object.keys(changes.value).length && items.includes('form')) {
@@ -1288,7 +1283,7 @@ export default {
         if (!node.data.children) node.data.children = [];
         node.data.children.push(child);
         node.expanded = true;
-        focusInputEl();
+        nextTick(() => document.getElementById('node_edit').focus());
       } else {
         createForm({ pid: 0 }).then(({ code, data, msg }) => {
           if (code === 200) {
@@ -1313,7 +1308,7 @@ export default {
       if (isModified(['form'], true)) return;
       node.data.title_old = node.data.title;
       node.data.edit = true;
-      focusInputEl();
+      nextTick(() => document.getElementById('node_edit').focus());
     };
 
     const handleSaveFormTitle = (node) => {

@@ -460,7 +460,6 @@ export default {
       () => props.data,
       (val) => {
         account.value = JSON.parse(JSON.stringify(val));
-        console.log(account.value);
       },
       { immediate: true, deep: true },
     );

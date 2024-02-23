@@ -59,11 +59,7 @@ router.beforeEach((to, from, next) => {
       if (modelEl) {
         modelEl.classList.remove('show');
         const modelBackdropEl = document.getElementsByClassName('modal-backdrop show')?.[0];
-        if (modelBackdropEl) {
-          setTimeout(() => {
-            modelBackdropEl.parentNode.removeChild(modelBackdropEl);
-          }, 200);
-        }
+        if (modelBackdropEl) modelBackdropEl.parentNode.removeChild(modelBackdropEl);
       }
       const token = jwt.decode(
         localStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`),

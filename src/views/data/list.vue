@@ -535,9 +535,7 @@ export default {
               customs.value.data.forEach((custom, index) => {
                 gridColumnApi.moveColumn(custom.colId, index);
               });
-              setTimeout(() => {
-                ready.setCustom = true;
-              }, 1000);
+              ready.setCustom = true;
             } else {
               ready.setCustom = true;
             }
@@ -666,9 +664,7 @@ export default {
             customs.value.data.forEach((custom, index) => {
               gridColumnApi.moveColumn(custom.colId, index);
             });
-            setTimeout(() => {
-              ready.setCustom = true;
-            }, 1000);
+            ready.setCustom = true;
           } else {
             ready.setCustom = true;
           }
@@ -1450,9 +1446,7 @@ export default {
       gridApi.showLoadingOverlay();
       fetchDataForm(() => {
         gridApi.refreshServerSide({ purge: true });
-        setTimeout(() => {
-          gridApi.hideOverlay();
-        }, 200);
+        nextTick(() => gridApi.hideOverlay());
       });
     };
 

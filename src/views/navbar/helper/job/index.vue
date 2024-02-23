@@ -152,7 +152,7 @@ import Breadcrumb from '@layouts/breadcrumb';
 import EditJobModal from './components/EditJobModal';
 import DeleteJobModal from './components/DeleteJobModal';
 import Empty from '@components/Empty';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import { getJobs } from '@api/job';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -226,9 +226,7 @@ export default {
         moment(job.start).format('YYYY-MM-DD HH:mm:ss'),
         moment(job.end).format('YYYY-MM-DD HH:mm:ss'),
       ];
-      setTimeout(() => {
-        document.getElementById('showEditJobModalBtn').click();
-      }, 10);
+      nextTick(() => document.getElementById('showEditJobModalBtn').click());
     };
 
     const handleEditJob = (job) => {
@@ -238,9 +236,7 @@ export default {
         moment(job.end).format('YYYY-MM-DD HH:mm:ss'),
       ];
       current_job.value.key = Math.random().toString(36).slice(-6);
-      setTimeout(() => {
-        document.getElementById('showEditJobModalBtn').click();
-      }, 10);
+      nextTick(() => document.getElementById('showEditJobModalBtn').click());
     };
 
     const handleDelJob = (job) => {

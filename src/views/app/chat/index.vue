@@ -812,12 +812,12 @@ export default {
 
       if (current_chat.value.chat_data.length < 10) current_chat.value.completed = true;
 
-      setTimeout(() => {
+      nextTick(() => {
         const chatConversationList = document
           .getElementById('user-chat')
           ?.querySelector('.chat-conversation .simplebar-content-wrapper');
         if (chatConversationList) chatConversationList.addEventListener('scroll', scrollHandler);
-      }, 100);
+      });
     };
 
     const quote = ref(null);
@@ -843,9 +843,7 @@ export default {
 
     const handleClickEmoji = (item) => {
       message.value += item;
-      setTimeout(() => {
-        document.getElementById('message_input').focus();
-      }, 50);
+      nextTick(() => document.getElementById('message_input').focus());
     };
 
     const handleClickFileInput = () => {
@@ -942,9 +940,7 @@ export default {
 
     const handleClickQuote = (data) => {
       quote.value = data;
-      setTimeout(() => {
-        document.getElementById('message_input').focus();
-      }, 50);
+      nextTick(() => document.getElementById('message_input').focus());
     };
 
     const handleWithdrawMsg = (data) => {

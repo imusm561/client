@@ -166,7 +166,7 @@ import Breadcrumb from '@layouts/breadcrumb';
 import EditAccountModal from './components/EditAccountModal';
 import DeleteAccountModal from './components/DeleteAccountModal';
 import Empty from '@components/Empty';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { getAccounts } from '@api/weixin';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -219,17 +219,13 @@ export default {
         description: '',
       };
       current_account.value = account;
-      setTimeout(() => {
-        document.getElementById('showEditAccountModalBtn').click();
-      }, 10);
+      nextTick(() => document.getElementById('showEditAccountModalBtn').click());
     };
 
     const handleEditAccount = (account) => {
       current_account.value = JSON.parse(JSON.stringify(account));
       current_account.value.key = Math.random().toString(36).slice(-6);
-      setTimeout(() => {
-        document.getElementById('showEditAccountModalBtn').click();
-      }, 10);
+      nextTick(() => document.getElementById('showEditAccountModalBtn').click());
     };
 
     const handleDelAccount = (account) => {

@@ -245,7 +245,7 @@ import Pagination from '@components/Pagination';
 import Empty from '@components/Empty';
 import Comment from '@components/Comment';
 import i18n from '@utils/i18n';
-import { onMounted, onUnmounted, ref, watch, reactive } from 'vue';
+import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from 'vue';
 import { useRouter, getChartColorsArray, getUserInfo } from '@utils';
 import { getJobDetail, getJobLog, executeJob } from '@api/job';
 import useJob from './useJob';
@@ -480,9 +480,7 @@ export default {
         moment(job.value.end).format('YYYY-MM-DD HH:mm:ss'),
       ];
       temp_job.value.key = Math.random().toString(36).slice(-6);
-      setTimeout(() => {
-        document.getElementById('showEditJobModalBtn').click();
-      }, 10);
+      nextTick(() => document.getElementById('showEditJobModalBtn').click());
     };
 
     const handleDelJob = () => {

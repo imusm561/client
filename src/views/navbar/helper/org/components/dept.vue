@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue';
+import { computed, ref, nextTick } from 'vue';
 import { createDept, updateDept, dropDept } from '@api/dept';
 import store from '@store';
 import i18n from '@utils/i18n';
@@ -117,11 +117,6 @@ export default {
     });
 
     let timer = null;
-    const focusInputEl = () => {
-      setTimeout(() => {
-        document.getElementById('node_edit').focus();
-      }, 50);
-    };
 
     const handleSelectDept = (node) => {
       clearTimeout(timer);
@@ -179,14 +174,14 @@ export default {
       clearTimeout(timer);
       node.data.name_old = node.data.name;
       node.data.edit = true;
-      focusInputEl();
+      nextTick(() => document.getElementById('node_edit').focus());
     };
 
     const handleAddDept = (node) => {
       const child = { pid: node.data.id, name: '', name_old: 'new', edit: true };
       if (!node.data.children) node.data.children = [];
       node.data.children.push(child);
-      focusInputEl();
+      nextTick(() => document.getElementById('node_edit').focus());
     };
 
     const handleSaveDeptName = (node) => {

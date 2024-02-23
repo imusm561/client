@@ -193,7 +193,7 @@ export default defineComponent({
               behavior: 'smooth',
             });
         }
-      }, 1000);
+      }, 500);
     };
 
     const refetchCommentsHandler = () => {
