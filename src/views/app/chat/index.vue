@@ -826,7 +826,7 @@ export default {
     const handleKeyDownEvent = (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        if (e.ctrlKey || e.metaKey) {
+        if (e.ctrlKey || e.metaKey || e.shiftKey) {
           const startPos = e.target.selectionStart;
           const endPos = e.target.selectionEnd;
           message.value =
