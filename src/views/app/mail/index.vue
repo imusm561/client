@@ -1214,7 +1214,7 @@ export default {
         new_mail.value.key = Math.random().toString(36).slice(-6);
         nextTick(() => document.getElementById('showDraftMailModalBtn').click());
       } else {
-        store.commit('user/DEL_NOTICE', {
+        store.dispatch('user/delNotice', {
           app: 'mail',
           data: mail,
         });

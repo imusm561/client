@@ -21,7 +21,7 @@ export const getUserData = () => {
       store.commit('org/SET_ROLES', roles);
       store.commit('org/SET_USERS', users);
       store.commit('org/SET_ONLINES', onlines);
-      store.commit('user/SET_USER', user);
+      store.dispatch('user/setUser', user);
       store.commit('user/SET_FORMS', forms);
       store.commit('user/SET_NOTICES', notices);
     }

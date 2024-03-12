@@ -779,7 +779,7 @@ export default {
         );
         message.value = '';
       }
-      store.commit('user/DEL_NOTICE', {
+      store.dispatch('user/delNotice', {
         app: 'chat',
         data: { user: contact },
       });

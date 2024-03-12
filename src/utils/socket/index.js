@@ -72,7 +72,7 @@ const initSocket = (socket) => {
     // if (router.currentRoute.value.name !== 'chat') { }
     const user = getUserInfo(chat.sender);
     if (user) {
-      store.commit('user/ADD_NOTICE', {
+      store.dispatch('user/addNotice', {
         app: 'chat',
         data: chat,
       });
@@ -92,7 +92,7 @@ const initSocket = (socket) => {
   });
 
   socket.on('delChatNotify', (chat) => {
-    store.commit('user/DEL_NOTICE', {
+    store.dispatch('user/delNotice', {
       app: 'chat',
       data: { user: { username: chat.sender }, id: chat.id },
     });
@@ -101,7 +101,7 @@ const initSocket = (socket) => {
   socket.on('addMailNotify', (mail) => {
     const user = getUserInfo(mail.created_by);
     if (user) {
-      store.commit('user/ADD_NOTICE', {
+      store.dispatch('user/addNotice', {
         app: 'mail',
         data: mail,
       });
@@ -119,7 +119,7 @@ const initSocket = (socket) => {
   });
 
   socket.on('delMailNotify', (mail) => {
-    store.commit('user/DEL_NOTICE', {
+    store.dispatch('user/delNotice', {
       app: 'mail',
       data: mail,
     });
@@ -128,7 +128,7 @@ const initSocket = (socket) => {
   socket.on('addCommentNotify', (comment) => {
     const user = getUserInfo(comment.created_by);
     if (user) {
-      store.commit('user/ADD_NOTICE', {
+      store.dispatch('user/addNotice', {
         app: 'comment',
         data: comment,
       });
@@ -146,7 +146,7 @@ const initSocket = (socket) => {
   });
 
   socket.on('delCommentNotify', (comment) => {
-    store.commit('user/DEL_NOTICE', {
+    store.dispatch('user/delNotice', {
       app: 'comment',
       data: comment,
     });
@@ -155,7 +155,7 @@ const initSocket = (socket) => {
   socket.on('addFlowNotify', (flow) => {
     const user = getUserInfo(flow.updated_by || flow.created_by);
     if (user) {
-      store.commit('user/ADD_NOTICE', {
+      store.dispatch('user/addNotice', {
         app: 'flow',
         data: flow,
       });
@@ -171,7 +171,7 @@ const initSocket = (socket) => {
   });
 
   socket.on('delFlowNotify', (flow) => {
-    store.commit('user/DEL_NOTICE', {
+    store.dispatch('user/delNotice', {
       app: 'flow',
       data: flow,
     });
@@ -193,7 +193,7 @@ const initSocket = (socket) => {
 
   socket.on('refetchSysInfo', () => {
     getSysInfo().then(({ code, data }) => {
-      if (code === 200) store.commit('sys/UPDATE_SYS_INFO', data);
+      if (code === 200) store.dispatch('sys/updateSysInfo', data);
     });
   });
 

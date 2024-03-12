@@ -67,21 +67,21 @@ export default {
     if (prefersDarkMode) {
       if (theme === 'dark')
         localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`);
-      store.commit('sys/TOGGLE_THEME', theme || 'dark');
+      store.dispatch('sys/toggleTheme', theme || 'dark');
     } else {
       if (theme === 'light')
         localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`);
-      store.commit('sys/TOGGLE_THEME', theme || 'light');
+      store.dispatch('sys/toggleTheme', theme || 'light');
     }
 
     const locale =
       localStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}locale`) ||
       navigator.language;
-    store.commit('sys/TOGGLE_LANG', locale.toLowerCase());
+    store.dispatch('sys/toggleLang', locale.toLowerCase());
 
     getSysInfo().then(({ code, data }) => {
       if (code === 200) {
-        store.commit('sys/UPDATE_SYS_INFO', data);
+        store.dispatch('sys/updateSysInfo', data);
         if (localStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`))
           getUserData();
       }

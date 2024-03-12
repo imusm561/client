@@ -40,10 +40,6 @@ export default {
   },
   mutations: {
     SET_USER(state, value) {
-      const moment = window.moment;
-      if (store.state.sys.cfg.waterMark && value.id)
-        setWatermark(`${value.username} - ${value.fullname}`, moment().format('ll'));
-      else removeWatermark();
       state.data = value;
       // window.user = value;
     },
@@ -55,51 +51,59 @@ export default {
       state.notices = value;
       // window.notices = value;
     },
-    ADD_NOTICE(state, value) {
-      if (value.app == 'chat') {
-        const idx = state.notices.chat.findIndex((item) => item.username == value.data.sender);
-        if (idx != -1) {
-          state.notices.chat[idx].chat_data.unshift(value.data);
+    SET_NOTICE(state, value) {
+      state.notices[value.app] = value.data;
+      // window.notices = state.notices;
+    },
+  },
+  actions: {
+    setUser({ commit }, value) {
+      commit('SET_USER', value);
+      const moment = window.moment;
+      if (store.state.sys.cfg.waterMark && value.id)
+        setWatermark(`${value.username} - ${value.fullname}`, moment().format('ll'));
+      else removeWatermark();
+    },
+    addNotice({ commit, state }, value) {
+      const val = {
+        app: value.app,
+        data: JSON.parse(JSON.stringify(state.notices[value.app])),
+      };
+      if (val.app == 'chat') {
+        const idx = val.data.findIndex((item) => item.username == value.data.sender);
+        if (idx !== -1) {
+          val.data[idx].chat_data.unshift(value.data);
         } else {
-          state.notices.chat.unshift({
+          val.data.unshift({
             username: value.data.sender,
             chat_data: [value.data],
           });
         }
-      } else if (value.app == 'mail') {
-        state.notices.mail.unshift(value.data);
-      } else if (value.app == 'comment') {
-        state.notices.comment.unshift(value.data);
-      } else if (value.app == 'flow') {
-        state.notices.flow.unshift(value.data);
+      } else {
+        val.data.unshift(value.data);
       }
-      // window.notices = state.notices;
+      commit('SET_NOTICE', val);
     },
-    DEL_NOTICE(state, value) {
-      if (value.app == 'chat') {
-        const idx = state.notices.chat.findIndex(
-          (chat) => chat.username == value.data.user.username,
-        );
+    delNotice({ commit, state }, value) {
+      const val = {
+        app: value.app,
+        data: JSON.parse(JSON.stringify(state.notices[value.app])),
+      };
+      if (val.app == 'chat') {
+        console.log(value);
+        const idx = val.data.findIndex((item) => item.username == value.data.user.username);
         if (idx !== -1) {
           if (value.data.id) {
-            const index = state.notices.chat[idx].chat_data.findIndex(
-              (item) => item.id === value.data.id,
-            );
-            if (index !== -1) state.notices.chat[idx].chat_data.splice(index, 1);
-          } else state.notices.chat.splice(idx, 1);
+            // withdraw
+            const index = val.data[idx].chat_data.findIndex((item) => item.id === value.data.id);
+            if (index !== -1) val.data[idx].chat_data.splice(index, 1);
+          } else val.data.splice(idx, 1);
         }
-      } else if (value.app == 'mail') {
-        const idx = state.notices.mail.findIndex((mail) => mail.id == value.data.id);
-        if (idx !== -1) state.notices.mail.splice(idx, 1);
-      } else if (value.app == 'comment') {
-        const idx = state.notices.comment.findIndex((comment) => comment.id == value.data.id);
-        if (idx !== -1) state.notices.comment.splice(idx, 1);
-      } else if (value.app == 'flow') {
-        const idx = state.notices.flow.findIndex((flow) => flow.id == value.data.id);
-        if (idx !== -1) state.notices.flow.splice(idx, 1);
+      } else {
+        const idx = val.data.findIndex((item) => item.id == value.data.id);
+        if (idx !== -1) val.data.splice(idx, 1);
       }
-      // window.notices = state.notices;
+      commit('SET_NOTICE', val);
     },
   },
-  actions: {},
 };

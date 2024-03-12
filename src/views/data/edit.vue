@@ -798,9 +798,9 @@ export default {
 
       watch(
         () => formData.value,
-        (newVal, oldVal) => {
+        (newVal = {}, oldVal = {}) => {
           if (initialized.value) {
-            const changes = getChanges(newVal || {}, oldVal || {});
+            const changes = getChanges(newVal, oldVal);
             for (let field in changes) {
               columns.value
                 .filter(

@@ -17,29 +17,39 @@ export default {
     },
   },
   mutations: {
-    TOGGLE_LANG(state, lang) {
-      state.lang = ['en-us', 'zh-cn'].includes(lang) ? lang : 'en-us';
-      i18n.global.locale = state.lang;
-      const moment = window.moment;
-      moment.locale(state.lang);
-      localStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}locale`, state.lang);
+    TOGGLE_LANG(state, value) {
+      state.lang = value;
     },
-    TOGGLE_THEME(state, theme) {
-      state.theme = theme;
-      document.documentElement.setAttribute('data-theme', theme);
+    TOGGLE_THEME(state, value) {
+      state.theme = value;
     },
     UPDATE_SYS_INFO(state, value) {
-      state.name = value.name;
-      state.company = value.company;
-      state.beian = value.beian;
-      state.public_key = value.public_key;
-      state.cfg = JSON.parse(decryptData(value.cfg));
-      if (state.cfg.amapJsCode) {
+      for (let key in value) {
+        state[key] = value[key];
+      }
+    },
+  },
+  actions: {
+    toggleLang({ commit }, value) {
+      const lang = ['en-us', 'zh-cn'].includes(value) ? value : 'en-us';
+      commit('TOGGLE_LANG', lang);
+      i18n.global.locale = lang;
+      const moment = window.moment;
+      moment.locale(lang);
+      localStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}locale`, lang);
+    },
+    toggleTheme({ commit }, value) {
+      commit('TOGGLE_THEME', value);
+      document.documentElement.setAttribute('data-theme', value);
+    },
+    updateSysInfo({ commit }, value) {
+      value.cfg = JSON.parse(decryptData(value.cfg, value.public_key));
+      commit('UPDATE_SYS_INFO', value);
+      if (value.cfg.amapJsCode) {
         window._AMapSecurityConfig = {
-          securityJsCode: state.cfg.amapJsCode,
+          securityJsCode: value.cfg.amapJsCode,
         };
       }
     },
   },
-  actions: {},
 };

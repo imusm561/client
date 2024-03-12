@@ -831,7 +831,7 @@ export default {
           },
         })
         .then(() => {
-          store.commit('user/DEL_NOTICE', {
+          store.dispatch('user/delNotice', {
             app: 'chat',
             data: chat,
           });
@@ -851,7 +851,7 @@ export default {
           },
         })
         .then(() => {
-          store.commit('user/DEL_NOTICE', {
+          store.dispatch('user/delNotice', {
             app: 'mail',
             data: mail,
           });
@@ -865,7 +865,7 @@ export default {
     const handleClickCommentNotice = (comment) => {
       router.replace({ path: comment.source, query: { tab: 'comment', id: comment.id } });
       // .then(() => {
-      //   store.commit('user/DEL_NOTICE', {
+      //   store.dispatch('user/delNotice', {
       //     app: 'comment',
       //     data: comment,
       //   });
@@ -878,7 +878,7 @@ export default {
 
     const handleClickFlowNotice = (flow) => {
       router.replace({ path: `/data/view/${flow.tid}/${flow.rid}` }).then(() => {
-        store.commit('user/DEL_NOTICE', {
+        store.dispatch('user/delNotice', {
           app: 'flow',
           data: flow,
         });
@@ -888,7 +888,7 @@ export default {
     const theme = computed({
       get: () => store.state.sys.theme,
       set: (value) => {
-        store.commit('sys/TOGGLE_THEME', value);
+        store.dispatch('sys/toggleTheme', value);
         localStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`, value);
       },
     });
@@ -909,7 +909,7 @@ export default {
     const lang = computed({
       get: () => store.state.sys.lang,
       set: (value) => {
-        store.commit('sys/TOGGLE_LANG', value);
+        store.dispatch('sys/toggleLang', value);
         if (store.state.sys.cfg.waterMark && store.state.user.data.id) {
           setWatermark(
             `${store.state.user.data.username} - ${store.state.user.data.fullname}`,

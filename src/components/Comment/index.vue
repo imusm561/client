@@ -142,7 +142,7 @@ export default defineComponent({
             if (
               store.state.user.notices?.comment?.findIndex((item) => item.id == comment.id) !== -1
             ) {
-              store.commit('user/DEL_NOTICE', {
+              store.dispatch('user/delNotice', {
                 app: 'comment',
                 data: comment,
               });

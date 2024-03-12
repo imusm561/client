@@ -487,7 +487,7 @@ export default {
             selectedRows.value = [];
           }
         },
-        { immediate: true },
+        { immediate: true, deep: true },
       );
 
       socket.on('refetchDataList', refetchDataListHandler);

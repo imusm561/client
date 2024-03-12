@@ -48,7 +48,7 @@ export const clearUserData = () => {
   // Remove accessToken from localStorage
   localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`);
   // Remove data from vuex
-  store.commit('user/SET_USER', {});
+  store.dispatch('user/setUser', {});
   store.commit('user/SET_FORMS', []);
   store.commit('user/SET_NOTICES', []);
 };
@@ -190,8 +190,8 @@ export const hashData = (string) => {
   return crypto.createHash('md5').update(string).digest('hex');
 };
 
-export const encryptData = (data) => {
-  let hash = crypto.createHash('md5').update(store.state.sys.public_key).digest('hex');
+export const encryptData = (data, public_key = store.state.sys.public_key) => {
+  let hash = crypto.createHash('md5').update(public_key).digest('hex');
   let key = hash.substring(0, 16);
   let iv = hash.substring(hash.length - 16, hash.length);
   let cipherChunks = [];
@@ -202,8 +202,8 @@ export const encryptData = (data) => {
   return cipherChunks.join('');
 };
 
-export const decryptData = (data) => {
-  let hash = crypto.createHash('md5').update(store.state.sys.public_key).digest('hex');
+export const decryptData = (data, public_key = store.state.sys.public_key) => {
+  let hash = crypto.createHash('md5').update(public_key).digest('hex');
   let key = hash.substring(0, 16);
   let iv = hash.substring(hash.length - 16, hash.length);
   let cipherChunks = [];
