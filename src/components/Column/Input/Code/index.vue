@@ -43,61 +43,52 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed, ref } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed, ref } from 'vue';
 import { resolveColumnTitle } from '@utils';
 import MonacoEditor from '@components/MonacoEditor';
-export default defineComponent({
-  components: {
-    MonacoEditor,
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'EDIT',
   },
-  props: {
-    type: {
-      type: String,
-      default: 'EDIT',
-    },
-    column: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    modelValue: {
-      type: [String, Number],
-      default: () => null,
-    },
-    required: {
-      type: [Boolean, Number],
-      default: () => false,
-    },
-    editable: {
-      type: [Boolean, Number],
-      default: () => true,
-    },
-    error: {
-      type: String,
-      default: () => null,
+  column: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    const syntax_error = ref(null);
-    const onOccuredSyntaxError = (e) => {
-      syntax_error.value = e;
-      emit('syntax-error', e);
-    };
-    return {
-      resolveColumnTitle,
-      onOccuredSyntaxError,
-      syntax_error,
-      value: computed({
-        get() {
-          return props.modelValue;
-        },
-        set(value) {
-          emit('update:modelValue', value);
-        },
-      }),
-    };
+  modelValue: {
+    type: [String, Number],
+    default: () => null,
+  },
+  required: {
+    type: [Boolean, Number],
+    default: () => false,
+  },
+  editable: {
+    type: [Boolean, Number],
+    default: () => true,
+  },
+  error: {
+    type: String,
+    default: () => null,
+  },
+});
+const emit = defineEmits(['update:modelValue', 'syntax-error']);
+
+const syntax_error = ref(null);
+const onOccuredSyntaxError = (e) => {
+  syntax_error.value = e;
+  emit('syntax-error', e);
+};
+
+const value = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit('update:modelValue', value);
   },
 });
 </script>

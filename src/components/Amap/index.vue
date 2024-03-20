@@ -106,274 +106,257 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed, ref, onMounted, onUnmounted } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed, ref, onMounted, onUnmounted } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
-import store from '@store';
-import i18n from '@utils/i18n';
-import { isLngLat, copyToClipboard, debounce } from '@utils';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-export default defineComponent({
-  props: {
-    id: {
-      type: String,
-      default: () => '',
-      requried: true,
-    },
-    modelValue: {
-      type: String,
-      default: () => '',
-      requried: true,
-    },
-    placeholder: {
-      type: String,
-      default: () => '',
-      requried: true,
-    },
-    disabled: {
-      type: Boolean,
-      default: () => false,
-      requried: true,
-    },
-    fieldClass: {
-      type: [String, Object],
-      default: '',
-      requried: true,
-    },
+import { isLngLat, copyToClipboard, debounce } from '@utils';
+import i18n from '@utils/i18n';
+import store from '@store';
+
+const props = defineProps({
+  id: {
+    type: String,
+    default: () => '',
+    requried: true,
   },
-  setup(props, { emit }) {
-    const toast = useToast();
-    let AMap = null;
-    let amap = null;
-
-    onMounted(async () => {
-      if (store.state.sys.cfg.amapJsApi) {
-        AMap = await AMapLoader.load({
-          key: store.state.sys.cfg.amapJsApi,
-          version: '2.0',
-          plugins: ['AMap.AutoComplete', 'AMap.PlaceSearch', 'AMap.Geocoder', 'AMap.CitySearch'],
-        });
-
-        amap = new AMap.Map(`amap_${props.id}`, {
-          zoom: 15,
-          showIndoorMap: true,
-          // showIndoorMap: false,
-          // layers: [indoorMap, AMap.createDefaultLayer()],
-        });
-
-        amap.setMapStyle(`amap://styles/${store.state.sys.theme === 'dark' ? 'dark' : 'normal'}`);
-        amap.on('click', onClickMap);
-      }
-
-      if (props.id === 'event-location') {
-        const amapOffcanvas = document.getElementById(`amapOffcanvas_${props.id}`);
-        amapOffcanvas.style['z-index'] = 1080;
-        amapOffcanvas.parentNode.removeChild(amapOffcanvas);
-        const viewAndEditEventModal = document.getElementById('viewAndEditEventModal');
-        viewAndEditEventModal.parentNode.insertBefore(amapOffcanvas, viewAndEditEventModal);
-      }
-    });
-
-    onUnmounted(() => {
-      if (props.id === 'event-location') {
-        const amapOffcanvas = document.getElementById(`amapOffcanvas_${props.id}`);
-        amapOffcanvas.parentNode.removeChild(amapOffcanvas);
-      }
-    });
-
-    let autoComplete = null;
-    let placeSearch = null;
-    let geoCoder = null;
-    let citysearch = null;
-    let marker = null;
-
-    const vModel = computed({
-      get() {
-        return props.modelValue || '';
-      },
-      set(value) {
-        emit('update:modelValue', value);
-      },
-    });
-
-    const handleSelectPosition = (key) => {
-      document.getElementById(`hideAmapOffcanvas_${props.id}Btn`).click();
-      copyToClipboard(
-        `${position.value.address}@${position.value.location.lng},${position.value.location.lat}`,
-      );
-      if (key === 'location')
-        vModel.value = `${position.value.location.lng},${position.value.location.lat}`;
-      else vModel.value = position.value.address;
-    };
-
-    const position = ref(null);
-    const search_str = ref(null);
-    const tips = ref([]);
-    const pois = ref([]);
-
-    const handleShowAmap = () => {
-      tips.value = [];
-      pois.value = [];
-
-      if (!store.state.sys.cfg.amapJsApi) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('components.amap.missingKey'),
-          },
-        });
-        return;
-      }
-
-      if (!AMap) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('components.amap.initialization.failed'),
-          },
-        });
-        return;
-      }
-
-      autoComplete = autoComplete || new AMap.AutoComplete();
-      placeSearch = placeSearch || new AMap.PlaceSearch({ extensions: 'all' });
-      geoCoder = geoCoder || new AMap.Geocoder();
-      citysearch = citysearch || new AMap.CitySearch();
-
-      marker = marker || new AMap.Marker();
-      marker.setMap(amap);
-
-      if (vModel.value) {
-        if (isLngLat(vModel.value)) {
-          onReGeoCoding({
-            lng: vModel.value.split(',')[0],
-            lat: vModel.value.split(',')[1],
-          });
-        } else {
-          placeSearch.search(vModel.value, (status, result) => {
-            if (status === 'complete' && result.poiList && result.poiList.count != 0) {
-              position.value = {
-                location: result.poiList.pois[0].location,
-                address: vModel.value,
-              };
-              marker.setPosition([
-                result.poiList.pois[0].location.lng,
-                result.poiList.pois[0].location.lat,
-              ]);
-              amap.setZoomAndCenter(15, [
-                result.poiList.pois[0].location.lng,
-                result.poiList.pois[0].location.lat,
-              ]);
-              marker.setTitle(vModel.value);
-              search_str.value = vModel.value;
-            }
-          });
-        }
-      } else {
-        searchCity((bounds) => {
-          amap.setBounds(bounds);
-        });
-      }
-    };
-
-    const onClickMap = (e) => {
-      tips.value = [];
-      pois.value = [];
-      onReGeoCoding(e.lnglat, false);
-    };
-
-    const searchCity = (callback) => {
-      citysearch.getLocalCity((status, result) => {
-        if (status === 'complete' && result.info === 'OK') {
-          if (result && result.bounds) {
-            callback && callback(result.bounds);
-          }
-        }
-      });
-    };
-
-    const onReGeoCoding = (lnglat, setZoomAndCenter = true) => {
-      geoCoder.getAddress(lnglat, (status, result) => {
-        if (status === 'complete' && result.regeocode) {
-          position.value = {
-            location: lnglat,
-            address: result.regeocode.formattedAddress,
-          };
-          marker.setPosition([lnglat.lng, lnglat.lat]);
-          if (setZoomAndCenter) amap.setZoomAndCenter(15, [lnglat.lng, lnglat.lat]);
-          marker.setTitle(result.regeocode.formattedAddress);
-          search_str.value = result.regeocode.formattedAddress;
-        }
-      });
-    };
-
-    const handleClickSearcher = () => {
-      if (search_str.value) handleSearchTips();
-    };
-
-    const handleSearchTips = debounce((e) => {
-      tips.value = [];
-      pois.value = [];
-      autoComplete.search(e?.target?.value || search_str.value, (status, result) => {
-        if (status == 'complete' && result.tips) {
-          tips.value = result.tips;
-        }
-      });
-    }, 500);
-
-    const handleClickTip = (option) => {
-      tips.value = [];
-      pois.value = [];
-      placeSearch.search(option.name, (status, result) => {
-        if (status === 'complete' && result?.poiList?.count != 0) {
-          pois.value = result.poiList.pois;
-          handleClickPoi(pois.value[0]);
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.globak.t('components.amap.tips.empty', {
-                district: option.district,
-                name: option.name,
-              }),
-            },
-          });
-        }
-      });
-    };
-
-    const handleClickPoi = (poi) => {
-      position.value = poi;
-      marker.setPosition([poi.location.lng, poi.location.lat]);
-      amap.setZoomAndCenter(15, [poi.location.lng, poi.location.lat]);
-      marker.setTitle(poi.address);
-    };
-
-    return {
-      handleShowAmap,
-
-      vModel,
-      handleSelectPosition,
-
-      position,
-      search_str,
-      tips,
-      pois,
-
-      handleClickSearcher,
-      handleSearchTips,
-      handleClickTip,
-      handleClickPoi,
-    };
+  modelValue: {
+    type: String,
+    default: () => '',
+    requried: true,
+  },
+  placeholder: {
+    type: String,
+    default: () => '',
+    requried: true,
+  },
+  disabled: {
+    type: Boolean,
+    default: () => false,
+    requried: true,
+  },
+  fieldClass: {
+    type: [String, Object],
+    default: '',
+    requried: true,
   },
 });
+
+const emit = defineEmits(['update:modelValue']);
+
+const toast = useToast();
+let AMap = null;
+let amap = null;
+
+onMounted(async () => {
+  if (store.state.sys.cfg.amapJsApi) {
+    AMap = await AMapLoader.load({
+      key: store.state.sys.cfg.amapJsApi,
+      version: '2.0',
+      plugins: ['AMap.AutoComplete', 'AMap.PlaceSearch', 'AMap.Geocoder', 'AMap.CitySearch'],
+    });
+
+    amap = new AMap.Map(`amap_${props.id}`, {
+      zoom: 15,
+      showIndoorMap: true,
+      // showIndoorMap: false,
+      // layers: [indoorMap, AMap.createDefaultLayer()],
+    });
+
+    amap.setMapStyle(`amap://styles/${store.state.sys.theme === 'dark' ? 'dark' : 'normal'}`);
+    amap.on('click', onClickMap);
+  }
+
+  if (props.id === 'event-location') {
+    const amapOffcanvas = document.getElementById(`amapOffcanvas_${props.id}`);
+    amapOffcanvas.style['z-index'] = 1080;
+    amapOffcanvas.parentNode.removeChild(amapOffcanvas);
+    const viewAndEditEventModal = document.getElementById('viewAndEditEventModal');
+    viewAndEditEventModal.parentNode.insertBefore(amapOffcanvas, viewAndEditEventModal);
+  }
+});
+
+onUnmounted(() => {
+  if (props.id === 'event-location') {
+    const amapOffcanvas = document.getElementById(`amapOffcanvas_${props.id}`);
+    amapOffcanvas.parentNode.removeChild(amapOffcanvas);
+  }
+});
+
+let autoComplete = null;
+let placeSearch = null;
+let geoCoder = null;
+let citysearch = null;
+let marker = null;
+
+const vModel = computed({
+  get() {
+    return props.modelValue || '';
+  },
+  set(value) {
+    emit('update:modelValue', value);
+  },
+});
+
+const handleSelectPosition = (key) => {
+  document.getElementById(`hideAmapOffcanvas_${props.id}Btn`).click();
+  copyToClipboard(
+    `${position.value.address}@${position.value.location.lng},${position.value.location.lat}`,
+  );
+  if (key === 'location')
+    vModel.value = `${position.value.location.lng},${position.value.location.lat}`;
+  else vModel.value = position.value.address;
+};
+
+const position = ref(null);
+const search_str = ref(null);
+const tips = ref([]);
+const pois = ref([]);
+
+const handleShowAmap = () => {
+  tips.value = [];
+  pois.value = [];
+
+  if (!store.state.sys.cfg.amapJsApi) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('components.amap.missingKey'),
+      },
+    });
+    return;
+  }
+
+  if (!AMap) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('components.amap.initialization.failed'),
+      },
+    });
+    return;
+  }
+
+  autoComplete = autoComplete || new AMap.AutoComplete();
+  placeSearch = placeSearch || new AMap.PlaceSearch({ extensions: 'all' });
+  geoCoder = geoCoder || new AMap.Geocoder();
+  citysearch = citysearch || new AMap.CitySearch();
+
+  marker = marker || new AMap.Marker();
+  marker.setMap(amap);
+
+  if (vModel.value) {
+    if (isLngLat(vModel.value)) {
+      onReGeoCoding({
+        lng: vModel.value.split(',')[0],
+        lat: vModel.value.split(',')[1],
+      });
+    } else {
+      placeSearch.search(vModel.value, (status, result) => {
+        if (status === 'complete' && result.poiList && result.poiList.count != 0) {
+          position.value = {
+            location: result.poiList.pois[0].location,
+            address: vModel.value,
+          };
+          marker.setPosition([
+            result.poiList.pois[0].location.lng,
+            result.poiList.pois[0].location.lat,
+          ]);
+          amap.setZoomAndCenter(15, [
+            result.poiList.pois[0].location.lng,
+            result.poiList.pois[0].location.lat,
+          ]);
+          marker.setTitle(vModel.value);
+          search_str.value = vModel.value;
+        }
+      });
+    }
+  } else {
+    searchCity((bounds) => {
+      amap.setBounds(bounds);
+    });
+  }
+};
+
+const onClickMap = (e) => {
+  tips.value = [];
+  pois.value = [];
+  onReGeoCoding(e.lnglat, false);
+};
+
+const searchCity = (callback) => {
+  citysearch.getLocalCity((status, result) => {
+    if (status === 'complete' && result.info === 'OK') {
+      if (result && result.bounds) {
+        callback && callback(result.bounds);
+      }
+    }
+  });
+};
+
+const onReGeoCoding = (lnglat, setZoomAndCenter = true) => {
+  geoCoder.getAddress(lnglat, (status, result) => {
+    if (status === 'complete' && result.regeocode) {
+      position.value = {
+        location: lnglat,
+        address: result.regeocode.formattedAddress,
+      };
+      marker.setPosition([lnglat.lng, lnglat.lat]);
+      if (setZoomAndCenter) amap.setZoomAndCenter(15, [lnglat.lng, lnglat.lat]);
+      marker.setTitle(result.regeocode.formattedAddress);
+      search_str.value = result.regeocode.formattedAddress;
+    }
+  });
+};
+
+const handleClickSearcher = () => {
+  if (search_str.value) handleSearchTips();
+};
+
+const handleSearchTips = debounce((e) => {
+  tips.value = [];
+  pois.value = [];
+  autoComplete.search(e?.target?.value || search_str.value, (status, result) => {
+    if (status == 'complete' && result.tips) {
+      tips.value = result.tips;
+    }
+  });
+}, 500);
+
+const handleClickTip = (option) => {
+  tips.value = [];
+  pois.value = [];
+  placeSearch.search(option.name, (status, result) => {
+    if (status === 'complete' && result?.poiList?.count != 0) {
+      pois.value = result.poiList.pois;
+      handleClickPoi(pois.value[0]);
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: i18n.globak.t('components.amap.tips.empty', {
+            district: option.district,
+            name: option.name,
+          }),
+        },
+      });
+    }
+  });
+};
+
+const handleClickPoi = (poi) => {
+  position.value = poi;
+  marker.setPosition([poi.location.lng, poi.location.lat]);
+  amap.setZoomAndCenter(15, [poi.location.lng, poi.location.lat]);
+  marker.setTitle(poi.address);
+};
 </script>
 
 <style lang="scss" scoped>

@@ -51,63 +51,53 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed } from 'vue';
 import { isLngLat, resolveColumnTitle } from '@utils';
 import Amap from '@components/Amap';
-export default defineComponent({
-  components: {
-    Amap,
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'EDIT',
   },
-  props: {
-    type: {
-      type: String,
-      default: 'EDIT',
-    },
-    column: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    modelValue: {
-      type: String,
-      default: () => null,
-    },
-    required: {
-      type: [Boolean, Number],
-      default: () => false,
-    },
-    editable: {
-      type: [Boolean, Number],
-      default: () => true,
-    },
-    error: {
-      type: String,
-      default: () => null,
+  column: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    const handleDblClickMap = (lnglat) => {
-      window.open(
-        `//www.amap.com/regeo?lng=${lnglat.split(',')[0]}&lat=${lnglat.split(',')[1]}`,
-        '_blank',
-      );
-    };
+  modelValue: {
+    type: String,
+    default: () => null,
+  },
+  required: {
+    type: [Boolean, Number],
+    default: () => false,
+  },
+  editable: {
+    type: [Boolean, Number],
+    default: () => true,
+  },
+  error: {
+    type: String,
+    default: () => null,
+  },
+});
+const emit = defineEmits(['update:modelValue']);
 
-    return {
-      isLngLat,
-      handleDblClickMap,
-      resolveColumnTitle,
-      value: computed({
-        get() {
-          return props.modelValue;
-        },
-        set(value) {
-          emit('update:modelValue', value);
-        },
-      }),
-    };
+const handleDblClickMap = (lnglat) => {
+  window.open(
+    `//www.amap.com/regeo?lng=${lnglat.split(',')[0]}&lat=${lnglat.split(',')[1]}`,
+    '_blank',
+  );
+};
+
+const value = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit('update:modelValue', value);
   },
 });
 </script>

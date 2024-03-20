@@ -11,9 +11,9 @@
         />
       </div>
       <small class="text-muted">
-        {{ $moment(comment.created_at).format('llll') }}
+        {{ moment(comment.created_at).format('llll') }}
         <span class="badge bg-soft-info text-info align-middle ms-2">
-          {{ $moment(comment.created_at).fromNow() }}
+          {{ moment(comment.created_at).fromNow() }}
         </span>
       </small>
       <div class="ck ck-content mt-2 mb-2" v-html="comment.content"></div>
@@ -52,33 +52,22 @@
   </div>
 </template>
 
-<script>
-import Avatar from '@components/Avatar';
+<script setup>
+import { defineProps, defineEmits } from 'vue';
 import { getUserInfo } from '@utils';
-export default {
-  name: 'Item',
-  components: {
-    Avatar,
+import moment from '@utils/moment';
+import Avatar from '@components/Avatar';
+defineProps({
+  comment: {
+    type: Object,
+    required: true,
   },
-  props: {
-    comment: {
-      type: Object,
-      required: true,
-    },
-  },
-  setup(_, { emit }) {
-    const handleReplyComment = (comment) => {
-      emit('reply', comment);
-    };
-    const handleDeleteComment = (comment) => {
-      emit('delete', comment);
-    };
-
-    return {
-      getUserInfo,
-      handleReplyComment,
-      handleDeleteComment,
-    };
-  },
+});
+const emit = defineEmits(['reply', 'delete']);
+const handleReplyComment = (comment) => {
+  emit('reply', comment);
+};
+const handleDeleteComment = (comment) => {
+  emit('delete', comment);
 };
 </script>

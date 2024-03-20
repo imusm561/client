@@ -17,14 +17,11 @@
   </span>
   <span v-else></span>
 </template>
-<script>
-import { defineComponent, computed } from 'vue';
-export default defineComponent({
-  setup(props) {
-    const theme = computed(() => {
-      return props.params.api.getTheme();
-    });
-    return { theme };
-  },
+
+<script setup>
+import { defineProps, computed } from 'vue';
+const props = defineProps(['params']);
+const theme = computed(() => {
+  return props.params.api.getTheme();
 });
 </script>

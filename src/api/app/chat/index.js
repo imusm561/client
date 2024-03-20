@@ -1,5 +1,5 @@
-import axios from '@utils/axios';
 import { generateApiQuery } from '@utils';
+import axios from '@utils/axios';
 
 export const getChats = () => {
   return axios.get('/cor/app/chat/list');

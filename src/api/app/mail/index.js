@@ -1,5 +1,5 @@
-import axios from '@utils/axios';
 import { generateApiQuery } from '@utils';
+import axios from '@utils/axios';
 
 export const getMail = (params) => {
   return axios.get('/cor/app/mail/data' + generateApiQuery(params));

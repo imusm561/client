@@ -49,59 +49,53 @@
   </div>
 </template>
 
-<script>
-import { ref, watch } from 'vue';
-import { updateJob } from '@api/job';
+<script setup>
+import { defineProps, defineEmits, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
+import { updateJob } from '@api/job';
 
-export default {
-  props: {
-    currentJob: {
-      type: Object,
-      default: () => {
-        return {};
-      },
+const props = defineProps({
+  currentJob: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    const toast = useToast();
+});
 
-    const job = ref({});
+const emit = defineEmits(['confirm']);
 
-    watch(
-      () => props.currentJob,
-      (val) => {
-        job.value = JSON.parse(JSON.stringify(val));
-      },
-      { immediate: true, deep: true },
-    );
+const toast = useToast();
 
-    const handleDelJob = () => {
-      updateJob({
-        id: job.value.id,
-        data_state: 'deleted',
-      }).then(({ code, msg }) => {
-        if (code === 200) {
-          emit('confirm');
-          document.getElementById('hideDeleteJobModalBtn').click();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
+const job = ref({});
 
-    return {
-      job,
-      handleDelJob,
-    };
+watch(
+  () => props.currentJob,
+  (val) => {
+    job.value = JSON.parse(JSON.stringify(val));
   },
+  { immediate: true, deep: true },
+);
+
+const handleDelJob = () => {
+  updateJob({
+    id: job.value.id,
+    data_state: 'deleted',
+  }).then(({ code, msg }) => {
+    if (code === 200) {
+      emit('confirm');
+      document.getElementById('hideDeleteJobModalBtn').click();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
 };
 </script>

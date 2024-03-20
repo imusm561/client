@@ -1,5 +1,5 @@
-import axios from '@utils/axios';
 import { generateApiQuery } from '@utils';
+import axios from '@utils/axios';
 
 export const getJobs = () => {
   return axios.get('/cor/job/list');

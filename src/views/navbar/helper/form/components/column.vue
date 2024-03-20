@@ -13,7 +13,7 @@
                   <i :class="`mdi ${item.icon}`" />
                   {{ $t(item.title) }}
                 </h5>
-                <draggable
+                <Draggable
                   class="row"
                   :list="item.list"
                   :group="{ name: 'component', pull: 'clone', put: false }"
@@ -25,7 +25,7 @@
                       {{ $t(component.name) }}
                     </div>
                   </div>
-                </draggable>
+                </Draggable>
               </div>
             </div>
           </div>
@@ -76,7 +76,7 @@
               </div>
             </div>
           </div>
-          <draggable
+          <Draggable
             class="row mt-2"
             :style="{ height: columns.length === 0 ? '100px' : 'auto' }"
             :list="columns"
@@ -147,7 +147,7 @@
                 <component :is="column.component" :column="column" type="DESIGN"></component>
               </div>
             </div>
-          </draggable>
+          </Draggable>
           <Empty
             v-if="columns.length === 0"
             :text="$t('layout.navbar.helper.form.column.components.empty')"
@@ -173,7 +173,7 @@
                 {{
                   $t('layout.navbar.helper.form.column.config.create', {
                     user: getUserInfo(current_column.created_by).fullname,
-                    time: $moment(current_column.created_at).format('llll'),
+                    time: moment(current_column.created_at).format('llll'),
                   })
                 }}
               </div>
@@ -182,7 +182,7 @@
                 {{
                   $t('layout.navbar.helper.form.column.config.update', {
                     user: getUserInfo(current_column.updated_by).fullname,
-                    time: $moment(current_column.updated_at).format('llll'),
+                    time: moment(current_column.updated_at).format('llll'),
                   })
                 }}
               </div>
@@ -222,18 +222,19 @@
   </div>
 </template>
 
-<script>
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { VueDraggableNext } from 'vue-draggable-next';
-import store from '@store';
-import { getChanges, copyToClipboard, pasteFromClipboard, getUserInfo } from '@utils';
-import { getColumns, createColumns, updateColumns } from '@api/column';
+<script setup>
+import { defineOptions, defineProps, defineEmits, onMounted, onUnmounted, ref, watch } from 'vue';
+import { VueDraggableNext as Draggable } from 'vue-draggable-next';
 import { useToast } from 'vue-toastification';
-import i18n from '@utils/i18n';
 import ToastificationContent from '@components/ToastificationContent';
+import { getChanges, copyToClipboard, pasteFromClipboard, getUserInfo } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+
+import store from '@store';
+
 import Empty from '@components/Empty';
-import CKEditor from '@components/CKEditor';
-import { columns as components } from '@components/Column';
+import components from '@components/Column';
 
 import InputText from '@components/Column/Input/Text/index.vue';
 import InputNumber from '@components/Column/Input/Number/index.vue';
@@ -271,12 +272,11 @@ import LayoutSeparator from '@components/Column/Layout/Separator/index.vue';
 import LayoutSeparatorConfig from '@components/Column/Layout/Separator/config.vue';
 import LayoutTab from '@components/Column/Layout/Tab/index.vue';
 import LayoutTabConfig from '@components/Column/Layout/Tab/config.vue';
-export default {
-  components: {
-    draggable: VueDraggableNext,
-    Empty,
-    CKEditor,
 
+import { getColumns, createColumns, updateColumns } from '@api/column';
+
+defineOptions({
+  components: {
     InputText,
     InputTextConfig,
     InputNumber,
@@ -314,376 +314,349 @@ export default {
     LayoutTab,
     LayoutTabConfig,
   },
-  props: {
-    form: {
-      type: Object,
-      default: () => {
-        return {};
-      },
+});
+
+const props = defineProps({
+  form: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    const toast = useToast();
-    const moment = window.moment;
+});
 
-    let server_columns = [];
-    const columns = ref([]);
-    const changes = ref({
-      create: [],
-      update: [],
-      delete: [],
-    });
+const emit = defineEmits(['setColumnsChangedFlag']);
 
-    const current_column = ref({});
+const toast = useToast();
 
-    const fetchColumns = (tid) => {
-      current_column.value = {};
-      getColumns({ tid }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          server_columns = data;
-          columns.value = JSON.parse(JSON.stringify(server_columns));
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
+let server_columns = [];
+const columns = ref([]);
+const changes = ref({
+  create: [],
+  update: [],
+  delete: [],
+});
 
-    watch(
-      () => props.form.id,
-      (newVal, oldVal) => {
-        if (newVal !== oldVal) {
-          columns.value = [];
-          changes.value = [];
-          if (newVal) fetchColumns(newVal);
-        }
-      },
-      { immediate: true },
-    );
+const current_column = ref({});
 
-    watch(
-      () => columns.value,
-      (val) => {
-        const create_columns = val.filter((item) => !item.id);
-        const existe_columns = val.filter((item) => item.id);
-
-        changes.value.create = create_columns;
-
-        changes.value.update = [];
-        existe_columns.forEach((cloumn) => {
-          let server_item = server_columns.find((item) => item.id === cloumn.id);
-          let existe_item = existe_columns.find((item) => item.id === cloumn.id);
-          if (Object.keys(getChanges(existe_item, server_item)).length)
-            changes.value.update.push(cloumn);
-        });
-
-        changes.value.delete = server_columns.filter((server_item) =>
-          existe_columns.every((old_item) => old_item.id != server_item.id),
-        );
-
-        if (
-          changes.value.create.length ||
-          changes.value.update.length ||
-          changes.value.delete.length
-        )
-          emit('setColumnsChangedFlag', true);
-        else emit('setColumnsChangedFlag', false);
-      },
-      { immediate: true, deep: true },
-    );
-
-    const viewAndEditColumnModalShownHandler = () => {
-      const viewAndEditColumnModal = document.getElementById('viewAndEditColumnModal');
-      if (viewAndEditColumnModal) scrollToTop(viewAndEditColumnModal);
-    };
-
-    onMounted(() => {
-      const viewAndEditColumnModal = document.getElementById('viewAndEditColumnModal');
-      if (viewAndEditColumnModal)
-        viewAndEditColumnModal.addEventListener(
-          'shown.bs.modal',
-          viewAndEditColumnModalShownHandler,
-        );
-
-      // document.onkeydown = (e) => {
-      //   if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-      //     if (!viewAndEditColumnModal.classList.contains('show')) handleSaveFormColumns();
-      //     e.preventDefault();
-      //   }
-      // };
-    });
-
-    onUnmounted(() => {
-      const viewAndEditColumnModal = document.getElementById('viewAndEditColumnModal');
-      if (viewAndEditColumnModal)
-        viewAndEditColumnModal.removeEventListener(
-          'shown.bs.modal',
-          viewAndEditColumnModalShownHandler,
-        );
-    });
-
-    const scrollToTop = (modal) => {
-      const el = modal?.querySelector('.simplebar-content-wrapper');
-      if (el)
-        el.scrollTo({
-          top: el.offsetTop,
-          behavior: 'smooth',
-        });
-    };
-
-    const handleAddColumn = (e) => {
-      columns.value[e.newIndex] = JSON.parse(JSON.stringify(columns.value[e.newIndex]));
-      columns.value[e.newIndex].name = i18n.global.t(columns.value[e.newIndex].name);
-      delete columns.value[e.newIndex].icon;
-    };
-
-    const handleSortColumn = () => {
-      columns.value.forEach((column, index) => (column.sort = index + 1));
-    };
-
-    const handleCopyColumns = () => {
-      const text = {
-        keyword: `copy_form_columns_at_${moment().format('YYYY-MM-DD')}_by_${
-          store.state.user.data.username
-        }`,
-        columns: columns.value.map((column) => {
-          return {
-            name: column.name,
-            component: column.component,
-            col: column.col,
-            type: column.type,
-            length: column.length,
-            default: column.default,
-            alias: column.alias,
-            visible: column.visible,
-            required: column.required,
-            editable: column.editable,
-            tags: column.tags,
-            cfg: column.cfg,
-            header: column.header,
-            footer: column.footer,
-            sort: column.sort,
-          };
-        }),
-      };
-      copyToClipboard(JSON.stringify(text))
-        .then(() => {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: i18n.global.t('layout.navbar.helper.form.column.components.copy.success'),
-            },
-          });
-        })
-        .catch((error) => {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: error.message,
-            },
-          });
-        });
-    };
-
-    const handlePasteColumns = () => {
-      pasteFromClipboard()
-        .then((text) => {
-          if (
-            text.includes(
-              `copy_form_columns_at_${moment().format('YYYY-MM-DD')}_by_${
-                store.state.user.data.username
-              }`,
-            )
-          ) {
-            try {
-              text = JSON.parse(text);
-              if (text.columns && Array.isArray(text.columns)) {
-                columns.value = text.columns;
-                toast({
-                  component: ToastificationContent,
-                  props: {
-                    variant: 'success',
-                    icon: 'mdi-check-circle',
-                    text: i18n.global.t(
-                      'layout.navbar.helper.form.column.components.paste.success',
-                    ),
-                  },
-                });
-              }
-            } catch (error) {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: error.message,
-                },
-              });
-            }
-          }
-        })
-        .catch((error) => {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: error.message,
-            },
-          });
-        });
-    };
-
-    const saving = ref(false);
-    const handleSaveFormColumns = async () => {
-      if (columns.value.some((column) => column.component === 'LayoutTab')) {
-        if (columns.value[0].component !== 'LayoutTab') {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.form.column.components.layout.tab.top'),
-            },
-          });
-          return;
-        }
-
-        if (columns.value[columns.value.length - 1].component === 'LayoutTab') {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.form.column.components.layout.tab.bottom'),
-            },
-          });
-          return;
-        }
-
-        if (
-          columns.value.some(
-            (column, index) =>
-              column.component === 'LayoutTab' &&
-              (columns.value?.[index - 1]?.component === 'LayoutTab' ||
-                columns.value?.[index + 1]?.component === 'LayoutTab'),
-          )
-        ) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.form.column.components.layout.tab.between'),
-            },
-          });
-          return;
-        }
-      }
-
-      saving.value = true;
-      const completed = {
-        create: true,
-        update: true,
-      };
-
-      if (changes.value.create.length) {
-        completed.create = false;
-        const { code: create_code, msg: create_msg } = await createColumns({
-          tid: props.form.id,
-          columns: changes.value.create,
-        });
-        if (create_code === 200) {
-          completed.create = true;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: create_msg,
-            },
-          });
-        }
-      }
-
-      if (changes.value.update.length || changes.value.delete.length) {
-        completed.update = false;
-        const { code: update_code, msg: update_msg } = await updateColumns({
-          tid: props.form.id,
-          columns: [
-            ...changes.value.update,
-            ...changes.value.delete.map((column) => {
-              column.data_state = 'deleted';
-              return column;
-            }),
-          ],
-        });
-        if (update_code === 200) {
-          completed.update = true;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: update_msg,
-            },
-          });
-        }
-      }
-
-      let interval;
-      interval = setInterval(() => {
-        if (completed.create && completed.update) {
-          clearInterval(interval);
-          fetchColumns(props.form.id);
-          saving.value = false;
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: i18n.global.t('layout.navbar.helper.form.column.save.success'),
-            },
-          });
-        }
-      }, 100);
-    };
-
-    const handleRestoreFormColumns = () => {
+const fetchColumns = (tid) => {
+  current_column.value = {};
+  getColumns({ tid }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      server_columns = data;
       columns.value = JSON.parse(JSON.stringify(server_columns));
-    };
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
 
-    return {
-      getUserInfo,
-      components,
-
-      columns,
-      changes,
-      current_column,
-
-      handleAddColumn,
-      handleSortColumn,
-      handleCopyColumns,
-      handlePasteColumns,
-
-      saving,
-      handleSaveFormColumns,
-
-      handleRestoreFormColumns,
-    };
+watch(
+  () => props.form.id,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      columns.value = [];
+      changes.value = [];
+      if (newVal) fetchColumns(newVal);
+    }
   },
+  { immediate: true },
+);
+
+watch(
+  () => columns.value,
+  (val) => {
+    const create_columns = val.filter((item) => !item.id);
+    const existe_columns = val.filter((item) => item.id);
+
+    changes.value.create = create_columns;
+
+    changes.value.update = [];
+    existe_columns.forEach((cloumn) => {
+      let server_item = server_columns.find((item) => item.id === cloumn.id);
+      let existe_item = existe_columns.find((item) => item.id === cloumn.id);
+      if (Object.keys(getChanges(existe_item, server_item)).length)
+        changes.value.update.push(cloumn);
+    });
+
+    changes.value.delete = server_columns.filter((server_item) =>
+      existe_columns.every((old_item) => old_item.id != server_item.id),
+    );
+
+    if (changes.value.create.length || changes.value.update.length || changes.value.delete.length)
+      emit('setColumnsChangedFlag', true);
+    else emit('setColumnsChangedFlag', false);
+  },
+  { immediate: true, deep: true },
+);
+
+const viewAndEditColumnModalShownHandler = () => {
+  const viewAndEditColumnModal = document.getElementById('viewAndEditColumnModal');
+  if (viewAndEditColumnModal) scrollToTop(viewAndEditColumnModal);
+};
+
+onMounted(() => {
+  const viewAndEditColumnModal = document.getElementById('viewAndEditColumnModal');
+  if (viewAndEditColumnModal)
+    viewAndEditColumnModal.addEventListener('shown.bs.modal', viewAndEditColumnModalShownHandler);
+
+  // document.onkeydown = (e) => {
+  //   if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+  //     if (!viewAndEditColumnModal.classList.contains('show')) handleSaveFormColumns();
+  //     e.preventDefault();
+  //   }
+  // };
+});
+
+onUnmounted(() => {
+  const viewAndEditColumnModal = document.getElementById('viewAndEditColumnModal');
+  if (viewAndEditColumnModal)
+    viewAndEditColumnModal.removeEventListener(
+      'shown.bs.modal',
+      viewAndEditColumnModalShownHandler,
+    );
+});
+
+const scrollToTop = (modal) => {
+  const el = modal?.querySelector('.simplebar-content-wrapper');
+  if (el)
+    el.scrollTo({
+      top: el.offsetTop,
+      behavior: 'smooth',
+    });
+};
+
+const handleAddColumn = (e) => {
+  columns.value[e.newIndex] = JSON.parse(JSON.stringify(columns.value[e.newIndex]));
+  columns.value[e.newIndex].name = i18n.global.t(columns.value[e.newIndex].name);
+  delete columns.value[e.newIndex].icon;
+};
+
+const handleSortColumn = () => {
+  columns.value.forEach((column, index) => (column.sort = index + 1));
+};
+
+const handleCopyColumns = () => {
+  const text = {
+    keyword: `copy_form_columns_at_${moment().format('YYYY-MM-DD')}_by_${
+      store.state.user.data.username
+    }`,
+    columns: columns.value.map((column) => {
+      return {
+        name: column.name,
+        component: column.component,
+        col: column.col,
+        type: column.type,
+        length: column.length,
+        default: column.default,
+        alias: column.alias,
+        visible: column.visible,
+        required: column.required,
+        editable: column.editable,
+        tags: column.tags,
+        cfg: column.cfg,
+        header: column.header,
+        footer: column.footer,
+        sort: column.sort,
+      };
+    }),
+  };
+  copyToClipboard(JSON.stringify(text))
+    .then(() => {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          text: i18n.global.t('layout.navbar.helper.form.column.components.copy.success'),
+        },
+      });
+    })
+    .catch((error) => {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: error.message,
+        },
+      });
+    });
+};
+
+const handlePasteColumns = () => {
+  pasteFromClipboard()
+    .then((text) => {
+      if (
+        text.includes(
+          `copy_form_columns_at_${moment().format('YYYY-MM-DD')}_by_${
+            store.state.user.data.username
+          }`,
+        )
+      ) {
+        try {
+          text = JSON.parse(text);
+          if (text.columns && Array.isArray(text.columns)) {
+            columns.value = text.columns;
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'success',
+                icon: 'mdi-check-circle',
+                text: i18n.global.t('layout.navbar.helper.form.column.components.paste.success'),
+              },
+            });
+          }
+        } catch (error) {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: error.message,
+            },
+          });
+        }
+      }
+    })
+    .catch((error) => {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: error.message,
+        },
+      });
+    });
+};
+
+const saving = ref(false);
+const handleSaveFormColumns = async () => {
+  if (columns.value.some((column) => column.component === 'LayoutTab')) {
+    if (columns.value[0].component !== 'LayoutTab') {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: i18n.global.t('layout.navbar.helper.form.column.components.layout.tab.top'),
+        },
+      });
+      return;
+    }
+
+    if (columns.value[columns.value.length - 1].component === 'LayoutTab') {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: i18n.global.t('layout.navbar.helper.form.column.components.layout.tab.bottom'),
+        },
+      });
+      return;
+    }
+
+    if (
+      columns.value.some(
+        (column, index) =>
+          column.component === 'LayoutTab' &&
+          (columns.value?.[index - 1]?.component === 'LayoutTab' ||
+            columns.value?.[index + 1]?.component === 'LayoutTab'),
+      )
+    ) {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: i18n.global.t('layout.navbar.helper.form.column.components.layout.tab.between'),
+        },
+      });
+      return;
+    }
+  }
+
+  saving.value = true;
+  const completed = {
+    create: true,
+    update: true,
+  };
+
+  if (changes.value.create.length) {
+    completed.create = false;
+    const { code: create_code, msg: create_msg } = await createColumns({
+      tid: props.form.id,
+      columns: changes.value.create,
+    });
+    if (create_code === 200) {
+      completed.create = true;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: create_msg,
+        },
+      });
+    }
+  }
+
+  if (changes.value.update.length || changes.value.delete.length) {
+    completed.update = false;
+    const { code: update_code, msg: update_msg } = await updateColumns({
+      tid: props.form.id,
+      columns: [
+        ...changes.value.update,
+        ...changes.value.delete.map((column) => {
+          column.data_state = 'deleted';
+          return column;
+        }),
+      ],
+    });
+    if (update_code === 200) {
+      completed.update = true;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: update_msg,
+        },
+      });
+    }
+  }
+
+  let interval;
+  interval = setInterval(() => {
+    if (completed.create && completed.update) {
+      clearInterval(interval);
+      fetchColumns(props.form.id);
+      saving.value = false;
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          text: i18n.global.t('layout.navbar.helper.form.column.save.success'),
+        },
+      });
+    }
+  }, 100);
+};
+
+const handleRestoreFormColumns = () => {
+  columns.value = JSON.parse(JSON.stringify(server_columns));
 };
 </script>
 

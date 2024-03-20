@@ -35,59 +35,49 @@
   </VueSelect>
 </template>
 
-<script>
-import { defineComponent, computed, ref, watch } from 'vue';
+<script setup>
+import { defineProps, computed, ref, watch } from 'vue';
 import { getDataByFormula } from '@utils';
-export default defineComponent({
-  setup(props) {
-    const value = ref(props.params.value);
 
-    const getValue = () => {
-      return value.value;
-    };
-    const isCancelAfterEnd = () => {
-      return !!props.params._column._required && (!value.value || value.value.length === 0);
-    };
+const props = defineProps(['params']);
 
-    const search = ref([]);
-    const select = ref([]);
+const value = ref(props.params.value);
 
-    watch(
-      () => value.value,
-      (val) => {
-        select.value = search.value.filter((option) => val.includes(option.value));
-      },
-      { immediate: true },
-    );
+/* eslint-disable-next-line no-unused-vars */
+const getValue = () => {
+  return value.value;
+};
 
-    const handleSelecterSearch = async (keyword, loading) => {
-      loading(true);
-      search.value = await getDataByFormula(props.params.data, props.params._column.cfg.__source, {
-        search: keyword,
-      });
-      loading(false);
-    };
+/* eslint-disable-next-line no-unused-vars */
+const isCancelAfterEnd = () => {
+  return !!props.params._column._required && (!value.value || value.value.length === 0);
+};
 
-    const unique = (arr) => {
-      const res = new Map();
-      return arr.filter((item) => !res.has(item.value) && res.set(item.value, 1));
-    };
+const search = ref([]);
+const select = ref([]);
 
-    const options = computed(() => {
-      return unique([
-        ...search.value,
-        ...(props.params._column.cfg.options || []),
-        ...select.value,
-      ]);
-    });
-
-    return {
-      value,
-      options,
-      handleSelecterSearch,
-      getValue,
-      isCancelAfterEnd,
-    };
+watch(
+  () => value.value,
+  (val) => {
+    select.value = search.value.filter((option) => val.includes(option.value));
   },
+  { immediate: true },
+);
+
+const handleSelecterSearch = async (keyword, loading) => {
+  loading(true);
+  search.value = await getDataByFormula(props.params.data, props.params._column.cfg.__source, {
+    search: keyword,
+  });
+  loading(false);
+};
+
+const unique = (arr) => {
+  const res = new Map();
+  return arr.filter((item) => !res.has(item.value) && res.set(item.value, 1));
+};
+
+const options = computed(() => {
+  return unique([...search.value, ...(props.params._column.cfg.options || []), ...select.value]);
 });
 </script>

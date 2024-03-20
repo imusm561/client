@@ -157,50 +157,42 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed, ref } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed, ref } from 'vue';
 import { icons } from '@utils/icons';
 import CKEditor from '@components/CKEditor';
-export default defineComponent({
-  components: {
-    CKEditor,
-  },
-  props: {
-    modelValue: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    errors: {
-      type: Object,
-      default: () => {
-        return {};
-      },
+const props = defineProps({
+  modelValue: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    const iconOptions = ref([]);
-    const fetchIconOptions = (search, loading) => {
-      iconOptions.value = [];
-      if (search.length > 2) {
-        loading(true);
-        iconOptions.value = icons.filter((item) => item.name.includes(search));
-        loading(false);
-      }
-    };
-    return {
-      iconOptions,
-      fetchIconOptions,
-      column: computed({
-        get() {
-          return props.modelValue;
-        },
-        set(value) {
-          emit('update:modelValue', value);
-        },
-      }),
-    };
+  errors: {
+    type: Object,
+    default: () => {
+      return {};
+    },
+  },
+});
+const emit = defineEmits(['update:modelValue']);
+
+const iconOptions = ref([]);
+const fetchIconOptions = (search, loading) => {
+  iconOptions.value = [];
+  if (search.length > 2) {
+    loading(true);
+    iconOptions.value = icons.filter((item) => item.name.includes(search));
+    loading(false);
+  }
+};
+
+const column = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit('update:modelValue', value);
   },
 });
 </script>

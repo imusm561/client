@@ -1,5 +1,8 @@
-import i18n from '@utils/i18n';
 import { decryptData } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+const { BASE_URL } = process.env;
+
 export default {
   namespaced: true,
   state: {
@@ -34,9 +37,8 @@ export default {
       const lang = ['en-us', 'zh-cn'].includes(value) ? value : 'en-us';
       commit('TOGGLE_LANG', lang);
       i18n.global.locale = lang;
-      const moment = window.moment;
       moment.locale(lang);
-      localStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}locale`, lang);
+      localStorage.setItem(`${BASE_URL.replace(/\//g, '_')}locale`, lang);
     },
     toggleTheme({ commit }, value) {
       commit('TOGGLE_THEME', value);

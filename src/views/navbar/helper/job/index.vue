@@ -88,13 +88,13 @@
                   <div class="flex-grow-1">
                     <h6 class="text-muted mb-0">
                       <span class="text-secondary" :title="job.start">
-                        {{ $moment(job.start).fromNow() }}
+                        {{ moment(job.start).fromNow() }}
                       </span>
                     </h6>
                   </div>
                   <div class="flex-shrink-0">
                     <span class="text-secondary" :title="job.end">
-                      {{ $moment(job.end).fromNow() }}
+                      {{ moment(job.end).fromNow() }}
                     </span>
                   </div>
                 </div>
@@ -103,8 +103,8 @@
                     class="progress-bar bg-secondary"
                     :style="{
                       width: `${
-                        (($moment().valueOf() - $moment(job.start).valueOf()) /
-                          ($moment(job.end).valueOf() - $moment(job.start).valueOf())) *
+                        ((moment().valueOf() - moment(job.start).valueOf()) /
+                          (moment(job.end).valueOf() - moment(job.start).valueOf())) *
                         100
                       }%`,
                     }"
@@ -147,119 +147,96 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+import { replaceHtml } from '@utils';
+import moment from '@utils/moment';
+import { socket } from '@utils/socket';
+
+import useJob from './useJob';
+
 import Breadcrumb from '@layouts/breadcrumb';
 import EditJobModal from './components/EditJobModal';
 import DeleteJobModal from './components/DeleteJobModal';
 import Empty from '@components/Empty';
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+
 import { getJobs } from '@api/job';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
-import useJob from './useJob';
-import { replaceHtml } from '@utils';
-export default {
-  components: {
-    Breadcrumb,
-    EditJobModal,
-    DeleteJobModal,
-    Empty,
-  },
-  setup() {
-    const toast = useToast();
-    const moment = window.moment;
-    const socket = window.socket;
 
-    const refetchJobsHandler = () => {
-      fetchJobs();
-    };
+const toast = useToast();
 
-    onMounted(() => {
-      fetchJobs();
-      socket.on('refetchJobs', refetchJobsHandler);
-    });
+const refetchJobsHandler = () => {
+  fetchJobs();
+};
 
-    onUnmounted(() => {
-      socket.off('refetchJobs', refetchJobsHandler);
-    });
+onMounted(() => {
+  fetchJobs();
+  socket.on('refetchJobs', refetchJobsHandler);
+});
 
-    const jobs = ref([]);
-    const fetchJobs = () => {
-      getJobs().then(({ code, data, msg }) => {
-        if (code === 200) {
-          jobs.value = data;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+onUnmounted(() => {
+  socket.off('refetchJobs', refetchJobsHandler);
+});
+
+const jobs = ref([]);
+const fetchJobs = () => {
+  getJobs().then(({ code, data, msg }) => {
+    if (code === 200) {
+      jobs.value = data;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const { resolveJobStatus, statusOptions } = useJob();
+const { resolveJobStatus, statusOptions } = useJob();
 
-    const search_keyword = ref('');
-    const search_status = ref([]);
+const search_keyword = ref('');
+const search_status = ref([]);
 
-    const current_job = ref({});
+const current_job = ref({});
 
-    const handleCreateJob = () => {
-      const job = {
-        key: Math.random().toString(36).slice(-6),
-        title: '',
-        status: 1,
-        rule: '0 0 * * * *',
-        description: '',
-        start: moment().format('YYYY-MM-DD HH:mm:ss'),
-        end: moment().add(7, 'd').format('YYYY-MM-DD HH:mm:ss'),
-        tags: [],
-        config:
-          '{\n  "executor": "axios",\n  "config": {\n    "url": "...",\n    "method": "GET"\n  }\n}',
-      };
-      current_job.value = job;
-      current_job.value.duration = [
-        moment(job.start).format('YYYY-MM-DD HH:mm:ss'),
-        moment(job.end).format('YYYY-MM-DD HH:mm:ss'),
-      ];
-      nextTick(() => document.getElementById('showEditJobModalBtn').click());
-    };
+const handleCreateJob = () => {
+  const job = {
+    key: Math.random().toString(36).slice(-6),
+    title: '',
+    status: 1,
+    rule: '0 0 * * * *',
+    description: '',
+    start: moment().format('YYYY-MM-DD HH:mm:ss'),
+    end: moment().add(7, 'd').format('YYYY-MM-DD HH:mm:ss'),
+    tags: [],
+    config:
+      '{\n  "executor": "axios",\n  "config": {\n    "url": "...",\n    "method": "GET"\n  }\n}',
+  };
+  current_job.value = job;
+  current_job.value.duration = [
+    moment(job.start).format('YYYY-MM-DD HH:mm:ss'),
+    moment(job.end).format('YYYY-MM-DD HH:mm:ss'),
+  ];
+  nextTick(() => document.getElementById('showEditJobModalBtn').click());
+};
 
-    const handleEditJob = (job) => {
-      current_job.value = JSON.parse(JSON.stringify(job));
-      current_job.value.duration = [
-        moment(job.start).format('YYYY-MM-DD HH:mm:ss'),
-        moment(job.end).format('YYYY-MM-DD HH:mm:ss'),
-      ];
-      current_job.value.key = Math.random().toString(36).slice(-6);
-      nextTick(() => document.getElementById('showEditJobModalBtn').click());
-    };
+const handleEditJob = (job) => {
+  current_job.value = JSON.parse(JSON.stringify(job));
+  current_job.value.duration = [
+    moment(job.start).format('YYYY-MM-DD HH:mm:ss'),
+    moment(job.end).format('YYYY-MM-DD HH:mm:ss'),
+  ];
+  current_job.value.key = Math.random().toString(36).slice(-6);
+  nextTick(() => document.getElementById('showEditJobModalBtn').click());
+};
 
-    const handleDelJob = (job) => {
-      current_job.value = JSON.parse(JSON.stringify(job));
-      document.getElementById('showDeleteJobModalBtn').click();
-    };
-    return {
-      replaceHtml,
-
-      jobs,
-      fetchJobs,
-
-      resolveJobStatus,
-      statusOptions,
-
-      search_keyword,
-      search_status,
-
-      current_job,
-      handleCreateJob,
-      handleEditJob,
-      handleDelJob,
-    };
-  },
+const handleDelJob = (job) => {
+  current_job.value = JSON.parse(JSON.stringify(job));
+  document.getElementById('showDeleteJobModalBtn').click();
 };
 </script>

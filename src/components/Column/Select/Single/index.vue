@@ -88,76 +88,69 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed } from 'vue';
-import { resolveColumnTitle, useRouter } from '@utils';
-export default defineComponent({
-  props: {
-    type: {
-      type: String,
-      default: 'EDIT',
-    },
-    column: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    modelValue: {
-      type: [String, Number, Object],
-      default: () => null,
-    },
-    required: {
-      type: [Boolean, Number],
-      default: () => false,
-    },
-    editable: {
-      type: [Boolean, Number],
-      default: () => true,
-    },
-    error: {
-      type: String,
-      default: () => null,
+<script setup>
+import { defineProps, defineEmits, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { resolveColumnTitle } from '@utils';
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'EDIT',
+  },
+  column: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
+  modelValue: {
+    type: [String, Number, Object],
+    default: () => null,
+  },
+  required: {
+    type: [Boolean, Number],
+    default: () => false,
+  },
+  editable: {
+    type: [Boolean, Number],
+    default: () => true,
+  },
+  error: {
+    type: String,
+    default: () => null,
+  },
+});
+const emit = defineEmits(['update:modelValue', 'selected']);
 
-  setup(props, { emit }) {
-    const unique = (arr) => {
-      const res = new Map();
-      return arr.filter((item) => !res.has(item.value) && res.set(item.value, 1));
-    };
+const unique = (arr) => {
+  const res = new Map();
+  return arr.filter((item) => !res.has(item.value) && res.set(item.value, 1));
+};
 
-    const options = computed(() => {
-      return unique([
-        ...(props.column.cfg.search || []),
-        ...(props.column.cfg.options || []),
-        ...(props.column.cfg.selected || []),
-      ]);
-    });
+const options = computed(() => {
+  return unique([
+    ...(props.column.cfg.search || []),
+    ...(props.column.cfg.options || []),
+    ...(props.column.cfg.selected || []),
+  ]);
+});
 
-    const { router } = useRouter();
-    const handleClickValue = (item) => {
-      const route = router.resolve({ name: 'view', params: { tid: item.tid, rid: item.rid } });
-      window.open(route.href, '_blank');
-    };
+const router = useRouter();
+const handleClickValue = (item) => {
+  const route = router.resolve({ name: 'view', params: { tid: item.tid, rid: item.rid } });
+  window.open(route.href, '_blank');
+};
 
-    return {
-      options,
-      resolveColumnTitle,
-      handleClickValue,
-      value: computed({
-        get() {
-          return Array.isArray(props.modelValue) ? props.modelValue[0] : props.modelValue;
-        },
-        set(value) {
-          emit('update:modelValue', value);
-          emit(
-            'selected',
-            options.value.filter((option) => option.value == value),
-          );
-        },
-      }),
-    };
+const value = computed({
+  get() {
+    return Array.isArray(props.modelValue) ? props.modelValue[0] : props.modelValue;
+  },
+  set(value) {
+    emit('update:modelValue', value);
+    emit(
+      'selected',
+      options.value.filter((option) => option.value == value),
+    );
   },
 });
 </script>

@@ -56,38 +56,29 @@
   </span>
 </template>
 
-<script>
-import { defineComponent, computed, ref } from 'vue';
-import store from '@store';
+<script setup>
+import { defineProps, computed, ref } from 'vue';
 import Avatar from '@components/Avatar';
-export default defineComponent({
-  components: {
-    Avatar,
-  },
-  setup(props) {
-    const theme = computed(() => {
-      return props.params.api.getTheme();
-    });
+import store from '@store';
 
-    const user = ref(null);
-    if (!['acl_view', 'acl_edit'].includes(props.params._column.field) && props.params.value) {
-      if (props.params.value === '@system')
-        user.value = { username: '@system', fullname: 'System' };
-      else if (props.params.value.includes('@pub'))
-        user.value = {
-          username: props.params.value,
-          fullname: props.params.value.replace('@pub_', 'Pub_'),
-        };
-      else
-        user.value = store.state.org.users.find((user) => user.username === props.params.value) || {
-          username: props.params.value,
-          fullname: props.params.value,
-        };
-    }
-    return {
-      theme,
-      user,
-    };
-  },
+const props = defineProps(['params']);
+
+const theme = computed(() => {
+  return props.params.api.getTheme();
 });
+
+const user = ref(null);
+if (!['acl_view', 'acl_edit'].includes(props.params._column.field) && props.params.value) {
+  if (props.params.value === '@system') user.value = { username: '@system', fullname: 'System' };
+  else if (props.params.value.includes('@pub'))
+    user.value = {
+      username: props.params.value,
+      fullname: props.params.value.replace('@pub_', 'Pub_'),
+    };
+  else
+    user.value = store.state.org.users.find((user) => user.username === props.params.value) || {
+      username: props.params.value,
+      fullname: props.params.value,
+    };
+}
 </script>

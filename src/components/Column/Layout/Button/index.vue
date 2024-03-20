@@ -33,41 +33,33 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
-import { resolveColumnTitle } from '@utils';
-export default defineComponent({
-  props: {
-    type: {
-      type: String,
-      default: 'EDIT',
-    },
-    column: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    editable: {
-      type: [Boolean, Number],
-      default: () => true,
+<script setup>
+import { defineProps } from 'vue';
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'EDIT',
+  },
+  column: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props) {
-    const handleClickButton = () => {
-      if (props.column.cfg.__href)
-        window.open(
-          props.column.cfg.__href?.charAt(0) === '/'
-            ? props.column.cfg.__href.replace('/', process.env.BASE_URL)
-            : props.column.cfg.__href,
-          '_blank',
-        );
-    };
-
-    return {
-      resolveColumnTitle,
-      handleClickButton,
-    };
+  editable: {
+    type: [Boolean, Number],
+    default: () => true,
   },
 });
+
+const { BASE_URL } = process.env;
+const handleClickButton = () => {
+  if (props.column.cfg.__href)
+    window.open(
+      props.column.cfg.__href?.charAt(0) === '/'
+        ? props.column.cfg.__href.replace('/', BASE_URL)
+        : props.column.cfg.__href,
+      '_blank',
+    );
+};
 </script>

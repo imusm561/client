@@ -147,7 +147,7 @@
                   <span class="text-muted">{{ $t('data.column.BasicCreateInfo') }}:&nbsp;</span>
                   <span>
                     {{ getUserInfo(data.created_by).fullname }}@{{
-                      $moment(data.created_at).format('llll')
+                      moment(data.created_at).format('llll')
                     }}
                   </span>
                 </h6>
@@ -155,7 +155,7 @@
                   <span class="text-muted">{{ $t('data.column.BasicUpdateInfo') }}:&nbsp;</span>
                   <span>
                     {{ getUserInfo(data.updated_by).fullname }}@{{
-                      $moment(data.updated_at).format('llll')
+                      moment(data.updated_at).format('llll')
                     }}
                   </span>
                 </h6>
@@ -394,9 +394,9 @@
                     />
                   </div>
                   <small class="text-muted">
-                    {{ $moment(flow.created_at).format('llll') }}
+                    {{ moment(flow.created_at).format('llll') }}
                     <span class="badge bg-soft-info text-info align-middle ms-2">
-                      {{ $moment(flow.created_at).fromNow() }}
+                      {{ moment(flow.created_at).fromNow() }}
                     </span>
                   </small>
                 </span>
@@ -579,12 +579,13 @@
   </div>
 </template>
 
-<script>
-import Breadcrumb from '@layouts/breadcrumb';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import store from '@store';
+<script setup>
+import { defineOptions, computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+
 import {
-  useRouter,
   getUserInfo,
   resolveColumnTitle,
   replaceVariables,
@@ -594,10 +595,13 @@ import {
   isEmpty,
   hashData,
 } from '@utils';
-import { getDataView, getDataTitle, updateFlow } from '@api/data';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
 import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+import { socket } from '@utils/socket';
+
+import store from '@store';
+
+import Breadcrumb from '@layouts/breadcrumb';
 import Avatar from '@components/Avatar';
 import Log from '@components/Log';
 import Comment from '@components/Comment';
@@ -621,13 +625,11 @@ import LayoutButton from '@components/Column/Layout/Button/index.vue';
 import LayoutTitle from '@components/Column/Layout/Title/index.vue';
 import LayoutSeparator from '@components/Column/Layout/Separator/index.vue';
 import LayoutTab from '@components/Column/Layout/Tab/index.vue';
-export default {
-  components: {
-    Breadcrumb,
-    Avatar,
-    Log,
-    Comment,
 
+import { getDataView, getDataTitle, updateFlow } from '@api/data';
+
+defineOptions({
+  components: {
     InputText,
     InputNumber,
     InputMaska,
@@ -648,216 +650,187 @@ export default {
     LayoutSeparator,
     LayoutTab,
   },
-  setup() {
-    const { route } = useRouter();
-    const toast = useToast();
-    const socket = window.socket;
+});
 
-    const form = ref([]);
-    const columns = ref([]);
-    const ribbon_mode = ref(true);
-    const tabs = ref([]);
-    const current_tab = ref(0);
-    const alias = ref({});
-    const show_empty_value_columns = ref(false);
-    const data = ref({});
-    const flow = ref(null);
-    const titles = ref([]);
+const route = useRoute();
+const toast = useToast();
 
-    const refetchDataViewHandler = (res) => {
-      if (res.tid == route.value.params.tid && res.rid == route.value.params.rid)
-        handleRefetchDataView();
-    };
+const form = ref([]);
+const columns = ref([]);
+const ribbon_mode = ref(true);
+const tabs = ref([]);
+const current_tab = ref(0);
+const alias = ref({});
+const show_empty_value_columns = ref(false);
+const data = ref({});
+const flow = ref(null);
+const titles = ref([]);
 
-    onMounted(() => {
-      watch(
-        () => route.value.params,
-        (newVal = {}, oldVal = {}) => {
-          if (
-            route.value.name === 'view' &&
-            (newVal.tid !== oldVal.tid || newVal.rid !== oldVal.rid)
-          ) {
-            fetchDataView(newVal.tid, newVal.rid);
-          }
+const refetchDataViewHandler = (res) => {
+  if (res.tid == route.params.tid && res.rid == route.params.rid) handleRefetchDataView();
+};
+
+onMounted(() => {
+  watch(
+    () => route.params,
+    (newVal = {}, oldVal = {}) => {
+      if (route.name === 'view' && (newVal.tid !== oldVal.tid || newVal.rid !== oldVal.rid)) {
+        fetchDataView(newVal.tid, newVal.rid);
+      }
+    },
+    { immediate: true, deep: true },
+  );
+
+  socket.on('refetchDataView', refetchDataViewHandler);
+});
+
+onUnmounted(() => {
+  socket.off('refetchDataView', refetchDataViewHandler);
+});
+
+const fetchDataView = async (tid, rid) => {
+  const { code, data: res, msg } = await getDataView({ tid, rid });
+  if (code === 200) {
+    form.value = res.form;
+    columns.value = res.columns;
+    alias.value = res.alias;
+    data.value = res.data;
+    flow.value = res.flow;
+    if (res.flow === null) {
+      document.getElementById('hideFlowDataOffcanvasBtn')?.click();
+    } else if (res.flow.handler && res.flow.handler.includes(store.state.user.data.username)) {
+      setTimeout(() => {
+        document.getElementById('showFlowDataOffcanvasBtn')?.click();
+      }, 500);
+    }
+    await setFormConfiguration();
+    await setFormColumns();
+    fetchDataTitle();
+  } else {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: msg,
+      },
+    });
+  }
+};
+
+const setFormConfiguration = () => {
+  if (form.value.script) form.value.script = replaceVariables(form.value.script, alias.value);
+  form.value.flow = form.value.flow?.length ? generateFlowByCurrentUser(form.value.flow) : null;
+};
+
+const handleToggleRibbonMode = () => {
+  ribbon_mode.value = !ribbon_mode.value;
+};
+
+const handleRefetchDataView = () => {
+  fetchDataView(form.value.id, data.value.id);
+};
+
+const fetchDataTitle = (search = '', loading) => {
+  if (loading) loading(true);
+  const params = {
+    tid: form.value.id,
+    rid: data.value.id,
+  };
+  if (search.length) params.search = search;
+  getDataTitle(params).then(({ code, data, msg }) => {
+    if (code === 200) {
+      titles.value = [
+        ...(store.state.user.data.permissions?.[form.value.id]?.create
+          ? [{ id: 0, title: i18n.global.t('data.view.create') }]
+          : []),
+        ...data,
+      ];
+      if (loading) loading(false);
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
         },
-        { immediate: true, deep: true },
-      );
-
-      socket.on('refetchDataView', refetchDataViewHandler);
-    });
-
-    onUnmounted(() => {
-      socket.off('refetchDataView', refetchDataViewHandler);
-    });
-
-    const fetchDataView = async (tid, rid) => {
-      const { code, data: res, msg } = await getDataView({ tid, rid });
-      if (code === 200) {
-        form.value = res.form;
-        columns.value = res.columns;
-        alias.value = res.alias;
-        data.value = res.data;
-        flow.value = res.flow;
-        if (res.flow === null) {
-          document.getElementById('hideFlowDataOffcanvasBtn')?.click();
-        } else if (res.flow.handler && res.flow.handler.includes(store.state.user.data.username)) {
-          setTimeout(() => {
-            document.getElementById('showFlowDataOffcanvasBtn')?.click();
-          }, 500);
-        }
-        await setFormConfiguration();
-        await setFormColumns();
-        fetchDataTitle();
-      } else {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: msg,
-          },
-        });
-      }
-    };
-
-    const setFormConfiguration = () => {
-      if (form.value.script) form.value.script = replaceVariables(form.value.script, alias.value);
-      form.value.flow = form.value.flow?.length ? generateFlowByCurrentUser(form.value.flow) : null;
-    };
-
-    const handleToggleRibbonMode = () => {
-      ribbon_mode.value = !ribbon_mode.value;
-    };
-
-    const handleRefetchDataView = () => {
-      fetchDataView(form.value.id, data.value.id);
-    };
-
-    const fetchDataTitle = (search = '', loading) => {
-      if (loading) loading(true);
-      const params = {
-        tid: form.value.id,
-        rid: data.value.id,
-      };
-      if (search.length) params.search = search;
-      getDataTitle(params).then(({ code, data, msg }) => {
-        if (code === 200) {
-          titles.value = [
-            ...(store.state.user.data.permissions?.[form.value.id]?.create
-              ? [{ id: 0, title: i18n.global.t('data.view.create') }]
-              : []),
-            ...data,
-          ];
-          if (loading) loading(false);
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
       });
-    };
+    }
+  });
+};
 
-    const setFormColumns = () => {
-      tabs.value = [];
-      if (columns.value.filter((column) => column.component === 'LayoutTab').length === 0)
-        tabs.value.push({ columns: [] });
-      columns.value.forEach((column) => {
-        if (column.component.includes('Basic')) {
-          // Basic Columns: id, uuid, data_state, created_by, created_at, updated_by, updated_at, acl_view, acl_edit
-        } else if (column.component === 'LayoutTab') {
-          tabs.value.push({ ...column, ...{ columns: [] } });
-        } else {
-          setColumnValue(column);
-          tabs.value[tabs.value.length - 1].columns.push(column);
-        }
-      });
-    };
+const setFormColumns = () => {
+  tabs.value = [];
+  if (columns.value.filter((column) => column.component === 'LayoutTab').length === 0)
+    tabs.value.push({ columns: [] });
+  columns.value.forEach((column) => {
+    if (column.component.includes('Basic')) {
+      // Basic Columns: id, uuid, data_state, created_by, created_at, updated_by, updated_at, acl_view, acl_edit
+    } else if (column.component === 'LayoutTab') {
+      tabs.value.push({ ...column, ...{ columns: [] } });
+    } else {
+      setColumnValue(column);
+      tabs.value[tabs.value.length - 1].columns.push(column);
+    }
+  });
+};
 
-    const setColumnValue = async (column) => {
-      if (column.cfg?.source) {
-        column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
-        data.value[column.field] = await getDataByFormula(data.value, column.cfg.__source, {
-          view: true,
-          value: data.value[column.field],
-        });
-      }
-
-      if (column.cfg?.href) {
-        column.cfg.href = replaceVariables(column.cfg.href, alias.value);
-        column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
-      }
-
-      if (column.visible) {
-        column.visible = replaceVariables(column.visible, alias.value);
-        const { visible } = await getRulesByFormula(data.value, column);
-        column._visible = visible;
-      } else {
-        column._visible = true;
-      }
-    };
-
-    const resolveUsers = computed(() => {
-      return (users) => {
-        return Array.isArray(users)
-          ? users.map((username) => {
-              return (
-                store.state.org.users.find((user) => user.username === username) || {
-                  username: username,
-                  fullname: username,
-                }
-              );
-            })
-          : [];
-      };
+const setColumnValue = async (column) => {
+  if (column.cfg?.source) {
+    column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
+    data.value[column.field] = await getDataByFormula(data.value, column.cfg.__source, {
+      view: true,
+      value: data.value[column.field],
     });
+  }
 
-    const handleSubmitFlow = (data) => {
-      data.hash = hashData(JSON.stringify(data));
-      updateFlow(data).then((res) => {
-        if (res.code === 200) {
-          if (res.data === null) document.getElementById('hideFlowDataOffcanvasBtn')?.click();
-          flow.value = res.data;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: res.msg,
-            },
-          });
-        }
+  if (column.cfg?.href) {
+    column.cfg.href = replaceVariables(column.cfg.href, alias.value);
+    column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
+  }
+
+  if (column.visible) {
+    column.visible = replaceVariables(column.visible, alias.value);
+    const { visible } = await getRulesByFormula(data.value, column);
+    column._visible = visible;
+  } else {
+    column._visible = true;
+  }
+};
+
+const resolveUsers = computed(() => {
+  return (users) => {
+    return Array.isArray(users)
+      ? users.map((username) => {
+          return (
+            store.state.org.users.find((user) => user.username === username) || {
+              username: username,
+              fullname: username,
+            }
+          );
+        })
+      : [];
+  };
+});
+
+const handleSubmitFlow = (data) => {
+  data.hash = hashData(JSON.stringify(data));
+  updateFlow(data).then((res) => {
+    if (res.code === 200) {
+      if (res.data === null) document.getElementById('hideFlowDataOffcanvasBtn')?.click();
+      flow.value = res.data;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: res.msg,
+        },
       });
-    };
-
-    return {
-      resolveColumnTitle,
-      isEmpty,
-
-      form,
-      data,
-      flow,
-      ribbon_mode,
-      tabs,
-      current_tab,
-      show_empty_value_columns,
-      titles,
-
-      handleToggleRibbonMode,
-      handleRefetchDataView,
-      fetchDataTitle,
-
-      resolveUsers,
-      getUserInfo,
-
-      handleSubmitFlow,
-    };
-  },
+    }
+  });
 };
 </script>
 

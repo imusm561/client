@@ -211,17 +211,17 @@
                       v-if="
                         index === 0 ||
                         (index > 0 &&
-                          $moment(current_chat.chat_data[index].created_at).format('YYYYMMDD') !=
-                            $moment(current_chat.chat_data[index - 1].created_at).format(
+                          moment(current_chat.chat_data[index].created_at).format('YYYYMMDD') !=
+                            moment(current_chat.chat_data[index - 1].created_at).format(
                               'YYYYMMDD',
                             )) ||
                         (index === current_chat.chat_data.length - 1 &&
-                          $moment(current_chat.chat_data[index].created_at).format('YYYYMMDD') !=
-                            $moment().format('YYYYMMDD'))
+                          moment(current_chat.chat_data[index].created_at).format('YYYYMMDD') !=
+                            moment().format('YYYYMMDD'))
                       "
                     >
-                      {{ $moment(data.created_at).format('ll') }}
-                      {{ $moment(data.created_at).format('dddd') }}
+                      {{ moment(data.created_at).format('ll') }}
+                      {{ moment(data.created_at).format('dddd') }}
                     </small>
                     <li
                       :class="{
@@ -249,9 +249,9 @@
                                   <small class="text-muted time">
                                     <span>
                                       {{
-                                        $moment(data.quote.created_at).format(
-                                          $moment(data.quote.created_at).format('YYYYMMDD') !=
-                                            $moment().format('YYYYMMDD')
+                                        moment(data.quote.created_at).format(
+                                          moment(data.quote.created_at).format('YYYYMMDD') !=
+                                            moment().format('YYYYMMDD')
                                             ? 'llll'
                                             : 'HH:mm',
                                         )
@@ -318,7 +318,7 @@
                             </div>
                             <div class="conversation-name">
                               <small class="text-muted time">
-                                <span>{{ $moment(data.created_at).format('HH:mm') }}</span>
+                                <span>{{ moment(data.created_at).format('HH:mm') }}</span>
                               </small>
                               <span class="text-success check-message-icon">
                                 <i
@@ -334,8 +334,7 @@
                               <span
                                 v-if="
                                   data.id &&
-                                  ($moment().valueOf() - $moment(data.created_at).valueOf()) /
-                                    1000 <
+                                  (moment().valueOf() - moment(data.created_at).valueOf()) / 1000 <
                                     120 &&
                                   data.sender === $store.state.user.data.username &&
                                   !data.receiver_read
@@ -505,7 +504,7 @@
               {{ $t('app.chat.personalDetails.lastLoginAt') }}
             </p>
             <h6>
-              {{ current_chat.last_login_at ? $moment(current_chat.last_login_at).fromNow() : '-' }}
+              {{ current_chat.last_login_at ? moment(current_chat.last_login_at).fromNow() : '-' }}
             </h6>
           </div>
         </div>
@@ -514,519 +513,490 @@
   </div>
 </template>
 
-<script>
-import store from '@store';
+<script setup>
 import { computed, onMounted, ref, reactive, watch, onUnmounted, nextTick } from 'vue';
-import { getChats, getChatData, sendMsg, withdrawMsg, readMsg, delChat } from '@api/app/chat';
-import { useRouter, getUserInfo, hashData, encryptData, decryptData } from '@utils';
+import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
+import { getUserInfo, hashData, encryptData, decryptData } from '@utils';
+import moment from '@utils/moment';
+import { socket } from '@utils/socket';
+import store from '@store';
 import Avatar from '@components/Avatar';
 import Uploader from '@components/Uploader';
 import Message from './Message';
-export default {
-  components: {
-    Avatar,
-    Uploader,
-    Message,
-  },
-  setup() {
-    const toast = useToast();
-    const socket = window.socket;
-    const { route } = useRouter();
+import { getChats, getChatData, sendMsg, withdrawMsg, readMsg, delChat } from '@api/app/chat';
 
-    const _chats = ref([]);
-    const _contacts = computed(() => {
-      return store.state.org.users.filter(
-        (user) => user.username !== store.state.user.data.username,
-      );
-    });
+const route = useRoute();
+const toast = useToast();
 
-    const search_contact = ref('');
+const _chats = ref([]);
+const _contacts = computed(() => {
+  return store.state.org.users.filter((user) => user.username !== store.state.user.data.username);
+});
 
-    const chats = computed(() => {
-      if (search_contact.value)
-        return _chats.value.filter(
-          (chat) =>
-            chat.username.toLowerCase().includes(search_contact.value.toLowerCase()) ||
-            chat.fullname.toLowerCase().includes(search_contact.value.toLowerCase()),
-        );
-      else return _chats.value;
-    });
-    const contacts = computed(() => {
-      if (search_contact.value)
-        return _contacts.value.filter(
-          (user) =>
-            user.username.toLowerCase().includes(search_contact.value.toLowerCase()) ||
-            user.fullname.toLowerCase().includes(search_contact.value.toLowerCase()),
-        );
-      else return _contacts.value;
-    });
+const search_contact = ref('');
 
-    const scrollToBottom = (behavior = 'auto') => {
-      nextTick(() => {
-        if (scrollable.value && document.getElementById('user-chat')) {
-          const chatConversationList = document
-            .getElementById('user-chat')
-            ?.querySelector('.chat-conversation .simplebar-content-wrapper');
-          if (chatConversationList) {
-            chatConversationList.scrollTo({
-              top: chatConversationList.scrollHeight,
-              behavior,
-            });
-            document.getElementById('message_input').focus();
-          }
-        }
-      });
-    };
-
-    const current_chat = ref({});
-
-    watch(
-      () => current_chat.value.chat_data,
-      (val) => {
-        if (val) {
-          scrollToBottom('smooth');
-          const unReadData = current_chat.value.chat_data.filter(
-            (data) => data.receiver === store.state.user.data.username && !data.receiver_read,
-          );
-          if (unReadData.length) {
-            handleReadMsg(() => {
-              unReadData.map((data) => {
-                data.receiver_read = true;
-                return data;
-              });
-            });
-          }
-        }
-      },
-      { immediate: true, deep: true },
+const chats = computed(() => {
+  if (search_contact.value)
+    return _chats.value.filter(
+      (chat) =>
+        chat.username.toLowerCase().includes(search_contact.value.toLowerCase()) ||
+        chat.fullname.toLowerCase().includes(search_contact.value.toLowerCase()),
     );
+  else return _chats.value;
+});
 
-    const receiverReadMsgHandler = (data) => {
-      let _chat = _chats.value.find((chat) => chat.username === data.receiver);
-      if (_chat) {
-        _chat.chat_data.map((data) => {
-          data.receiver_read = true;
-          return data;
-        });
-      }
-    };
-    const receiveMsgHandler = (data) => {
-      let _chat = _chats.value.find((chat) => chat.username === data.sender);
-      if (_chat) {
-        _chat.chat_data.push({
-          id: data.id,
-          created_at: data.created_at,
-          sender: data.sender,
-          receiver: data.receiver,
-          type: data.type,
-          message: data.message,
-          quote: data.quote,
-          receiver_read: current_chat.value.username === data.sender ? true : false,
-        });
-        if (current_chat.value.username === data.sender) handleReadMsg();
-      } else {
-        let contact = _contacts.value.find((contact) => contact.username == data.sender);
-        if (contact) {
-          _chat = {
-            ...contact,
-            ...{
-              chat_data: [
-                {
-                  id: data.id,
-                  created_at: data.created_at,
-                  sender: data.sender,
-                  receiver: data.receiver,
-                  type: data.type,
-                  message: data.message,
-                  quote: data.quote,
-                  receiver_read: false,
-                },
-              ],
-            },
-          };
-          _chats.value.push(_chat);
-        }
-      }
-    };
-    const withdrawMsgHandler = (data) => {
-      let _chat = _chats.value.find((chat) => chat.username === data.sender);
-      if (_chat) {
-        const index = _chat.chat_data.findIndex((item) => item.id === data.id);
-        if (index !== -1) _chat.chat_data.splice(index, 1);
-      }
-    };
+const contacts = computed(() => {
+  if (search_contact.value)
+    return _contacts.value.filter(
+      (user) =>
+        user.username.toLowerCase().includes(search_contact.value.toLowerCase()) ||
+        user.fullname.toLowerCase().includes(search_contact.value.toLowerCase()),
+    );
+  else return _contacts.value;
+});
 
-    const scrollHandler = () => {
+const scrollToBottom = (behavior = 'auto') => {
+  nextTick(() => {
+    if (scrollable.value && document.getElementById('user-chat')) {
       const chatConversationList = document
         .getElementById('user-chat')
         ?.querySelector('.chat-conversation .simplebar-content-wrapper');
-      if (
-        chatConversationList &&
-        chatConversationList.scrollTop < 5 &&
-        !current_chat.value.completed &&
-        !loading.value
-      ) {
-        const oldHeight = chatConversationList.scrollHeight;
-        loading.value = true;
-        scrollable.value = false;
-        getChatData({
-          lt: current_chat.value.chat_data[0].id,
-          contact: current_chat.value.username,
-        }).then(({ code, data, msg }) => {
-          if (code === 200) {
-            if (data.length < 10) current_chat.value.completed = true;
-            setTimeout(() => {
-              current_chat.value.chat_data.unshift(...data);
-              loading.value = false;
-              nextTick(() => {
-                const newHeight = chatConversationList.scrollHeight;
-                chatConversationList.scrollTop = newHeight - oldHeight - 12;
-                setTimeout(() => {
-                  scrollable.value = true;
-                }, 500);
-              });
-            }, 500);
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
+      if (chatConversationList) {
+        chatConversationList.scrollTo({
+          top: chatConversationList.scrollHeight,
+          behavior,
         });
+        document.getElementById('message_input').focus();
       }
-    };
+    }
+  });
+};
 
-    onMounted(() => {
-      getChats().then(({ code, data, msg }) => {
-        if (code === 200) {
-          _chats.value = data
-            .filter((chat) => _contacts.value.find((contact) => contact.username === chat.username))
-            .map((chat) => {
-              const contact = _contacts.value.find((contact) => contact.username === chat.username);
-              return {
-                ...contact,
-                ...chat,
-              };
-            });
+const current_chat = ref({});
 
-          watch(
-            () => route.value.query,
-            (val) => {
-              if (val.contact) {
-                let contact = _contacts.value.find((contact) => contact.username === val.contact);
-                if (contact) handleClickContact(contact);
-              }
-            },
-            { immediate: true },
-          );
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-
-      socket.on('receiverReadMsg', receiverReadMsgHandler);
-      socket.on('receiveMsg', receiveMsgHandler);
-      socket.on('withdrawMsg', withdrawMsgHandler);
-    });
-
-    onUnmounted(() => {
-      socket.off('receiverReadMsg', receiverReadMsgHandler);
-      socket.off('receiveMsg', receiveMsgHandler);
-      socket.off('withdrawMsg', withdrawMsgHandler);
-
-      const chatConversationList = document
-        .getElementById('user-chat')
-        ?.querySelector('.chat-conversation .simplebar-content-wrapper');
-      if (chatConversationList) chatConversationList.removeEventListener('scroll', scrollHandler);
-    });
-
-    const loading = ref(false);
-    const scrollable = ref(true);
-
-    const handleCloseChat = () => {
-      if (message.value) {
-        localStorage.setItem(
-          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-            `chat_message_${store.state.user.data.username}_${current_chat.value.username}`,
-          )}`,
-          encryptData(message.value),
-        );
-        message.value = '';
-      }
-      current_chat.value = {};
-    };
-
-    const handleClickContact = (contact) => {
-      if (message.value) {
-        localStorage.setItem(
-          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-            `chat_message_${store.state.user.data.username}_${current_chat.value.username}`,
-          )}`,
-          encryptData(message.value),
-        );
-        message.value = '';
-      }
-      store.dispatch('user/delNotice', {
-        app: 'chat',
-        data: { user: contact },
-      });
-      let chat = _chats.value.find((chat) => chat.username === contact.username);
-      if (!chat) {
-        chat = {
-          ...contact,
-          ...{
-            chat_data: [],
-          },
-        };
-        _chats.value.push(chat);
-      }
-      current_chat.value = chat;
-      scrollToBottom();
-      search_contact.value = '';
-      const temp_message = localStorage.getItem(
-        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-          `chat_message_${store.state.user.data.username}_${contact.username}`,
-        )}`,
+watch(
+  () => current_chat.value.chat_data,
+  (val) => {
+    if (val) {
+      scrollToBottom('smooth');
+      const unReadData = current_chat.value.chat_data.filter(
+        (data) => data.receiver === store.state.user.data.username && !data.receiver_read,
       );
-      if (temp_message) {
-        localStorage.removeItem(
-          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-            `chat_message_${store.state.user.data.username}_${contact.username}`,
-          )}`,
-        );
-        message.value = decryptData(temp_message);
-      }
-
-      if (current_chat.value.chat_data.length < 10) current_chat.value.completed = true;
-
-      nextTick(() => {
-        const chatConversationList = document
-          .getElementById('user-chat')
-          ?.querySelector('.chat-conversation .simplebar-content-wrapper');
-        if (chatConversationList) chatConversationList.addEventListener('scroll', scrollHandler);
-      });
-    };
-
-    const quote = ref(null);
-    const message = ref('');
-
-    const handleKeyDownEvent = (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        if (e.ctrlKey || e.metaKey || e.shiftKey) {
-          const startPos = e.target.selectionStart;
-          const endPos = e.target.selectionEnd;
-          message.value =
-            message.value.substring(0, startPos) + '\n' + message.value.substring(endPos);
-          nextTick(() => {
-            e.target.selectionStart = startPos + 1;
-            e.target.selectionEnd = startPos + 1;
+      if (unReadData.length) {
+        handleReadMsg(() => {
+          unReadData.map((data) => {
+            data.receiver_read = true;
+            return data;
           });
-        } else {
-          handleSendMsg();
-        }
-      }
-    };
-
-    const handleClickEmoji = (item) => {
-      message.value += item;
-      nextTick(() => document.getElementById('message_input').focus());
-    };
-
-    const handleClickFileInput = () => {
-      document.getElementById('uploadFile').click();
-    };
-
-    const handleFileAdd = (e) => {
-      const temp_file = {
-        category: e.category,
-        extension: e.extension,
-        name: e.name,
-        size: e.size,
-      };
-      const temp_data = reactive({
-        key: e.key,
-        id: 0,
-        created_at: new Date(),
-        sender: store.state.user.data.username,
-        receiver: current_chat.value.username,
-        type: 'file',
-        message: encryptData(JSON.stringify(temp_file)),
-        quote: quote.value,
-      });
-      current_chat.value.chat_data.push(temp_data);
-    };
-
-    const handleCompletedFile = (e) => {
-      const temp_data = current_chat.value.chat_data.find((item) => item.key === e.key);
-      if (temp_data) {
-        temp_data.message = encryptData(JSON.stringify(e.data));
-        sendMsg({
-          uid: e.data.id,
-          sender: temp_data.sender,
-          receiver: temp_data.receiver,
-          type: temp_data.type,
-          message: temp_data.message,
-          quote: temp_data.quote,
-        }).then(({ code, msg, data }) => {
-          if (code === 200) {
-            temp_data.id = data.id;
-            temp_data.created_at = data.created_at;
-            delete temp_data.key;
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
         });
       }
-    };
-
-    const handleSendMsg = () => {
-      if (message.value.trim()) {
-        const temp_data = reactive({
-          id: 0,
-          created_at: new Date(),
-          sender: store.state.user.data.username,
-          receiver: current_chat.value.username,
-          type: 'text',
-          message: encryptData(message.value.trim()),
-          quote: quote.value,
-        });
-        message.value = '';
-        current_chat.value.chat_data.push(temp_data);
-        sendMsg({
-          sender: temp_data.sender,
-          receiver: temp_data.receiver,
-          type: temp_data.type,
-          message: temp_data.message,
-          quote: temp_data.quote,
-        }).then(({ code, msg, data }) => {
-          if (code === 200) {
-            temp_data.id = data.id;
-            temp_data.created_at = data.created_at;
-            quote.value = null;
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
-      }
-    };
-
-    const handleClickQuote = (data) => {
-      quote.value = data;
-      nextTick(() => document.getElementById('message_input').focus());
-    };
-
-    const handleWithdrawMsg = (data) => {
-      withdrawMsg({
-        id: data.id,
-      }).then(({ code, msg }) => {
-        if (code === 200) {
-          const idx = current_chat.value.chat_data.findIndex((item) => item.id === data.id);
-          if (idx != -1) current_chat.value.chat_data.splice(idx, 1);
-          quote.value = data.quote;
-          message.value = decryptData(data.message);
-        } else
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-      });
-    };
-
-    const handleReadMsg = (callback) => {
-      readMsg({
-        contact: current_chat.value.username,
-      }).then(({ code, msg }) => {
-        if (code === 200) callback && callback();
-        else
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-      });
-    };
-
-    const handleDelChat = () => {
-      delChat({
-        contact: current_chat.value.username,
-      }).then(({ code, msg }) => {
-        if (code === 200) {
-          const idx = _chats.value.findIndex(
-            (chat) => chat.username === current_chat.value.username,
-          );
-          _chats.value.splice(idx, 1);
-          current_chat.value = {};
-        } else
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-      });
-    };
-
-    return {
-      search_contact,
-      chats,
-      contacts,
-      current_chat,
-      loading,
-      handleCloseChat,
-      handleClickContact,
-      quote,
-      message,
-      handleKeyDownEvent,
-      emoji:
-        '😀,😁,😂,😃,😄,😅,😆,😉,😊,😋,😎,😍,😘,😗,😙,😚,😇,😐,😑,😶,😏,😣,😥,😮,😯,😪,😫,😴,😌,😛,😜,😝,😒,😓,😔,😕,😲,😷,😖,😞,😟,😤,😢,😭,😦,😧,😨,😬,😰,😱,😳,😵,😡,😠,💘,❤,💓,💔,💕,💖,💗,💙,💚,💛,💜,💝,💞,💟,❣,💪,👈,👉,☝,👆,👇,✌,✋,👌,👍,👎,✊,👊,👋,👏,👐,✍,🍇,🍈,🍉,🍊,🍋,🍌,🍍,🍎,🍏,🍐,🍑,🍒,🍓,🍅,🍆,🌽,🍄,🌰,🍞,🍖,🍗,🍔,🍟,🍕,🍳,🍲,🍱,🍘,🍙,🍚,🍛,🍜,🍝,🍠,🍢,🍣,🍤,🍥,🍡,🍦,🍧,🍨,🍩,🍪,🎂,🍰,🍫,🍬,🍭,🍮,🍯,🍼,☕,🍵,🍶,🍷,🍸,🍹,🍺,🍻,🍴,🌹,🍀,🍎,💰,📱,🌙,🍁,🍂,🍃,🌷,💎,🔪,🔫,🏀,⚽,⚡,👄,👍,🔥,🙈,🙉,🙊,🐵,🐒,🐶,🐕,🐩,🐺,🐱,😺,😸,😹,😻,😼,😽,🙀,😿,😾,🐈,🐯,🐅,🐆,🐴,🐎,🐮,🐂,🐃,🐄,🐷,🐖,🐗,🐽,🐏,🐑,🐐,🐪,🐫,🐘,🐭,🐁,🐀,🐹,🐰,🐇,🐻,🐨,🐼,🐾,🐔,🐓,🐣,🐤,🐥,🐦,🐧,🐸,🐊,🐢,🐍,🐲,🐉,🐳,🐋,🐬,🐟,🐠,🐡,🐙,🐚,🐌,🐛,🐜,🐝,🐞,🦋,😈,👿,👹,👺,💀,☠,👻,👽,👾,💣',
-      handleClickEmoji,
-      handleClickFileInput,
-      handleFileAdd,
-      handleCompletedFile,
-      handleClickQuote,
-      handleWithdrawMsg,
-      handleDelChat,
-      getUserInfo,
-      decryptData,
-    };
+    }
   },
+  { immediate: true, deep: true },
+);
+
+const receiverReadMsgHandler = (data) => {
+  let _chat = _chats.value.find((chat) => chat.username === data.receiver);
+  if (_chat) {
+    _chat.chat_data.map((data) => {
+      data.receiver_read = true;
+      return data;
+    });
+  }
+};
+const receiveMsgHandler = (data) => {
+  let _chat = _chats.value.find((chat) => chat.username === data.sender);
+  if (_chat) {
+    _chat.chat_data.push({
+      id: data.id,
+      created_at: data.created_at,
+      sender: data.sender,
+      receiver: data.receiver,
+      type: data.type,
+      message: data.message,
+      quote: data.quote,
+      receiver_read: current_chat.value.username === data.sender ? true : false,
+    });
+    if (current_chat.value.username === data.sender) handleReadMsg();
+  } else {
+    let contact = _contacts.value.find((contact) => contact.username == data.sender);
+    if (contact) {
+      _chat = {
+        ...contact,
+        ...{
+          chat_data: [
+            {
+              id: data.id,
+              created_at: data.created_at,
+              sender: data.sender,
+              receiver: data.receiver,
+              type: data.type,
+              message: data.message,
+              quote: data.quote,
+              receiver_read: false,
+            },
+          ],
+        },
+      };
+      _chats.value.push(_chat);
+    }
+  }
+};
+const withdrawMsgHandler = (data) => {
+  let _chat = _chats.value.find((chat) => chat.username === data.sender);
+  if (_chat) {
+    const index = _chat.chat_data.findIndex((item) => item.id === data.id);
+    if (index !== -1) _chat.chat_data.splice(index, 1);
+  }
+};
+
+const scrollHandler = () => {
+  const chatConversationList = document
+    .getElementById('user-chat')
+    ?.querySelector('.chat-conversation .simplebar-content-wrapper');
+  if (
+    chatConversationList &&
+    chatConversationList.scrollTop < 5 &&
+    !current_chat.value.completed &&
+    !loading.value
+  ) {
+    const oldHeight = chatConversationList.scrollHeight;
+    loading.value = true;
+    scrollable.value = false;
+    getChatData({
+      lt: current_chat.value.chat_data[0].id,
+      contact: current_chat.value.username,
+    }).then(({ code, data, msg }) => {
+      if (code === 200) {
+        if (data.length < 10) current_chat.value.completed = true;
+        setTimeout(() => {
+          current_chat.value.chat_data.unshift(...data);
+          loading.value = false;
+          nextTick(() => {
+            const newHeight = chatConversationList.scrollHeight;
+            chatConversationList.scrollTop = newHeight - oldHeight - 12;
+            setTimeout(() => {
+              scrollable.value = true;
+            }, 500);
+          });
+        }, 500);
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
+};
+
+onMounted(() => {
+  getChats().then(({ code, data, msg }) => {
+    if (code === 200) {
+      _chats.value = data
+        .filter((chat) => _contacts.value.find((contact) => contact.username === chat.username))
+        .map((chat) => {
+          const contact = _contacts.value.find((contact) => contact.username === chat.username);
+          return {
+            ...contact,
+            ...chat,
+          };
+        });
+
+      watch(
+        () => route.query,
+        (val) => {
+          if (val.contact) {
+            let contact = _contacts.value.find((contact) => contact.username === val.contact);
+            if (contact) handleClickContact(contact);
+          }
+        },
+        { immediate: true },
+      );
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+
+  socket.on('receiverReadMsg', receiverReadMsgHandler);
+  socket.on('receiveMsg', receiveMsgHandler);
+  socket.on('withdrawMsg', withdrawMsgHandler);
+});
+
+onUnmounted(() => {
+  socket.off('receiverReadMsg', receiverReadMsgHandler);
+  socket.off('receiveMsg', receiveMsgHandler);
+  socket.off('withdrawMsg', withdrawMsgHandler);
+
+  const chatConversationList = document
+    .getElementById('user-chat')
+    ?.querySelector('.chat-conversation .simplebar-content-wrapper');
+  if (chatConversationList) chatConversationList.removeEventListener('scroll', scrollHandler);
+});
+
+const loading = ref(false);
+const scrollable = ref(true);
+
+const { BASE_URL } = process.env;
+
+const handleCloseChat = () => {
+  if (message.value) {
+    localStorage.setItem(
+      `${BASE_URL.replace(/\//g, '_')}${hashData(
+        `chat_message_${store.state.user.data.username}_${current_chat.value.username}`,
+      )}`,
+      encryptData(message.value),
+    );
+    message.value = '';
+  }
+  current_chat.value = {};
+};
+
+const handleClickContact = (contact) => {
+  if (message.value) {
+    localStorage.setItem(
+      `${BASE_URL.replace(/\//g, '_')}${hashData(
+        `chat_message_${store.state.user.data.username}_${current_chat.value.username}`,
+      )}`,
+      encryptData(message.value),
+    );
+    message.value = '';
+  }
+  store.dispatch('user/delNotice', {
+    app: 'chat',
+    data: { user: contact },
+  });
+  let chat = _chats.value.find((chat) => chat.username === contact.username);
+  if (!chat) {
+    chat = {
+      ...contact,
+      ...{
+        chat_data: [],
+      },
+    };
+    _chats.value.push(chat);
+  }
+  current_chat.value = chat;
+  scrollToBottom();
+  search_contact.value = '';
+  const temp_message = localStorage.getItem(
+    `${BASE_URL.replace(/\//g, '_')}${hashData(
+      `chat_message_${store.state.user.data.username}_${contact.username}`,
+    )}`,
+  );
+  if (temp_message) {
+    localStorage.removeItem(
+      `${BASE_URL.replace(/\//g, '_')}${hashData(
+        `chat_message_${store.state.user.data.username}_${contact.username}`,
+      )}`,
+    );
+    message.value = decryptData(temp_message);
+  }
+
+  if (current_chat.value.chat_data.length < 10) current_chat.value.completed = true;
+
+  nextTick(() => {
+    const chatConversationList = document
+      .getElementById('user-chat')
+      ?.querySelector('.chat-conversation .simplebar-content-wrapper');
+    if (chatConversationList) chatConversationList.addEventListener('scroll', scrollHandler);
+  });
+};
+
+const quote = ref(null);
+const message = ref('');
+
+const handleKeyDownEvent = (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    if (e.ctrlKey || e.metaKey || e.shiftKey) {
+      const startPos = e.target.selectionStart;
+      const endPos = e.target.selectionEnd;
+      message.value = message.value.substring(0, startPos) + '\n' + message.value.substring(endPos);
+      nextTick(() => {
+        e.target.selectionStart = startPos + 1;
+        e.target.selectionEnd = startPos + 1;
+      });
+    } else {
+      handleSendMsg();
+    }
+  }
+};
+
+const emoji =
+  '😀,😁,😂,😃,😄,😅,😆,😉,😊,😋,😎,😍,😘,😗,😙,😚,😇,😐,😑,😶,😏,😣,😥,😮,😯,😪,😫,😴,😌,😛,😜,😝,😒,😓,😔,😕,😲,😷,😖,😞,😟,😤,😢,😭,😦,😧,😨,😬,😰,😱,😳,😵,😡,😠,💘,❤,💓,💔,💕,💖,💗,💙,💚,💛,💜,💝,💞,💟,❣,💪,👈,👉,☝,👆,👇,✌,✋,👌,👍,👎,✊,👊,👋,👏,👐,✍,🍇,🍈,🍉,🍊,🍋,🍌,🍍,🍎,🍏,🍐,🍑,🍒,🍓,🍅,🍆,🌽,🍄,🌰,🍞,🍖,🍗,🍔,🍟,🍕,🍳,🍲,🍱,🍘,🍙,🍚,🍛,🍜,🍝,🍠,🍢,🍣,🍤,🍥,🍡,🍦,🍧,🍨,🍩,🍪,🎂,🍰,🍫,🍬,🍭,🍮,🍯,🍼,☕,🍵,🍶,🍷,🍸,🍹,🍺,🍻,🍴,🌹,🍀,🍎,💰,📱,🌙,🍁,🍂,🍃,🌷,💎,🔪,🔫,🏀,⚽,⚡,👄,👍,🔥,🙈,🙉,🙊,🐵,🐒,🐶,🐕,🐩,🐺,🐱,😺,😸,😹,😻,😼,😽,🙀,😿,😾,🐈,🐯,🐅,🐆,🐴,🐎,🐮,🐂,🐃,🐄,🐷,🐖,🐗,🐽,🐏,🐑,🐐,🐪,🐫,🐘,🐭,🐁,🐀,🐹,🐰,🐇,🐻,🐨,🐼,🐾,🐔,🐓,🐣,🐤,🐥,🐦,🐧,🐸,🐊,🐢,🐍,🐲,🐉,🐳,🐋,🐬,🐟,🐠,🐡,🐙,🐚,🐌,🐛,🐜,🐝,🐞,🦋,😈,👿,👹,👺,💀,☠,👻,👽,👾,💣';
+
+const handleClickEmoji = (item) => {
+  message.value += item;
+  nextTick(() => document.getElementById('message_input').focus());
+};
+
+const handleClickFileInput = () => {
+  document.getElementById('uploadFile').click();
+};
+
+const handleFileAdd = (e) => {
+  const temp_file = {
+    category: e.category,
+    extension: e.extension,
+    name: e.name,
+    size: e.size,
+  };
+  const temp_data = reactive({
+    key: e.key,
+    id: 0,
+    created_at: new Date(),
+    sender: store.state.user.data.username,
+    receiver: current_chat.value.username,
+    type: 'file',
+    message: encryptData(JSON.stringify(temp_file)),
+    quote: quote.value,
+  });
+  current_chat.value.chat_data.push(temp_data);
+};
+
+const handleCompletedFile = (e) => {
+  const temp_data = current_chat.value.chat_data.find((item) => item.key === e.key);
+  if (temp_data) {
+    temp_data.message = encryptData(JSON.stringify(e.data));
+    sendMsg({
+      uid: e.data.id,
+      sender: temp_data.sender,
+      receiver: temp_data.receiver,
+      type: temp_data.type,
+      message: temp_data.message,
+      quote: temp_data.quote,
+    }).then(({ code, msg, data }) => {
+      if (code === 200) {
+        temp_data.id = data.id;
+        temp_data.created_at = data.created_at;
+        delete temp_data.key;
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
+};
+
+const handleSendMsg = () => {
+  if (message.value.trim()) {
+    const temp_data = reactive({
+      id: 0,
+      created_at: new Date(),
+      sender: store.state.user.data.username,
+      receiver: current_chat.value.username,
+      type: 'text',
+      message: encryptData(message.value.trim()),
+      quote: quote.value,
+    });
+    message.value = '';
+    current_chat.value.chat_data.push(temp_data);
+    sendMsg({
+      sender: temp_data.sender,
+      receiver: temp_data.receiver,
+      type: temp_data.type,
+      message: temp_data.message,
+      quote: temp_data.quote,
+    }).then(({ code, msg, data }) => {
+      if (code === 200) {
+        temp_data.id = data.id;
+        temp_data.created_at = data.created_at;
+        quote.value = null;
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
+};
+
+const handleClickQuote = (data) => {
+  quote.value = data;
+  nextTick(() => document.getElementById('message_input').focus());
+};
+
+const handleWithdrawMsg = (data) => {
+  withdrawMsg({
+    id: data.id,
+  }).then(({ code, msg }) => {
+    if (code === 200) {
+      const idx = current_chat.value.chat_data.findIndex((item) => item.id === data.id);
+      if (idx != -1) current_chat.value.chat_data.splice(idx, 1);
+      quote.value = data.quote;
+      message.value = decryptData(data.message);
+    } else
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+  });
+};
+
+const handleReadMsg = (callback) => {
+  readMsg({
+    contact: current_chat.value.username,
+  }).then(({ code, msg }) => {
+    if (code === 200) callback && callback();
+    else
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+  });
+};
+
+const handleDelChat = () => {
+  delChat({
+    contact: current_chat.value.username,
+  }).then(({ code, msg }) => {
+    if (code === 200) {
+      const idx = _chats.value.findIndex((chat) => chat.username === current_chat.value.username);
+      _chats.value.splice(idx, 1);
+      current_chat.value = {};
+    } else
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+  });
 };
 </script>
 

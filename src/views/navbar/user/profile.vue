@@ -112,7 +112,7 @@
                               {{ $t('layout.navbar.user.dropdown.profil.overview.info.birthday') }}:
                             </th>
                             <td class="text-muted">
-                              {{ $moment($store.state.user.data.birthday).format('ll') }}
+                              {{ moment($store.state.user.data.birthday).format('ll') }}
                             </td>
                           </tr>
                         </tbody>
@@ -304,7 +304,7 @@
                                           <span class="text-secondary">
                                             {{ item.method }}::{{ item.ip }}
                                           </span>
-                                          @ {{ $moment(item.created_at).format('llll') }}
+                                          @ {{ moment(item.created_at).format('llll') }}
                                         </small>
                                       </div>
                                     </div>
@@ -390,7 +390,7 @@
                         <i
                           v-else
                           class="file-icon"
-                          :class="$fileIcons.getClassWithColor(file.name)"
+                          :class="FileIcons.getClassWithColor(file.name)"
                         />
                       </td>
                       <td
@@ -404,7 +404,7 @@
                       <td class="text-capitalize">{{ file.category }}</td>
                       <td>{{ size2Str(file.size) }}</td>
                       <td style="white-space: nowrap">
-                        {{ $moment(file.created_at).format('llll') }}
+                        {{ moment(file.created_at).format('llll') }}
                       </td>
                       <td>
                         <div class="dropdown">
@@ -478,136 +478,116 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted, computed } from 'vue';
-import { getUserLogs, getUserFiles } from '@api/user';
+<script setup>
+import { ref, reactive, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import uaParser from 'ua-parser-js';
 import { useToast } from 'vue-toastification';
-import { useRouter, size2Str, getUserInfo } from '@utils';
 import ToastificationContent from '@components/ToastificationContent';
+
+import { size2Str, getUserInfo } from '@utils';
+import moment from '@utils/moment';
+
 import MonacoEditor from '@components/MonacoEditor';
 import Empty from '@components/Empty';
 import Avatar from '@components/Avatar';
-import uaParser from 'ua-parser-js';
 import Pagination from '@components/Pagination';
-export default {
-  components: {
-    Empty,
-    Avatar,
-    MonacoEditor,
-    Pagination,
-  },
-  setup() {
-    const toast = useToast();
-    const { router } = useRouter();
 
-    const recent_activities = ref([]);
-    const uploads = ref([]);
+import { getUserLogs, getUserFiles } from '@api/user';
 
-    const pagination = ref({
-      pageNum: 1,
-      pageSize: 200,
-      totalCount: 0,
-    });
+const { FileIcons } = window;
 
-    const handlePaginationChange = ({ pageNum, pageSize }) => {
-      pagination.value.pageNum = pageNum;
-      pagination.value.pageSize = pageSize;
-      getUploads();
-    };
+const toast = useToast();
+const router = useRouter();
 
-    const getUploads = () => {
-      getUserFiles({ pageNum: pagination.value.pageNum, pageSize: pagination.value.pageSize }).then(
-        ({ code, msg, data }) => {
-          if (code === 200) {
-            uploads.value = data.rows;
-            pagination.value.totalCount = data.count;
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
+const recent_activities = ref([]);
+const uploads = ref([]);
+
+const pagination = reactive({
+  pageNum: 1,
+  pageSize: 200,
+  totalCount: 0,
+});
+
+const handlePaginationChange = ({ pageNum, pageSize }) => {
+  pagination.pageNum = pageNum;
+  pagination.pageSize = pageSize;
+  getUploads();
+};
+
+const getUploads = () => {
+  getUserFiles({ pageNum: pagination.pageNum, pageSize: pagination.pageSize }).then(
+    ({ code, msg, data }) => {
+      if (code === 200) {
+        uploads.value = data.rows;
+        pagination.totalCount = data.count;
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    },
+  );
+};
+
+const getLogs = () => {
+  getUserLogs({ type: 2 }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      recent_activities.value = data;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
         },
-      );
-    };
-
-    const getLogs = () => {
-      getUserLogs({ type: 2 }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          recent_activities.value = data;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
       });
-    };
+    }
+  });
+};
 
-    onMounted(() => {
-      getLogs();
-      getUploads();
-    });
+onMounted(() => {
+  getLogs();
+  getUploads();
+});
 
-    const resolveDeviceIcon = computed(() => {
-      return (type) => {
-        if (type.toLowerCase().includes('mobile')) return 'mdi-cellphone';
-        else if (type.toLowerCase().includes('safari')) return 'mdi-tablet';
-        else return 'mdi-desktop-mac';
-      };
-    });
+const resolveDeviceIcon = computed(() => {
+  return (type) => {
+    if (type.toLowerCase().includes('mobile')) return 'mdi-cellphone';
+    else if (type.toLowerCase().includes('safari')) return 'mdi-tablet';
+    else return 'mdi-desktop-mac';
+  };
+});
 
-    const current_activity = ref({});
-    const handleViewActivityData = (item) => {
-      current_activity.value = item;
-      document.getElementById('showActivityDataOffcanvasBtn').click();
-    };
+const current_activity = ref({});
+const handleViewActivityData = (item) => {
+  current_activity.value = item;
+  document.getElementById('showActivityDataOffcanvasBtn').click();
+};
 
-    const handlePreviewFile = (file) => {
-      const { href } = router.resolve({ name: 'preview', params: { uuid: file.uuid } });
-      window.open(href, '_blank');
-    };
+const handlePreviewFile = (file) => {
+  const { href } = router.resolve({ name: 'preview', params: { uuid: file.uuid } });
+  window.open(href, '_blank');
+};
 
-    const handleViewFileSource = (source) => {
-      // const { href } = router.resolve({ path: source });
-      window.open(`${process.env.BASE_URL}${source.substring(1)}`, '_blank');
-    };
+const { BASE_URL } = process.env;
+const handleViewFileSource = (source) => {
+  // const { href } = router.resolve({ path: source });
+  window.open(`${BASE_URL}${source.substring(1)}`, '_blank');
+};
 
-    const handleDownloadFile = (file) => {
-      let downloadElement = document.createElement('a');
-      downloadElement.href = `${process.env.BASE_URL}cor/file/load/${file.uuid}`;
-      downloadElement.download = file.name;
-      document.body.appendChild(downloadElement);
-      downloadElement.click();
-      document.body.removeChild(downloadElement);
-    };
-
-    return {
-      getUserInfo,
-
-      recent_activities,
-      uaParser,
-      resolveDeviceIcon,
-      current_activity,
-      handleViewActivityData,
-
-      uploads,
-      pagination,
-      handlePaginationChange,
-
-      size2Str,
-      handlePreviewFile,
-      handleViewFileSource,
-      handleDownloadFile,
-    };
-  },
+const handleDownloadFile = (file) => {
+  let downloadElement = document.createElement('a');
+  downloadElement.href = `${BASE_URL}cor/file/load/${file.uuid}`;
+  downloadElement.download = file.name;
+  document.body.appendChild(downloadElement);
+  downloadElement.click();
+  document.body.removeChild(downloadElement);
 };
 </script>

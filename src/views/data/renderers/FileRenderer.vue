@@ -39,7 +39,7 @@
           class="bg-light rounded cursor-pointer overflow-hidden"
           :class="[
             ['alpine', 'quartz'].includes(theme) ? 'file-icon' : 'file-icon file-icon-md',
-            $fileIcons.getClassWithColor(file.name),
+            FileIcons.getClassWithColor(file.name),
           ]"
           style="box-shadow: 0px 3px 5px 0px rgba(30, 32, 37, 0.3)"
           @dblclick="handleDbclickFile(file)"
@@ -50,32 +50,30 @@
   <span v-else></span>
 </template>
 
-<script>
-import { defineComponent, computed } from 'vue';
-import router from '@router';
-export default defineComponent({
-  setup(props) {
-    const theme = computed(() => {
-      return props.params.api.getTheme();
-    });
+<script setup>
+import { defineProps, computed } from 'vue';
+import { useRouter } from 'vue-router';
 
-    let timer = null;
-    const handleClickImage = (callback) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        callback && callback();
-      }, 200);
-    };
-    const handleDbclickFile = (file) => {
-      clearTimeout(timer);
-      const { href } = router.resolve({ name: 'preview', params: { uuid: file.uuid } });
-      window.open(href, '_blank');
-    };
-    return {
-      theme,
-      handleClickImage,
-      handleDbclickFile,
-    };
-  },
+const props = defineProps(['params']);
+
+const { FileIcons } = window;
+const { BASE_URL } = process.env;
+const router = useRouter();
+
+const theme = computed(() => {
+  return props.params.api.getTheme();
 });
+
+let timer = null;
+const handleClickImage = (callback) => {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    callback && callback();
+  }, 200);
+};
+const handleDbclickFile = (file) => {
+  clearTimeout(timer);
+  const { href } = router.resolve({ name: 'preview', params: { uuid: file.uuid } });
+  window.open(href, '_blank');
+};
 </script>

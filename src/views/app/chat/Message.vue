@@ -35,7 +35,7 @@
       <div class="me-2">
         <i
           class="file-icon"
-          :class="$fileIcons.getClassWithColor(JSON.parse(decryptData(item.message)).name)"
+          :class="FileIcons.getClassWithColor(JSON.parse(decryptData(item.message)).name)"
         />
       </div>
       <div
@@ -57,33 +57,27 @@
   </div>
 </template>
 
-<script>
-import { useRouter, decryptData, size2Str } from '@utils';
-import { reactive } from 'vue';
-export default {
-  props: {
-    item: {
-      type: Object,
-      required: true,
-    },
+<script setup>
+import { defineProps, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+import { decryptData, size2Str } from '@utils';
+
+defineProps({
+  item: {
+    type: Object,
+    required: true,
   },
-  setup() {
-    const { router } = useRouter();
+});
 
-    const handlePreviewFile = (file) => {
-      if (file.category === 'image') return;
-      const route = router.resolve({ name: 'preview', params: { uuid: file.uuid } });
-      window.open(route.href, '_blank');
-    };
+const { FileIcons } = window;
+const { BASE_URL } = process.env;
+const router = useRouter();
 
-    const loaded = reactive({});
-
-    return {
-      decryptData,
-      size2Str,
-      handlePreviewFile,
-      loaded,
-    };
-  },
+const handlePreviewFile = (file) => {
+  if (file.category === 'image') return;
+  const route = router.resolve({ name: 'preview', params: { uuid: file.uuid } });
+  window.open(route.href, '_blank');
 };
+
+const loaded = reactive({});
 </script>

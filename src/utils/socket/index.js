@@ -1,17 +1,33 @@
+import io from 'socket.io-client';
 import { watch } from 'vue';
-import store from '@store';
-import i18n from '@utils/i18n';
-import { clearUserData, getUserInfo, replaceHtml, decryptData } from '@utils';
-import { getSysInfo } from '@api/sys';
-import { getUserData } from '@api/user';
-import router from '@router';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
 import { ElLoading } from 'element-plus';
 import 'element-plus/es/components/loading/style/css';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+
+import { clearUserData, getUserInfo, replaceHtml, decryptData } from '@utils';
+import i18n from '@utils/i18n';
+
+import router from '@router';
+import store from '@store';
+
+import { getSysInfo } from '@api/sys';
+import { getUserData } from '@api/user';
+
+const { BASE_URL } = process.env;
+
+export let socket = {};
+
 const loading = { instance: null, count: 0, interval: null };
-const initSocket = (socket) => {
-  const toast = useToast();
+const toast = useToast();
+
+export const initSocket = () => {
+  socket = io(store.state.sys.cfg.origin, {
+    path: `${BASE_URL}socket.io`,
+    transports: ['websocket'],
+    secure: true,
+  });
+
   // let connection = -1;
   socket.on('connect', () => {
     watch(
@@ -235,5 +251,3 @@ const initSocket = (socket) => {
     // });
   });
 };
-
-export default initSocket;

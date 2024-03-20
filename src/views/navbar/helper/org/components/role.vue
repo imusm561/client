@@ -92,7 +92,7 @@
                     <li class="list-inline-item">
                       <span class="text-muted">
                         <i class="mdi mdi-clock-outline align-bottom"></i>
-                        {{ $moment(role.updated_at || role.created_at).fromNow() }}
+                        {{ moment(role.updated_at || role.created_at).fromNow() }}
                       </span>
                     </li>
                   </ul>
@@ -444,284 +444,261 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed, onMounted } from 'vue';
-import store from '@store';
-import i18n from '@utils/i18n';
-import { listToTree, getChanges, copyToClipboard, pasteFromClipboard } from '@utils';
-import { createRole, updateRole } from '@api/role';
-import { getForms } from '@api/form';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
+import { listToTree, getChanges, copyToClipboard, pasteFromClipboard } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+import store from '@store';
 import Avatar from '@components/Avatar';
-export default {
-  components: {
-    ElTree,
-    Avatar,
-  },
-  setup() {
-    const toast = useToast();
-    const moment = window.moment;
+import { createRole, updateRole } from '@api/role';
+import { getForms } from '@api/form';
 
-    const getCheckedMenuCount = computed(() => {
-      return (permissions) => {
-        let count = 0;
-        for (let key in permissions) {
-          if (permissions[key].checked) count += 1;
-        }
-        return count;
+const toast = useToast();
+
+const getCheckedMenuCount = computed(() => {
+  return (permissions) => {
+    let count = 0;
+    for (let key in permissions) {
+      if (permissions[key].checked) count += 1;
+    }
+    return count;
+  };
+});
+
+const resolveRoleUsers = computed(() => {
+  return (role) => {
+    return store.state.org.users.filter((user) => user.role.includes(role.id));
+  };
+});
+
+const current_role = ref({});
+const editOrCreateRoleModalKey = ref(null);
+
+const handleCreateOrEditRole = (role) => {
+  current_role.value = JSON.parse(JSON.stringify(role || {}));
+  current_role.value.permissions = current_role.value.permissions || {};
+  editOrCreateRoleModalKey.value = Math.random().toString(36).slice(-6);
+  document.getElementById('showEditOrCreateRoleModalBtn').click();
+};
+
+const forms = ref([]);
+onMounted(() => {
+  getForms().then(({ code, data, msg }) => {
+    if (code === 200) {
+      forms.value = data;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+});
+
+const tree = computed(() => {
+  return listToTree(JSON.parse(JSON.stringify(forms.value)));
+});
+
+const generateDefaultCheckedKeys = computed(() => {
+  return () => {
+    current_role.value.permissions = current_role.value.permissions || {};
+    const keys = [];
+    for (let key in current_role.value.permissions) {
+      if (current_role.value.permissions[key].checked) keys.push(Number(key));
+    }
+    return keys;
+  };
+});
+
+const handleNodeChecked = (_, state) => {
+  forms.value.forEach((form) => {
+    if (state.checkedKeys.includes(form.id) || state.halfCheckedKeys.includes(form.id)) {
+      current_role.value.permissions[form.id] = {
+        half_checked: state.halfCheckedKeys.includes(form.id),
+        checked: state.checkedKeys.includes(form.id),
+        create: current_role.value.permissions[form.id]?.create || false,
+        edit: current_role.value.permissions[form.id]?.edit || false,
+        batch: current_role.value.permissions[form.id]?.batch || false,
+        export: current_role.value.permissions[form.id]?.export || false,
+        import: current_role.value.permissions[form.id]?.import || false,
+        all: current_role.value.permissions[form.id]?.all || false,
       };
-    });
+    } else {
+      delete current_role.value.permissions[form.id];
+    }
+  });
+};
 
-    const resolveRoleUsers = computed(() => {
-      return (role) => {
-        return store.state.org.users.filter((user) => user.role.includes(role.id));
-      };
-    });
-
-    const current_role = ref({});
-    const editOrCreateRoleModalKey = ref(null);
-
-    const handleCreateOrEditRole = (role) => {
-      current_role.value = JSON.parse(JSON.stringify(role || {}));
-      current_role.value.permissions = current_role.value.permissions || {};
-      editOrCreateRoleModalKey.value = Math.random().toString(36).slice(-6);
-      document.getElementById('showEditOrCreateRoleModalBtn').click();
-    };
-
-    const forms = ref([]);
-    onMounted(() => {
-      getForms().then(({ code, data, msg }) => {
-        if (code === 200) {
-          forms.value = data;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+const handleCopyPermissions = () => {
+  const text = {
+    keyword: `copy_role_permissions_at_${moment().format('YYYY-MM-DD')}_by_${
+      store.state.user.data.username
+    }`,
+    permissions: current_role.value.permissions,
+  };
+  copyToClipboard(JSON.stringify(text))
+    .then(() => {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          text: i18n.global.t(
+            'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.copy.success',
+          ),
+        },
+      });
+    })
+    .catch((error) => {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: error.message,
+        },
       });
     });
+};
 
-    const tree = computed(() => {
-      return listToTree(JSON.parse(JSON.stringify(forms.value)));
-    });
-
-    const generateDefaultCheckedKeys = computed(() => {
-      return () => {
-        current_role.value.permissions = current_role.value.permissions || {};
-        const keys = [];
-        for (let key in current_role.value.permissions) {
-          if (current_role.value.permissions[key].checked) keys.push(Number(key));
-        }
-        return keys;
-      };
-    });
-
-    const handleNodeChecked = (_, state) => {
-      forms.value.forEach((form) => {
-        if (state.checkedKeys.includes(form.id) || state.halfCheckedKeys.includes(form.id)) {
-          current_role.value.permissions[form.id] = {
-            half_checked: state.halfCheckedKeys.includes(form.id),
-            checked: state.checkedKeys.includes(form.id),
-            create: current_role.value.permissions[form.id]?.create || false,
-            edit: current_role.value.permissions[form.id]?.edit || false,
-            batch: current_role.value.permissions[form.id]?.batch || false,
-            export: current_role.value.permissions[form.id]?.export || false,
-            import: current_role.value.permissions[form.id]?.import || false,
-            all: current_role.value.permissions[form.id]?.all || false,
-          };
-        } else {
-          delete current_role.value.permissions[form.id];
-        }
-      });
-    };
-
-    const handleCopyPermissions = () => {
-      const text = {
-        keyword: `copy_role_permissions_at_${moment().format('YYYY-MM-DD')}_by_${
-          store.state.user.data.username
-        }`,
-        permissions: current_role.value.permissions,
-      };
-      copyToClipboard(JSON.stringify(text))
-        .then(() => {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: i18n.global.t(
-                'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.copy.success',
-              ),
-            },
-          });
-        })
-        .catch((error) => {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: error.message,
-            },
-          });
-        });
-    };
-
-    const handlePastePermissions = () => {
-      pasteFromClipboard()
-        .then((text) => {
-          if (
-            text.includes(
-              `copy_role_permissions_at_${moment().format('YYYY-MM-DD')}_by_${
-                store.state.user.data.username
-              }`,
-            )
-          ) {
-            try {
-              text = JSON.parse(text);
-              if (text.permissions && typeof text.permissions === 'object') {
-                current_role.value.permissions = text.permissions;
-                toast({
-                  component: ToastificationContent,
-                  props: {
-                    variant: 'success',
-                    icon: 'mdi-check-circle',
-                    text: i18n.global.t(
-                      'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.paste.success',
-                    ),
-                  },
-                });
-              }
-            } catch (error) {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: error.message,
-                },
-              });
-            }
-          }
-        })
-        .catch((error) => {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: error.message,
-            },
-          });
-        });
-    };
-
-    const handleSubmitRole = () => {
+const handlePastePermissions = () => {
+  pasteFromClipboard()
+    .then((text) => {
       if (
-        !current_role.value.id &&
-        store.state.org.roles.filter((role) => role.name === current_role.value.name).length
+        text.includes(
+          `copy_role_permissions_at_${moment().format('YYYY-MM-DD')}_by_${
+            store.state.user.data.username
+          }`,
+        )
       ) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.org.role.create.error', {
-              name: current_role.value.name,
-            }),
-          },
-        });
-        return;
-      }
-
-      if (current_role.value.id) {
-        const changes = getChanges(
-          current_role.value,
-          store.state.org.roles.find((role) => role.id === current_role.value.id),
-        );
-        if (Object.keys(changes).length) {
-          changes.id = current_role.value.id;
-          if (store.state.user.data.id != 1 && changes.tags) {
-            const newTags = changes.tags.filter(
-              (n) =>
-                !store.state.org.roles
-                  .find((role) => role.id === current_role.value.id)
-                  .tags.includes(n),
-            );
-            changes.tags = changes.tags.map((tag) => {
-              return newTags.includes(tag) && ['HR', 'OE', 'DBA'].includes(tag)
-                ? `*${tag.toLowerCase()}`
-                : tag;
+        try {
+          text = JSON.parse(text);
+          if (text.permissions && typeof text.permissions === 'object') {
+            current_role.value.permissions = text.permissions;
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'success',
+                icon: 'mdi-check-circle',
+                text: i18n.global.t(
+                  'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.paste.success',
+                ),
+              },
             });
           }
-          updateRole(changes).then(() => {
-            document.getElementById('hideEditOrCreateRoleModalBtn').click();
-          });
-        } else {
-          document.getElementById('hideEditOrCreateRoleModalBtn').click();
-        }
-      } else {
-        if (store.state.user.data.id != 1) {
-          current_role.value.tags = current_role.value.tags.map((tag) => {
-            return ['HR', 'OE', 'DBA'].includes(tag) ? `*${tag.toLowerCase()}` : tag;
+        } catch (error) {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: error.message,
+            },
           });
         }
-        createRole(current_role.value).then(() => {
-          document.getElementById('hideEditOrCreateRoleModalBtn').click();
-        });
       }
-    };
-
-    const handlePreDelRole = (role) => {
-      if (store.state.org.users.filter((user) => user.role.includes(role.id)).length !== 0) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.org.role.delete.error', { name: role.name }),
-          },
-        });
-      } else {
-        current_role.value = JSON.parse(JSON.stringify(role));
-        current_role.value.permissions = current_role.value.permissions || {};
-        document.getElementById('showDeleteRoleModalBtn').click();
-      }
-    };
-
-    const handleDelRole = () => {
-      updateRole({
-        id: current_role.value.id,
-        data_state: 'deleted',
-      }).then(() => {
-        document.getElementById('hideDeleteRoleModalBtn').click();
+    })
+    .catch((error) => {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: error.message,
+        },
       });
-    };
+    });
+};
 
-    return {
-      getCheckedMenuCount,
-      resolveRoleUsers,
-      current_role,
-      editOrCreateRoleModalKey,
-      handleCreateOrEditRole,
-      forms,
-      tree,
-      generateDefaultCheckedKeys,
-      handleNodeChecked,
-      handleCopyPermissions,
-      handlePastePermissions,
-      handleSubmitRole,
-      handlePreDelRole,
-      handleDelRole,
-    };
-  },
+const handleSubmitRole = () => {
+  if (
+    !current_role.value.id &&
+    store.state.org.roles.filter((role) => role.name === current_role.value.name).length
+  ) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.org.role.create.error', {
+          name: current_role.value.name,
+        }),
+      },
+    });
+    return;
+  }
+
+  if (current_role.value.id) {
+    const changes = getChanges(
+      current_role.value,
+      store.state.org.roles.find((role) => role.id === current_role.value.id),
+    );
+    if (Object.keys(changes).length) {
+      changes.id = current_role.value.id;
+      if (store.state.user.data.id != 1 && changes.tags) {
+        const newTags = changes.tags.filter(
+          (n) =>
+            !store.state.org.roles
+              .find((role) => role.id === current_role.value.id)
+              .tags.includes(n),
+        );
+        if (changes.tags?.length)
+          changes.tags = changes.tags.map((tag) => {
+            return newTags.includes(tag) && ['HR', 'OE', 'DBA'].includes(tag)
+              ? `*${tag.toLowerCase()}`
+              : tag;
+          });
+      }
+      updateRole(changes).then(() => {
+        document.getElementById('hideEditOrCreateRoleModalBtn').click();
+      });
+    } else {
+      document.getElementById('hideEditOrCreateRoleModalBtn').click();
+    }
+  } else {
+    if (store.state.user.data.id != 1 && current_role.value.tags?.length) {
+      current_role.value.tags = current_role.value.tags.map((tag) => {
+        return ['HR', 'OE', 'DBA'].includes(tag) ? `*${tag.toLowerCase()}` : tag;
+      });
+    }
+    createRole(current_role.value).then(() => {
+      document.getElementById('hideEditOrCreateRoleModalBtn').click();
+    });
+  }
+};
+
+const handlePreDelRole = (role) => {
+  if (store.state.org.users.filter((user) => user.role.includes(role.id)).length !== 0) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.org.role.delete.error', { name: role.name }),
+      },
+    });
+  } else {
+    current_role.value = JSON.parse(JSON.stringify(role));
+    current_role.value.permissions = current_role.value.permissions || {};
+    document.getElementById('showDeleteRoleModalBtn').click();
+  }
+};
+
+const handleDelRole = () => {
+  updateRole({
+    id: current_role.value.id,
+    data_state: 'deleted',
+  }).then(() => {
+    document.getElementById('hideDeleteRoleModalBtn').click();
+  });
 };
 </script>

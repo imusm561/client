@@ -92,7 +92,7 @@
         </div>
         <div data-simplebar class="tasks-wrapper mb-1 px-3 mx-n3">
           <div class="tasks" :id="status.value">
-            <draggable
+            <Draggable
               :list="status.tasks"
               :id="status.value"
               class="dragArea"
@@ -139,7 +139,7 @@
                       </div>
                       <div class="flex-shrink-0">
                         <span class="text-muted" :title="task.due_date">
-                          {{ $moment(task.due_date).add(1, 'd').fromNow() }}
+                          {{ moment(task.due_date).add(1, 'd').fromNow() }}
                         </span>
                       </div>
                     </div>
@@ -176,7 +176,7 @@
                         <li class="list-inline-item">
                           <span class="text-muted" :title="task.created_at">
                             <i class="mdi mdi-clock-outline align-bottom"></i>
-                            {{ $moment(task.created_at).fromNow() }}
+                            {{ moment(task.created_at).fromNow() }}
                           </span>
                         </li>
                       </ul>
@@ -184,7 +184,7 @@
                   </div>
                 </div>
               </div>
-            </draggable>
+            </Draggable>
             <button
               v-if="status.loading && !status.refetch"
               type="button"
@@ -419,307 +419,279 @@
   </div>
 </template>
 
-<script>
-import { onMounted, onUnmounted, ref, watch, computed, nextTick } from 'vue';
-import { getTasks, createTask, updateTask, sortTask } from '@api/app/task';
-import CKEditor from '@components/CKEditor';
-import { VueDraggableNext } from 'vue-draggable-next';
+<script setup>
+import { onMounted, onUnmounted, ref, reactive, watch, computed, nextTick } from 'vue';
+import { VueDraggableNext as Draggable } from 'vue-draggable-next';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import store from '@store';
 import { replaceHtml, getUserInfo, debounce } from '@utils';
+import moment from '@utils/moment';
+import { socket } from '@utils/socket';
+import store from '@store';
+import CKEditor from '@components/CKEditor';
 import FlatPickr from '@components/FlatPickr';
 import Avatar from '@components/Avatar';
 import UserSelector from '@components/UserSelector';
 import useTask from './useTask';
-export default {
-  components: {
-    draggable: VueDraggableNext,
-    CKEditor,
-    FlatPickr,
-    Avatar,
-    UserSelector,
-  },
-  setup() {
-    const toast = useToast();
-    const socket = window.socket;
-    const moment = window.moment;
+import { getTasks, createTask, updateTask, sortTask } from '@api/app/task';
 
-    const statuses = ref(
-      JSON.parse(JSON.stringify(store.state.sys.cfg.task.statuses)).map((status) => {
-        status.condition = new Function('task', `return ${status.condition}`);
-        status.group = {
-          name: 'group',
-          /* eslint-disable-next-line no-unused-vars */
-          put: (to, from, dragEl, evt) => {
-            const status = statuses.value.find((status) => status.value === to.el.id);
-            return status?.condition({ progress: Number(dragEl.getAttribute('data-progress')) });
-          },
-          pull: true,
-        };
-        status.total = 0;
-        status.pageNum = 1;
-        status.pageSize = 10;
-        status.tasks = [];
-        status.loading = false;
-        return status;
-      }),
-    );
+const toast = useToast();
 
-    const { resolveTaskVariant } = useTask();
+const statuses = reactive(
+  JSON.parse(JSON.stringify(store.state.sys.cfg.task.statuses)).map((status) => {
+    status.condition = new Function('task', `return ${status.condition}`);
+    status.group = {
+      name: 'group',
+      /* eslint-disable-next-line no-unused-vars */
+      put: (to, from, dragEl, evt) => {
+        const status = statuses.find((status) => status.value === to.el.id);
+        return status?.condition({ progress: Number(dragEl.getAttribute('data-progress')) });
+      },
+      pull: true,
+    };
+    status.total = 0;
+    status.pageNum = 1;
+    status.pageSize = 10;
+    status.tasks = [];
+    status.loading = false;
+    return status;
+  }),
+);
 
-    const search_users = ref([]);
-    const search_keyword = ref('');
+const { resolveTaskVariant } = useTask();
 
-    const getTaskUsers = computed(() => {
-      return (users) => {
-        return users.map((username) => {
-          return getUserInfo(username);
-        });
-      };
+const search_users = ref([]);
+const search_keyword = ref('');
+
+const getTaskUsers = computed(() => {
+  return (users) => {
+    return users.map((username) => {
+      return getUserInfo(username);
     });
+  };
+});
 
-    const fetchTasks = (status, callback) => {
-      const data = {};
-      data.status = status.value;
-      data.pageNum = status.refetch ? 1 : status.pageNum;
-      data.pageSize = status.refetch ? (status.pageNum - 1) * status.pageSize : status.pageSize;
-      if (search_users.value.length) data.users = search_users.value.toString();
-      if (search_keyword.value) data.keyword = search_keyword.value.trim();
+const fetchTasks = (status, callback) => {
+  const data = {};
+  data.status = status.value;
+  data.pageNum = status.refetch ? 1 : status.pageNum;
+  data.pageSize = status.refetch ? (status.pageNum - 1) * status.pageSize : status.pageSize;
+  if (search_users.value.length) data.users = search_users.value.toString();
+  if (search_keyword.value) data.keyword = search_keyword.value.trim();
 
-      getTasks(data).then(({ code, data, msg }) => {
-        if (code === 200) {
-          status.total = data.count;
-          if (status.refetch) {
-            status.tasks = data.rows;
-          } else {
-            status.pageNum += 1;
-            status.tasks.push(...data.rows);
-          }
-          setTimeout(() => {
-            status.loading = false;
-            status.refetch = false;
-          }, 500);
-          nextTick(() => {
-            callback && callback();
-          });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+  getTasks(data).then(({ code, data, msg }) => {
+    if (code === 200) {
+      status.total = data.count;
+      if (status.refetch) {
+        status.tasks = data.rows;
+      } else {
+        status.pageNum += 1;
+        status.tasks.push(...data.rows);
+      }
+      setTimeout(() => {
+        status.loading = false;
+        status.refetch = false;
+      }, 500);
+      nextTick(() => {
+        callback && callback();
       });
-    };
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
 
-    const refetchTasksHandler = (relates) => {
-      statuses.value
-        .filter((status) => relates.includes(status.value))
-        .forEach((status) => {
-          status.refetch = true;
-          status.loading = true;
-          fetchTasks(status);
-        });
-    };
+const refetchTasksHandler = (relates) => {
+  statuses
+    .filter((status) => relates.includes(status.value))
+    .forEach((status) => {
+      status.refetch = true;
+      status.loading = true;
+      fetchTasks(status);
+    });
+};
 
-    const scrollHandler = (e) => {
-      const status = statuses.value.find(
-        (status) => status.value === e.target.children[0].children[0].id,
-      );
+const scrollHandler = (e) => {
+  const status = statuses.find((status) => status.value === e.target.children[0].children[0].id);
+  const list = document
+    .getElementById(`task-${status.value}`)
+    ?.querySelector('.simplebar-content-wrapper');
+
+  if (
+    list &&
+    list.scrollHeight - (list.scrollTop + list.offsetHeight) < 2 &&
+    status.tasks.length < status.total &&
+    !status.loading
+  ) {
+    status.loading = true;
+    fetchTasks(status);
+  }
+};
+
+onMounted(() => {
+  socket.on('refetchTasks', refetchTasksHandler);
+  statuses.forEach((status) => {
+    fetchTasks(status, () => {
       const list = document
         .getElementById(`task-${status.value}`)
         ?.querySelector('.simplebar-content-wrapper');
-
-      if (
-        list &&
-        list.scrollHeight - (list.scrollTop + list.offsetHeight) < 2 &&
-        status.tasks.length < status.total &&
-        !status.loading
-      ) {
-        status.loading = true;
-        fetchTasks(status);
-      }
-    };
-
-    onMounted(() => {
-      socket.on('refetchTasks', refetchTasksHandler);
-      statuses.value.forEach((status) => {
-        fetchTasks(status, () => {
-          const list = document
-            .getElementById(`task-${status.value}`)
-            ?.querySelector('.simplebar-content-wrapper');
-          if (list) list.addEventListener('scroll', scrollHandler);
-        });
-      });
+      if (list) list.addEventListener('scroll', scrollHandler);
     });
+  });
+});
 
-    onUnmounted(() => {
-      socket.off('refetchTasks', refetchTasksHandler);
-      statuses.value.forEach((status) => {
+onUnmounted(() => {
+  socket.off('refetchTasks', refetchTasksHandler);
+  statuses.forEach((status) => {
+    const list = document
+      .getElementById(`task-${status.value}`)
+      ?.querySelector('.simplebar-content-wrapper');
+    if (list) list.removeEventListener('scroll', scrollHandler);
+  });
+});
+
+watch(
+  () => [search_users.value, search_keyword.value],
+  (newVal, oldVal) => {
+    if (newVal && oldVal) {
+      statuses.forEach((status) => {
         const list = document
           .getElementById(`task-${status.value}`)
           ?.querySelector('.simplebar-content-wrapper');
-        if (list) list.removeEventListener('scroll', scrollHandler);
+        if (list) list.scrollTop = 0;
+        status.pageNum = 1;
+        status.tasks = [];
+        status.loading = true;
+        fetchTasks(status);
       });
-    });
-
-    watch(
-      () => [search_users.value, search_keyword.value],
-      (newVal, oldVal) => {
-        if (newVal && oldVal) {
-          statuses.value.forEach((status) => {
-            const list = document
-              .getElementById(`task-${status.value}`)
-              ?.querySelector('.simplebar-content-wrapper');
-            if (list) list.scrollTop = 0;
-            status.pageNum = 1;
-            status.tasks = [];
-            status.loading = true;
-            fetchTasks(status);
-          });
-        }
-      },
-      { immediate: true },
-    );
-
-    const current_task = ref({});
-
-    const handleCreateTask = () => {
-      current_task.value = {
-        key: Math.random().toString(36).slice(-6),
-        title: '',
-        description: '',
-        tags: [],
-        users: [store.state.user.data.username],
-        due_date: moment().add(7, 'd').format('YYYY-MM-DD'),
-        progress: 0,
-        status: statuses.value[0].value,
-        sort: 0,
-      };
-    };
-
-    const handleEditTask = (task) => {
-      current_task.value = JSON.parse(JSON.stringify(task));
-      current_task.value.emits = current_task.value.users;
-      current_task.value.relates = current_task.value.status;
-    };
-
-    const handleChangeTaskProgress = debounce((e) => {
-      const current = statuses.value.find((item) => item.value === current_task.value.status);
-      if (!current.condition({ progress: Number(e.target.value || 0) })) {
-        for (let index = 0; index < statuses.value.length; index++) {
-          const status = statuses.value[index];
-          if (status.condition({ progress: Number(e.target.value || 0) })) {
-            current_task.value.status = status.value;
-            break;
-          }
-        }
-      }
-    }, 500);
-
-    const handleSubmitTask = () => {
-      if (current_task.value.id) {
-        const data = JSON.parse(JSON.stringify(current_task.value));
-        data.emits = Array.from(new Set([...data.users, ...data.emits]));
-        data.relates = Array.from(new Set([current_task.value.status, data.relates]));
-        updateTask(data).then(({ code, msg }) => {
-          if (code === 200) {
-            document.getElementById('hideEditTaskModalBtn').click();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
-      } else {
-        createTask(current_task.value).then(({ code, msg }) => {
-          if (code === 200) {
-            document.getElementById('hideEditTaskModalBtn').click();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
-      }
-    };
-
-    const handleDelTask = () => {
-      updateTask({
-        id: current_task.value.id,
-        data_state: 'deleted',
-        emits: current_task.value.users,
-        relates: [current_task.value.status],
-      }).then(({ code, msg }) => {
-        if (code === 200) {
-          document.getElementById('hideDelTaskModalBtn').click();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const handleSortTask = (e) => {
-      if (!(e.to.id === e.from.id && e.newIndex === e.oldIndex)) {
-        const to = statuses.value.find((status) => status.value === e.to.id);
-        sortTask({
-          ids: to.tasks.map((task) => {
-            return task.id;
-          }),
-          status: to.value,
-          emits: to.tasks[e.newIndex].users,
-          relates: Array.from(new Set([e.from.id, e.to.id])),
-        }).then(({ code, msg }) => {
-          if (code !== 200) {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
-      }
-    };
-
-    return {
-      search_users,
-      search_keyword,
-      replaceHtml,
-      statuses,
-      resolveTaskVariant,
-      getTaskUsers,
-      current_task,
-      handleCreateTask,
-      handleEditTask,
-      handleChangeTaskProgress,
-      handleSubmitTask,
-      handleDelTask,
-      handleSortTask,
-    };
+    }
   },
+  { immediate: true },
+);
+
+const current_task = ref({});
+
+const handleCreateTask = () => {
+  current_task.value = {
+    key: Math.random().toString(36).slice(-6),
+    title: '',
+    description: '',
+    tags: [],
+    users: [store.state.user.data.username],
+    due_date: moment().add(7, 'd').format('YYYY-MM-DD'),
+    progress: 0,
+    status: statuses[0].value,
+    sort: 0,
+  };
+};
+
+const handleEditTask = (task) => {
+  current_task.value = JSON.parse(JSON.stringify(task));
+  current_task.value.emits = current_task.value.users;
+  current_task.value.relates = current_task.value.status;
+};
+
+const handleChangeTaskProgress = debounce((e) => {
+  const current = statuses.find((item) => item.value === current_task.value.status);
+  if (!current.condition({ progress: Number(e.target.value || 0) })) {
+    for (let index = 0; index < statuses.length; index++) {
+      const status = statuses[index];
+      if (status.condition({ progress: Number(e.target.value || 0) })) {
+        current_task.value.status = status.value;
+        break;
+      }
+    }
+  }
+}, 500);
+
+const handleSubmitTask = () => {
+  if (current_task.value.id) {
+    const data = JSON.parse(JSON.stringify(current_task.value));
+    data.emits = Array.from(new Set([...data.users, ...data.emits]));
+    data.relates = Array.from(new Set([current_task.value.status, data.relates]));
+    updateTask(data).then(({ code, msg }) => {
+      if (code === 200) {
+        document.getElementById('hideEditTaskModalBtn').click();
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  } else {
+    createTask(current_task.value).then(({ code, msg }) => {
+      if (code === 200) {
+        document.getElementById('hideEditTaskModalBtn').click();
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
+};
+
+const handleDelTask = () => {
+  updateTask({
+    id: current_task.value.id,
+    data_state: 'deleted',
+    emits: current_task.value.users,
+    relates: [current_task.value.status],
+  }).then(({ code, msg }) => {
+    if (code === 200) {
+      document.getElementById('hideDelTaskModalBtn').click();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const handleSortTask = (e) => {
+  if (!(e.to.id === e.from.id && e.newIndex === e.oldIndex)) {
+    const to = statuses.find((status) => status.value === e.to.id);
+    sortTask({
+      ids: to.tasks.map((task) => {
+        return task.id;
+      }),
+      status: to.value,
+      emits: to.tasks[e.newIndex].users,
+      relates: Array.from(new Set([e.from.id, e.to.id])),
+    }).then(({ code, msg }) => {
+      if (code !== 200) {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
 };
 </script>

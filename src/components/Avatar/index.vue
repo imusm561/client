@@ -47,89 +47,81 @@
   </template>
 </template>
 
-<script>
-import { defineComponent, onMounted, ref, watch } from 'vue';
-export default defineComponent({
-  props: {
-    data: {
-      type: [Object, Array],
-      requried: true,
-    },
-    size: {
-      type: String,
-      default: () => 'xs',
-      requried: true,
-    },
-    thumbnail: {
-      type: Boolean,
-      default: () => false,
-    },
-    keyAvatar: {
-      type: String,
-      default: () => 'avatar',
-      requried: true,
-    },
-    keyUsername: {
-      type: String,
-      default: () => 'username',
-      requried: true,
-    },
-    keyFullname: {
-      type: String,
-      default: () => 'fullname',
-      requried: true,
-    },
+<script setup>
+import { defineProps, onMounted, ref, watch } from 'vue';
+const props = defineProps({
+  data: {
+    type: [Object, Array],
+    requried: true,
   },
-  setup(props) {
-    const isGroup = ref(false);
-    const user = ref({});
-    const users = ref([]);
-
-    const fs = ref({
-      xxxs: 'fs-10',
-      xxs: 'fs-12',
-      xs: 'fs-16',
-      sm: 'fs-20',
-      md: 'fs-24',
-      lg: 'fs-36',
-      xl: 'fs-48',
-    });
-
-    onMounted(() => {
-      watch(
-        () => props.data,
-        (val) => {
-          const data = JSON.parse(JSON.stringify(val));
-          if (Array.isArray(data)) {
-            isGroup.value = true;
-            if (data.length < 6) users.value = data;
-            else {
-              const collapse_users_object = {};
-              collapse_users_object.collapse = true;
-              collapse_users_object[props.keyUsername] = '···';
-              collapse_users_object[props.keyFullname] = data
-                .slice(4)
-                .map((item) => {
-                  return item[props.keyFullname];
-                })
-                .toString();
-              users.value = [...data.slice(0, 4), ...[collapse_users_object]];
-            }
-          } else {
-            isGroup.value = false;
-            user.value = data;
-          }
-        },
-        { immediate: true, deep: true },
-      );
-    });
-
-    return {
-      isGroup,
-      user,
-      users,
-      fs,
-    };
+  size: {
+    type: String,
+    default: () => 'xs',
+    requried: true,
   },
+  thumbnail: {
+    type: Boolean,
+    default: () => false,
+  },
+  keyAvatar: {
+    type: String,
+    default: () => 'avatar',
+    requried: true,
+  },
+  keyUsername: {
+    type: String,
+    default: () => 'username',
+    requried: true,
+  },
+  keyFullname: {
+    type: String,
+    default: () => 'fullname',
+    requried: true,
+  },
+});
+
+const isGroup = ref(false);
+const user = ref({});
+const users = ref([]);
+
+const { BASE_URL } = process.env;
+
+const fs = {
+  xxxs: 'fs-10',
+  xxs: 'fs-12',
+  xs: 'fs-16',
+  sm: 'fs-20',
+  md: 'fs-24',
+  lg: 'fs-36',
+  xl: 'fs-48',
+};
+
+onMounted(() => {
+  watch(
+    () => props.data,
+    (val) => {
+      const data = JSON.parse(JSON.stringify(val));
+      if (Array.isArray(data)) {
+        isGroup.value = true;
+        if (data.length < 6) users.value = data;
+        else {
+          const collapse_users_object = {};
+          collapse_users_object.collapse = true;
+          collapse_users_object[props.keyUsername] = '···';
+          collapse_users_object[props.keyFullname] = data
+            .slice(4)
+            .map((item) => {
+              return item[props.keyFullname];
+            })
+            .toString();
+          users.value = [...data.slice(0, 4), ...[collapse_users_object]];
+        }
+      } else {
+        isGroup.value = false;
+        user.value = data;
+      }
+    },
+    { immediate: true, deep: true },
+  );
 });
 </script>

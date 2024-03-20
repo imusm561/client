@@ -72,7 +72,7 @@
           () => {
             column.alias =
               column.alias ||
-              $pinyin(column.name, { toneType: 'none', type: 'array' })
+              pinyin(column.name, { toneType: 'none', type: 'array' })
                 .map((item) => {
                   return item.charAt(0).toUpperCase() + item.slice(1);
                 })
@@ -226,44 +226,37 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed } from 'vue';
+import { pinyin } from 'pinyin-pro';
 import CKEditor from '@components/CKEditor';
-export default defineComponent({
-  components: {
-    CKEditor,
-  },
-  props: {
-    modelValue: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    alias: {
-      type: String,
-      default: () => {
-        return '';
-      },
-    },
-    errors: {
-      type: Object,
-      default: () => {
-        return {};
-      },
+const props = defineProps({
+  modelValue: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    return {
-      column: computed({
-        get() {
-          return props.modelValue;
-        },
-        set(value) {
-          emit('update:modelValue', value);
-        },
-      }),
-    };
+  alias: {
+    type: String,
+    default: () => {
+      return '';
+    },
+  },
+  errors: {
+    type: Object,
+    default: () => {
+      return {};
+    },
+  },
+});
+const emit = defineEmits(['update:modelValue']);
+const column = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit('update:modelValue', value);
   },
 });
 </script>

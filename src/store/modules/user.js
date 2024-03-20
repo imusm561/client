@@ -1,4 +1,5 @@
 import { listToTree, getUserInfo } from '@utils';
+import moment from '@utils/moment';
 import { setWatermark, removeWatermark } from '@utils/watermark';
 import store from '@store';
 import app from '../menu/app';
@@ -59,7 +60,6 @@ export default {
   actions: {
     setUser({ commit }, value) {
       commit('SET_USER', value);
-      const moment = window.moment;
       if (store.state.sys.cfg.waterMark && value.id)
         setWatermark(`${value.username} - ${value.fullname}`, moment().format('ll'));
       else removeWatermark();
@@ -90,7 +90,6 @@ export default {
         data: JSON.parse(JSON.stringify(state.notices[value.app])),
       };
       if (val.app == 'chat') {
-        console.log(value);
         const idx = val.data.findIndex((item) => item.username == value.data.user.username);
         if (idx !== -1) {
           if (value.data.id) {

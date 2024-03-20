@@ -193,7 +193,7 @@
             class="rounded avatar-xs cursor-pointer"
             loading="lazy"
           />
-          <i v-else class="file-icon" :class="$fileIcons.getClassWithColor(file.name)" />
+          <i v-else class="file-icon" :class="FileIcons.getClassWithColor(file.name)" />
         </div>
         <div class="flex-grow-1 w-75">
           <div class="d-flex">
@@ -252,88 +252,76 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
-import i18n from '@utils/i18n';
+<script setup>
+import { defineProps } from 'vue';
+import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import { useRouter, size2Str, replaceHtml, copyToClipboard } from '@utils';
+import { size2Str, replaceHtml, copyToClipboard } from '@utils';
+import i18n from '@utils/i18n';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
-export default defineComponent({
-  props: {
-    keyword: {
-      type: String,
-      default: () => '',
-      requried: true,
-    },
-    result: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-      requried: true,
-    },
+defineProps({
+  keyword: {
+    type: String,
+    default: () => '',
+    requried: true,
   },
-  components: {
-    Avatar,
-    Empty,
-  },
-  setup() {
-    const { router } = useRouter();
-    const toast = useToast();
-
-    const handlePreviewFile = (file) => {
-      const { href } = router.resolve({ name: 'preview', params: { uuid: file.uuid } });
-      window.open(href, '_blank');
-    };
-
-    const handleViewFileSource = (source) => {
-      // const { href } = router.resolve({ path: source });
-      window.open(`${process.env.BASE_URL}${source.substring(1)}`, '_blank');
-    };
-
-    const handleDownloadFile = (file) => {
-      let downloadElement = document.createElement('a');
-      downloadElement.href = `${process.env.BASE_URL}cor/file/load/${file.uuid}`;
-      downloadElement.download = file.name;
-      document.body.appendChild(downloadElement);
-      downloadElement.click();
-      document.body.removeChild(downloadElement);
-    };
-
-    const handleClickIcon = (icon) => {
-      copyToClipboard(`mdi mdi-${icon.name}`)
-        .then(() => {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: i18n.global.t('layout.navbar.search.icon.copy.success'),
-            },
-          });
-        })
-        .catch((error) => {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: error.message,
-            },
-          });
-        });
-    };
-
-    return {
-      handlePreviewFile,
-      handleViewFileSource,
-      handleDownloadFile,
-      size2Str,
-      replaceHtml,
-      handleClickIcon,
-    };
+  result: {
+    type: Object,
+    default: () => {
+      return {};
+    },
+    requried: true,
   },
 });
+
+const { FileIcons } = window;
+
+const router = useRouter();
+const toast = useToast();
+const { BASE_URL } = process.env;
+
+const handlePreviewFile = (file) => {
+  const { href } = router.resolve({ name: 'preview', params: { uuid: file.uuid } });
+  window.open(href, '_blank');
+};
+
+const handleViewFileSource = (source) => {
+  // const { href } = router.resolve({ path: source });
+  window.open(`${BASE_URL}${source.substring(1)}`, '_blank');
+};
+
+const handleDownloadFile = (file) => {
+  let downloadElement = document.createElement('a');
+  downloadElement.href = `${BASE_URL}cor/file/load/${file.uuid}`;
+  downloadElement.download = file.name;
+  document.body.appendChild(downloadElement);
+  downloadElement.click();
+  document.body.removeChild(downloadElement);
+};
+
+const handleClickIcon = (icon) => {
+  copyToClipboard(`mdi mdi-${icon.name}`)
+    .then(() => {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          text: i18n.global.t('layout.navbar.search.icon.copy.success'),
+        },
+      });
+    })
+    .catch((error) => {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: error.message,
+        },
+      });
+    });
+};
 </script>

@@ -47,6 +47,8 @@ import Todolist from '@ckeditor/ckeditor5-list/src/todolist';
 import Code from '@ckeditor/ckeditor5-basic-styles/src/code';
 
 import store from '@store';
+const { BASE_URL } = process.env;
+
 export default class ClassicEditor extends ClassicEditorBase {}
 ClassicEditor.builtinPlugins = [
   Essentials,
@@ -180,7 +182,7 @@ ClassicEditor.defaultConfig = {
     options: [10, 'default', 14, 16, 18, 24, 36, 48],
   },
   simpleUpload: {
-    uploadUrl: `${process.env.BASE_URL}cor/file/ckeditor`,
+    uploadUrl: `${BASE_URL}cor/file/ckeditor`,
   },
   link: {
     addTargetToExternalLinks: true,

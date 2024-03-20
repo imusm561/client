@@ -95,179 +95,161 @@
   </div>
 </template>
 
-<script>
-import { computed, ref, nextTick } from 'vue';
-import { createDept, updateDept, dropDept } from '@api/dept';
-import store from '@store';
-import i18n from '@utils/i18n';
-import { listToTree, getChildrenById } from '@utils';
+<script setup>
+import { defineEmits, computed, ref, nextTick } from 'vue';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-export default {
-  components: {
-    ElTree,
-  },
-  setup(_, { emit }) {
-    const toast = useToast();
+import { listToTree, getChildrenById } from '@utils';
+import i18n from '@utils/i18n';
+import store from '@store';
+import { createDept, updateDept, dropDept } from '@api/dept';
 
-    const tree = computed(() => {
-      return listToTree(JSON.parse(JSON.stringify(store.state.org.depts)));
+const emit = defineEmits(['setDepts']);
+
+const toast = useToast();
+
+const tree = computed(() => {
+  return listToTree(JSON.parse(JSON.stringify(store.state.org.depts)));
+});
+
+let timer = null;
+
+const handleSelectDept = (node) => {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    const dept = store.state.org.depts.find((dept) => dept.id === node.id);
+    if (dept) {
+      const depts = [...[dept], ...getChildrenById(store.state.org.depts, node.id)];
+      emit('setDepts', depts);
+    }
+  }, 200);
+};
+
+const allowDrop = (draggingNode, dropNode, type) => {
+  if (dropNode.data.id === 1) {
+    return type === 'inner';
+  } else {
+    return true;
+  }
+};
+
+const allowDrag = (draggingNode) => {
+  return draggingNode.data.id != 1;
+};
+
+const handleDropDept = (draggingNode, dropNode, type) => {
+  const updates = [];
+  if (type == 'inner') {
+    dropNode.childNodes.forEach((node, index) => {
+      const update = { id: node.data.id, pid: dropNode.data.id, sort: index + 1 };
+      const origin = store.state.org.depts.find((dept) => dept.id === update.id);
+      if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
     });
-
-    let timer = null;
-
-    const handleSelectDept = (node) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        const dept = store.state.org.depts.find((dept) => dept.id === node.id);
-        if (dept) {
-          const depts = [...[dept], ...getChildrenById(store.state.org.depts, node.id)];
-          emit('setDepts', depts);
-        }
-      }, 200);
-    };
-
-    const allowDrop = (draggingNode, dropNode, type) => {
-      if (dropNode.data.id === 1) {
-        return type === 'inner';
-      } else {
-        return true;
-      }
-    };
-
-    const allowDrag = (draggingNode) => {
-      return draggingNode.data.id != 1;
-    };
-
-    const handleDropDept = (draggingNode, dropNode, type) => {
-      const updates = [];
-      if (type == 'inner') {
-        dropNode.childNodes.forEach((node, index) => {
-          const update = { id: node.data.id, pid: dropNode.data.id, sort: index + 1 };
-          const origin = store.state.org.depts.find((dept) => dept.id === update.id);
-          if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
-        });
-      } else {
-        dropNode.parent.childNodes.forEach((node, index) => {
-          const update = { id: node.data.id, pid: dropNode.parent.data.id, sort: index + 1 };
-          const origin = store.state.org.depts.find((dept) => dept.id === update.id);
-          if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
-        });
-      }
-      dropDept({ depts: updates }).then(({ code, msg }) => {
-        if (code != 200) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+  } else {
+    dropNode.parent.childNodes.forEach((node, index) => {
+      const update = { id: node.data.id, pid: dropNode.parent.data.id, sort: index + 1 };
+      const origin = store.state.org.depts.find((dept) => dept.id === update.id);
+      if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
+    });
+  }
+  dropDept({ depts: updates }).then(({ code, msg }) => {
+    if (code != 200) {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const handleEditDept = (node) => {
-      clearTimeout(timer);
-      node.data.name_old = node.data.name;
-      node.data.edit = true;
-      nextTick(() => document.getElementById('node_edit').focus());
-    };
+const handleEditDept = (node) => {
+  clearTimeout(timer);
+  node.data.name_old = node.data.name;
+  node.data.edit = true;
+  nextTick(() => document.getElementById('node_edit').focus());
+};
 
-    const handleAddDept = (node) => {
-      const child = { pid: node.data.id, name: '', name_old: 'new', edit: true };
-      if (!node.data.children) node.data.children = [];
-      node.data.children.push(child);
-      nextTick(() => document.getElementById('node_edit').focus());
-    };
+const handleAddDept = (node) => {
+  const child = { pid: node.data.id, name: '', name_old: 'new', edit: true };
+  if (!node.data.children) node.data.children = [];
+  node.data.children.push(child);
+  nextTick(() => document.getElementById('node_edit').focus());
+};
 
-    const handleSaveDeptName = (node) => {
-      node.data.name = node.data.name.trim();
-      if (!node.data.name) node.data.name = node.data.name_old;
-      if (node.data.id) {
-        if (node.data.name != node.data.name_old) {
-          if (store.state.org.depts.filter((dept) => dept.name == node.data.name).length > 0) {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: i18n.global.t('layout.navbar.helper.org.dept.create.error', {
-                  name: node.data.name,
-                }),
-              },
-            });
-          } else {
-            node.data.edit = false;
-            updateDept(node.data);
-          }
-        } else {
-          node.data.edit = false;
-        }
-      } else {
-        if (store.state.org.depts.filter((dept) => dept.name == node.data.name).length !== 0) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.globa.t('layout.navbar.helper.org.dept.create.error', {
-                name: node.data.name,
-              }),
-            },
-          });
-        } else {
-          node.data.edit = false;
-          createDept(node.data);
-        }
-      }
-    };
-
-    const current_dept = ref({});
-    const handlePreDelDept = (node) => {
-      if (store.state.org.users.filter((user) => user.dept === node.data.id).length !== 0) {
+const handleSaveDeptName = (node) => {
+  node.data.name = node.data.name.trim();
+  if (!node.data.name) node.data.name = node.data.name_old;
+  if (node.data.id) {
+    if (node.data.name != node.data.name_old) {
+      if (store.state.org.depts.filter((dept) => dept.name == node.data.name).length > 0) {
         toast({
           component: ToastificationContent,
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: i18n.globa.t('layout.navbar.helper.org.dept.delete.error', {
+            text: i18n.global.t('layout.navbar.helper.org.dept.create.error', {
               name: node.data.name,
             }),
           },
         });
       } else {
-        current_dept.value = node.data;
-        document.getElementById('showDeleteDeptModalBtn').click();
+        node.data.edit = false;
+        updateDept(node.data);
       }
-    };
-
-    const handleDelDept = () => {
-      updateDept({
-        id: current_dept.value.id,
-        data_state: 'deleted',
-      }).then(() => {
-        current_dept.value = {};
-        document.getElementById('hideDeleteDeptModalBtn').click();
+    } else {
+      node.data.edit = false;
+    }
+  } else {
+    if (store.state.org.depts.filter((dept) => dept.name == node.data.name).length !== 0) {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: i18n.globa.t('layout.navbar.helper.org.dept.create.error', {
+            name: node.data.name,
+          }),
+        },
       });
-    };
+    } else {
+      node.data.edit = false;
+      createDept(node.data);
+    }
+  }
+};
 
-    return {
-      tree,
-      handleSelectDept,
-      allowDrop,
-      allowDrag,
-      handleDropDept,
-      handleEditDept,
-      handleAddDept,
-      handleSaveDeptName,
-      current_dept,
-      handlePreDelDept,
-      handleDelDept,
-    };
-  },
+const current_dept = ref({});
+const handlePreDelDept = (node) => {
+  if (store.state.org.users.filter((user) => user.dept === node.data.id).length !== 0) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.globa.t('layout.navbar.helper.org.dept.delete.error', {
+          name: node.data.name,
+        }),
+      },
+    });
+  } else {
+    current_dept.value = node.data;
+    document.getElementById('showDeleteDeptModalBtn').click();
+  }
+};
+
+const handleDelDept = () => {
+  updateDept({
+    id: current_dept.value.id,
+    data_state: 'deleted',
+  }).then(() => {
+    current_dept.value = {};
+    document.getElementById('hideDeleteDeptModalBtn').click();
+  });
 };
 </script>

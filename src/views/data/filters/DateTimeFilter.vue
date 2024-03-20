@@ -15,60 +15,49 @@
   ></FlatPickr>
 </template>
 
-<script>
-import { defineComponent, ref } from 'vue';
+<script setup>
+import { defineProps, ref } from 'vue';
+import moment from '@utils/moment';
 import FlatPickr from '@/components/FlatPickr';
-export default defineComponent({
-  components: {
-    FlatPickr,
-  },
-  setup(props) {
-    const moment = window.moment;
 
-    const onOpen = () => {
-      document
-        .getElementsByClassName('flatpickr-calendar animate open')[0]
-        .classList.add('ag-custom-component-popup');
-    };
+const props = defineProps(['params']);
 
-    const onChange = () => {
-      props.params.onDateChanged();
-    };
+const onOpen = () => {
+  document
+    .getElementsByClassName('flatpickr-calendar animate open')[0]
+    .classList.add('ag-custom-component-popup');
+};
 
-    const onClose = () => {
-      props.params.onDateChanged();
-    };
+const onChange = () => {
+  props.params.onDateChanged();
+};
 
-    const date = ref(null);
-    const getDate = () => {
-      return date.value
-        ? moment(
-            props.params.filterParams._column.cfg.dateFormat.includes('Y-m-d')
-              ? date.value
-              : `${moment().format('YYYY-MM-DD')} ${date.value}`,
-          ).toDate()
-        : null;
-    };
+const onClose = () => {
+  props.params.onDateChanged();
+};
 
-    const setDate = (res) => {
-      date.value = res;
-    };
+const date = ref(null);
 
-    const disabled = ref(false);
-    const setDisabled = (res) => {
-      disabled.value = res;
-    };
+/* eslint-disable-next-line no-unused-vars */
+const getDate = () => {
+  return date.value
+    ? moment(
+        props.params.filterParams._column.cfg.dateFormat.includes('Y-m-d')
+          ? date.value
+          : `${moment().format('YYYY-MM-DD')} ${date.value}`,
+      ).toDate()
+    : null;
+};
 
-    return {
-      onOpen,
-      onChange,
-      onClose,
-      date,
-      getDate,
-      setDate,
-      disabled,
-      setDisabled,
-    };
-  },
-});
+/* eslint-disable-next-line no-unused-vars */
+const setDate = (res) => {
+  date.value = res;
+};
+
+const disabled = ref(false);
+
+/* eslint-disable-next-line no-unused-vars */
+const setDisabled = (res) => {
+  disabled.value = res;
+};
 </script>

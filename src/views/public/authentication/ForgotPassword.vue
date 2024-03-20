@@ -214,132 +214,109 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed } from 'vue';
-import { resetPassword } from '@api/user';
-import { sendVerificationCode, verifyVerificationCode } from '@api/com/sms';
-import { useRouter, hashData, clearUserData } from '@utils';
-import store from '@store';
+import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-export default {
-  setup() {
-    const formtype = ref('sms_verification');
 
-    const phone = ref('');
-    const code = ref('');
+import { hashData, clearUserData } from '@utils';
+import store from '@store';
 
-    const newpassword = ref('');
-    const confirmpassword = ref('');
-    const isNewPasswordVisible = ref(false);
-    const isConfirmPasswordVisible = ref(false);
+import { resetPassword } from '@api/user';
+import { sendVerificationCode, verifyVerificationCode } from '@api/com/sms';
 
-    const res = ref({});
+const { BASE_URL } = process.env;
+const formtype = ref('sms_verification');
 
-    const canSendVerificationCode = ref(true);
-    const resendVerificationCodeCountDown = ref(60);
-    const handleSendVerificationCode = () => {
-      if (canSendVerificationCode.value) {
-        canSendVerificationCode.value = false;
-        let params = {
-          template: 'reset_password',
-          phone: phone.value,
-        };
-        sendVerificationCode(params).then(({ code, data }) => {
-          if (code === 200) {
-            let interval;
-            interval = setInterval(() => {
-              resendVerificationCodeCountDown.value -= 1;
-              if (resendVerificationCodeCountDown.value === 0) {
-                clearInterval(interval);
-                canSendVerificationCode.value = true;
-                resendVerificationCodeCountDown.value = 60;
-              }
-            }, 1000);
-          } else {
+const phone = ref('');
+const code = ref('');
+
+const newpassword = ref('');
+const confirmpassword = ref('');
+const isNewPasswordVisible = ref(false);
+const isConfirmPasswordVisible = ref(false);
+
+const res = ref({});
+
+const canSendVerificationCode = ref(true);
+const resendVerificationCodeCountDown = ref(60);
+const handleSendVerificationCode = () => {
+  if (canSendVerificationCode.value) {
+    canSendVerificationCode.value = false;
+    let params = {
+      template: 'reset_password',
+      phone: phone.value,
+    };
+    sendVerificationCode(params).then(({ code, data }) => {
+      if (code === 200) {
+        let interval;
+        interval = setInterval(() => {
+          resendVerificationCodeCountDown.value -= 1;
+          if (resendVerificationCodeCountDown.value === 0) {
+            clearInterval(interval);
             canSendVerificationCode.value = true;
-            res.value = data;
+            resendVerificationCodeCountDown.value = 60;
           }
-        });
+        }, 1000);
+      } else {
+        canSendVerificationCode.value = true;
+        res.value = data;
       }
-    };
-
-    const canSubmit = ref(true);
-    const handleVerifyCode = async () => {
-      if (canSubmit.value) {
-        canSubmit.value = false;
-        const params = {
-          template: 'reset_password',
-          phone: phone.value,
-          code: code.value,
-        };
-        verifyVerificationCode(params).then(({ code, data }) => {
-          if (code === 200) {
-            formtype.value = 'reset_password';
-          } else {
-            res.value = data;
-          }
-          canSubmit.value = true;
-        });
-      }
-    };
-
-    const { router, route } = useRouter();
-    const toast = useToast();
-    const handleResetPassword = async () => {
-      if (canSubmit.value) {
-        canSubmit.value = false;
-        const params = {
-          phone: phone.value,
-          password: hashData(newpassword.value),
-        };
-        resetPassword(params).then(async ({ code, msg }) => {
-          if (code === 200) {
-            clearUserData();
-            router.replace({ name: 'login', query: route.value.query });
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-          canSubmit.value = true;
-        });
-      }
-    };
-
-    const logo = computed(() => {
-      return store.getters['sys/logo'];
     });
-
-    return {
-      formtype,
-
-      newpassword,
-      confirmpassword,
-      isNewPasswordVisible,
-      isConfirmPasswordVisible,
-
-      phone,
-      code,
-
-      res,
-
-      canSendVerificationCode,
-      resendVerificationCodeCountDown,
-      handleSendVerificationCode,
-
-      canSubmit,
-      handleVerifyCode,
-
-      handleResetPassword,
-
-      logo,
-    };
-  },
+  }
 };
+
+const canSubmit = ref(true);
+const handleVerifyCode = async () => {
+  if (canSubmit.value) {
+    canSubmit.value = false;
+    const params = {
+      template: 'reset_password',
+      phone: phone.value,
+      code: code.value,
+    };
+    verifyVerificationCode(params).then(({ code, data }) => {
+      if (code === 200) {
+        formtype.value = 'reset_password';
+      } else {
+        res.value = data;
+      }
+      canSubmit.value = true;
+    });
+  }
+};
+
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
+const handleResetPassword = async () => {
+  if (canSubmit.value) {
+    canSubmit.value = false;
+    const params = {
+      phone: phone.value,
+      password: hashData(newpassword.value),
+    };
+    resetPassword(params).then(async ({ code, msg }) => {
+      if (code === 200) {
+        clearUserData();
+        router.replace({ name: 'login', query: route.query });
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+      canSubmit.value = true;
+    });
+  }
+};
+
+const logo = computed(() => {
+  return store.getters['sys/logo'];
+});
 </script>

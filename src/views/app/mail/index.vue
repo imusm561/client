@@ -253,7 +253,7 @@
                       -
                       <span class="teaser">{{ replaceHtml(mail.content) }}</span>
                     </a>
-                    <div class="date text-truncate">{{ $moment(mail.created_at).fromNow() }}</div>
+                    <div class="date text-truncate">{{ moment(mail.created_at).fromNow() }}</div>
                   </div>
                 </div>
               </li>
@@ -430,7 +430,7 @@
               </div>
             </div>
             <div class="flex-shrink-0 align-self-start">
-              <div class="text-muted fs-12">{{ $moment(current_mail.created_at).fromNow() }}</div>
+              <div class="text-muted fs-12">{{ moment(current_mail.created_at).fromNow() }}</div>
               <a
                 role="button"
                 class="w-100 text-primary float-end text-end collapsed"
@@ -772,32 +772,616 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { computed, onMounted, onUnmounted, ref, watch, reactive, nextTick } from 'vue';
-import { replaceHtml, useRouter, getUserInfo, hashData, encryptData, decryptData } from '@utils';
+import { useRoute } from 'vue-router';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+import { replaceHtml, getUserInfo, hashData, encryptData, decryptData } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+import { socket } from '@utils/socket';
 import store from '@store';
 import CKEditor from '@components/CKEditor';
 import Uploader from '@components/Uploader';
-import { getMail, getMails, createMail, updateMail } from '@api/app/mail';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
 import UserSelector from '@components/UserSelector';
 import Avatar from '@components/Avatar';
-import i18n from '@utils/i18n';
-export default {
-  components: {
-    CKEditor,
-    Uploader,
-    UserSelector,
-    Avatar,
-  },
-  setup() {
-    const toast = useToast();
-    const { route } = useRouter();
-    const socket = window.socket;
-    const moment = window.moment;
+import { getMail, getMails, createMail, updateMail } from '@api/app/mail';
 
-    const new_mail = ref({
+const toast = useToast();
+const route = useRoute();
+
+const new_mail = ref({
+  key: Math.random().toString(36).slice(-6),
+  to: [],
+  cc: [],
+  bcc: [],
+  subject: '',
+  content: '',
+  attachments: [],
+  label: [],
+  trash: [],
+  star: [],
+  important: [],
+  read: [],
+});
+
+const menus = reactive([
+  {
+    title: i18n.global.t('app.mail.menu.all'),
+    value: 'all',
+    variant: 'primary',
+    icon: 'mdi-email-multiple',
+  },
+  {
+    title: i18n.global.t('app.mail.menu.inbox'),
+    value: 'inbox',
+    variant: 'info',
+    icon: 'mdi-email-receive',
+  },
+  {
+    title: i18n.global.t('app.mail.menu.draft'),
+    value: 'draft',
+    variant: 'warning',
+    icon: 'mdi-email-edit-outline',
+  },
+  {
+    title: i18n.global.t('app.mail.menu.sent'),
+    value: 'sent',
+    variant: 'success',
+    icon: 'mdi-email-send',
+  },
+  {
+    title: i18n.global.t('app.mail.menu.trash'),
+    value: 'trash',
+    variant: 'danger',
+    icon: 'mdi-trash-can',
+  },
+  {
+    title: i18n.global.t('app.mail.menu.star'),
+    value: 'star',
+    variant: 'warning',
+    icon: 'mdi-star',
+  },
+  {
+    title: i18n.global.t('app.mail.menu.important'),
+    value: 'important',
+    variant: 'warning',
+    icon: 'mdi-label',
+  },
+]);
+
+const labels = reactive(JSON.parse(JSON.stringify(store.state.sys.cfg.mail.labels)));
+
+const mails = reactive({
+  menu: menus[0].value,
+  label: labels[0].value,
+  total: 0,
+  pageNum: 1,
+  pageSize: 20,
+  list: [],
+  loading: false,
+  refetch: false,
+});
+
+const fetchMails = (callback) => {
+  getMails({
+    menu: mails.menu,
+    label: mails.label,
+    pageNum: mails.refetch ? 1 : mails.pageNum,
+    pageSize: mails.refetch ? (mails.pageNum - 1) * mails.pageSize : mails.pageSize,
+  }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      mails.total = data.count;
+      if (mails.refetch) {
+        mails.list = data.rows.map((mail) => {
+          mail.sender = getUserInfo(mail.created_by);
+          return mail;
+        });
+      } else {
+        mails.pageNum += 1;
+        mails.list.push(
+          ...data.rows.map((mail) => {
+            mail.sender = getUserInfo(mail.created_by);
+            return mail;
+          }),
+        );
+      }
+      if (data.menu)
+        menus.forEach((menu) => {
+          menu.count = data.menu[menu.value];
+        });
+      if (data.label)
+        labels.forEach((label) => {
+          label.count = data.label[label.value];
+        });
+      setTimeout(() => {
+        mails.loading = false;
+        mails.refetch = false;
+      }, 500);
+      nextTick(() => {
+        callback && callback();
+      });
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const scrollHandler = () => {
+  const list = document.getElementById('email-list')?.querySelector('.simplebar-content-wrapper');
+  if (
+    list &&
+    list.scrollHeight - (list.scrollTop + list.offsetHeight) < 2 &&
+    mails.list.length < mails.total &&
+    !mails.loading
+  ) {
+    mails.loading = true;
+    fetchMails();
+  }
+};
+
+const refetchMailsHandler = () => {
+  mails.refetch = true;
+  mails.loading = true;
+  fetchMails();
+};
+
+const ccRecipientsCollapseHiddenHandler = () => {
+  new_mail.value.cc = [];
+};
+
+const bccRecipientsCollapseHiddenHandler = () => {
+  new_mail.value.bcc = [];
+};
+
+const composeModalShowHandler = () => {
+  const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
+  const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
+  if (ccRecipientsCollapse && new_mail.value.cc.length != 0)
+    ccRecipientsCollapse.classList.add('show');
+  if (bccRecipientsCollapse && new_mail.value.bcc.length != 0)
+    bccRecipientsCollapse.classList.add('show');
+};
+
+const composeModalHiddenHandler = () => {
+  const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
+  const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
+  if (ccRecipientsCollapse && new_mail.value.cc.length === 0)
+    ccRecipientsCollapse.classList.remove('show');
+  if (bccRecipientsCollapse && new_mail.value.bcc.length === 0)
+    bccRecipientsCollapse.classList.remove('show');
+};
+
+const mailCcListElShowHandler = () => {
+  showMoreUsers.value = true;
+};
+
+const mailCcListElHideHandler = () => {
+  showMoreUsers.value = false;
+};
+
+onMounted(async () => {
+  if (route.query.id) {
+    const { code, data, msg } = await getMail(route.query);
+    if (code === 200) {
+      data.sender = getUserInfo(data.created_by);
+      mails.menu = data.trash.includes(store.state.user.data.username)
+        ? 'trash'
+        : data.created_by === store.state.user.data.username
+        ? data.data_state === 'published'
+          ? 'sent'
+          : 'draft'
+        : 'inbox';
+      mails.label = data.label?.length ? data.label[0] : 'all';
+      setTimeout(() => {
+        handleOpenMail(data);
+      }, 500);
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  }
+
+  fetchMails(() => {
+    watch(
+      () => [mails.menu, mails.label],
+      (newVal, oldVal) => {
+        if (newVal && oldVal) {
+          handleCloseMail();
+          const checkall = document.getElementById('checkall');
+          checkall.checked = false;
+          checkall.indeterminate = false;
+          checkedMailIds.value = [];
+
+          mails.total = 0;
+          mails.pageNum = 1;
+          mails.pageSize = 20;
+          mails.list = [];
+
+          fetchMails();
+        }
+      },
+      { immediate: true },
+    );
+
+    const list = document.getElementById('email-list')?.querySelector('.simplebar-content-wrapper');
+    if (list) list.addEventListener('scroll', scrollHandler);
+  });
+  socket.on('refetchMails', refetchMailsHandler);
+  handleCloseMail();
+
+  const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
+  if (ccRecipientsCollapse)
+    ccRecipientsCollapse.addEventListener('hidden.bs.collapse', ccRecipientsCollapseHiddenHandler);
+
+  const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
+  if (bccRecipientsCollapse)
+    bccRecipientsCollapse.addEventListener(
+      'hidden.bs.collapse',
+      bccRecipientsCollapseHiddenHandler,
+    );
+
+  const composeModal = document.getElementById('composeModal');
+  if (composeModal) {
+    composeModal.addEventListener('show.bs.modal', composeModalShowHandler);
+    composeModal.addEventListener('hidden.bs.modal', composeModalHiddenHandler);
+  }
+});
+
+onUnmounted(() => {
+  const list = document.getElementById('email-list')?.querySelector('.simplebar-content-wrapper');
+  if (list) list.removeEventListener('scroll', scrollHandler);
+
+  socket.off('refetchMails', refetchMailsHandler);
+  const mailCcListEl = document.getElementById('cc_list');
+  if (mailCcListEl) {
+    mailCcListEl.removeEventListener('show.bs.collapse', mailCcListElShowHandler);
+    mailCcListEl.removeEventListener('hide.bs.collapse', mailCcListElHideHandler);
+  }
+
+  const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
+  if (ccRecipientsCollapse)
+    ccRecipientsCollapse.removeEventListener(
+      'hidden.bs.collapse',
+      ccRecipientsCollapseHiddenHandler,
+    );
+
+  const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
+  if (bccRecipientsCollapse)
+    bccRecipientsCollapse.removeEventListener(
+      'hidden.bs.collapse',
+      bccRecipientsCollapseHiddenHandler,
+    );
+
+  const composeModal = document.getElementById('composeModal');
+  if (composeModal) {
+    composeModal.removeEventListener('show.bs.modal', composeModalShowHandler);
+    composeModal.removeEventListener('hidden.bs.modal', composeModalHiddenHandler);
+  }
+});
+
+const handleClickMenuBtn = () => {
+  document.getElementById('menusidebar').classList.add('menubar-show');
+};
+
+const handleClickMailWrapper = () => {
+  if (document.getElementById('menusidebar').classList.contains('menubar-show'))
+    document.getElementById('menusidebar').classList.remove('menubar-show');
+};
+
+const checkedMailIds = ref([]);
+
+watch(
+  () => checkedMailIds.value,
+  (val) => {
+    if (val) {
+      const checkall = document.getElementById('checkall');
+      if (checkall) {
+        checkall.checked = val.length > 0;
+        checkall.indeterminate = val.length > 0 && val.length < mails.list.length;
+      }
+    }
+  },
+  { immediate: true, deep: true },
+);
+
+const handleCheckMail = (mail) => {
+  const idx = checkedMailIds.value.indexOf(mail.id);
+  if (idx === -1) checkedMailIds.value.push(mail.id);
+  else checkedMailIds.value.splice(idx, 1);
+};
+
+const handleCheckAllMail = (e) => {
+  if (e?.target?.checked)
+    checkedMailIds.value = mails.list.map((mail) => {
+      return mail.id;
+    });
+  else checkedMailIds.value = [];
+};
+
+const handleMarkOrUnmarkMails = (ids, field, mark) => {
+  const data = {
+    mails: ids.map((id) => {
+      const mail = mails.list.find((mail) => mail.id === id);
+      const idx = mail[field].indexOf(store.state.user.data.username);
+      if (mark) {
+        if (idx === -1) mail[field].push(store.state.user.data.username);
+      } else {
+        if (idx != -1) mail[field].splice(idx, 1);
+      }
+      if (id === current_mail.value.id) current_mail.value[field] = mail[field];
+      return {
+        id,
+        [field]: mail[field],
+      };
+    }),
+  };
+  updateMail(data).then(({ code, msg }) => {
+    if (code === 200) {
+      if (mark && (field === 'trash' || field === 'delete') && ids.includes(current_mail.value.id))
+        handleCloseMail();
+      mails.refetch = true;
+      mails.loading = true;
+      fetchMails();
+      handleCheckAllMail();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const current_mail = ref({});
+
+const resolveUsers = computed(() => {
+  return (arr) => {
+    return arr.map((item) => {
+      if (item == 0) {
+        return;
+      } else if (!Number(item)) {
+        const user = getUserInfo(item);
+        return {
+          label: user ? user.fullname : i18n.global.t('app.mail.content.to.user', { user: item }),
+          title: user ? user.fullname : i18n.global.t('app.mail.content.to.user', { user: item }),
+        };
+      } else {
+        item = Number(item);
+        const dept = store.state.org.depts.find((dept) => dept.id === item);
+        return {
+          label: dept ? dept.name : i18n.global.t('app.mail.content.to.dept', { dept: item }),
+          title: dept
+            ? store.state.org.users
+                .map((user) => {
+                  return user.fullname;
+                })
+                .join(',')
+            : i18n.global.t('app.mail.content.to.dept', { dept: item }),
+        };
+      }
+    });
+  };
+});
+
+const showMoreUsers = ref(false);
+
+const handleOpenMail = (mail) => {
+  if (mail.data_state === 'drafted') {
+    handleCloseMail();
+    new_mail.value = JSON.parse(JSON.stringify(mail));
+    new_mail.value.key = Math.random().toString(36).slice(-6);
+    nextTick(() => document.getElementById('showDraftMailModalBtn').click());
+  } else {
+    store.dispatch('user/delNotice', {
+      app: 'mail',
+      data: mail,
+    });
+    if (
+      mail.created_by != store.state.user.data.username &&
+      mail.read.indexOf(store.state.user.data.username) === -1
+    ) {
+      mail.read.push(store.state.user.data.username);
+      updateMail({
+        mails: [
+          {
+            id: mail.id,
+            read: mail.read,
+          },
+        ],
+      }).then(({ code, msg }) => {
+        if (code !== 200) {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    }
+    current_mail.value = mail;
+    document.body.classList.add('email-detail-show');
+    nextTick(() => {
+      const mailCcListEl = document.getElementById('cc_list');
+      if (mailCcListEl) {
+        mailCcListEl.addEventListener('show.bs.collapse', mailCcListElShowHandler);
+        mailCcListEl.addEventListener('hide.bs.collapse', mailCcListElHideHandler);
+      }
+    });
+  }
+};
+
+const handleCloseMail = () => {
+  const mailCcListEl = document.getElementById('cc_list');
+  nextTick(() => {
+    if (mailCcListEl) {
+      mailCcListEl.removeEventListener('show.bs.collapse', mailCcListElShowHandler);
+      mailCcListEl.removeEventListener('hide.bs.collapse', mailCcListElHideHandler);
+    }
+    showMoreUsers.value = false;
+    current_mail.value = {};
+  });
+  document.body.classList.remove('email-detail-show');
+};
+
+const { BASE_URL } = process.env;
+const handleComposeMail = () => {
+  const staged = localStorage.getItem(
+    `${BASE_URL.replace(/\//g, '_')}${hashData(
+      `app_mail_${store.state.user.data.username}_staged`,
+    )}`,
+  );
+  if (staged) {
+    try {
+      new_mail.value = JSON.parse(decryptData(staged));
+    } catch (error) {
+      // console.error(error);
+    }
+    localStorage.removeItem(
+      `${BASE_URL.replace(/\//g, '_')}${hashData(
+        `app_mail_${store.state.user.data.username}_staged`,
+      )}`,
+    );
+  }
+  handleCloseMail();
+};
+
+const handleSubmitMail = (data_state) => {
+  new_mail.value.data_state = data_state;
+  const apis = { createMail, updateMail };
+  apis[new_mail.value.id ? 'updateMail' : 'createMail'](
+    new_mail.value.id
+      ? {
+          mails: [new_mail.value],
+        }
+      : new_mail.value,
+  ).then(({ code, msg }) => {
+    if (code === 200) {
+      mails.refetch = true;
+      fetchMails();
+      document.getElementById('hideComposeModalBtn').click();
+      setTimeout(() => {
+        handleCancelCompose();
+      }, 500);
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const handleReply = (mail) => {
+  new_mail.value = {
+    to: [mail.created_by],
+    cc: [],
+    bcc: [],
+    subject: `Re: ${mail.subject}`,
+    content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(
+      mail.created_at,
+    ).format('llll')}<br/><b>To:</b> ${resolveUsers
+      .value(mail.to)
+      .map((item) => {
+        return item.label;
+      })
+      .join(', ')}<br/>${
+      mail.cc.length
+        ? `<b>Cc:</b> ${resolveUsers
+            .value(mail.cc)
+            .map((item) => {
+              return item.label;
+            })
+            .join(', ')}<br/>`
+        : ``
+    }<b>Subject:</b> ${mail.subject}<br/>${mail.content}`,
+    attachments: [],
+    label: mail.label,
+    trash: [],
+    star: [],
+    important: [],
+    read: [],
+  };
+  document.getElementById('showComposeModalBtn').click();
+};
+const handleReply2All = (mail, confirmed) => {
+  if (!confirmed && ![...mail.to, ...mail.cc].includes(store.state.user.data.username)) {
+    document.getElementById('showReply2AllConfirmModalBtn').click();
+    return;
+  }
+  new_mail.value = {
+    to: [
+      ...[mail.created_by],
+      ...mail.to.filter((username) => username != store.state.user.data.username),
+    ],
+    cc: mail.cc.filter((username) => username != store.state.user.data.username),
+    bcc: [],
+    subject: `Re: ${mail.subject}`,
+    content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(
+      mail.created_at,
+    ).format('llll')}<br/><b>To:</b> ${resolveUsers
+      .value(mail.to)
+      .map((item) => {
+        return item.label;
+      })
+      .join(', ')}<br/>${
+      mail.cc.length
+        ? `<b>Cc:</b> ${resolveUsers
+            .value(mail.cc)
+            .map((item) => {
+              return item.label;
+            })
+            .join(', ')}<br/>`
+        : ``
+    }<b>Subject:</b> ${mail.subject}<br/>${mail.content}`,
+    attachments: [],
+    label: mail.label,
+    trash: [],
+    star: [],
+    important: [],
+    read: [],
+  };
+  if (new_mail.value.cc.length) {
+    document.getElementById('CcRecipientsCollapse').classList.add('show');
+  }
+  document.getElementById('showComposeModalBtn').click();
+};
+const showCancelConfirmModal = () => {
+  if (new_mail.value.data_state === 'drafted') {
+    document.getElementById('hideComposeModalBtn').click();
+    setTimeout(() => {
+      handleCancelCompose();
+    }, 500);
+  } else document.getElementById('showCancelConfirmModalBtn').click();
+};
+const handleCancelCompose = (discard = true) => {
+  if (discard) {
+    new_mail.value = {
       key: Math.random().toString(36).slice(-6),
       to: [],
       cc: [],
@@ -810,653 +1394,19 @@ export default {
       star: [],
       important: [],
       read: [],
-    });
-
-    const menus = reactive([
-      {
-        title: i18n.global.t('app.mail.menu.all'),
-        value: 'all',
-        variant: 'primary',
-        icon: 'mdi-email-multiple',
-      },
-      {
-        title: i18n.global.t('app.mail.menu.inbox'),
-        value: 'inbox',
-        variant: 'info',
-        icon: 'mdi-email-receive',
-      },
-      {
-        title: i18n.global.t('app.mail.menu.draft'),
-        value: 'draft',
-        variant: 'warning',
-        icon: 'mdi-email-edit-outline',
-      },
-      {
-        title: i18n.global.t('app.mail.menu.sent'),
-        value: 'sent',
-        variant: 'success',
-        icon: 'mdi-email-send',
-      },
-      {
-        title: i18n.global.t('app.mail.menu.trash'),
-        value: 'trash',
-        variant: 'danger',
-        icon: 'mdi-trash-can',
-      },
-      {
-        title: i18n.global.t('app.mail.menu.star'),
-        value: 'star',
-        variant: 'warning',
-        icon: 'mdi-star',
-      },
-      {
-        title: i18n.global.t('app.mail.menu.important'),
-        value: 'important',
-        variant: 'warning',
-        icon: 'mdi-label',
-      },
-    ]);
-
-    const labels = reactive(JSON.parse(JSON.stringify(store.state.sys.cfg.mail.labels)));
-
-    const mails = reactive({
-      menu: menus[0].value,
-      label: labels[0].value,
-      total: 0,
-      pageNum: 1,
-      pageSize: 20,
-      list: [],
-      loading: false,
-      refetch: false,
-    });
-
-    const fetchMails = (callback) => {
-      getMails({
-        menu: mails.menu,
-        label: mails.label,
-        pageNum: mails.refetch ? 1 : mails.pageNum,
-        pageSize: mails.refetch ? (mails.pageNum - 1) * mails.pageSize : mails.pageSize,
-      }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          mails.total = data.count;
-          if (mails.refetch) {
-            mails.list = data.rows.map((mail) => {
-              mail.sender = getUserInfo(mail.created_by);
-              return mail;
-            });
-          } else {
-            mails.pageNum += 1;
-            mails.list.push(
-              ...data.rows.map((mail) => {
-                mail.sender = getUserInfo(mail.created_by);
-                return mail;
-              }),
-            );
-          }
-          if (data.menu)
-            menus.forEach((menu) => {
-              menu.count = data.menu[menu.value];
-            });
-          if (data.label)
-            labels.forEach((label) => {
-              label.count = data.label[label.value];
-            });
-          setTimeout(() => {
-            mails.loading = false;
-            mails.refetch = false;
-          }, 500);
-          nextTick(() => {
-            callback && callback();
-          });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
     };
-
-    const scrollHandler = () => {
-      const list = document
-        .getElementById('email-list')
-        ?.querySelector('.simplebar-content-wrapper');
-      if (
-        list &&
-        list.scrollHeight - (list.scrollTop + list.offsetHeight) < 2 &&
-        mails.list.length < mails.total &&
-        !mails.loading
-      ) {
-        mails.loading = true;
-        fetchMails();
-      }
-    };
-
-    const refetchMailsHandler = () => {
-      mails.refetch = true;
-      mails.loading = true;
-      fetchMails();
-    };
-
-    const ccRecipientsCollapseHiddenHandler = () => {
-      new_mail.value.cc = [];
-    };
-
-    const bccRecipientsCollapseHiddenHandler = () => {
-      new_mail.value.bcc = [];
-    };
-
-    const composeModalShowHandler = () => {
-      const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
-      const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
-      if (ccRecipientsCollapse && new_mail.value.cc.length != 0)
-        ccRecipientsCollapse.classList.add('show');
-      if (bccRecipientsCollapse && new_mail.value.bcc.length != 0)
-        bccRecipientsCollapse.classList.add('show');
-    };
-
-    const composeModalHiddenHandler = () => {
-      const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
-      const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
-      if (ccRecipientsCollapse && new_mail.value.cc.length === 0)
-        ccRecipientsCollapse.classList.remove('show');
-      if (bccRecipientsCollapse && new_mail.value.bcc.length === 0)
-        bccRecipientsCollapse.classList.remove('show');
-    };
-
-    const mailCcListElShowHandler = () => {
-      showMoreUsers.value = true;
-    };
-
-    const mailCcListElHideHandler = () => {
-      showMoreUsers.value = false;
-    };
-
-    onMounted(async () => {
-      if (route.value.query.id) {
-        const { code, data, msg } = await getMail(route.value.query);
-        if (code === 200) {
-          data.sender = getUserInfo(data.created_by);
-          mails.menu = data.trash.includes(store.state.user.data.username)
-            ? 'trash'
-            : data.created_by === store.state.user.data.username
-            ? data.data_state === 'published'
-              ? 'sent'
-              : 'draft'
-            : 'inbox';
-          mails.label = data.label?.length ? data.label[0] : 'all';
-          setTimeout(() => {
-            handleOpenMail(data);
-          }, 500);
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      }
-
-      fetchMails(() => {
-        watch(
-          () => [mails.menu, mails.label],
-          (newVal, oldVal) => {
-            if (newVal && oldVal) {
-              handleCloseMail();
-              const checkall = document.getElementById('checkall');
-              checkall.checked = false;
-              checkall.indeterminate = false;
-              checkedMailIds.value = [];
-
-              mails.total = 0;
-              mails.pageNum = 1;
-              mails.pageSize = 20;
-              mails.list = [];
-
-              fetchMails();
-            }
-          },
-          { immediate: true },
-        );
-
-        const list = document
-          .getElementById('email-list')
-          ?.querySelector('.simplebar-content-wrapper');
-        if (list) list.addEventListener('scroll', scrollHandler);
-      });
-      socket.on('refetchMails', refetchMailsHandler);
-      handleCloseMail();
-
-      const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
-      if (ccRecipientsCollapse)
-        ccRecipientsCollapse.addEventListener(
-          'hidden.bs.collapse',
-          ccRecipientsCollapseHiddenHandler,
-        );
-
-      const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
-      if (bccRecipientsCollapse)
-        bccRecipientsCollapse.addEventListener(
-          'hidden.bs.collapse',
-          bccRecipientsCollapseHiddenHandler,
-        );
-
-      const composeModal = document.getElementById('composeModal');
-      if (composeModal) {
-        composeModal.addEventListener('show.bs.modal', composeModalShowHandler);
-        composeModal.addEventListener('hidden.bs.modal', composeModalHiddenHandler);
-      }
-    });
-
-    onUnmounted(() => {
-      const list = document
-        .getElementById('email-list')
-        ?.querySelector('.simplebar-content-wrapper');
-      if (list) list.removeEventListener('scroll', scrollHandler);
-
-      socket.off('refetchMails', refetchMailsHandler);
-      const mailCcListEl = document.getElementById('cc_list');
-      if (mailCcListEl) {
-        mailCcListEl.removeEventListener('show.bs.collapse', mailCcListElShowHandler);
-        mailCcListEl.removeEventListener('hide.bs.collapse', mailCcListElHideHandler);
-      }
-
-      const ccRecipientsCollapse = document.getElementById('CcRecipientsCollapse');
-      if (ccRecipientsCollapse)
-        ccRecipientsCollapse.removeEventListener(
-          'hidden.bs.collapse',
-          ccRecipientsCollapseHiddenHandler,
-        );
-
-      const bccRecipientsCollapse = document.getElementById('BccRecipientsCollapse');
-      if (bccRecipientsCollapse)
-        bccRecipientsCollapse.removeEventListener(
-          'hidden.bs.collapse',
-          bccRecipientsCollapseHiddenHandler,
-        );
-
-      const composeModal = document.getElementById('composeModal');
-      if (composeModal) {
-        composeModal.removeEventListener('show.bs.modal', composeModalShowHandler);
-        composeModal.removeEventListener('hidden.bs.modal', composeModalHiddenHandler);
-      }
-    });
-
-    const handleClickMenuBtn = () => {
-      document.getElementById('menusidebar').classList.add('menubar-show');
-    };
-
-    const handleClickMailWrapper = () => {
-      if (document.getElementById('menusidebar').classList.contains('menubar-show'))
-        document.getElementById('menusidebar').classList.remove('menubar-show');
-    };
-
-    const checkedMailIds = ref([]);
-
-    watch(
-      () => checkedMailIds.value,
-      (val) => {
-        if (val) {
-          const checkall = document.getElementById('checkall');
-          if (checkall) {
-            checkall.checked = val.length > 0;
-            checkall.indeterminate = val.length > 0 && val.length < mails.list.length;
-          }
-        }
-      },
-      { immediate: true, deep: true },
+    localStorage.removeItem(
+      `${BASE_URL.replace(/\//g, '_')}${hashData(
+        `app_mail_${store.state.user.data.username}_staged`,
+      )}`,
     );
-
-    const handleCheckMail = (mail) => {
-      const idx = checkedMailIds.value.indexOf(mail.id);
-      if (idx === -1) checkedMailIds.value.push(mail.id);
-      else checkedMailIds.value.splice(idx, 1);
-    };
-
-    const handleCheckAllMail = (e) => {
-      if (e?.target?.checked)
-        checkedMailIds.value = mails.list.map((mail) => {
-          return mail.id;
-        });
-      else checkedMailIds.value = [];
-    };
-
-    const handleMarkOrUnmarkMails = (ids, field, mark) => {
-      const data = {
-        mails: ids.map((id) => {
-          const mail = mails.list.find((mail) => mail.id === id);
-          const idx = mail[field].indexOf(store.state.user.data.username);
-          if (mark) {
-            if (idx === -1) mail[field].push(store.state.user.data.username);
-          } else {
-            if (idx != -1) mail[field].splice(idx, 1);
-          }
-          if (id === current_mail.value.id) current_mail.value[field] = mail[field];
-          return {
-            id,
-            [field]: mail[field],
-          };
-        }),
-      };
-      updateMail(data).then(({ code, msg }) => {
-        if (code === 200) {
-          if (
-            mark &&
-            (field === 'trash' || field === 'delete') &&
-            ids.includes(current_mail.value.id)
-          )
-            handleCloseMail();
-          mails.refetch = true;
-          mails.loading = true;
-          fetchMails();
-          handleCheckAllMail();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const current_mail = ref({});
-
-    const resolveUsers = computed(() => {
-      return (arr) => {
-        return arr.map((item) => {
-          if (item == 0) {
-            return;
-          } else if (!Number(item)) {
-            const user = getUserInfo(item);
-            return {
-              label: user
-                ? user.fullname
-                : i18n.global.t('app.mail.content.to.user', { user: item }),
-              title: user
-                ? user.fullname
-                : i18n.global.t('app.mail.content.to.user', { user: item }),
-            };
-          } else {
-            item = Number(item);
-            const dept = store.state.org.depts.find((dept) => dept.id === item);
-            return {
-              label: dept ? dept.name : i18n.global.t('app.mail.content.to.dept', { dept: item }),
-              title: dept
-                ? store.state.org.users
-                    .map((user) => {
-                      return user.fullname;
-                    })
-                    .join(',')
-                : i18n.global.t('app.mail.content.to.dept', { dept: item }),
-            };
-          }
-        });
-      };
-    });
-
-    const showMoreUsers = ref(false);
-
-    const handleOpenMail = (mail) => {
-      if (mail.data_state === 'drafted') {
-        handleCloseMail();
-        new_mail.value = JSON.parse(JSON.stringify(mail));
-        new_mail.value.key = Math.random().toString(36).slice(-6);
-        nextTick(() => document.getElementById('showDraftMailModalBtn').click());
-      } else {
-        store.dispatch('user/delNotice', {
-          app: 'mail',
-          data: mail,
-        });
-        if (
-          mail.created_by != store.state.user.data.username &&
-          mail.read.indexOf(store.state.user.data.username) === -1
-        ) {
-          mail.read.push(store.state.user.data.username);
-          updateMail({
-            mails: [
-              {
-                id: mail.id,
-                read: mail.read,
-              },
-            ],
-          }).then(({ code, msg }) => {
-            if (code !== 200) {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-            }
-          });
-        }
-        current_mail.value = mail;
-        document.body.classList.add('email-detail-show');
-        nextTick(() => {
-          const mailCcListEl = document.getElementById('cc_list');
-          if (mailCcListEl) {
-            mailCcListEl.addEventListener('show.bs.collapse', mailCcListElShowHandler);
-            mailCcListEl.addEventListener('hide.bs.collapse', mailCcListElHideHandler);
-          }
-        });
-      }
-    };
-
-    const handleCloseMail = () => {
-      const mailCcListEl = document.getElementById('cc_list');
-      nextTick(() => {
-        if (mailCcListEl) {
-          mailCcListEl.removeEventListener('show.bs.collapse', mailCcListElShowHandler);
-          mailCcListEl.removeEventListener('hide.bs.collapse', mailCcListElHideHandler);
-        }
-        showMoreUsers.value = false;
-        current_mail.value = {};
-      });
-      document.body.classList.remove('email-detail-show');
-    };
-
-    const handleComposeMail = () => {
-      const staged = localStorage.getItem(
-        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-          `app_mail_${store.state.user.data.username}_staged`,
-        )}`,
-      );
-      if (staged) {
-        try {
-          new_mail.value = JSON.parse(decryptData(staged));
-        } catch (error) {
-          // console.error(error);
-        }
-        localStorage.removeItem(
-          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-            `app_mail_${store.state.user.data.username}_staged`,
-          )}`,
-        );
-      }
-      handleCloseMail();
-    };
-
-    const handleSubmitMail = (data_state) => {
-      new_mail.value.data_state = data_state;
-      const apis = { createMail, updateMail };
-      apis[new_mail.value.id ? 'updateMail' : 'createMail'](
-        new_mail.value.id
-          ? {
-              mails: [new_mail.value],
-            }
-          : new_mail.value,
-      ).then(({ code, msg }) => {
-        if (code === 200) {
-          mails.refetch = true;
-          fetchMails();
-          document.getElementById('hideComposeModalBtn').click();
-          setTimeout(() => {
-            handleCancelCompose();
-          }, 500);
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const handleReply = (mail) => {
-      new_mail.value = {
-        to: [mail.created_by],
-        cc: [],
-        bcc: [],
-        subject: `Re: ${mail.subject}`,
-        content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(
-          mail.created_at,
-        ).format('llll')}<br/><b>To:</b> ${resolveUsers
-          .value(mail.to)
-          .map((item) => {
-            return item.label;
-          })
-          .join(', ')}<br/>${
-          mail.cc.length
-            ? `<b>Cc:</b> ${resolveUsers
-                .value(mail.cc)
-                .map((item) => {
-                  return item.label;
-                })
-                .join(', ')}<br/>`
-            : ``
-        }<b>Subject:</b> ${mail.subject}<br/>${mail.content}`,
-        attachments: [],
-        label: mail.label,
-        trash: [],
-        star: [],
-        important: [],
-        read: [],
-      };
-      document.getElementById('showComposeModalBtn').click();
-    };
-    const handleReply2All = (mail, confirmed) => {
-      if (!confirmed && ![...mail.to, ...mail.cc].includes(store.state.user.data.username)) {
-        document.getElementById('showReply2AllConfirmModalBtn').click();
-        return;
-      }
-      new_mail.value = {
-        to: [
-          ...[mail.created_by],
-          ...mail.to.filter((username) => username != store.state.user.data.username),
-        ],
-        cc: mail.cc.filter((username) => username != store.state.user.data.username),
-        bcc: [],
-        subject: `Re: ${mail.subject}`,
-        content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(
-          mail.created_at,
-        ).format('llll')}<br/><b>To:</b> ${resolveUsers
-          .value(mail.to)
-          .map((item) => {
-            return item.label;
-          })
-          .join(', ')}<br/>${
-          mail.cc.length
-            ? `<b>Cc:</b> ${resolveUsers
-                .value(mail.cc)
-                .map((item) => {
-                  return item.label;
-                })
-                .join(', ')}<br/>`
-            : ``
-        }<b>Subject:</b> ${mail.subject}<br/>${mail.content}`,
-        attachments: [],
-        label: mail.label,
-        trash: [],
-        star: [],
-        important: [],
-        read: [],
-      };
-      if (new_mail.value.cc.length) {
-        document.getElementById('CcRecipientsCollapse').classList.add('show');
-      }
-      document.getElementById('showComposeModalBtn').click();
-    };
-    const showCancelConfirmModal = () => {
-      if (new_mail.value.data_state === 'drafted') {
-        document.getElementById('hideComposeModalBtn').click();
-        setTimeout(() => {
-          handleCancelCompose();
-        }, 500);
-      } else document.getElementById('showCancelConfirmModalBtn').click();
-    };
-    const handleCancelCompose = (discard = true) => {
-      if (discard) {
-        new_mail.value = {
-          key: Math.random().toString(36).slice(-6),
-          to: [],
-          cc: [],
-          bcc: [],
-          subject: '',
-          content: '',
-          attachments: [],
-          label: [],
-          trash: [],
-          star: [],
-          important: [],
-          read: [],
-        };
-        localStorage.removeItem(
-          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-            `app_mail_${store.state.user.data.username}_staged`,
-          )}`,
-        );
-      } else {
-        localStorage.setItem(
-          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-            `app_mail_${store.state.user.data.username}_staged`,
-          )}`,
-          encryptData(JSON.stringify(new_mail.value)),
-        );
-      }
-    };
-
-    return {
-      new_mail,
-      menus,
-      labels,
-      fetchMails,
-      replaceHtml,
-      handleClickMenuBtn,
-      handleClickMailWrapper,
-      mails,
-      checkedMailIds,
-      handleCheckMail,
-      handleCheckAllMail,
-      handleMarkOrUnmarkMails,
-      current_mail,
-      resolveUsers,
-      showMoreUsers,
-      handleOpenMail,
-      handleCloseMail,
-      handleComposeMail,
-      handleSubmitMail,
-      handleReply,
-      handleReply2All,
-      showCancelConfirmModal,
-      handleCancelCompose,
-    };
-  },
+  } else {
+    localStorage.setItem(
+      `${BASE_URL.replace(/\//g, '_')}${hashData(
+        `app_mail_${store.state.user.data.username}_staged`,
+      )}`,
+      encryptData(JSON.stringify(new_mail.value)),
+    );
+  }
 };
 </script>

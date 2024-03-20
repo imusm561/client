@@ -11,30 +11,25 @@
   <span v-else>{{ $t('data.list.filter.blank') }}</span>
 </template>
 
-<script>
-import { defineComponent, ref } from 'vue';
+<script setup>
+import { defineProps, ref } from 'vue';
 import store from '@store';
 import Avatar from '@components/Avatar';
-export default defineComponent({
-  components: {
-    Avatar,
-  },
-  setup(props) {
-    const user = ref(null);
-    if (props.params.value === null) user.value = null;
-    else if (props.params.value === '@system')
-      user.value = { username: '@system', fullname: 'System' };
-    else if (props.params.value.includes('@pub'))
-      user.value = {
-        username: props.params.value,
-        fullname: props.params.value.replace('@pub_', 'Pub_'),
-      };
-    else
-      user.value = store.state.org.users.find((user) => user.username === props.params.value) || {
-        username: props.params.value,
-        fullname: props.params.value,
-      };
-    return { user };
-  },
-});
+
+const props = defineProps(['params']);
+
+const user = ref(null);
+
+if (props.params.value === null) user.value = null;
+else if (props.params.value === '@system') user.value = { username: '@system', fullname: 'System' };
+else if (props.params.value.includes('@pub'))
+  user.value = {
+    username: props.params.value,
+    fullname: props.params.value.replace('@pub_', 'Pub_'),
+  };
+else
+  user.value = store.state.org.users.find((user) => user.username === props.params.value) || {
+    username: props.params.value,
+    fullname: props.params.value,
+  };
 </script>

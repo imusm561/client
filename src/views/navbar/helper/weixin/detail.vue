@@ -200,7 +200,7 @@
                   <dd class="col-sm-9 mb-3">
                     {{
                       account.access_token_time
-                        ? $moment(account.access_token_time).format('llll')
+                        ? moment(account.access_token_time).format('llll')
                         : '-'
                     }}
                   </dd>
@@ -218,7 +218,7 @@
                   <dd class="col-sm-9 mb-3">
                     {{
                       account.refresh_token_time
-                        ? $moment(account.refresh_token_time).format('llll')
+                        ? moment(account.refresh_token_time).format('llll')
                         : '-'
                     }}
                   </dd>
@@ -240,7 +240,7 @@
                   <dd class="col-sm-9 mb-3">
                     {{
                       account.jsapi_ticket_time
-                        ? $moment(account.jsapi_ticket_time).format('llll')
+                        ? moment(account.jsapi_ticket_time).format('llll')
                         : '-'
                     }}
                   </dd>
@@ -375,7 +375,7 @@
                         {{ getUserInfo(strategy.created_by).fullname }}
                       </td>
                       <td>
-                        {{ $moment(strategy.created_at).format('llll') }}
+                        {{ moment(strategy.created_at).format('llll') }}
                       </td>
                       <td>
                         {{
@@ -451,7 +451,7 @@
                     <tr v-for="bind in binds" :key="bind.id">
                       <td>{{ bind.title }}</td>
                       <td>
-                        {{ $moment(bind.created_at).format('llll') }}
+                        {{ moment(bind.created_at).format('llll') }}
                       </td>
                       <td
                         class="openid cursor-pointer"
@@ -1081,10 +1081,25 @@
     <DeleteAccountModal :data="_account" @confirm="$router.replace({ name: 'weixin' })" />
   </div>
 </template>
-<script>
-import Breadcrumb from '@layouts/breadcrumb';
+<script setup>
 import { onMounted, onUnmounted, reactive, ref, nextTick } from 'vue';
-import { useRouter, getUserInfo, replaceHtml } from '@utils';
+import { useRoute } from 'vue-router';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+
+import { getUserInfo, replaceHtml } from '@utils';
+import moment from '@utils/moment';
+
+import Breadcrumb from '@layouts/breadcrumb';
+import MonacoEditor from '@components/MonacoEditor';
+import Empty from '@components/Empty';
+import Pagination from '@components/Pagination';
+import CKEditor from '@components/CKEditor';
+import EditAccountModal from './components/EditAccountModal.vue';
+import DeleteAccountModal from './components/DeleteAccountModal.vue';
+
+import useWeixin from './useWeixin';
+
 import {
   getAccountDetail,
   getBinds,
@@ -1095,365 +1110,305 @@ import {
   refreshAccount,
   getQRCode,
 } from '@api/weixin';
-import { useToast } from 'vue-toastification';
-import useWeixin from './useWeixin';
-import MonacoEditor from '@components/MonacoEditor';
-import ToastificationContent from '@components/ToastificationContent';
-import Empty from '@components/Empty';
-import Pagination from '@components/Pagination';
-import CKEditor from '@components/CKEditor';
-import EditAccountModal from './components/EditAccountModal.vue';
-import DeleteAccountModal from './components/DeleteAccountModal.vue';
-export default {
-  components: {
-    Breadcrumb,
-    MonacoEditor,
-    Empty,
-    Pagination,
-    CKEditor,
-    EditAccountModal,
-    DeleteAccountModal,
+
+const route = useRoute();
+const { msgTypeOptions, replyTypeOptions } = useWeixin();
+
+const toast = useToast();
+const accounts = ref([]);
+const account = ref({});
+const _account = ref({});
+
+const fetchAccountInfo = (callback) => {
+  getAccountDetail({ id: route.params.id }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      accounts.value = data.accounts;
+      account.value = data.account;
+      callback && callback();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const pagination = reactive({
+  binds: {
+    pageNum: 1,
+    pageSize: 200,
+    totalCount: 0,
   },
-  setup() {
-    const { route } = useRouter();
-    const { msgTypeOptions, replyTypeOptions } = useWeixin();
+  strategies: {
+    pageNum: 1,
+    pageSize: 200,
+    totalCount: 0,
+  },
+});
 
-    const toast = useToast();
-    const accounts = ref([]);
-    const account = ref({});
-    const _account = ref({});
+const handlePaginationChange = ({ tab, pageNum, pageSize }) => {
+  pagination[tab].pageNum = pageNum;
+  pagination[tab].pageSize = pageSize;
+  if (tab === 'binds') fetchBindBinds();
+  if (tab === 'strategies') fetchStrategies();
+};
 
-    const fetchAccountInfo = (callback) => {
-      getAccountDetail({ id: route.value.params.id }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          accounts.value = data.accounts;
-          account.value = data.account;
-          callback && callback();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+const binds = ref([]);
+const fetchBindBinds = () => {
+  getBinds({
+    soid: account.value.soid,
+    pageNum: pagination.binds.pageNum,
+    pageSize: pagination.binds.pageSize,
+  }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      binds.value = data.rows;
+      pagination.binds.totalCount = data.count;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const pagination = reactive({
-      binds: {
-        pageNum: 1,
-        pageSize: 200,
-        totalCount: 0,
-      },
-      strategies: {
-        pageNum: 1,
-        pageSize: 200,
-        totalCount: 0,
-      },
-    });
-
-    const handlePaginationChange = ({ tab, pageNum, pageSize }) => {
-      pagination[tab].pageNum = pageNum;
-      pagination[tab].pageSize = pageSize;
-      if (tab === 'binds') fetchBindBinds();
-      if (tab === 'strategies') fetchStrategies();
-    };
-
-    const binds = ref([]);
-    const fetchBindBinds = () => {
-      getBinds({
-        soid: account.value.soid,
-        pageNum: pagination.binds.pageNum,
-        pageSize: pagination.binds.pageSize,
-      }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          binds.value = data.rows;
-          pagination.binds.totalCount = data.count;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+const strategies = ref([]);
+const fetchStrategies = () => {
+  getStrategies({
+    soid: account.value.soid,
+    pageNum: pagination.strategies.pageNum,
+    pageSize: pagination.strategies.pageSize,
+  }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      strategies.value = data.rows;
+      pagination.strategies.totalCount = data.count;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const strategies = ref([]);
-    const fetchStrategies = () => {
-      getStrategies({
-        soid: account.value.soid,
-        pageNum: pagination.strategies.pageNum,
-        pageSize: pagination.strategies.pageSize,
-      }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          strategies.value = data.rows;
-          pagination.strategies.totalCount = data.count;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+const viewAndEditStrategyModalHiddenHandler = () => {
+  is_editing.value = false;
+};
+
+onMounted(() => {
+  fetchAccountInfo(() => {
+    if (account.value.soid) {
+      fetchBindBinds();
+      fetchStrategies();
+    }
+  });
+
+  const viewAndEditStrategyModal = document.getElementById('viewAndEditStrategyModal');
+  if (viewAndEditStrategyModal)
+    viewAndEditStrategyModal.addEventListener(
+      'hidden.bs.modal',
+      viewAndEditStrategyModalHiddenHandler,
+    );
+});
+
+onUnmounted(() => {
+  const viewAndEditStrategyModal = document.getElementById('viewAndEditStrategyModal');
+  if (viewAndEditStrategyModal)
+    viewAndEditStrategyModal.removeEventListener(
+      'hidden.bs.modal',
+      viewAndEditStrategyModalHiddenHandler,
+    );
+});
+
+const handleEditAccount = () => {
+  _account.value = JSON.parse(JSON.stringify(account.value));
+  _account.value.key = Math.random().toString(36).slice(-6);
+  nextTick(() => document.getElementById('showEditAccountModalBtn').click());
+};
+
+const handleDeleteAccount = () => {
+  _account.value = JSON.parse(JSON.stringify(account.value));
+  document.getElementById('showDeleteAccountModalBtn').click();
+};
+
+const current_bind = ref({});
+
+const handleViewBindData = (bind) => {
+  current_bind.value = JSON.parse(JSON.stringify(bind));
+  current_bind.value.userinfo = JSON.stringify(current_bind.value.userinfo, null, 2);
+  document.getElementById('showBindDataOffcanvasBtn').click();
+};
+
+const handleUnbind = () => {
+  current_bind.value.data_state = 'deleted';
+  unbindUser(current_bind.value).then(({ code, msg }) => {
+    if (code === 200) {
+      fetchBindBinds();
+      document.getElementById('hideUnbindModalBtn').click();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const viewAndEditStrategyModalHiddenHandler = () => {
-      is_editing.value = false;
-    };
+const is_editing = ref(false);
+const current_strategy = ref({});
+const viewAndEditStrategyModalKey = ref(null);
+const handleClickStrategyId = (strategy) => {
+  is_editing.value = false;
+  current_strategy.value = JSON.parse(JSON.stringify(strategy));
+  viewAndEditStrategyModalKey.value = Math.random().toString(36).slice(-6);
+  document.getElementById('showviewAndEditStrategyModalBtn').click();
+};
 
-    onMounted(() => {
-      fetchAccountInfo(() => {
-        if (account.value.soid) {
-          fetchBindBinds();
-          fetchStrategies();
-        }
+const handleDelStrategy = () => {
+  current_strategy.value.data_state = 'deleted';
+  updateStrategy(current_strategy.value).then(({ code, msg }) => {
+    if (code === 200) {
+      document.getElementById('hidedeleteStrategyModalBtn').click();
+      fetchStrategies();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
+    }
+  });
+};
 
-      const viewAndEditStrategyModal = document.getElementById('viewAndEditStrategyModal');
-      if (viewAndEditStrategyModal)
-        viewAndEditStrategyModal.addEventListener(
-          'hidden.bs.modal',
-          viewAndEditStrategyModalHiddenHandler,
-        );
-    });
+const handleCreateStrategy = () => {
+  current_strategy.value = { soid: account.value.soid, weight: 0 };
+  is_editing.value = true;
+  viewAndEditStrategyModalKey.value = Math.random().toString(36).slice(-6);
+  document.getElementById('showviewAndEditStrategyModalBtn').click();
+};
 
-    onUnmounted(() => {
-      const viewAndEditStrategyModal = document.getElementById('viewAndEditStrategyModal');
-      if (viewAndEditStrategyModal)
-        viewAndEditStrategyModal.removeEventListener(
-          'hidden.bs.modal',
-          viewAndEditStrategyModalHiddenHandler,
-        );
-    });
-
-    const handleEditAccount = () => {
-      _account.value = JSON.parse(JSON.stringify(account.value));
-      _account.value.key = Math.random().toString(36).slice(-6);
-      nextTick(() => document.getElementById('showEditAccountModalBtn').click());
-    };
-
-    const handleDeleteAccount = () => {
-      _account.value = JSON.parse(JSON.stringify(account.value));
-      document.getElementById('showDeleteAccountModalBtn').click();
-    };
-
-    const current_bind = ref({});
-
-    const handleViewBindData = (bind) => {
-      current_bind.value = JSON.parse(JSON.stringify(bind));
-      current_bind.value.userinfo = JSON.stringify(current_bind.value.userinfo, null, 2);
-      document.getElementById('showBindDataOffcanvasBtn').click();
-    };
-
-    const handleUnbind = () => {
-      current_bind.value.data_state = 'deleted';
-      unbindUser(current_bind.value).then(({ code, msg }) => {
-        if (code === 200) {
-          fetchBindBinds();
-          document.getElementById('hideUnbindModalBtn').click();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const is_editing = ref(false);
-    const current_strategy = ref({});
-    const viewAndEditStrategyModalKey = ref(null);
-    const handleClickStrategyId = (strategy) => {
-      is_editing.value = false;
-      current_strategy.value = JSON.parse(JSON.stringify(strategy));
-      viewAndEditStrategyModalKey.value = Math.random().toString(36).slice(-6);
-      document.getElementById('showviewAndEditStrategyModalBtn').click();
-    };
-
-    const handleDelStrategy = () => {
-      current_strategy.value.data_state = 'deleted';
-      updateStrategy(current_strategy.value).then(({ code, msg }) => {
-        if (code === 200) {
-          document.getElementById('hidedeleteStrategyModalBtn').click();
-          fetchStrategies();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const handleCreateStrategy = () => {
-      current_strategy.value = { soid: account.value.soid, weight: 0 };
-      is_editing.value = true;
-      viewAndEditStrategyModalKey.value = Math.random().toString(36).slice(-6);
-      document.getElementById('showviewAndEditStrategyModalBtn').click();
-    };
-
-    const handleSubmitStrategy = () => {
-      if (current_strategy.value.msg_keyword?.charAt(0) != '@')
-        current_strategy.value.instr_exp = null;
-      if (current_strategy.value.id) {
-        updateStrategy(current_strategy.value).then(({ code, msg }) => {
-          if (code === 200) {
-            document.getElementById('hideviewAndEditStrategyModalBtn').click();
-            fetchStrategies();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
+const handleSubmitStrategy = () => {
+  if (current_strategy.value.msg_keyword?.charAt(0) != '@') current_strategy.value.instr_exp = null;
+  if (current_strategy.value.id) {
+    updateStrategy(current_strategy.value).then(({ code, msg }) => {
+      if (code === 200) {
+        document.getElementById('hideviewAndEditStrategyModalBtn').click();
+        fetchStrategies();
       } else {
-        createStrategy(current_strategy.value).then(({ code, msg }) => {
-          if (code === 200) {
-            document.getElementById('hideviewAndEditStrategyModalBtn').click();
-            fetchStrategies();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
         });
       }
-    };
-
-    const handleRefreshAccount = (key) => {
-      refreshAccount({ key, id: account.value.id }).then((res) => {
-        if (res.code === 200) {
-          // fetchAccountInfo();
-          if (res?.data?.data) account.value[key] = res.data.data;
-          if (res?.data?.time) account.value[`${key}_time`] = res.data.time;
-          if (key === 'menu')
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'success',
-                icon: 'mdi-check-circle',
-                text: JSON.stringify(res.data),
-              },
-            });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: res.msg,
-            },
-          });
-        }
-      });
-    };
-
-    const handleAuthorize = () => {
-      const api = `${location.origin}${process.env.BASE_URL}cor/weixin/auth/url`;
-      const appid = account.value.app_id;
-      const redirect = `${location.origin}${process.env.BASE_URL}cor/weixin/auth/${appid}`;
-      const a = document.createElement('a');
-      a.href = `${api}?appid=${appid}&redirect=${encodeURIComponent(redirect)}`;
-      a.target = '_blank';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    };
-
-    const qr = reactive({
-      src: null,
-      scene: '',
-      expire: 1800,
-      count: 1,
     });
-
-    const handleGenerateQr = () => {
-      if (qr.src) {
-        qr.src = null;
-        qr.scene = '';
-        qr.expire = 1800;
-        qr.count = 1;
-        return;
+  } else {
+    createStrategy(current_strategy.value).then(({ code, msg }) => {
+      if (code === 200) {
+        document.getElementById('hideviewAndEditStrategyModalBtn').click();
+        fetchStrategies();
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
       }
-      const params = {
-        soid: account.value.soid,
-        scene: qr.scene,
-        expire: qr.expire,
-        count: qr.count,
-      };
-      getQRCode(params).then(({ code, data }) => {
-        if (code === 200) qr.src = data.src;
+    });
+  }
+};
+
+const handleRefreshAccount = (key) => {
+  refreshAccount({ key, id: account.value.id }).then((res) => {
+    if (res.code === 200) {
+      // fetchAccountInfo();
+      if (res?.data?.data) account.value[key] = res.data.data;
+      if (res?.data?.time) account.value[`${key}_time`] = res.data.time;
+      if (key === 'menu')
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'success',
+            icon: 'mdi-check-circle',
+            text: JSON.stringify(res.data),
+          },
+        });
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: res.msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    return {
-      accounts,
-      account,
-      _account,
-      fetchAccountInfo,
-      handleEditAccount,
-      handleDeleteAccount,
+const { BASE_URL } = process.env;
+const handleAuthorize = () => {
+  const api = `${location.origin}${BASE_URL}cor/weixin/auth/url`;
+  const appid = account.value.app_id;
+  const redirect = `${location.origin}${BASE_URL}cor/weixin/auth/${appid}`;
+  const a = document.createElement('a');
+  a.href = `${api}?appid=${appid}&redirect=${encodeURIComponent(redirect)}`;
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
 
-      getUserInfo,
-      replaceHtml,
+const qr = reactive({
+  src: null,
+  scene: '',
+  expire: 1800,
+  count: 1,
+});
 
-      pagination,
-      handlePaginationChange,
-
-      binds,
-      current_bind,
-      handleViewBindData,
-      handleUnbind,
-
-      strategies,
-      current_strategy,
-
-      is_editing,
-      msgTypeOptions,
-      replyTypeOptions,
-
-      handleCreateStrategy,
-      handleClickStrategyId,
-      viewAndEditStrategyModalKey,
-      handleDelStrategy,
-      handleSubmitStrategy,
-
-      handleRefreshAccount,
-      handleAuthorize,
-
-      qr,
-      handleGenerateQr,
-    };
-  },
+const handleGenerateQr = () => {
+  if (qr.src) {
+    qr.src = null;
+    qr.scene = '';
+    qr.expire = 1800;
+    qr.count = 1;
+    return;
+  }
+  const params = {
+    soid: account.value.soid,
+    scene: qr.scene,
+    expire: qr.expire,
+    count: qr.count,
+  };
+  getQRCode(params).then(({ code, data }) => {
+    if (code === 200) qr.src = data.src;
+  });
 };
 </script>
 

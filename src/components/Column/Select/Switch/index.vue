@@ -47,50 +47,44 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed } from 'vue';
 import { resolveColumnTitle } from '@utils';
-export default defineComponent({
-  props: {
-    type: {
-      type: String,
-      default: 'EDIT',
-    },
-    column: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    modelValue: {
-      type: Boolean,
-      default: () => false,
-    },
-    required: {
-      type: [Boolean, Number],
-      default: () => false,
-    },
-    editable: {
-      type: [Boolean, Number],
-      default: () => true,
-    },
-    error: {
-      type: String,
-      default: () => null,
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'EDIT',
+  },
+  column: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    return {
-      resolveColumnTitle,
-      value: computed({
-        get() {
-          return props.modelValue;
-        },
-        set(value) {
-          emit('update:modelValue', value);
-        },
-      }),
-    };
+  modelValue: {
+    type: Boolean,
+    default: () => false,
+  },
+  required: {
+    type: [Boolean, Number],
+    default: () => false,
+  },
+  editable: {
+    type: [Boolean, Number],
+    default: () => true,
+  },
+  error: {
+    type: String,
+    default: () => null,
+  },
+});
+const emit = defineEmits(['update:modelValue']);
+const value = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit('update:modelValue', value);
   },
 });
 </script>

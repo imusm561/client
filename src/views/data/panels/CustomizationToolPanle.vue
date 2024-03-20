@@ -293,600 +293,561 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, onMounted, onUnmounted, ref, reactive } from 'vue';
-import { useRouter, getChanges, getUserInfo } from '@utils';
-import { getCustomFilter, createCustomFilter, updateCustomFilter } from '@api/custom';
-import MonacoEditor from '@components/MonacoEditor';
-import store from '@store';
-import i18n from '@utils/i18n';
+<script setup>
+import { defineProps, onMounted, onUnmounted, ref, reactive } from 'vue';
+import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-export default defineComponent({
-  components: {
-    MonacoEditor,
+import { getChanges, getUserInfo } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+import { socket } from '@utils/socket';
+import MonacoEditor from '@components/MonacoEditor';
+import store from '@store';
+import { getCustomFilter, createCustomFilter, updateCustomFilter } from '@api/custom';
+
+const props = defineProps(['params']);
+
+const toast = useToast();
+const route = useRoute();
+
+const keyword = ref(null);
+const visible = reactive({});
+
+const system = [
+  {
+    id: 'created_by_me',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdByMe'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      created_by: {
+        filterType: 'set',
+        values: [store.state.user.data.username],
+      },
+    },
   },
-  setup(props) {
-    const toast = useToast();
-    const moment = window.moment;
-    const socket = window.socket;
-    const { route } = useRouter();
+  {
+    id: 'updated_by_me',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedByMe'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      updated_by: {
+        filterType: 'set',
+        values: [store.state.user.data.username],
+      },
+    },
+  },
+  {
+    id: 'created_before_yesterday',
+    created_by: '@system',
+    name: i18n.global.t(
+      'data.list.sideBar.toolPanels.customization.filter.system.createdBeforeYesterday',
+    ),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      created_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: moment().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
+      },
+    },
+  },
+  {
+    id: 'created_yesterday',
+    created_by: '@system',
+    name: i18n.global.t(
+      'data.list.sideBar.toolPanels.customization.filter.system.createdYesterday',
+    ),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      created_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: moment().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
+      },
+    },
+  },
+  {
+    id: 'created_today',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdToday'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      created_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().format('YYYY-MM-DD 00:00:00'),
+        dateTo: moment().format('YYYY-MM-DD 23:59:59'),
+      },
+    },
+  },
+  {
+    id: 'created_last_week',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdLastWeek'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      created_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: moment().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
+      },
+    },
+  },
+  {
+    id: 'created_this_week',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdThisWeek'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      created_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().startOf('week').format('YYYY-MM-DD 00:00:00'),
+        dateTo: moment().endOf('week').format('YYYY-MM-DD 23:59:59'),
+      },
+    },
+  },
+  {
+    id: 'created_last_month',
+    created_by: '@system',
+    name: i18n.global.t(
+      'data.list.sideBar.toolPanels.customization.filter.system.createdLastMonth',
+    ),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      created_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
+        dateTo: moment(moment().format('YYYY-MM-01 00:00:00'))
+          .add(-1, 's')
+          .format('YYYY-MM-DD HH:mm:ss'),
+      },
+    },
+  },
+  {
+    id: 'created_this_month',
+    created_by: '@system',
+    name: i18n.global.t(
+      'data.list.sideBar.toolPanels.customization.filter.system.createdThisMonth',
+    ),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      created_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().format('YYYY-MM-01 00:00:00'),
+        dateTo: moment(moment().add(1, 'M').format('YYYY-MM-01 00:00:00'))
+          .add(-1, 's')
+          .format('YYYY-MM-DD HH:mm:ss'),
+      },
+    },
+  },
+  {
+    id: 'created_last_year',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdLastYear'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      created_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
+        dateTo: moment(moment().format('YYYY-01-01 00:00:00'))
+          .add(-1, 's')
+          .format('YYYY-MM-DD HH:mm:ss'),
+      },
+    },
+  },
+  {
+    id: 'created_this_year',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdThisYear'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      created_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().format('YYYY-01-01 00:00:00'),
+        dateTo: moment(moment().add(1, 'Y').format('YYYY-01-01 00:00:00'))
+          .add(-1, 's')
+          .format('YYYY-MM-DD HH:mm:ss'),
+      },
+    },
+  },
+  {
+    id: 'updated_before_yesterday',
+    created_by: '@system',
+    name: i18n.global.t(
+      'data.list.sideBar.toolPanels.customization.filter.system.updatedBeforeYesterday',
+    ),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      updated_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: moment().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
+      },
+    },
+  },
+  {
+    id: 'updated_yesterday',
+    created_by: '@system',
+    name: i18n.global.t(
+      'data.list.sideBar.toolPanels.customization.filter.system.updatedYesterday',
+    ),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      updated_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: moment().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
+      },
+    },
+  },
+  {
+    id: 'updated_today',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedToday'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      updated_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().format('YYYY-MM-DD 00:00:00'),
+        dateTo: moment().format('YYYY-MM-DD 23:59:59'),
+      },
+    },
+  },
+  {
+    id: 'updated_last_week',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedLastWeek'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      updated_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: moment().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
+      },
+    },
+  },
+  {
+    id: 'updated_this_week',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedThisWeek'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      updated_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().startOf('week').format('YYYY-MM-DD 00:00:00'),
+        dateTo: moment().endOf('week').format('YYYY-MM-DD 23:59:59'),
+      },
+    },
+  },
+  {
+    id: 'updated_last_month',
+    created_by: '@system',
+    name: i18n.global.t(
+      'data.list.sideBar.toolPanels.customization.filter.system.updatedLastMonth',
+    ),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      updated_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
+        dateTo: moment(moment().format('YYYY-MM-01 00:00:00'))
+          .add(-1, 's')
+          .format('YYYY-MM-DD HH:mm:ss'),
+      },
+    },
+  },
+  {
+    id: 'updated_this_month',
+    created_by: '@system',
+    name: i18n.global.t(
+      'data.list.sideBar.toolPanels.customization.filter.system.updatedThisMonth',
+    ),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      updated_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().format('YYYY-MM-01 00:00:00'),
+        dateTo: moment(moment().add(1, 'M').format('YYYY-MM-01 00:00:00'))
+          .add(-1, 's')
+          .format('YYYY-MM-DD HH:mm:ss'),
+      },
+    },
+  },
+  {
+    id: 'updated_last_year',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedLastYear'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      updated_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
+        dateTo: moment(moment().format('YYYY-01-01 00:00:00'))
+          .add(-1, 's')
+          .format('YYYY-MM-DD HH:mm:ss'),
+      },
+    },
+  },
+  {
+    id: 'updated_this_year',
+    created_by: '@system',
+    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedThisYear'),
+    data: {
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+      updated_at: {
+        filterType: 'date',
+        type: 'inRange',
+        dateFrom: moment().format('YYYY-01-01 00:00:00'),
+        dateTo: moment(moment().add(1, 'Y').format('YYYY-01-01 00:00:00'))
+          .add(-1, 's')
+          .format('YYYY-MM-DD HH:mm:ss'),
+      },
+    },
+  },
+];
+const _filters = ref([]);
+const filters = ref([]);
 
-    const keyword = ref(null);
-    const visible = reactive({});
+const refetchFilterHandler = (res) => {
+  if (res.tid === Number(route.params.tid)) fetchFormFilters();
+};
 
-    const system = [
-      {
-        id: 'created_by_me',
-        created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdByMe'),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          created_by: {
-            filterType: 'set',
-            values: [store.state.user.data.username],
-          },
-        },
-      },
-      {
-        id: 'updated_by_me',
-        created_by: '@system',
-        name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedByMe'),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          updated_by: {
-            filterType: 'set',
-            values: [store.state.user.data.username],
-          },
-        },
-      },
-      {
-        id: 'created_before_yesterday',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.createdBeforeYesterday',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          created_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
-            dateTo: moment().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
-          },
-        },
-      },
-      {
-        id: 'created_yesterday',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.createdYesterday',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          created_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
-            dateTo: moment().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
-          },
-        },
-      },
-      {
-        id: 'created_today',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.createdToday',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          created_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().format('YYYY-MM-DD 00:00:00'),
-            dateTo: moment().format('YYYY-MM-DD 23:59:59'),
-          },
-        },
-      },
-      {
-        id: 'created_last_week',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.createdLastWeek',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          created_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
-            dateTo: moment().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
-          },
-        },
-      },
-      {
-        id: 'created_this_week',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.createdThisWeek',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          created_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().startOf('week').format('YYYY-MM-DD 00:00:00'),
-            dateTo: moment().endOf('week').format('YYYY-MM-DD 23:59:59'),
-          },
-        },
-      },
-      {
-        id: 'created_last_month',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.createdLastMonth',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          created_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
-            dateTo: moment(moment().format('YYYY-MM-01 00:00:00'))
-              .add(-1, 's')
-              .format('YYYY-MM-DD HH:mm:ss'),
-          },
-        },
-      },
-      {
-        id: 'created_this_month',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.createdThisMonth',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          created_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().format('YYYY-MM-01 00:00:00'),
-            dateTo: moment(moment().add(1, 'M').format('YYYY-MM-01 00:00:00'))
-              .add(-1, 's')
-              .format('YYYY-MM-DD HH:mm:ss'),
-          },
-        },
-      },
-      {
-        id: 'created_last_year',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.createdLastYear',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          created_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
-            dateTo: moment(moment().format('YYYY-01-01 00:00:00'))
-              .add(-1, 's')
-              .format('YYYY-MM-DD HH:mm:ss'),
-          },
-        },
-      },
-      {
-        id: 'created_this_year',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.createdThisYear',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          created_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().format('YYYY-01-01 00:00:00'),
-            dateTo: moment(moment().add(1, 'Y').format('YYYY-01-01 00:00:00'))
-              .add(-1, 's')
-              .format('YYYY-MM-DD HH:mm:ss'),
-          },
-        },
-      },
-      {
-        id: 'updated_before_yesterday',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.updatedBeforeYesterday',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          updated_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
-            dateTo: moment().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
-          },
-        },
-      },
-      {
-        id: 'updated_yesterday',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.updatedYesterday',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          updated_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
-            dateTo: moment().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
-          },
-        },
-      },
-      {
-        id: 'updated_today',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.updatedToday',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          updated_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().format('YYYY-MM-DD 00:00:00'),
-            dateTo: moment().format('YYYY-MM-DD 23:59:59'),
-          },
-        },
-      },
-      {
-        id: 'updated_last_week',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.updatedLastWeek',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          updated_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
-            dateTo: moment().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
-          },
-        },
-      },
-      {
-        id: 'updated_this_week',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.updatedThisWeek',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          updated_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().startOf('week').format('YYYY-MM-DD 00:00:00'),
-            dateTo: moment().endOf('week').format('YYYY-MM-DD 23:59:59'),
-          },
-        },
-      },
-      {
-        id: 'updated_last_month',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.updatedLastMonth',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          updated_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
-            dateTo: moment(moment().format('YYYY-MM-01 00:00:00'))
-              .add(-1, 's')
-              .format('YYYY-MM-DD HH:mm:ss'),
-          },
-        },
-      },
-      {
-        id: 'updated_this_month',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.updatedThisMonth',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          updated_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().format('YYYY-MM-01 00:00:00'),
-            dateTo: moment(moment().add(1, 'M').format('YYYY-MM-01 00:00:00'))
-              .add(-1, 's')
-              .format('YYYY-MM-DD HH:mm:ss'),
-          },
-        },
-      },
-      {
-        id: 'updated_last_year',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.updatedLastYear',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          updated_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
-            dateTo: moment(moment().format('YYYY-01-01 00:00:00'))
-              .add(-1, 's')
-              .format('YYYY-MM-DD HH:mm:ss'),
-          },
-        },
-      },
-      {
-        id: 'updated_this_year',
-        created_by: '@system',
-        name: i18n.global.t(
-          'data.list.sideBar.toolPanels.customization.filter.system.updatedThisYear',
-        ),
-        data: {
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-          updated_at: {
-            filterType: 'date',
-            type: 'inRange',
-            dateFrom: moment().format('YYYY-01-01 00:00:00'),
-            dateTo: moment(moment().add(1, 'Y').format('YYYY-01-01 00:00:00'))
-              .add(-1, 's')
-              .format('YYYY-MM-DD HH:mm:ss'),
-          },
-        },
-      },
-    ];
-    const _filters = ref([]);
-    const filters = ref([]);
+onMounted(() => {
+  socket.on('refetchFilter', refetchFilterHandler);
+  fetchFormFilters();
+});
 
-    const refetchFilterHandler = (res) => {
-      if (res.tid === Number(route.value.params.tid)) fetchFormFilters();
-    };
+onUnmounted(() => {
+  socket.off('refetchFilter', refetchFilterHandler);
+});
 
-    onMounted(() => {
-      socket.on('refetchFilter', refetchFilterHandler);
-      fetchFormFilters();
-    });
-
-    onUnmounted(() => {
-      socket.off('refetchFilter', refetchFilterHandler);
-    });
-
-    const fetchFormFilters = () => {
-      getCustomFilter({ tid: Number(route.value.params.tid) }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          data = [...system, ...data];
-          _filters.value = JSON.parse(JSON.stringify(data));
-          const temp = [];
-          data.forEach((ei) => {
-            const item = temp.find((item) => item.created_by === ei.created_by);
-            if (item) {
-              item.children.push({
+const fetchFormFilters = () => {
+  getCustomFilter({ tid: Number(route.params.tid) }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      data = [...system, ...data];
+      _filters.value = JSON.parse(JSON.stringify(data));
+      const temp = [];
+      data.forEach((ei) => {
+        const item = temp.find((item) => item.created_by === ei.created_by);
+        if (item) {
+          item.children.push({
+            id: ei.id,
+            tid: ei.tid || Number(route.params.tid),
+            name: ei.name,
+            data: ei.data,
+          });
+        } else {
+          temp.push({
+            created_by: ei.created_by,
+            visible:
+              filters.value.find((item) => item.created_by === ei.created_by)?.visible || false,
+            children: [
+              {
                 id: ei.id,
-                tid: ei.tid || Number(route.value.params.tid),
+                tid: ei.tid || Number(route.params.tid),
                 name: ei.name,
                 data: ei.data,
-              });
-            } else {
-              temp.push({
-                created_by: ei.created_by,
-                visible:
-                  filters.value.find((item) => item.created_by === ei.created_by)?.visible || false,
-                children: [
-                  {
-                    id: ei.id,
-                    tid: ei.tid || Number(route.value.params.tid),
-                    name: ei.name,
-                    data: ei.data,
-                  },
-                ],
-              });
-            }
-          });
-          filters.value = temp;
-          handleSetCurrentFilter();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
+              },
+            ],
           });
         }
       });
-    };
+      filters.value = temp;
+      handleSetCurrentFilter();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
 
-    const current_filter = ref({});
+const current_filter = ref({});
 
-    const handleSetCurrentFilter = () => {
-      const filterModel = props.params.api.getFilterModel();
-      if (filterModel) {
-        if (Object.keys(filterModel).length === 0) current_filter.value = {};
-        else {
-          const filter = _filters.value.find(
-            (filter) =>
-              Object.keys(getChanges(filterModel, filter.data)).length === 0 &&
-              Object.keys(getChanges(filter.data, filterModel)).length === 0,
-          );
-          current_filter.value = filter || {};
-        }
-      }
-    };
+const handleSetCurrentFilter = () => {
+  const filterModel = props.params.api.getFilterModel();
+  if (filterModel) {
+    if (Object.keys(filterModel).length === 0) current_filter.value = {};
+    else {
+      const filter = _filters.value.find(
+        (filter) =>
+          Object.keys(getChanges(filterModel, filter.data)).length === 0 &&
+          Object.keys(getChanges(filter.data, filterModel)).length === 0,
+      );
+      current_filter.value = filter || {};
+    }
+  }
+};
 
-    const handleSetFilterModel = (item) => {
-      if (current_filter.value.id === item.id) {
-        props.params.api.setFilterModel({
-          data_state: {
-            filterType: 'set',
-            values: ['published'],
-          },
-        });
+const handleSetFilterModel = (item) => {
+  if (current_filter.value.id === item.id) {
+    props.params.api.setFilterModel({
+      data_state: {
+        filterType: 'set',
+        values: ['published'],
+      },
+    });
+  } else {
+    props.params.api.setFilterModel(item.data);
+  }
+};
+
+const create_filter = ref({});
+
+const handleCreateFilter = () => {
+  const stringifyFilterModel = JSON.stringify(props.params.api.getFilterModel(), null, 2);
+  create_filter.value = {
+    key: Math.random().toString(36).slice(-6),
+    name: create_filter.value.data === stringifyFilterModel ? create_filter.value.name : '',
+    data: stringifyFilterModel,
+  };
+  document.getElementById('showCreateFilterModalBtn').click();
+};
+
+const handleSubmitFilter = () => {
+  if (_filters.value.find((filter) => filter.name === create_filter.value.name)) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t(
+          'data.list.sideBar.toolPanels.customization.createFilterModal.form.name.duplicate',
+          { name: create_filter.value.name },
+        ),
+      },
+    });
+  } else {
+    createCustomFilter({
+      tid: Number(route.params.tid),
+      name: create_filter.value.name,
+      data: JSON.parse(create_filter.value.data),
+    }).then(({ code, msg }) => {
+      if (code === 200) {
+        create_filter.value = {};
+        handleSetCurrentFilter();
+        document.getElementById('hideCreateFilterModalBtn').click();
       } else {
-        props.params.api.setFilterModel(item.data);
-      }
-    };
-
-    const create_filter = ref({});
-
-    const handleCreateFilter = () => {
-      const stringifyFilterModel = JSON.stringify(props.params.api.getFilterModel(), null, 2);
-      create_filter.value = {
-        key: Math.random().toString(36).slice(-6),
-        name: create_filter.value.data === stringifyFilterModel ? create_filter.value.name : '',
-        data: stringifyFilterModel,
-      };
-      document.getElementById('showCreateFilterModalBtn').click();
-    };
-
-    const handleSubmitFilter = () => {
-      if (_filters.value.find((filter) => filter.name === create_filter.value.name)) {
         toast({
           component: ToastificationContent,
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: i18n.global.t(
-              'data.list.sideBar.toolPanels.customization.createFilterModal.form.name.duplicate',
-              { name: create_filter.value.name },
-            ),
+            text: msg,
           },
         });
-      } else {
-        createCustomFilter({
-          tid: Number(route.value.params.tid),
-          name: create_filter.value.name,
-          data: JSON.parse(create_filter.value.data),
-        }).then(({ code, msg }) => {
-          if (code === 200) {
-            create_filter.value = {};
-            handleSetCurrentFilter();
-            document.getElementById('hideCreateFilterModalBtn').click();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
       }
-    };
+    });
+  }
+};
 
-    const delete_filter = ref({});
+const delete_filter = ref({});
 
-    const handleDeleteFilter = () => {
-      delete_filter.value.data_state = 'deleted';
-      updateCustomFilter(delete_filter.value).then(({ code, msg }) => {
-        if (code === 200) {
-          delete_filter.value = {};
-          handleSetCurrentFilter();
-          document.getElementById('hideDeleteFilterConfirmModalBtn').click();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+const handleDeleteFilter = () => {
+  delete_filter.value.data_state = 'deleted';
+  updateCustomFilter(delete_filter.value).then(({ code, msg }) => {
+    if (code === 200) {
+      delete_filter.value = {};
+      handleSetCurrentFilter();
+      document.getElementById('hideDeleteFilterConfirmModalBtn').click();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const handleSetTheme = (theme) => {
-      if (theme != props.params.api.getTheme()) props.params.api.setTheme(theme);
-    };
-
-    return {
-      getUserInfo,
-      keyword,
-      visible,
-      filters,
-      current_filter,
-      handleSetCurrentFilter,
-      handleSetFilterModel,
-      create_filter,
-      handleCreateFilter,
-      handleSubmitFilter,
-      delete_filter,
-      handleDeleteFilter,
-      handleSetTheme,
-    };
-  },
-});
+const handleSetTheme = (theme) => {
+  if (theme != props.params.api.getTheme()) props.params.api.setTheme(theme);
+};
 </script>

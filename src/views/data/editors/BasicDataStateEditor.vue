@@ -20,25 +20,19 @@
   </VueSelect>
 </template>
 
-<script>
-import { defineComponent, ref } from 'vue';
-export default defineComponent({
-  setup(props) {
-    const value = ref(props.params.value);
+<script setup>
+import { defineProps, ref } from 'vue';
+const props = defineProps(['params']);
 
-    const getValue = () => {
-      return value.value;
-    };
+const value = ref(props.params.value);
 
-    const isCancelAfterEnd = () => {
-      return !value.value;
-    };
+/* eslint-disable-next-line no-unused-vars */
+const getValue = () => {
+  return value.value;
+};
 
-    return {
-      value,
-      getValue,
-      isCancelAfterEnd,
-    };
-  },
-});
+/* eslint-disable-next-line no-unused-vars */
+const isCancelAfterEnd = () => {
+  return !value.value;
+};
 </script>

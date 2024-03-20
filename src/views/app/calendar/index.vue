@@ -41,7 +41,7 @@
                   <div :class="`flex-grow-1 text-${resolveEventVariant(event)}`">
                     <i class="mdi mdi-circle me-2"></i>
                     <span class="fw-medium">
-                      {{ $moment(event.start).format(event.all_day ? 'll' : 'llll') }}
+                      {{ moment(event.start).format(event.all_day ? 'll' : 'llll') }}
                     </span>
                   </div>
                   <div class="flex-shrink-0">
@@ -208,8 +208,8 @@
                         type="checkbox"
                         class="form-check-input"
                         :disabled="
-                          $moment(current_event.start).format('YYYY-MM-DD') !=
-                          $moment(current_event.end).format('YYYY-MM-DD')
+                          moment(current_event.start).format('YYYY-MM-DD') !=
+                          moment(current_event.end).format('YYYY-MM-DD')
                         "
                         v-model="current_event.all_day"
                       />
@@ -276,16 +276,16 @@
                     <div class="flex-grow-1">
                       <h6
                         v-if="
-                          $moment(current_event.start).format('YYYY-MM-DD') ==
-                          $moment(current_event.end).format('YYYY-MM-DD')
+                          moment(current_event.start).format('YYYY-MM-DD') ==
+                          moment(current_event.end).format('YYYY-MM-DD')
                         "
                         class="d-block fw-semibold mb-0"
                       >
-                        {{ $moment(current_event.start).format('YYYY-MM-DD') }}
+                        {{ moment(current_event.start).format('YYYY-MM-DD') }}
                       </h6>
                       <h6 v-else class="d-block fw-semibold mb-0">
-                        {{ $moment(current_event.start).format('YYYY-MM-DD') }} ~
-                        {{ $moment(current_event.end).format('YYYY-MM-DD') }}
+                        {{ moment(current_event.start).format('YYYY-MM-DD') }} ~
+                        {{ moment(current_event.end).format('YYYY-MM-DD') }}
                       </h6>
                     </div>
                   </div>
@@ -296,9 +296,9 @@
                   </div>
                   <div class="flex-grow-1">
                     <h6 class="d-block fw-semibold mb-0">
-                      <span>{{ $moment(current_event.start).format('HH:mm:ss') }}</span>
+                      <span>{{ moment(current_event.start).format('HH:mm:ss') }}</span>
                       ~
-                      <span>{{ $moment(current_event.end).format('HH:mm:ss') }}</span>
+                      <span>{{ moment(current_event.end).format('HH:mm:ss') }}</span>
                     </h6>
                   </div>
                 </div>
@@ -426,10 +426,8 @@
     </div>
   </div>
 </template>
-<script>
-import { ref, onMounted, onUnmounted } from 'vue';
-import store from '@store';
-import { getUserInfo, isLngLat } from '@utils';
+<script setup>
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import FullCalendar from '@fullcalendar/vue3';
@@ -441,462 +439,432 @@ import listPlugin from '@fullcalendar/list';
 import '@fullcalendar/core/vdom';
 import usUs from '@fullcalendar/core/locales/es-us';
 import zhCn from '@fullcalendar/core/locales/zh-cn';
-import { getEvents, createEvent, updateEvent } from '@api/app/calendar';
+import { getUserInfo, isLngLat } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+import { socket } from '@utils/socket';
 import FlatPickr from '@components/FlatPickr';
 import Amap from '@components/Amap';
 import UserSelector from '@components/UserSelector';
-import i18n from '@utils/i18n';
-export default {
-  components: {
-    FullCalendar,
-    FlatPickr,
-    Amap,
-    UserSelector,
+import store from '@store';
+import { getEvents, createEvent, updateEvent } from '@api/app/calendar';
+
+const toast = useToast();
+
+const calendar = ref(null);
+let calendarApi = null;
+
+const categories = [
+  {
+    title: i18n.global.t('app.calendar.category.personal'),
+    value: 'personal',
+    variant: 'primary',
   },
-  setup() {
-    const toast = useToast();
-    const socket = window.socket;
-    const moment = window.moment;
+  {
+    title: i18n.global.t('app.calendar.category.meeting'),
+    value: 'meeting',
+    variant: 'secondary',
+  },
+  {
+    title: i18n.global.t('app.calendar.category.family'),
+    value: 'family',
+    variant: 'warning',
+  },
+  {
+    title: i18n.global.t('app.calendar.category.work'),
+    value: 'work',
+    variant: 'danger',
+  },
+  {
+    title: i18n.global.t('app.calendar.category.holiday'),
+    value: 'holiday',
+    variant: 'success',
+  },
+  {
+    title: i18n.global.t('app.calendar.category.other'),
+    value: 'other',
+    variant: 'info',
+  },
+];
 
-    const calendar = ref(null);
-    let calendarApi = null;
+const resolveEventVariant = computed(() => {
+  return (event) => {
+    const category = categories.find((category) => category.value === event.category);
+    return category ? category.variant : 'info';
+  };
+});
 
-    const categories = ref([
-      {
-        title: i18n.global.t('app.calendar.category.personal'),
-        value: 'personal',
-        variant: 'primary',
-      },
-      {
-        title: i18n.global.t('app.calendar.category.meeting'),
-        value: 'meeting',
-        variant: 'secondary',
-      },
-      {
-        title: i18n.global.t('app.calendar.category.family'),
-        value: 'family',
-        variant: 'warning',
-      },
-      {
-        title: i18n.global.t('app.calendar.category.work'),
-        value: 'work',
-        variant: 'danger',
-      },
-      {
-        title: i18n.global.t('app.calendar.category.holiday'),
-        value: 'holiday',
-        variant: 'success',
-      },
-      {
-        title: i18n.global.t('app.calendar.category.other'),
-        value: 'other',
-        variant: 'info',
-      },
-    ]);
+const events = ref([]);
+const upcoming_events = ref(null);
+const current_event = ref({});
+const is_editing = ref(false);
 
-    const resolveEventVariant = (event) => {
-      const category = categories.value.find((category) => category.value === event.category);
-      return category ? category.variant : 'info';
-    };
+const getInitialView = () => {
+  if (window.innerWidth >= 768 && window.innerWidth < 1200) {
+    return 'timeGridWeek';
+  } else if (window.innerWidth <= 768) {
+    return 'listMonth';
+  } else {
+    return 'dayGridMonth';
+  }
+};
 
-    const events = ref([]);
-    const upcoming_events = ref(null);
-    const current_event = ref({});
-
-    const is_editing = ref(false);
-
-    const getInitialView = () => {
-      if (window.innerWidth >= 768 && window.innerWidth < 1200) {
-        return 'timeGridWeek';
-      } else if (window.innerWidth <= 768) {
-        return 'listMonth';
-      } else {
-        return 'dayGridMonth';
-      }
-    };
-
-    const fetchUpcomingEvents = () => {
-      getEvents({
-        start: moment().format('YYYY-MM-DD'),
-        end: moment().add(1, 'M').format('YYYY-MM-DD'),
-      }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          upcoming_events.value = data
-            .map((event) => {
-              const category = categories.value.find(
-                (category) => category.value === event.category,
-              );
-              event.className = category ? `bg-soft-${category.variant}` : 'bg-soft-info';
-              event.allDay = event.all_day;
-              event.users = event.users.filter((username) => getUserInfo(username));
-              return event;
-            })
-            .sort((a, b) => moment(a.start).valueOf() - moment(b.start).valueOf());
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const fetchEvents = (info, successCallback) => {
-      getEvents({
-        start: moment(info.start).format('YYYY-MM-DD'),
-        end: moment(info.end).format('YYYY-MM-DD'),
-      }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          events.value = data.map((event) => {
-            const category = categories.value.find((category) => category.value === event.category);
-            event.className = category ? `bg-soft-${category.variant}` : 'bg-soft-info';
-            event.allDay = event.all_day;
-            event.users = event.users.filter((username) => getUserInfo(username));
-            return event;
-          });
-          successCallback(events.value);
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const viewAndEditEventModalKey = ref(null);
-
-    const handleDateClick = (e) => {
-      current_event.value = {
-        title: '',
-        description: '',
-
-        date: [moment(e.date).format('YYYY-MM-DD'), moment(e.date).format('YYYY-MM-DD')],
-
-        start: `${moment(e.date).format('YYYY-MM-DD')} 00:00:00`,
-        end: `${moment(e.date).format('YYYY-MM-DD')} 00:00:00`,
-        all_day: true,
-
-        start_time: '09:00:00',
-        end_time: '18:00:00',
-
-        location: '',
-        category: 'other',
-        users: [store.state.user.data.username],
-      };
-      is_editing.value = true;
-      viewAndEditEventModalKey.value = Math.random().toString(36).slice(-6);
-      document.getElementById('showViewAndEditEventModalBtn').click();
-    };
-
-    const handleEventClick = ({ event }) => {
-      current_event.value = {
-        id: event.id,
-
-        title: event.title,
-        description: event.extendedProps ? event.extendedProps.description : event.description,
-
-        date: [
-          moment(event.start).format('YYYY-MM-DD'),
-          event.allDay && event.end && event.endStr != event.startStr
-            ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD')
-            : moment(event.end || event.start).format('YYYY-MM-DD'),
-        ],
-
-        start: event.start,
-        end:
-          event.allDay && event.end && event.endStr != event.startStr
-            ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD')
-            : event.end || event.start,
-        all_day: event.allDay,
-
-        start_time: moment(event.start).format('HH:mm:ss'),
-        end_time: moment(event.end).format('HH:mm:ss'),
-
-        location: event.extendedProps ? event.extendedProps.location : event.location,
-        category: event.extendedProps ? event.extendedProps.category : event.category,
-        users: event.extendedProps ? event.extendedProps.users : event.users,
-      };
-      document.getElementById('showViewAndEditEventModalBtn').click();
-    };
-
-    const handleEventDrop = ({ event }) => {
-      const data = {
-        id: event.id,
-        start: moment(event.start).format('YYYY-MM-DD HH:mm:ss'),
-        end: moment(event.end || event.start).format('YYYY-MM-DD HH:mm:ss'),
-      };
-      updateEvent(data).then(({ code, msg }) => {
-        if (code !== 200) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const handleEventReceive = ({ event, revert }) => {
-      revert();
-      const data = {
-        title: event.title,
-        description: event.extendedProps.description,
-        start: moment(event.start).format('YYYY-MM-DD 00:00:00'),
-        end: moment(event.start).format('YYYY-MM-DD 00:00:00'),
-        all_day: true,
-        category: event.extendedProps.category,
-        users: event.extendedProps.users,
-      };
-      createEvent(data).then(({ code, msg }) => {
-        if (code !== 200) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const calendarOptions = ref({
-      locales: [usUs, zhCn],
-      locale: store.state.sys.lang,
-      firstDay: 0,
-      timeZone: 'local',
-      droppable: true,
-      navLinks: true,
-      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin, listPlugin],
-      themeSystem: 'bootstrap',
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
-      },
-      windowResize: () => {
-        getInitialView();
-      },
-      initialView: getInitialView(),
-      events: fetchEvents,
-      editable: true,
-      selectable: true,
-      selectMirror: true,
-      dayMaxEvents: true,
-      weekends: true,
-      dateClick: handleDateClick,
-      eventClick: handleEventClick,
-      eventDrop: handleEventDrop,
-      eventReceive: handleEventReceive,
-    });
-
-    const refetchEventsHandler = () => {
-      fetchUpcomingEvents();
-      calendarApi.refetchEvents();
-    };
-
-    const viewAndEditEventModalHiddenHandler = () => {
-      is_editing.value = false;
-    };
-
-    onMounted(() => {
-      fetchUpcomingEvents();
-      calendarApi = calendar.value.getApi().view.calendar;
-      new Draggable(document.getElementById('external-events'), {
-        itemSelector: '.external-event',
-        eventData: function (eventEl) {
-          return {
-            title: eventEl.innerText.trim(),
-            description: i18n.global.t('app.calendar.viewAndEditEventModal.form.description'),
-            start: new Date(),
-            category: eventEl.getAttribute('data-category'),
-            users: [store.state.user.data.username],
-          };
+const fetchUpcomingEvents = () => {
+  getEvents({
+    start: moment().format('YYYY-MM-DD'),
+    end: moment().add(1, 'M').format('YYYY-MM-DD'),
+  }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      upcoming_events.value = data
+        .map((event) => {
+          const category = categories.find((category) => category.value === event.category);
+          event.className = category ? `bg-soft-${category.variant}` : 'bg-soft-info';
+          event.allDay = event.all_day;
+          event.users = event.users.filter((username) => getUserInfo(username));
+          return event;
+        })
+        .sort((a, b) => moment(a.start).valueOf() - moment(b.start).valueOf());
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
         },
       });
+    }
+  });
+};
 
-      const viewAndEditEventModal = document.getElementById('viewAndEditEventModal');
-      if (viewAndEditEventModal) {
-        viewAndEditEventModal.addEventListener(
-          'hidden.bs.modal',
-          viewAndEditEventModalHiddenHandler,
-        );
-      }
-      socket.on('refetchEvents', refetchEventsHandler);
-    });
+const fetchEvents = (info, successCallback) => {
+  getEvents({
+    start: moment(info.start).format('YYYY-MM-DD'),
+    end: moment(info.end).format('YYYY-MM-DD'),
+  }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      events.value = data.map((event) => {
+        const category = categories.find((category) => category.value === event.category);
+        event.className = category ? `bg-soft-${category.variant}` : 'bg-soft-info';
+        event.allDay = event.all_day;
+        event.users = event.users.filter((username) => getUserInfo(username));
+        return event;
+      });
+      successCallback(events.value);
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
 
-    onUnmounted(() => {
-      const viewAndEditEventModal = document.getElementById('viewAndEditEventModal');
-      if (viewAndEditEventModal) {
-        viewAndEditEventModal.removeEventListener(
-          'hidden.bs.modal',
-          viewAndEditEventModalHiddenHandler,
-        );
-      }
-      socket.off('refetchEvents', refetchEventsHandler);
-    });
+const viewAndEditEventModalKey = ref(null);
 
-    const handleCreateEvent = () => {
-      current_event.value = {
-        key: Math.random().toString(36).slice(-6),
+const handleDateClick = (e) => {
+  current_event.value = {
+    title: '',
+    description: '',
 
-        title: '',
-        description: '',
+    date: [moment(e.date).format('YYYY-MM-DD'), moment(e.date).format('YYYY-MM-DD')],
 
-        date: [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+    start: `${moment(e.date).format('YYYY-MM-DD')} 00:00:00`,
+    end: `${moment(e.date).format('YYYY-MM-DD')} 00:00:00`,
+    all_day: true,
 
-        start: `${moment().format('YYYY-MM-DD')} 00:00:00`,
-        end: `${moment().format('YYYY-MM-DD')} 00:00:00`,
-        all_day: true,
+    start_time: '09:00:00',
+    end_time: '18:00:00',
 
-        start_time: '09:00:00',
-        end_time: '18:00:00',
+    location: '',
+    category: 'other',
+    users: [store.state.user.data.username],
+  };
+  is_editing.value = true;
+  viewAndEditEventModalKey.value = Math.random().toString(36).slice(-6);
+  document.getElementById('showViewAndEditEventModalBtn').click();
+};
 
-        location: '',
-        category: 'other',
+const handleEventClick = ({ event }) => {
+  current_event.value = {
+    id: event.id,
+
+    title: event.title,
+    description: event.extendedProps ? event.extendedProps.description : event.description,
+
+    date: [
+      moment(event.start).format('YYYY-MM-DD'),
+      event.allDay && event.end && event.endStr != event.startStr
+        ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD')
+        : moment(event.end || event.start).format('YYYY-MM-DD'),
+    ],
+
+    start: event.start,
+    end:
+      event.allDay && event.end && event.endStr != event.startStr
+        ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD')
+        : event.end || event.start,
+    all_day: event.allDay,
+
+    start_time: moment(event.start).format('HH:mm:ss'),
+    end_time: moment(event.end).format('HH:mm:ss'),
+
+    location: event.extendedProps ? event.extendedProps.location : event.location,
+    category: event.extendedProps ? event.extendedProps.category : event.category,
+    users: event.extendedProps ? event.extendedProps.users : event.users,
+  };
+  document.getElementById('showViewAndEditEventModalBtn').click();
+};
+
+const handleEventDrop = ({ event }) => {
+  const data = {
+    id: event.id,
+    start: moment(event.start).format('YYYY-MM-DD HH:mm:ss'),
+    end: moment(event.end || event.start).format('YYYY-MM-DD HH:mm:ss'),
+  };
+  updateEvent(data).then(({ code, msg }) => {
+    if (code !== 200) {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const handleEventReceive = ({ event, revert }) => {
+  revert();
+  const data = {
+    title: event.title,
+    description: event.extendedProps.description,
+    start: moment(event.start).format('YYYY-MM-DD 00:00:00'),
+    end: moment(event.start).format('YYYY-MM-DD 00:00:00'),
+    all_day: true,
+    category: event.extendedProps.category,
+    users: event.extendedProps.users,
+  };
+  createEvent(data).then(({ code, msg }) => {
+    if (code !== 200) {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const calendarOptions = ref({
+  locales: [usUs, zhCn],
+  locale: store.state.sys.lang,
+  firstDay: 0,
+  timeZone: 'local',
+  droppable: true,
+  navLinks: true,
+  plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin, listPlugin],
+  themeSystem: 'bootstrap',
+  headerToolbar: {
+    left: 'prev,next today',
+    center: 'title',
+    right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
+  },
+  windowResize: () => {
+    getInitialView();
+  },
+  initialView: getInitialView(),
+  events: fetchEvents,
+  editable: true,
+  selectable: true,
+  selectMirror: true,
+  dayMaxEvents: true,
+  weekends: true,
+  dateClick: handleDateClick,
+  eventClick: handleEventClick,
+  eventDrop: handleEventDrop,
+  eventReceive: handleEventReceive,
+});
+
+const refetchEventsHandler = () => {
+  fetchUpcomingEvents();
+  calendarApi.refetchEvents();
+};
+
+const viewAndEditEventModalHiddenHandler = () => {
+  is_editing.value = false;
+};
+
+onMounted(() => {
+  fetchUpcomingEvents();
+  calendarApi = calendar.value.getApi().view.calendar;
+  new Draggable(document.getElementById('external-events'), {
+    itemSelector: '.external-event',
+    eventData: function (eventEl) {
+      return {
+        title: eventEl.innerText.trim(),
+        description: i18n.global.t('app.calendar.viewAndEditEventModal.form.description'),
+        start: new Date(),
+        category: eventEl.getAttribute('data-category'),
         users: [store.state.user.data.username],
       };
-      is_editing.value = true;
-      viewAndEditEventModalKey.value = Math.random().toString(36).slice(-6);
-      document.getElementById('showViewAndEditEventModalBtn').click();
-    };
+    },
+  });
 
-    const handleChangeDate = (e) => {
-      if (e.target.value) {
-        if (e.target.value.split(' ').length === 3) {
-          current_event.value.start = e.target.value.split(' ')[0];
-          current_event.value.end = e.target.value.split(' ')[2];
-          current_event.value.all_day = true;
-        } else {
-          current_event.value.start = current_event.value.end = e.target.value;
-        }
-      }
-    };
+  const viewAndEditEventModal = document.getElementById('viewAndEditEventModal');
+  if (viewAndEditEventModal) {
+    viewAndEditEventModal.addEventListener('hidden.bs.modal', viewAndEditEventModalHiddenHandler);
+  }
+  socket.on('refetchEvents', refetchEventsHandler);
+});
 
-    const handleDelEvent = () => {
-      updateEvent({
-        id: current_event.value.id,
-        data_state: 'deleted',
-      }).then(({ code, msg }) => {
-        if (code === 200) {
-          document.getElementById('hideDeleteEventModalBtn').click();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+onUnmounted(() => {
+  const viewAndEditEventModal = document.getElementById('viewAndEditEventModal');
+  if (viewAndEditEventModal) {
+    viewAndEditEventModal.removeEventListener(
+      'hidden.bs.modal',
+      viewAndEditEventModalHiddenHandler,
+    );
+  }
+  socket.off('refetchEvents', refetchEventsHandler);
+});
+
+const handleCreateEvent = () => {
+  current_event.value = {
+    key: Math.random().toString(36).slice(-6),
+
+    title: '',
+    description: '',
+
+    date: [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+
+    start: `${moment().format('YYYY-MM-DD')} 00:00:00`,
+    end: `${moment().format('YYYY-MM-DD')} 00:00:00`,
+    all_day: true,
+
+    start_time: '09:00:00',
+    end_time: '18:00:00',
+
+    location: '',
+    category: 'other',
+    users: [store.state.user.data.username],
+  };
+  is_editing.value = true;
+  viewAndEditEventModalKey.value = Math.random().toString(36).slice(-6);
+  document.getElementById('showViewAndEditEventModalBtn').click();
+};
+
+const handleChangeDate = (e) => {
+  if (e.target.value) {
+    if (e.target.value.split(' ').length === 3) {
+      current_event.value.start = e.target.value.split(' ')[0];
+      current_event.value.end = e.target.value.split(' ')[2];
+      current_event.value.all_day = true;
+    } else {
+      current_event.value.start = current_event.value.end = e.target.value;
+    }
+  }
+};
+
+const handleDelEvent = () => {
+  updateEvent({
+    id: current_event.value.id,
+    data_state: 'deleted',
+  }).then(({ code, msg }) => {
+    if (code === 200) {
+      document.getElementById('hideDeleteEventModalBtn').click();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const handleSubmitEvent = () => {
-      const data = {
-        title: current_event.value.title,
-        description: current_event.value.description,
-        start: moment(current_event.value.start).format('YYYY-MM-DD'),
-        end: moment(current_event.value.end).format('YYYY-MM-DD'),
-        all_day: current_event.value.all_day,
-        location: current_event.value.location,
-        category: current_event.value.category,
-        users: current_event.value.users,
-      };
+const handleSubmitEvent = () => {
+  const data = {
+    title: current_event.value.title,
+    description: current_event.value.description,
+    start: moment(current_event.value.start).format('YYYY-MM-DD'),
+    end: moment(current_event.value.end).format('YYYY-MM-DD'),
+    all_day: current_event.value.all_day,
+    location: current_event.value.location,
+    category: current_event.value.category,
+    users: current_event.value.users,
+  };
 
-      if (current_event.value.all_day) {
-        data.end =
-          data.end === data.start
-            ? moment(data.end).format('YYYY-MM-DD 00:00:00')
-            : moment(data.end).add(1, 'd').format('YYYY-MM-DD 00:00:00');
-        data.start = moment(data.start).format('YYYY-MM-DD 00:00:00');
+  if (current_event.value.all_day) {
+    data.end =
+      data.end === data.start
+        ? moment(data.end).format('YYYY-MM-DD 00:00:00')
+        : moment(data.end).add(1, 'd').format('YYYY-MM-DD 00:00:00');
+    data.start = moment(data.start).format('YYYY-MM-DD 00:00:00');
+  } else {
+    if (current_event.value.start_time.split(':').length !== 3) {
+      current_event.value.start_time = '';
+      return;
+    }
+    if (current_event.value.end_time.split(':').length !== 3) {
+      current_event.value.end_time = '';
+      return;
+    }
+
+    data.start = `${data.start} ${current_event.value.start_time}`.trim();
+    data.end = `${data.end} ${current_event.value.end_time}`.trim();
+  }
+
+  if (current_event.value.id) {
+    data.id = current_event.value.id;
+    updateEvent(data).then(({ code, msg }) => {
+      if (code === 200) {
+        document.getElementById('hideViewAndEditEventModalBtn').click();
       } else {
-        if (current_event.value.start_time.split(':').length !== 3) {
-          current_event.value.start_time = '';
-          return;
-        }
-        if (current_event.value.end_time.split(':').length !== 3) {
-          current_event.value.end_time = '';
-          return;
-        }
-
-        data.start = `${data.start} ${current_event.value.start_time}`.trim();
-        data.end = `${data.end} ${current_event.value.end_time}`.trim();
-      }
-
-      if (current_event.value.id) {
-        data.id = current_event.value.id;
-        updateEvent(data).then(({ code, msg }) => {
-          if (code === 200) {
-            document.getElementById('hideViewAndEditEventModalBtn').click();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
-      } else {
-        createEvent(data).then(({ code, msg }) => {
-          if (code === 200) {
-            document.getElementById('hideViewAndEditEventModalBtn').click();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
         });
       }
-    };
+    });
+  } else {
+    createEvent(data).then(({ code, msg }) => {
+      if (code === 200) {
+        document.getElementById('hideViewAndEditEventModalBtn').click();
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
+};
 
-    const handleDblClickMap = (lnglat) => {
-      window.open(
-        `//www.amap.com/regeo?lng=${lnglat.split(',')[0]}&lat=${lnglat.split(',')[1]}`,
-        '_blank',
-      );
-    };
-
-    return {
-      calendar,
-      calendarOptions,
-      categories,
-      resolveEventVariant,
-      events,
-      upcoming_events,
-      current_event,
-      is_editing,
-      isLngLat,
-      viewAndEditEventModalKey,
-      handleEventClick,
-      handleCreateEvent,
-      handleChangeDate,
-      handleDelEvent,
-      handleSubmitEvent,
-      handleDblClickMap,
-    };
-  },
+const handleDblClickMap = (lnglat) => {
+  window.open(
+    `//www.amap.com/regeo?lng=${lnglat.split(',')[0]}&lat=${lnglat.split(',')[1]}`,
+    '_blank',
+  );
 };
 </script>

@@ -13,21 +13,12 @@
   <span v-else></span>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
+<script setup>
 import { isLngLat } from '@utils';
-export default defineComponent({
-  setup() {
-    const handleDblClickLngLat = (lnglat) => {
-      window.open(
-        `//www.amap.com/regeo?lng=${lnglat.split(',')[0]}&lat=${lnglat.split(',')[1]}`,
-        '_blank',
-      );
-    };
-    return {
-      isLngLat,
-      handleDblClickLngLat,
-    };
-  },
-});
+const handleDblClickLngLat = (lnglat) => {
+  window.open(
+    `//www.amap.com/regeo?lng=${lnglat.split(',')[0]}&lat=${lnglat.split(',')[1]}`,
+    '_blank',
+  );
+};
 </script>

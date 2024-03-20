@@ -7,29 +7,20 @@
   />
 </template>
 
-<script>
-import { defineComponent, ref } from 'vue';
+<script setup>
+import { defineProps, ref } from 'vue';
 import UserSelector from '@components/UserSelector';
-export default defineComponent({
-  components: {
-    UserSelector,
-  },
-  setup(props) {
-    const value = ref(props.params.value);
+const props = defineProps(['params']);
 
-    const getValue = () => {
-      return value.value;
-    };
+const value = ref(props.params.value);
 
-    const isCancelAfterEnd = () => {
-      return false;
-    };
+/* eslint-disable-next-line no-unused-vars */
+const getValue = () => {
+  return value.value;
+};
 
-    return {
-      value,
-      getValue,
-      isCancelAfterEnd,
-    };
-  },
-});
+/* eslint-disable-next-line no-unused-vars */
+const isCancelAfterEnd = () => {
+  return false;
+};
 </script>

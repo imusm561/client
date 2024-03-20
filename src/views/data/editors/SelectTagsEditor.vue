@@ -16,31 +16,22 @@
   </VueSelect>
 </template>
 
-<script>
-import { defineComponent, computed, ref } from 'vue';
-export default defineComponent({
-  setup(props) {
-    const value = ref(props.params.value);
+<script setup>
+import { defineProps, computed, ref } from 'vue';
+const props = defineProps(['params']);
+const value = ref(props.params.value);
 
-    const options = computed(() => {
-      return Array.from(
-        new Set([...(props.params._column.cfg.options || []), ...(value.value || [])]),
-      );
-    });
-
-    const getValue = () => {
-      return value.value;
-    };
-    const isCancelAfterEnd = () => {
-      return !!props.params._column._required && (!value.value || value.value.length === 0);
-    };
-
-    return {
-      value,
-      options,
-      getValue,
-      isCancelAfterEnd,
-    };
-  },
+const options = computed(() => {
+  return Array.from(new Set([...(props.params._column.cfg.options || []), ...(value.value || [])]));
 });
+
+/* eslint-disable-next-line no-unused-vars */
+const getValue = () => {
+  return value.value;
+};
+
+/* eslint-disable-next-line no-unused-vars */
+const isCancelAfterEnd = () => {
+  return !!props.params._column._required && (!value.value || value.value.length === 0);
+};
 </script>

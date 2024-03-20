@@ -30,7 +30,7 @@
             >
               <i class="mdi mdi-clock-outline label-icon"></i>
               <div class="flex-grow-1 text-truncate">
-                {{ $moment().format('LLLL') }}
+                {{ moment().format('LLLL') }}
               </div>
             </div>
             <div class="row p-3 gap-3">
@@ -56,7 +56,7 @@
               <div class="col">
                 <calendar-heatmap
                   :values="activities"
-                  :end-date="$moment().format('YYYY-MM-DD')"
+                  :end-date="moment().format('YYYY-MM-DD')"
                   :max="100"
                   :tooltip-unit="$t('home.heatmap.tooltipUnit')"
                   :no-data-text="false"
@@ -214,7 +214,7 @@
                           </div>
                         </div>
                       </td>
-                      <td class="text-muted text-end">{{ $moment(task.due_date).format('ll') }}</td>
+                      <td class="text-muted text-end">{{ moment(task.due_date).format('ll') }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -247,8 +247,8 @@
                       <div class="col-auto">
                         <div class="avatar-sm p-1 py-1 h-auto bg-light rounded-3 shadow">
                           <div class="text-center mt-1">
-                            <h5 class="mb-0">{{ $moment(event.start).format('DD') }}</h5>
-                            <div class="text-muted">{{ $moment(event.start).format('ddd') }}</div>
+                            <h5 class="mb-0">{{ moment(event.start).format('DD') }}</h5>
+                            <div class="text-muted">{{ moment(event.start).format('ddd') }}</div>
                           </div>
                         </div>
                       </div>
@@ -286,119 +286,97 @@
   </div>
 </template>
 
-<script>
-import { onMounted, computed, reactive, ref } from 'vue';
+<script setup>
+import { onMounted, computed, ref } from 'vue';
+import { CalendarHeatmap } from 'vue3-calendar-heatmap';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
 import store from '@store';
 import Breadcrumb from '@layouts/breadcrumb';
-import { CalendarHeatmap } from 'vue3-calendar-heatmap';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
 import { getUserHome } from '@api/user';
 import { getUserInfo } from '@utils';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
-import i18n from '@utils/i18n';
 import useTask from '../app/task/useTask';
-export default {
-  components: {
-    Breadcrumb,
-    CalendarHeatmap,
-    Avatar,
-    Empty,
+
+const toast = useToast();
+const types = [
+  {
+    title: i18n.global.t('home.analytics.create'),
+    type: 'create',
+    icon: 'mdi-creation',
+    variant: 'primary',
   },
-  setup() {
-    const toast = useToast();
-    const types = reactive([
-      {
-        title: i18n.global.t('home.analytics.create'),
-        type: 'create',
-        icon: 'mdi-creation',
-        variant: 'primary',
-      },
-      {
-        title: i18n.global.t('home.analytics.delete'),
-        type: 'delete',
-        icon: 'mdi-delete-variant',
-        variant: 'danger',
-      },
-      {
-        title: i18n.global.t('home.analytics.update'),
-        type: 'update',
-        icon: 'mdi-square-edit-outline',
-        variant: 'warning',
-      },
-      {
-        title: i18n.global.t('home.analytics.view'),
-        type: 'view',
-        icon: 'mdi-eye-outline',
-        variant: 'success',
-      },
-    ]);
-
-    const { resolveTaskVariant } = useTask();
-
-    const resolveTaskStatus = computed(() => {
-      return (task) => {
-        const status = store.state.sys.cfg.task.statuses.find(
-          (status) => status.value === task.status,
-        );
-        return status || store.state.sys.cfg.task.statuses[0];
-      };
-    });
-
-    const heatmapRangeColor = computed(() => {
-      return store.state.sys.theme === 'dark'
-        ? ['#414653', '#516939', '#6c8b4b', '#86ab63', '#9fbc82', '#b6cda1']
-        : ['#ebedf0', '#dae2ef', '#c0ddf9', '#73b3f3', '#3886e1', '#17459e'];
-    });
-
-    const mergeActivities = (arr) => {
-      const result = arr.reduce((obj, item) => {
-        if (!obj[item.date]) {
-          obj[item.date] = 0;
-        }
-        obj[item.date] += item.count;
-        return obj;
-      }, {});
-      return Object.keys(result).map((date) => ({ date: date, count: result[date] }));
-    };
-
-    const activities = ref([]);
-    const analytics = ref({ create: {}, update: {}, view: {}, delete: {} });
-    const tasks = ref([]);
-    const events = ref([]);
-
-    onMounted(() => {
-      getUserHome().then(({ code, data, msg }) => {
-        if (code === 200) {
-          activities.value = mergeActivities([...data.activities.st, ...data.activities.zz]);
-          analytics.value = data.analytics;
-          tasks.value = data.tasks;
-          events.value = data.events;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    });
-
-    return {
-      types,
-      heatmapRangeColor,
-      resolveTaskStatus,
-      resolveTaskVariant,
-      activities,
-      analytics,
-      tasks,
-      events,
-      getUserInfo,
-    };
+  {
+    title: i18n.global.t('home.analytics.delete'),
+    type: 'delete',
+    icon: 'mdi-delete-variant',
+    variant: 'danger',
   },
+  {
+    title: i18n.global.t('home.analytics.update'),
+    type: 'update',
+    icon: 'mdi-square-edit-outline',
+    variant: 'warning',
+  },
+  {
+    title: i18n.global.t('home.analytics.view'),
+    type: 'view',
+    icon: 'mdi-eye-outline',
+    variant: 'success',
+  },
+];
+
+const { resolveTaskVariant } = useTask();
+
+const resolveTaskStatus = computed(() => {
+  return (task) => {
+    const status = store.state.sys.cfg.task.statuses.find((status) => status.value === task.status);
+    return status || store.state.sys.cfg.task.statuses[0];
+  };
+});
+
+const heatmapRangeColor = computed(() => {
+  return store.state.sys.theme === 'dark'
+    ? ['#414653', '#516939', '#6c8b4b', '#86ab63', '#9fbc82', '#b6cda1']
+    : ['#ebedf0', '#dae2ef', '#c0ddf9', '#73b3f3', '#3886e1', '#17459e'];
+});
+
+const mergeActivities = (arr) => {
+  const result = arr.reduce((obj, item) => {
+    if (!obj[item.date]) {
+      obj[item.date] = 0;
+    }
+    obj[item.date] += item.count;
+    return obj;
+  }, {});
+  return Object.keys(result).map((date) => ({ date: date, count: result[date] }));
 };
+
+const activities = ref([]);
+const analytics = ref({ create: {}, update: {}, view: {}, delete: {} });
+const tasks = ref([]);
+const events = ref([]);
+
+onMounted(() => {
+  getUserHome().then(({ code, data, msg }) => {
+    if (code === 200) {
+      activities.value = mergeActivities([...data.activities.st, ...data.activities.zz]);
+      analytics.value = data.analytics;
+      tasks.value = data.tasks;
+      events.value = data.events;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+});
 </script>

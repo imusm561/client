@@ -126,9 +126,9 @@
                   <div class="d-flex align-items-center">
                     <i class="fs-32 mb-n2 mt-n2 mdi mdi-calendar-clock text-primary" />
                     <span class="d-flex flex-column ms-1">
-                      <span class="fs-14">{{ $moment(log.created_at).format('ll') }}</span>
+                      <span class="fs-14">{{ moment(log.created_at).format('ll') }}</span>
                       <span class="fs-10">
-                        {{ $moment(log.created_at).format('LTS') }}
+                        {{ moment(log.created_at).format('LTS') }}
                       </span>
                     </span>
                   </div>
@@ -257,183 +257,156 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive, onMounted, onUnmounted, computed, watch } from 'vue';
+import uaParser from 'ua-parser-js';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+import { getUserInfo } from '@utils';
+import moment from '@utils/moment';
+import { socket } from '@utils/socket';
+
 import Breadcrumb from '@layouts/breadcrumb';
 import Pagination from '@components/Pagination';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
 import MonacoEditor from '@components/MonacoEditor';
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+
 import { getSysUrl, getSysLog } from '@api/sys';
-import { getUserInfo } from '@utils';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
-import uaParser from 'ua-parser-js';
 
-export default {
-  components: {
-    Breadcrumb,
-    Pagination,
-    Avatar,
-    Empty,
-    MonacoEditor,
-  },
-  setup() {
-    const toast = useToast();
-    const socket = window.socket;
+const toast = useToast();
 
-    const urls = ref([]);
-    const logs = ref([]);
+const urls = ref([]);
+const logs = ref([]);
 
-    const search_user = ref(null);
-    const search_url = ref(null);
+const search_user = ref(null);
+const search_url = ref(null);
 
-    const pagination = ref({
-      pageNum: 1,
-      pageSize: 200,
-      totalCount: 0,
-    });
+const pagination = reactive({
+  pageNum: 1,
+  pageSize: 200,
+  totalCount: 0,
+});
 
-    const handlePaginationChange = ({ pageNum, pageSize }) => {
-      pagination.value.pageNum = pageNum;
-      pagination.value.pageSize = pageSize;
-      fetchLogs();
-    };
+const handlePaginationChange = ({ pageNum, pageSize }) => {
+  pagination.pageNum = pageNum;
+  pagination.pageSize = pageSize;
+  fetchLogs();
+};
 
-    const refetchLogsHandler = () => {
-      pagination.value.pageNum = 1;
-      fetchLogs();
-    };
+const refetchLogsHandler = () => {
+  pagination.pageNum = 1;
+  fetchLogs();
+};
 
-    onMounted(() => {
-      fetchLogs();
-      watch(
-        () => search_user.value,
-        (newVal, oldVal) => {
-          if (oldVal !== undefined) {
-            pagination.value.pageNum = 1;
-            fetchLogs();
-          }
+onMounted(() => {
+  fetchLogs();
+  watch(
+    () => search_user.value,
+    (newVal, oldVal) => {
+      if (oldVal !== undefined) {
+        pagination.pageNum = 1;
+        fetchLogs();
+      }
+    },
+    { immediate: true },
+  );
+
+  watch(
+    () => search_url.value,
+    (newVal, oldVal) => {
+      if (oldVal !== undefined) {
+        pagination.pageNum = 1;
+        fetchLogs();
+      }
+    },
+    { immediate: true },
+  );
+
+  socket.on('refetchLogs', refetchLogsHandler);
+});
+
+onUnmounted(() => {
+  socket.off('refetchLogs', refetchLogsHandler);
+});
+
+const fetchLogs = () => {
+  getSysUrl().then(({ code, data, msg }) => {
+    if (code === 200) {
+      urls.value = data;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
         },
-        { immediate: true },
-      );
-
-      watch(
-        () => search_url.value,
-        (newVal, oldVal) => {
-          if (oldVal !== undefined) {
-            pagination.value.pageNum = 1;
-            fetchLogs();
-          }
+      });
+    }
+  });
+  getSysLog({
+    pageNum: pagination.pageNum,
+    pageSize: pagination.pageSize,
+    user: search_user.value || '',
+    url: search_url.value || '',
+  }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      logs.value = data.rows;
+      pagination.totalCount = data.count;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
         },
-        { immediate: true },
-      );
-
-      socket.on('refetchLogs', refetchLogsHandler);
-    });
-
-    onUnmounted(() => {
-      socket.off('refetchLogs', refetchLogsHandler);
-    });
-
-    const fetchLogs = () => {
-      getSysUrl().then(({ code, data, msg }) => {
-        if (code === 200) {
-          urls.value = data;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
       });
-      getSysLog({
-        pageNum: pagination.value.pageNum,
-        pageSize: pagination.value.pageSize,
-        user: search_user.value || '',
-        url: search_url.value || '',
-      }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          logs.value = data.rows;
-          pagination.value.totalCount = data.count;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
+    }
+  });
+};
 
-    const resolveBrowserIcon = computed(() => {
-      return (browser) => {
-        if (browser.toLowerCase().includes('chrome')) return 'mdi-google-chrome';
-        else if (browser.toLowerCase().includes('edge')) return 'mdi-microsoft-edge';
-        else if (browser.toLowerCase().includes('safari')) return 'mdi-apple-safari';
-        else if (browser.toLowerCase().includes('firefox')) return 'mdi-firefox';
-        else if (browser.toLowerCase().includes('ie')) return 'mdi-microsoft-internet-explorer';
-        else if (browser.toLowerCase().includes('opera')) return 'mdi-opera';
-        else return 'mdi-web';
-      };
-    });
+const resolveBrowserIcon = computed(() => {
+  return (browser) => {
+    if (browser.toLowerCase().includes('chrome')) return 'mdi-google-chrome';
+    else if (browser.toLowerCase().includes('edge')) return 'mdi-microsoft-edge';
+    else if (browser.toLowerCase().includes('safari')) return 'mdi-apple-safari';
+    else if (browser.toLowerCase().includes('firefox')) return 'mdi-firefox';
+    else if (browser.toLowerCase().includes('ie')) return 'mdi-microsoft-internet-explorer';
+    else if (browser.toLowerCase().includes('opera')) return 'mdi-opera';
+    else return 'mdi-web';
+  };
+});
 
-    const reslovOsIcon = computed(() => {
-      return (os) => {
-        if (os.toLowerCase().includes('android')) return 'mdi-android';
-        else if (os.toLowerCase().includes('debian')) return 'mdi-debian';
-        else if (os.toLowerCase().includes('ios')) return 'mdi-apple-ios';
-        else if (os.toLowerCase().includes('linux')) return 'mdi-linux';
-        else if (os.toLowerCase().includes('mint')) return 'mdi-linux-mint';
-        else if (os.toLowerCase().includes('mac')) return 'mdi-apple';
-        else if (os.toLowerCase().includes('nintendo')) return 'mdi-nintendo-switch';
-        else if (os.toLowerCase().includes('playstation')) return 'mdi-sony-playstation';
-        else if (os.toLowerCase().includes('ubuntu')) return 'mdi-ubuntu';
-        else if (os.toLowerCase().includes('centos')) return 'mdi-centos';
-        else if (os.toLowerCase().includes('windows')) return 'mdi-microsoft-windows';
-        else return 'mdi-microsoft-windows';
-      };
-    });
+const reslovOsIcon = computed(() => {
+  return (os) => {
+    if (os.toLowerCase().includes('android')) return 'mdi-android';
+    else if (os.toLowerCase().includes('debian')) return 'mdi-debian';
+    else if (os.toLowerCase().includes('ios')) return 'mdi-apple-ios';
+    else if (os.toLowerCase().includes('linux')) return 'mdi-linux';
+    else if (os.toLowerCase().includes('mint')) return 'mdi-linux-mint';
+    else if (os.toLowerCase().includes('mac')) return 'mdi-apple';
+    else if (os.toLowerCase().includes('nintendo')) return 'mdi-nintendo-switch';
+    else if (os.toLowerCase().includes('playstation')) return 'mdi-sony-playstation';
+    else if (os.toLowerCase().includes('ubuntu')) return 'mdi-ubuntu';
+    else if (os.toLowerCase().includes('centos')) return 'mdi-centos';
+    else if (os.toLowerCase().includes('windows')) return 'mdi-microsoft-windows';
+    else return 'mdi-microsoft-windows';
+  };
+});
 
-    const resolveDeviceIcon = computed(() => {
-      return (type) => {
-        if (type.toLowerCase().includes('mobile')) return 'mdi-cellphone';
-        else if (type.toLowerCase().includes('safari')) return 'mdi-tablet';
-        else return 'mdi-desktop-mac';
-      };
-    });
+const resolveDeviceIcon = computed(() => {
+  return (type) => {
+    if (type.toLowerCase().includes('mobile')) return 'mdi-cellphone';
+    else if (type.toLowerCase().includes('safari')) return 'mdi-tablet';
+    else return 'mdi-desktop-mac';
+  };
+});
 
-    const current_log = ref({});
-    const handleViewLogData = (log) => {
-      current_log.value = log;
-      document.getElementById('showLogDataOffcanvasBtn').click();
-    };
-
-    return {
-      urls,
-      logs,
-
-      search_user,
-      search_url,
-
-      pagination,
-      handlePaginationChange,
-
-      getUserInfo,
-      uaParser,
-      resolveBrowserIcon,
-      reslovOsIcon,
-      resolveDeviceIcon,
-      current_log,
-      handleViewLogData,
-    };
-  },
+const current_log = ref({});
+const handleViewLogData = (log) => {
+  current_log.value = log;
+  document.getElementById('showLogDataOffcanvasBtn').click();
 };
 </script>

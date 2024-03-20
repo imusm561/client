@@ -54,7 +54,7 @@
                         v-if="node.data.type === 'file'"
                         style="margin-left: -3px"
                         class="file-icon file-icon-sm"
-                        :class="$fileIcons.getClassWithColor(node.data.name)"
+                        :class="FileIcons.getClassWithColor(node.data.name)"
                       />
                       <i v-else class="mdi mdi-folder-outline" />
                       {{ node.data.name }}
@@ -103,11 +103,11 @@
                         created_by: current.created_by
                           ? getUserInfo(current.created_by).fullname
                           : $t('layout.navbar.helper.code.file.info.system'),
-                        created_at: $moment(current.created_at || current.birthtime).format('llll'),
+                        created_at: moment(current.created_at || current.birthtime).format('llll'),
                         updated_by: current.updated_by
                           ? getUserInfo(current.updated_by).fullname
                           : $t('layout.navbar.helper.code.file.info.system'),
-                        updated_at: $moment(current.updated_at || current.mtime).format('llll'),
+                        updated_at: moment(current.updated_at || current.mtime).format('llll'),
                       })
                     "
                   >
@@ -292,16 +292,17 @@
   </div>
 </template>
 
-<script>
-import Breadcrumb from '@layouts/breadcrumb';
-import MonacoEditor from '@components/MonacoEditor';
+<script setup>
+import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
-import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import i18n from '@utils/i18n';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getFileSuffix, getUserInfo } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+import Breadcrumb from '@layouts/breadcrumb';
+import MonacoEditor from '@components/MonacoEditor';
 import {
   getCodeDirs,
   getCodeData,
@@ -313,240 +314,268 @@ import {
   saveCode,
   dropCode,
 } from '@api/code';
-export default {
-  components: {
-    Breadcrumb,
-    ElTree,
-    MonacoEditor,
-  },
-  setup() {
-    const reftree = ref(null);
-    const toast = useToast();
-    const dirs = ref([]);
-    const list = ref([]);
-    const current = ref({});
-    const confirm = ref({});
 
-    const editable = computed(() => {
-      return (item) => {
-        return (
-          item.type === 'file' &&
-          ['txt', 'md', 'json', 'html', 'css', 'js'].includes(getFileSuffix(item.name))
-        );
-      };
-    });
+const { FileIcons } = window;
 
-    const isEditing = ref(false);
-    const isModified = (option) => {
-      if (editable.value(current.value) && current.value.data != current.value.file) {
-        if (option.toast)
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.code.modified'),
-            },
-          });
-        return true;
-      }
-      return false;
-    };
+const reftree = ref(null);
+const toast = useToast();
+const dirs = ref([]);
+const list = ref([]);
+const current = ref({});
+const confirm = ref({});
 
-    const keydownHandler = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        if (isModified({ toast: false })) handleSaveCode();
-        e.preventDefault();
-      }
-    };
+const editable = computed(() => {
+  return (item) => {
+    return (
+      item.type === 'file' &&
+      ['txt', 'md', 'json', 'html', 'css', 'js'].includes(getFileSuffix(item.name))
+    );
+  };
+});
 
-    onMounted(() => {
-      handleGetCodeDirs();
-      document.addEventListener('keydown', keydownHandler);
-    });
-
-    onUnmounted(() => {
-      document.removeEventListener('keydown', keydownHandler);
-    });
-
-    const handleGetCodeDirs = (callback) => {
-      if (isModified({ toast: true })) return;
-      getCodeDirs().then(({ code, data, msg }) => {
-        if (code === 200) {
-          dirs.value = data.dirs;
-          list.value = data.list;
-          if (!current.value.path) {
-            current.value.name = '';
-            current.value.path = '/';
-            current.value.type = 'directory';
-            current.value.children = tree.value;
-            current.value.data = JSON.stringify(
-              tree.value.map((i) => {
-                return `${i.type}:${i.path}`;
-              }),
-              null,
-              2,
-            );
-          }
-          nextTick(() => {
-            callback && callback();
-          });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+const isEditing = ref(false);
+const isModified = (option) => {
+  if (editable.value(current.value) && current.value.data != current.value.file) {
+    if (option.toast)
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: i18n.global.t('layout.navbar.helper.code.modified'),
+        },
       });
-    };
+    return true;
+  }
+  return false;
+};
 
-    const tree = computed(() => {
-      const pathToTree = (arr) => {
-        let root = [];
-        for (let i = 0; i < arr.length; i++) {
-          let chain = arr[i].path.split('/');
-          let currentNode = root;
-          for (let j = 0; j < chain.length; j++) {
-            let name = chain[j];
-            let lastNode = currentNode;
+const keydownHandler = (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    if (isModified({ toast: false })) handleSaveCode();
+    e.preventDefault();
+  }
+};
 
-            for (let k = 0; k < currentNode.length; k++) {
-              if (currentNode[k].name === name) {
-                currentNode = currentNode[k].children;
-                break;
-              }
-            }
+onMounted(() => {
+  handleGetCodeDirs();
+  document.addEventListener('keydown', keydownHandler);
+});
 
-            if (lastNode === currentNode) {
-              let newNode = {
-                name: name,
-              };
+onUnmounted(() => {
+  document.removeEventListener('keydown', keydownHandler);
+});
 
-              if (j === chain.length - 1) {
-                newNode.path = arr[i].path;
-              } else {
-                newNode.path = chain.slice(0, j + 1).join('/');
-                newNode.children = [];
-              }
-              newNode.type = arr.find((item) => item.path === newNode.path)?.type || 'directory';
+const handleGetCodeDirs = (callback) => {
+  if (isModified({ toast: true })) return;
+  getCodeDirs().then(({ code, data, msg }) => {
+    if (code === 200) {
+      dirs.value = data.dirs;
+      list.value = data.list;
+      if (!current.value.path) {
+        current.value.name = '';
+        current.value.path = '/';
+        current.value.type = 'directory';
+        current.value.children = tree.value;
+        current.value.data = JSON.stringify(
+          tree.value.map((i) => {
+            return `${i.type}:${i.path}`;
+          }),
+          null,
+          2,
+        );
+      }
+      nextTick(() => {
+        callback && callback();
+      });
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
 
-              if (newNode.type === 'file') {
-                switch (getFileSuffix(newNode.name)) {
-                  case 'log':
-                    newNode.language = 'log';
-                    break;
-                  case 'html':
-                    newNode.language = 'html';
-                    break;
-                  case 'js':
-                    newNode.language = 'javascript';
-                    break;
-                  case 'json':
-                    newNode.language = 'json';
-                    break;
-                  case 'md':
-                    newNode.language = 'markdown';
-                    break;
-                  case 'yml':
-                    newNode.language = 'yaml';
-                    break;
-                  case 'ts':
-                    newNode.language = 'typescript';
-                    break;
-                  case 'css':
-                    newNode.language = 'css';
-                    break;
-                  case 'scss':
-                    newNode.language = 'scss';
-                    break;
-                  case 'less':
-                    newNode.language = 'less';
-                    break;
-                  case 'php':
-                    newNode.language = 'php';
-                    break;
-                  case 'py':
-                    newNode.language = 'python';
-                    break;
-                  case 'sql':
-                    newNode.language = 'mysql';
-                    break;
-                  default:
-                    newNode.language = /.log(.\d{1,2})?$/.test(newNode.name) ? 'log' : 'plaintext';
-                    break;
-                }
-              }
-              currentNode.push(newNode);
-              currentNode = newNode.children;
-            }
+const tree = computed(() => {
+  const pathToTree = (arr) => {
+    let root = [];
+    for (let i = 0; i < arr.length; i++) {
+      let chain = arr[i].path.split('/');
+      let currentNode = root;
+      for (let j = 0; j < chain.length; j++) {
+        let name = chain[j];
+        let lastNode = currentNode;
+
+        for (let k = 0; k < currentNode.length; k++) {
+          if (currentNode[k].name === name) {
+            currentNode = currentNode[k].children;
+            break;
           }
         }
-        return root;
-      };
 
-      const sortTree = (tree) => {
-        tree
-          .sort((a, b) => {
-            return a.name.localeCompare(b.name);
-          })
-          .sort((a, b) => {
-            return a.type.localeCompare(b.type);
-          });
-        tree.forEach((item) => {
-          if (item.children) {
-            item.children = sortTree(item.children);
+        if (lastNode === currentNode) {
+          let newNode = {
+            name: name,
+          };
+
+          if (j === chain.length - 1) {
+            newNode.path = arr[i].path;
+          } else {
+            newNode.path = chain.slice(0, j + 1).join('/');
+            newNode.children = [];
           }
-        });
-        return tree;
-      };
+          newNode.type = arr.find((item) => item.path === newNode.path)?.type || 'directory';
 
-      return sortTree(pathToTree(list.value));
+          if (newNode.type === 'file') {
+            switch (getFileSuffix(newNode.name)) {
+              case 'log':
+                newNode.language = 'log';
+                break;
+              case 'html':
+                newNode.language = 'html';
+                break;
+              case 'js':
+                newNode.language = 'javascript';
+                break;
+              case 'json':
+                newNode.language = 'json';
+                break;
+              case 'md':
+                newNode.language = 'markdown';
+                break;
+              case 'yml':
+                newNode.language = 'yaml';
+                break;
+              case 'ts':
+                newNode.language = 'typescript';
+                break;
+              case 'css':
+                newNode.language = 'css';
+                break;
+              case 'scss':
+                newNode.language = 'scss';
+                break;
+              case 'less':
+                newNode.language = 'less';
+                break;
+              case 'php':
+                newNode.language = 'php';
+                break;
+              case 'py':
+                newNode.language = 'python';
+                break;
+              case 'sql':
+                newNode.language = 'mysql';
+                break;
+              default:
+                newNode.language = /.log(.\d{1,2})?$/.test(newNode.name) ? 'log' : 'plaintext';
+                break;
+            }
+          }
+          currentNode.push(newNode);
+          currentNode = newNode.children;
+        }
+      }
+    }
+    return root;
+  };
+
+  const sortTree = (tree) => {
+    tree
+      .sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      })
+      .sort((a, b) => {
+        return a.type.localeCompare(b.type);
+      });
+    tree.forEach((item) => {
+      if (item.children) {
+        item.children = sortTree(item.children);
+      }
     });
+    return tree;
+  };
 
-    const defaultExpandKeys = ref([]);
-    const removeChildrenKeys = (data) => {
-      if (data.children) {
-        data.children.forEach((item) => {
-          const index = defaultExpandKeys.value.indexOf(item.path);
-          if (index != -1) defaultExpandKeys.value.splice(index, 1);
-          removeChildrenKeys(item);
-        });
-      }
-    };
-    const handleNodeToggle = (data, expanded) => {
-      if (expanded) {
-        if (!defaultExpandKeys.value.includes(data.path)) defaultExpandKeys.value.push(data.path);
+  return sortTree(pathToTree(list.value));
+});
+
+const defaultExpandKeys = ref([]);
+const removeChildrenKeys = (data) => {
+  if (data.children) {
+    data.children.forEach((item) => {
+      const index = defaultExpandKeys.value.indexOf(item.path);
+      if (index != -1) defaultExpandKeys.value.splice(index, 1);
+      removeChildrenKeys(item);
+    });
+  }
+};
+const handleNodeToggle = (data, expanded) => {
+  if (expanded) {
+    if (!defaultExpandKeys.value.includes(data.path)) defaultExpandKeys.value.push(data.path);
+  } else {
+    const index = defaultExpandKeys.value.indexOf(data.path);
+    if (index != -1) defaultExpandKeys.value.splice(index, 1);
+  }
+  removeChildrenKeys(data);
+};
+
+const allowDrop = (draggingNode, dropNode, type) => {
+  return (
+    type === 'inner' &&
+    dropNode.data.type === 'directory' &&
+    dropNode.data.path != 'public' &&
+    !dropNode.data.children.some((item) => item.name === draggingNode.data.name)
+  );
+};
+
+const allowDrag = (draggingNode) => {
+  return !['logs', 'public', 'public/client', 'scripts', 'scripts'].includes(
+    draggingNode.data.path,
+  );
+};
+
+const handleDropCode = (draggingNode, dropNode) => {
+  dropCode({ source: draggingNode.data, destination: dropNode.data.path }).then(({ code, msg }) => {
+    if (code === 200) {
+      handleGetCodeDirs();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+let timer = null;
+const handleClickPath = (e) => {
+  if (current.value.path != e.path && !e?.edit) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (isModified({ toast: true })) return;
+      if (e.type === 'directory') {
+        current.value = JSON.parse(JSON.stringify(e));
+        current.value.data = JSON.stringify(
+          current.value.children?.map((child) => {
+            return `${child.type}:${child.path}`;
+          }) || [],
+          null,
+          2,
+        );
       } else {
-        const index = defaultExpandKeys.value.indexOf(data.path);
-        if (index != -1) defaultExpandKeys.value.splice(index, 1);
-      }
-      removeChildrenKeys(data);
-    };
-
-    const allowDrop = (draggingNode, dropNode, type) => {
-      return (
-        type === 'inner' &&
-        dropNode.data.type === 'directory' &&
-        dropNode.data.path != 'public' &&
-        !dropNode.data.children.some((item) => item.name === draggingNode.data.name)
-      );
-    };
-
-    const allowDrag = (draggingNode) => {
-      return !['logs', 'public', 'public/client', 'scripts', 'scripts'].includes(
-        draggingNode.data.path,
-      );
-    };
-
-    const handleDropCode = (draggingNode, dropNode) => {
-      dropCode({ source: draggingNode.data, destination: dropNode.data.path }).then(
-        ({ code, msg }) => {
+        getCodeData({ path: e.path }).then(({ code, data, msg }) => {
           if (code === 200) {
-            handleGetCodeDirs();
+            current.value = { ...data, ...JSON.parse(JSON.stringify(e)) };
+            document.getElementById('showCodeDataOffcanvasBtn').click();
           } else {
             toast({
               component: ToastificationContent,
@@ -557,330 +586,267 @@ export default {
               },
             });
           }
-        },
-      );
-    };
-
-    let timer = null;
-    const handleClickPath = (e) => {
-      if (current.value.path != e.path && !e?.edit) {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          if (isModified({ toast: true })) return;
-          if (e.type === 'directory') {
-            current.value = JSON.parse(JSON.stringify(e));
-            current.value.data = JSON.stringify(
-              current.value.children?.map((child) => {
-                return `${child.type}:${child.path}`;
-              }) || [],
-              null,
-              2,
-            );
-          } else {
-            getCodeData({ path: e.path }).then(({ code, data, msg }) => {
-              if (code === 200) {
-                current.value = { ...data, ...JSON.parse(JSON.stringify(e)) };
-                document.getElementById('showCodeDataOffcanvasBtn').click();
-              } else {
-                toast({
-                  component: ToastificationContent,
-                  props: {
-                    variant: 'danger',
-                    icon: 'mdi-alert',
-                    text: msg,
-                  },
-                });
-              }
-            });
-          }
-        }, 200);
+        });
       }
+    }, 200);
+  }
+};
+
+const handleEditFileName = (node) => {
+  if (isModified({ toast: true })) return;
+  if (node.data.path.startsWith('logs/pm2')) return;
+  clearTimeout(timer);
+  node.data._name = node.data.name;
+  node.data.edit = true;
+  isEditing.value = true;
+  nextTick(() => document.getElementById('node_edit').focus());
+};
+
+const handleSaveFileName = (node) => {
+  node.data.name = node.data.name.trim();
+  node.data._path = node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name;
+
+  if (!node.data.name || node.data.name === node.data._name) {
+    node.data.name = node.data._name;
+    delete node.data._name;
+    delete node.data.edit;
+    isEditing.value = false;
+    return;
+  }
+
+  if (
+    node.data._path.includes('/node_modules/') ||
+    node.data._path.endsWith('/node_modules') ||
+    (node.data.type === 'file' && node.data.name.includes('/')) ||
+    (((node.data.type === 'directory' && node.data.name.includes('/')) ||
+      dirs.value.includes(node.data.path)) &&
+      (node.data.name === `${node.data._name}/` ||
+        !node.data.name.startsWith(`${node.data._name}/`)))
+  ) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.code.name.illegal'),
+      },
+    });
+    isEditing.value = true;
+    nextTick(() => document.getElementById('node_edit').focus());
+    return;
+  }
+
+  if (
+    list.value.find((item) => item.path === node.data._path) ||
+    list.value.find((item) => item.type === 'file' && node.data._path.includes(`${item.path}/`))
+  ) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.code.name.duplicate'),
+      },
+    });
+    isEditing.value = true;
+    nextTick(() => document.getElementById('node_edit').focus());
+    return;
+  }
+
+  if (node.data.name.includes('/')) {
+    const data = {
+      type: node.data.name.endsWith('/') ? 'directory' : 'file',
+      name: (node.data.name.endsWith('/') ? node.data.name.slice(0, -1) : node.data.name).replace(
+        `${node.data._name}/`,
+        '',
+      ),
+      path: node.data.path,
     };
-
-    const handleEditFileName = (node) => {
-      if (isModified({ toast: true })) return;
-      if (node.data.path.startsWith('logs/pm2')) return;
-      clearTimeout(timer);
-      node.data._name = node.data.name;
-      node.data.edit = true;
-      isEditing.value = true;
-      nextTick(() => document.getElementById('node_edit').focus());
-    };
-
-    const handleSaveFileName = (node) => {
-      node.data.name = node.data.name.trim();
-      node.data._path = node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name;
-
-      if (!node.data.name || node.data.name === node.data._name) {
-        node.data.name = node.data._name;
+    createCode(data).then((res) => {
+      if (res.code === 200) {
         delete node.data._name;
         delete node.data.edit;
         isEditing.value = false;
-        return;
-      }
-
-      if (
-        node.data._path.includes('/node_modules/') ||
-        node.data._path.endsWith('/node_modules') ||
-        (node.data.type === 'file' && node.data.name.includes('/')) ||
-        (((node.data.type === 'directory' && node.data.name.includes('/')) ||
-          dirs.value.includes(node.data.path)) &&
-          (node.data.name === `${node.data._name}/` ||
-            !node.data.name.startsWith(`${node.data._name}/`)))
-      ) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.code.name.illegal'),
-          },
-        });
-        isEditing.value = true;
-        nextTick(() => document.getElementById('node_edit').focus());
-        return;
-      }
-
-      if (
-        list.value.find((item) => item.path === node.data._path) ||
-        list.value.find((item) => item.type === 'file' && node.data._path.includes(`${item.path}/`))
-      ) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.code.name.duplicate'),
-          },
-        });
-        isEditing.value = true;
-        nextTick(() => document.getElementById('node_edit').focus());
-        return;
-      }
-
-      if (node.data.name.includes('/')) {
-        const data = {
-          type: node.data.name.endsWith('/') ? 'directory' : 'file',
-          name: (node.data.name.endsWith('/')
-            ? node.data.name.slice(0, -1)
-            : node.data.name
-          ).replace(`${node.data._name}/`, ''),
-          path: node.data.path,
-        };
-        createCode(data).then((res) => {
-          if (res.code === 200) {
-            delete node.data._name;
-            delete node.data.edit;
-            isEditing.value = false;
-            handleGetCodeDirs(() => {
-              nextTick(() => {
-                const NODE = reftree.value.getNode(res.data.path);
-                handleClickPath(NODE.data);
-                reftree.value.setCurrentKey(NODE.data.path);
-                reftree.value.store.nodesMap[NODE.data.path].expanded = true;
-              });
-            });
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: res.msg,
-              },
-            });
-          }
+        handleGetCodeDirs(() => {
+          nextTick(() => {
+            const NODE = reftree.value.getNode(res.data.path);
+            handleClickPath(NODE.data);
+            reftree.value.setCurrentKey(NODE.data.path);
+            reftree.value.store.nodesMap[NODE.data.path].expanded = true;
+          });
         });
       } else {
-        const data = {
-          old: node.data.path,
-          new: node.data._path,
-        };
-        renameCode(data).then((res) => {
-          if (res.code === 200) {
-            delete node.data._name;
-            delete node.data.edit;
-            isEditing.value = false;
-            handleGetCodeDirs(() => {
-              nextTick(() => {
-                const NODE = reftree.value.getNode(data.new);
-                handleClickPath(NODE.data);
-                reftree.value.setCurrentKey(NODE.data.path);
-                reftree.value.store.nodesMap[NODE.data.path].expanded = true;
-              });
-            });
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: res.msg,
-              },
-            });
-          }
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: res.msg,
+          },
         });
       }
+    });
+  } else {
+    const data = {
+      old: node.data.path,
+      new: node.data._path,
     };
+    renameCode(data).then((res) => {
+      if (res.code === 200) {
+        delete node.data._name;
+        delete node.data.edit;
+        isEditing.value = false;
+        handleGetCodeDirs(() => {
+          nextTick(() => {
+            const NODE = reftree.value.getNode(data.new);
+            handleClickPath(NODE.data);
+            reftree.value.setCurrentKey(NODE.data.path);
+            reftree.value.store.nodesMap[NODE.data.path].expanded = true;
+          });
+        });
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: res.msg,
+          },
+        });
+      }
+    });
+  }
+};
 
-    const folder = ref(null);
-    const handleUpload = (node) => {
-      folder.value = node.data.path;
-      document.getElementById('code-file-input').click();
-    };
-    const handleFileInput = (e) => {
+const folder = ref(null);
+const handleUpload = (node) => {
+  folder.value = node.data.path;
+  document.getElementById('code-file-input').click();
+};
+const handleFileInput = (e) => {
+  toast({
+    component: ToastificationContent,
+    props: {
+      variant: 'success',
+      icon: 'mdi-upload',
+      text: i18n.global.t('layout.navbar.helper.code.uploading'),
+    },
+  });
+  const formData = new FormData();
+  formData.append('folder', folder.value);
+  Array.from(e.target.files).forEach((file) => {
+    formData.append('file', file, file.name);
+  });
+  uploadCode(formData).then(async ({ code, msg }) => {
+    toast.clear();
+    if (code === 200) {
+      e.target.value = null;
+      handleGetCodeDirs();
       toast({
         component: ToastificationContent,
         props: {
           variant: 'success',
-          icon: 'mdi-upload',
-          text: i18n.global.t('layout.navbar.helper.code.uploading'),
+          icon: 'mdi-check-circle',
+          text: i18n.global.t('layout.navbar.helper.code.upload.success'),
         },
       });
-      const formData = new FormData();
-      formData.append('folder', folder.value);
-      Array.from(e.target.files).forEach((file) => {
-        formData.append('file', file, file.name);
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-      uploadCode(formData).then(async ({ code, msg }) => {
-        toast.clear();
-        if (code === 200) {
-          e.target.value = null;
-          handleGetCodeDirs();
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: i18n.global.t('layout.navbar.helper.code.upload.success'),
-            },
-          });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
+    }
+  });
+};
 
-    const installing = ref(null);
-    const handleInstallPackage = (node) => {
-      if (installing.value) return;
+const installing = ref(null);
+const handleInstallPackage = (node) => {
+  if (installing.value) return;
+  toast({
+    component: ToastificationContent,
+    props: {
+      variant: 'success',
+      icon: 'mdi-package-down',
+      text: i18n.global.t('layout.navbar.helper.code.package.installing'),
+    },
+  });
+  installing.value = node.key;
+  installPackage({ path: node.parent.data.path }).then(async ({ code, msg }) => {
+    installing.value = null;
+    handleGetCodeDirs();
+    toast.clear();
+    if (code === 200) {
       toast({
         component: ToastificationContent,
         props: {
           variant: 'success',
-          icon: 'mdi-package-down',
-          text: i18n.global.t('layout.navbar.helper.code.package.installing'),
+          icon: 'mdi-check-circle',
+          text: i18n.global.t('layout.navbar.helper.code.package.install.success'),
         },
       });
-      installing.value = node.key;
-      installPackage({ path: node.parent.data.path }).then(async ({ code, msg }) => {
-        installing.value = null;
-        handleGetCodeDirs();
-        toast.clear();
-        if (code === 200) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: i18n.global.t('layout.navbar.helper.code.package.install.success'),
-            },
-          });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const handleDeleteConfirm = (node) => {
-      if (isModified({ toast: true })) return;
-      confirm.value = node.data;
-      document.getElementById('showConfirmDeleteFileOrDirectoryModalBtn').click();
-    };
+const handleDeleteConfirm = (node) => {
+  if (isModified({ toast: true })) return;
+  confirm.value = node.data;
+  document.getElementById('showConfirmDeleteFileOrDirectoryModalBtn').click();
+};
 
-    const handleDelete = () => {
-      deleteCode({ type: confirm.value.type, path: confirm.value.path }).then(({ code, msg }) => {
-        if (code === 200) {
-          handleGetCodeDirs();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+const handleDelete = () => {
+  deleteCode({ type: confirm.value.type, path: confirm.value.path }).then(({ code, msg }) => {
+    if (code === 200) {
+      handleGetCodeDirs();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const handleSaveCode = () => {
-      saveCode({ path: current.value.path, data: current.value.data }).then(({ code, msg }) => {
-        if (code === 200) {
-          document.getElementById('hideCodeDiffModalBtn').click();
-          current.value.file = current.value.data;
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: i18n.global.t('layout.navbar.helper.code.modify.success'),
-            },
-          });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+const handleSaveCode = () => {
+  saveCode({ path: current.value.path, data: current.value.data }).then(({ code, msg }) => {
+    if (code === 200) {
+      document.getElementById('hideCodeDiffModalBtn').click();
+      current.value.file = current.value.data;
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          text: i18n.global.t('layout.navbar.helper.code.modify.success'),
+        },
       });
-    };
-
-    return {
-      reftree,
-      dirs,
-      tree,
-      editable,
-      isEditing,
-      current,
-      confirm,
-      handleGetCodeDirs,
-      defaultExpandKeys,
-      handleNodeToggle,
-      allowDrop,
-      allowDrag,
-      handleDropCode,
-      handleClickPath,
-      getUserInfo,
-      handleEditFileName,
-      handleSaveFileName,
-      handleUpload,
-      handleFileInput,
-      installing,
-      handleInstallPackage,
-      handleDeleteConfirm,
-      handleDelete,
-      handleSaveCode,
-    };
-  },
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
 };
 </script>

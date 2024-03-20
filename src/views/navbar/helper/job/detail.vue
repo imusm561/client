@@ -172,7 +172,7 @@
                         {{ getUserInfo(log.created_by).fullname }}
                       </td>
                       <td style="white-space: nowrap">
-                        {{ $moment(log.created_at).format('llll') }}
+                        {{ moment(log.created_at).format('llll') }}
                       </td>
                       <td style="white-space: nowrap">{{ log.cost }}</td>
                       <td style="white-space: nowrap">
@@ -239,282 +239,252 @@
     <DeleteJobModal :current-job="temp_job" @confirm="$router.replace({ name: 'job' })" />
   </div>
 </template>
-<script>
+
+<script setup>
+import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from 'vue';
+import { useRoute } from 'vue-router';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+
+import { getChartColorsArray, getUserInfo } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+import { socket } from '@utils/socket';
+
+import useJob from './useJob';
+
 import Breadcrumb from '@layouts/breadcrumb';
 import Pagination from '@components/Pagination';
 import Empty from '@components/Empty';
 import Comment from '@components/Comment';
-import i18n from '@utils/i18n';
-import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from 'vue';
-import { useRouter, getChartColorsArray, getUserInfo } from '@utils';
-import { getJobDetail, getJobLog, executeJob } from '@api/job';
-import useJob from './useJob';
 import MonacoEditor from '@components/MonacoEditor';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
 import EditJobModal from './components/EditJobModal.vue';
 import DeleteJobModal from './components/DeleteJobModal.vue';
-export default {
-  components: {
-    Breadcrumb,
-    MonacoEditor,
-    Pagination,
-    Empty,
-    Comment,
-    EditJobModal,
-    DeleteJobModal,
-  },
-  setup() {
-    const { route } = useRouter();
-    const toast = useToast();
-    const moment = window.moment;
-    const socket = window.socket;
 
-    const job = ref({});
+import { getJobDetail, getJobLog, executeJob } from '@api/job';
 
-    const fetchJobInfo = () => {
-      getJobDetail({ id: route.value.params.id }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          job.value = data;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+const route = useRoute();
+const toast = useToast();
+
+const job = ref({});
+
+const fetchJobInfo = () => {
+  getJobDetail({ id: route.params.id }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      job.value = data;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
-
-    const isJobExecuting = ref(false);
-    const handleExecuteJob = () => {
-      isJobExecuting.value = true;
-      executeJob({ id: job.value.id }).then(({ code, msg }) => {
-        if (code === 200) {
-          pagination.value.pageNum = 1;
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: i18n.global.t('layout.navbar.helper.job.execute'),
-            },
-          });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-        setTimeout(() => {
-          isJobExecuting.value = false;
-        }, 500);
-      });
-    };
-    const { resolveJobStatus } = useJob();
-
-    const pagination = ref({
-      pageNum: 1,
-      pageSize: 200,
-      totalCount: 0,
-    });
-
-    const handlePaginationChange = ({ pageNum, pageSize }) => {
-      pagination.value.pageNum = pageNum;
-      pagination.value.pageSize = pageSize;
-      fetchJobLog();
-    };
-
-    const logs = ref([]);
-
-    const fetchJobLog = () => {
-      getJobLog({
-        id: route.value.params.id,
-        pageNum: pagination.value.pageNum,
-        pageSize: pagination.value.pageSize,
-      }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          logs.value = data.rows;
-          pagination.value.totalCount = data.count;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const current_log = ref({});
-    const handleViewJobData = (log) => {
-      current_log.value = log;
-      document.getElementById('showJobDataOffcanvasBtn').click();
-    };
-
-    const chart = reactive({
-      key: null,
-      series: [
-        {
-          name: 'Cost',
-          data: [],
-        },
-      ],
-      options: {
-        chart: {
-          type: 'area',
-          stacked: false,
-          height: 350,
-          zoom: {
-            type: 'x',
-            enabled: true,
-            autoScaleYaxis: true,
-          },
-          toolbar: {
-            show: false,
-            autoSelected: 'zoom',
-          },
-        },
-        colors: getChartColorsArray(`["--${process.env.VUE_APP_VARIABLE_PREFIX}-success"]`),
-        fill: {
-          type: 'gradient',
-          gradient: {
-            shadeIntensity: 1,
-            inverseColors: false,
-            opacityFrom: 0.5,
-            opacityTo: 0,
-            stops: [0, 90, 100],
-          },
-        },
-        xaxis: {
-          type: 'datetime',
-          categories: [],
-          labels: {
-            datetimeUTC: false,
-          },
-        },
-        yaxis: {
-          min: 0,
-          max: 0,
-        },
-        dataLabels: {
-          enabled: false,
-        },
-        markers: {
-          size: 0,
-        },
-        tooltip: {
-          shared: false,
-          y: {
-            formatter: function (val) {
-              return `${val}ms`;
-            },
-          },
-        },
-      },
-    });
-
-    watch(
-      () => logs.value,
-      (val) => {
-        if (val && val.length) {
-          chart.series[0].data = val.map((log) => {
-            return log.cost;
-          });
-          chart.options.xaxis.categories = val.map((log) => {
-            return log.created_at;
-          });
-          chart.options.yaxis.max =
-            val
-              .map((log) => {
-                return log.cost;
-              })
-              .reduce((max, item) => {
-                return max > item ? max : item;
-              }) + 100;
-        } else {
-          chart.series[0].data = [];
-          chart.options.xaxis.categories = [];
-          chart.options.yaxis.max = 100;
-        }
-        chart.key = Math.random().toString(36).slice(-6);
-      },
-      { immediate: true, deep: true },
-    );
-
-    const refetchJobInfoHandler = () => {
-      fetchJobInfo();
-    };
-
-    const refetchJobLogHandler = () => {
-      fetchJobLog();
-    };
-
-    onMounted(() => {
-      fetchJobInfo();
-      fetchJobLog();
-      socket.on('refetchJobInfo', refetchJobInfoHandler);
-      socket.on('refetchJobLog', refetchJobLogHandler);
-    });
-
-    onUnmounted(() => {
-      socket.off('refetchJobInfo', refetchJobInfoHandler);
-      socket.off('refetchJobLog', refetchJobLogHandler);
-    });
-
-    const temp_job = ref({});
-    const handleEditJob = () => {
-      temp_job.value = JSON.parse(JSON.stringify(job.value));
-      temp_job.value.duration = [
-        moment(job.value.start).format('YYYY-MM-DD HH:mm:ss'),
-        moment(job.value.end).format('YYYY-MM-DD HH:mm:ss'),
-      ];
-      temp_job.value.key = Math.random().toString(36).slice(-6);
-      nextTick(() => document.getElementById('showEditJobModalBtn').click());
-    };
-
-    const handleDelJob = () => {
-      temp_job.value = JSON.parse(JSON.stringify(job.value));
-      document.getElementById('showDeleteJobModalBtn').click();
-    };
-
-    const comments = ref([]);
-
-    return {
-      getUserInfo,
-
-      job,
-      fetchJobInfo,
-
-      isJobExecuting,
-      handleExecuteJob,
-      resolveJobStatus,
-
-      pagination,
-      handlePaginationChange,
-
-      logs,
-      current_log,
-      handleViewJobData,
-
-      chart,
-
-      temp_job,
-      handleEditJob,
-      handleDelJob,
-
-      comments,
-    };
-  },
+    }
+  });
 };
+
+const isJobExecuting = ref(false);
+const handleExecuteJob = () => {
+  isJobExecuting.value = true;
+  executeJob({ id: job.value.id }).then(({ code, msg }) => {
+    if (code === 200) {
+      pagination.pageNum = 1;
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          text: i18n.global.t('layout.navbar.helper.job.execute'),
+        },
+      });
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+    setTimeout(() => {
+      isJobExecuting.value = false;
+    }, 500);
+  });
+};
+const { resolveJobStatus } = useJob();
+
+const pagination = reactive({
+  pageNum: 1,
+  pageSize: 200,
+  totalCount: 0,
+});
+
+const handlePaginationChange = ({ pageNum, pageSize }) => {
+  pagination.pageNum = pageNum;
+  pagination.pageSize = pageSize;
+  fetchJobLog();
+};
+
+const logs = ref([]);
+
+const fetchJobLog = () => {
+  getJobLog({
+    id: route.params.id,
+    pageNum: pagination.pageNum,
+    pageSize: pagination.pageSize,
+  }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      logs.value = data.rows;
+      pagination.totalCount = data.count;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const current_log = ref({});
+const handleViewJobData = (log) => {
+  current_log.value = log;
+  document.getElementById('showJobDataOffcanvasBtn').click();
+};
+
+const { VUE_APP_VARIABLE_PREFIX } = process.env;
+
+const chart = reactive({
+  key: null,
+  series: [
+    {
+      name: 'Cost',
+      data: [],
+    },
+  ],
+  options: {
+    chart: {
+      type: 'area',
+      stacked: false,
+      height: 350,
+      zoom: {
+        type: 'x',
+        enabled: true,
+        autoScaleYaxis: true,
+      },
+      toolbar: {
+        show: false,
+        autoSelected: 'zoom',
+      },
+    },
+    colors: getChartColorsArray(`["--${VUE_APP_VARIABLE_PREFIX}-success"]`),
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shadeIntensity: 1,
+        inverseColors: false,
+        opacityFrom: 0.5,
+        opacityTo: 0,
+        stops: [0, 90, 100],
+      },
+    },
+    xaxis: {
+      type: 'datetime',
+      categories: [],
+      labels: {
+        datetimeUTC: false,
+      },
+    },
+    yaxis: {
+      min: 0,
+      max: 0,
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    markers: {
+      size: 0,
+    },
+    tooltip: {
+      shared: false,
+      y: {
+        formatter: function (val) {
+          return `${val}ms`;
+        },
+      },
+    },
+  },
+});
+
+watch(
+  () => logs.value,
+  (val) => {
+    if (val && val.length) {
+      chart.series[0].data = val.map((log) => {
+        return log.cost;
+      });
+      chart.options.xaxis.categories = val.map((log) => {
+        return log.created_at;
+      });
+      chart.options.yaxis.max =
+        val
+          .map((log) => {
+            return log.cost;
+          })
+          .reduce((max, item) => {
+            return max > item ? max : item;
+          }) + 100;
+    } else {
+      chart.series[0].data = [];
+      chart.options.xaxis.categories = [];
+      chart.options.yaxis.max = 100;
+    }
+    chart.key = Math.random().toString(36).slice(-6);
+  },
+  { immediate: true, deep: true },
+);
+
+const refetchJobInfoHandler = () => {
+  fetchJobInfo();
+};
+
+const refetchJobLogHandler = () => {
+  fetchJobLog();
+};
+
+onMounted(() => {
+  fetchJobInfo();
+  fetchJobLog();
+  socket.on('refetchJobInfo', refetchJobInfoHandler);
+  socket.on('refetchJobLog', refetchJobLogHandler);
+});
+
+onUnmounted(() => {
+  socket.off('refetchJobInfo', refetchJobInfoHandler);
+  socket.off('refetchJobLog', refetchJobLogHandler);
+});
+
+const temp_job = ref({});
+const handleEditJob = () => {
+  temp_job.value = JSON.parse(JSON.stringify(job.value));
+  temp_job.value.duration = [
+    moment(job.value.start).format('YYYY-MM-DD HH:mm:ss'),
+    moment(job.value.end).format('YYYY-MM-DD HH:mm:ss'),
+  ];
+  temp_job.value.key = Math.random().toString(36).slice(-6);
+  nextTick(() => document.getElementById('showEditJobModalBtn').click());
+};
+
+const handleDelJob = () => {
+  temp_job.value = JSON.parse(JSON.stringify(job.value));
+  document.getElementById('showDeleteJobModalBtn').click();
+};
+
+const comments = ref([]);
 </script>

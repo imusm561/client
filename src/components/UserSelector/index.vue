@@ -54,89 +54,76 @@
   </TreeSelect>
 </template>
 
-<script>
-import { defineComponent, ref, computed } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed } from 'vue';
 import TreeSelect from 'vue3-treeselect';
 import Avatar from '@components/Avatar';
 import store from '@store';
-export default defineComponent({
-  components: {
-    Avatar,
-    TreeSelect,
-  },
-  props: {
-    modelValue: {
-      type: Array,
-      default: () => {
-        return [];
-      },
-    },
-    disableList: {
-      type: Array,
-      default: () => {
-        return [];
-      },
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    placeholder: {
-      type: String,
-      default: () => 'Select Users',
+const props = defineProps({
+  modelValue: {
+    type: Array,
+    default: () => {
+      return [];
     },
   },
-  setup(props, { emit }) {
-    const users = computed({
-      get() {
-        return props.modelValue;
-      },
-      set(value) {
-        emit('update:modelValue', value);
-      },
-    });
-
-    const options = ref([]);
-
-    const generateDeptUserTree = (list, parent_id = 0) =>
-      list
-        .filter((item) => item.pid === parent_id)
-        .map((item) => {
-          const children = generateDeptUserTree(list, item.id);
-          if (children.length) item.children = [...item.children, ...children];
-          if (item.children.every((child) => child.isDisabled)) {
-            item.isDisabled = true;
-            item.isDefaultExpanded = false;
-          }
-          return item;
-        });
-
-    const _users = JSON.parse(JSON.stringify(store.state.org.users)).map((user) => {
-      return {
-        id: user.username,
-        label: user.fullname,
-        isDisabled: props.disableList.includes(user.username),
-        dept: user.dept,
-        avatar: user.avatar,
-      };
-    });
-
-    const _depts = JSON.parse(JSON.stringify(store.state.org.depts)).map((dept) => {
-      return {
-        id: dept.id,
-        label: dept.name,
-        isDefaultExpanded: true,
-        pid: dept.pid,
-        children: _users.filter((user) => user.dept === dept.id),
-      };
-    });
-
-    options.value = generateDeptUserTree(_depts);
-
-    return {
-      users,
-      options,
-    };
+  disableList: {
+    type: Array,
+    default: () => {
+      return [];
+    },
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  placeholder: {
+    type: String,
+    default: () => 'Select Users',
   },
 });
+const emit = defineEmits(['update:modelValue']);
+
+const users = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit('update:modelValue', value);
+  },
+});
+
+const generateDeptUserTree = (list, parent_id = 0) =>
+  list
+    .filter((item) => item.pid === parent_id)
+    .map((item) => {
+      const children = generateDeptUserTree(list, item.id);
+      if (children.length) item.children = [...item.children, ...children];
+      if (item.children.every((child) => child.isDisabled)) {
+        item.isDisabled = true;
+        item.isDefaultExpanded = false;
+      }
+      return item;
+    });
+
+const _users = JSON.parse(JSON.stringify(store.state.org.users)).map((user) => {
+  return {
+    id: user.username,
+    label: user.fullname,
+    isDisabled: props.disableList.includes(user.username),
+    dept: user.dept,
+    avatar: user.avatar,
+  };
+});
+
+const _depts = JSON.parse(JSON.stringify(store.state.org.depts)).map((dept) => {
+  return {
+    id: dept.id,
+    label: dept.name,
+    isDefaultExpanded: true,
+    pid: dept.pid,
+    children: _users.filter((user) => user.dept === dept.id),
+  };
+});
+
+const options = generateDeptUserTree(_depts);
 </script>

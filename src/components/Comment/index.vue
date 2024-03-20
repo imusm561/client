@@ -101,205 +101,185 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, ref, onMounted, onUnmounted, watch } from 'vue';
+<script setup>
+import { defineProps, defineEmits, ref, reactive, onMounted, onUnmounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+import { listToTree, getUserInfo } from '@utils';
+import { socket } from '@utils/socket';
+import store from '@store';
 import Empty from '@components/Empty';
 import CKEditor from '@components/CKEditor';
 import Item from './components/Item';
 import { getComments, createComment, updateComment } from '@api/com/comment';
-import store from '@store';
-import { listToTree, useRouter, getUserInfo } from '@utils';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
-export default defineComponent({
-  props: {
-    source: {
-      type: String,
-      default: () => '',
-      requried: true,
-    },
-    data: {
-      type: Object,
-      default: () => {},
-      requried: false,
-    },
+const props = defineProps({
+  source: {
+    type: String,
+    default: () => '',
+    requried: true,
   },
-  components: {
-    Empty,
-    CKEditor,
-    Item,
+  data: {
+    type: Object,
+    default: () => {},
+    requried: false,
   },
-  setup(props, { emit }) {
-    const toast = useToast();
-    const comments = ref([]);
-    const { route } = useRouter();
-    const socket = window.socket;
+});
+const emit = defineEmits(['fetch']);
 
-    const fetchComments = (callback) => {
-      getComments({ source: props.source }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          data.forEach((comment) => {
-            if (
-              store.state.user.notices?.comment?.findIndex((item) => item.id == comment.id) !== -1
-            ) {
-              store.dispatch('user/delNotice', {
-                app: 'comment',
-                data: comment,
-              });
-              updateComment({
-                id: comment.id,
-                read: true,
-              }).then(({ code, msg }) => {
-                if (code !== 200) {
-                  toast({
-                    component: ToastificationContent,
-                    props: {
-                      variant: 'danger',
-                      icon: 'mdi-alert',
-                      text: msg,
-                    },
-                  });
-                }
+const route = useRoute();
+const toast = useToast();
+const comments = ref([]);
+
+const fetchComments = (callback) => {
+  getComments({ source: props.source }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      data.forEach((comment) => {
+        if (store.state.user.notices?.comment?.findIndex((item) => item.id == comment.id) !== -1) {
+          store.dispatch('user/delNotice', {
+            app: 'comment',
+            data: comment,
+          });
+          updateComment({
+            id: comment.id,
+            read: true,
+          }).then(({ code, msg }) => {
+            if (code !== 200) {
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: msg,
+                },
               });
             }
           });
-          comments.value = listToTree(data);
-          emit('fetch', data);
-          callback && callback();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
         }
       });
-    };
-
-    const scrollToComment = ({ id }) => {
-      setTimeout(() => {
-        document.documentElement.scrollTop = document.documentElement.offsetHeight;
-        const el = document.getElementById(`comment_${id}`);
-        if (el && document.getElementById('comment')) {
-          const commentList = document
-            .getElementById('comment')
-            ?.querySelector('.simplebar-content-wrapper');
-          if (commentList)
-            commentList.scrollTo({
-              top: el.offsetTop,
-              behavior: 'smooth',
-            });
-        }
-      }, 500);
-    };
-
-    const refetchCommentsHandler = () => {
-      fetchComments();
-    };
-
-    onMounted(() => {
-      fetchComments();
-      socket.on('refetchComments', refetchCommentsHandler);
-
-      watch(
-        () => route.value.query.id,
-        (id) => {
-          if (id) scrollToComment({ id });
+      comments.value = listToTree(data);
+      emit('fetch', data);
+      callback && callback();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
         },
-        { immediate: true },
-      );
-    });
-
-    onUnmounted(() => {
-      socket.off('refetchComments', refetchCommentsHandler);
-    });
-
-    const comment = ref({
-      key: Math.random().toString(36).slice(-6),
-      content: '',
-      reply: null,
-    });
-
-    const handleReplyComment = (e) => {
-      comment.value.reply = e;
-    };
-
-    const handleCreateComment = () => {
-      createComment({
-        source: props.source,
-        content: comment.value.content,
-        pid: comment.value.reply ? comment.value.reply.id : 0,
-        to: comment.value.reply
-          ? comment.value.reply.created_by
-          : props.data?.created_by && store.state.user.data.username != props.data?.created_by
-          ? props.data.created_by
-          : null,
-        read: false,
-      }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          fetchComments(() => {
-            scrollToComment(data);
-            comment.value = {
-              key: Math.random().toString(36).slice(-6),
-              content: '',
-              reply: null,
-            };
-          });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
       });
-    };
+    }
+  });
+};
 
-    const current_comment = ref({});
+const scrollToComment = ({ id }) => {
+  setTimeout(() => {
+    document.documentElement.scrollTop = document.documentElement.offsetHeight;
+    const el = document.getElementById(`comment_${id}`);
+    if (el && document.getElementById('comment')) {
+      const commentList = document
+        .getElementById('comment')
+        ?.querySelector('.simplebar-content-wrapper');
+      if (commentList)
+        commentList.scrollTo({
+          top: el.offsetTop,
+          behavior: 'smooth',
+        });
+    }
+  }, 500);
+};
 
-    const handleDeleteComment = (e) => {
-      current_comment.value = e;
-      document.getElementById('showDeleteCommentModalBtn').click();
-    };
+const refetchCommentsHandler = () => {
+  fetchComments();
+};
 
-    const handleUpdateComment = () => {
-      updateComment({
-        id: current_comment.value.id,
-        data_state: 'deleted',
-      }).then(({ code, msg }) => {
-        if (code === 200) {
-          fetchComments();
-          document.getElementById('hideDeleteCommentModalBtn').click();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    return {
-      getUserInfo,
-      fetchComments,
-      comments,
-      comment,
-      handleReplyComment,
-      handleCreateComment,
-      current_comment,
-      handleDeleteComment,
-      handleUpdateComment,
-    };
-  },
+onMounted(() => {
+  fetchComments();
+  socket.on('refetchComments', refetchCommentsHandler);
 });
+
+onUnmounted(() => {
+  socket.off('refetchComments', refetchCommentsHandler);
+});
+
+watch(
+  () => route.query.id,
+  (id) => {
+    if (id) scrollToComment({ id });
+  },
+  { immediate: true },
+);
+
+const comment = reactive({
+  key: Math.random().toString(36).slice(-6),
+  content: '',
+  reply: null,
+});
+
+const handleReplyComment = (e) => {
+  comment.reply = e;
+};
+
+const handleCreateComment = () => {
+  createComment({
+    source: props.source,
+    content: comment.content,
+    pid: comment.reply ? comment.reply.id : 0,
+    to: comment.reply
+      ? comment.reply.created_by
+      : props.data?.created_by && store.state.user.data.username != props.data?.created_by
+      ? props.data.created_by
+      : null,
+    read: false,
+  }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      fetchComments(() => {
+        scrollToComment(data);
+        Object.assign(comment, {
+          key: Math.random().toString(36).slice(-6),
+          content: '',
+          reply: null,
+        });
+      });
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const current_comment = reactive({});
+
+const handleDeleteComment = (e) => {
+  Object.assign(current_comment, e);
+  document.getElementById('showDeleteCommentModalBtn').click();
+};
+
+const handleUpdateComment = () => {
+  updateComment({
+    id: current_comment.id,
+    data_state: 'deleted',
+  }).then(({ code, msg }) => {
+    if (code === 200) {
+      fetchComments();
+      document.getElementById('hideDeleteCommentModalBtn').click();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
 </script>

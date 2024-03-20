@@ -7,22 +7,19 @@
   />
 </template>
 
-<script>
-import { defineComponent, ref } from 'vue';
-export default defineComponent({
-  setup(props) {
-    const value = ref(props.params.value);
-    const getValue = () => {
-      return value.value;
-    };
-    const isCancelAfterEnd = () => {
-      return !!props.params._column._required && !value.value;
-    };
-    return {
-      value,
-      getValue,
-      isCancelAfterEnd,
-    };
-  },
-});
+<script setup>
+import { defineProps, ref } from 'vue';
+const props = defineProps(['params']);
+
+const value = ref(props.params.value);
+
+/* eslint-disable-next-line no-unused-vars */
+const getValue = () => {
+  return value.value;
+};
+
+/* eslint-disable-next-line no-unused-vars */
+const isCancelAfterEnd = () => {
+  return !!props.params._column._required && !value.value;
+};
 </script>

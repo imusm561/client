@@ -6,17 +6,14 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
+<script setup>
+import { defineProps } from 'vue';
 import i18n from '@utils/i18n';
-export default defineComponent({
-  props: {
-    text: {
-      type: String,
-      default: () => i18n.global.t('components.empty.text'),
-      requried: true,
-    },
+defineProps({
+  text: {
+    type: String,
+    default: () => i18n.global.t('components.empty.text'),
+    requried: true,
   },
-  setup() {},
 });
 </script>

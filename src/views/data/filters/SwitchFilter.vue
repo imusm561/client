@@ -12,25 +12,18 @@
   </span>
 </template>
 
-<script>
-import { computed, defineComponent } from 'vue';
-export default defineComponent({
-  setup() {
-    const resolveItemIconClass = computed(() => {
-      return (value) => {
-        switch (value) {
-          case 0:
-            return 'mdi-checkbox-blank-outline text-danger';
-          case 1:
-            return 'mdi-checkbox-marked-outline text-success';
-          default:
-            return 'mdi-checkbox-marked-outline text-success';
-        }
-      };
-    });
-    return {
-      resolveItemIconClass,
-    };
-  },
+<script setup>
+import { computed } from 'vue';
+const resolveItemIconClass = computed(() => {
+  return (value) => {
+    switch (value) {
+      case 0:
+        return 'mdi-checkbox-blank-outline text-danger';
+      case 1:
+        return 'mdi-checkbox-marked-outline text-success';
+      default:
+        return 'mdi-checkbox-marked-outline text-success';
+    }
+  };
 });
 </script>

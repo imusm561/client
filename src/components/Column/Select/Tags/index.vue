@@ -65,57 +65,49 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed } from 'vue';
 import { resolveColumnTitle } from '@utils';
-export default defineComponent({
-  props: {
-    type: {
-      type: String,
-      default: 'EDIT',
-    },
-    column: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    modelValue: {
-      type: Array,
-      default: () => null,
-    },
-    required: {
-      type: [Boolean, Number],
-      default: () => false,
-    },
-    editable: {
-      type: [Boolean, Number],
-      default: () => true,
-    },
-    error: {
-      type: String,
-      default: () => null,
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'EDIT',
+  },
+  column: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    const options = computed(() => {
-      return Array.from(
-        new Set([...(props.column.cfg.options || []), ...(props.modelValue || [])]),
-      );
-    });
+  modelValue: {
+    type: Array,
+    default: () => null,
+  },
+  required: {
+    type: [Boolean, Number],
+    default: () => false,
+  },
+  editable: {
+    type: [Boolean, Number],
+    default: () => true,
+  },
+  error: {
+    type: String,
+    default: () => null,
+  },
+});
+const emit = defineEmits(['update:modelValue']);
 
-    return {
-      options,
-      resolveColumnTitle,
-      value: computed({
-        get() {
-          return props.modelValue;
-        },
-        set(value) {
-          emit('update:modelValue', value);
-        },
-      }),
-    };
+const options = computed(() => {
+  return Array.from(new Set([...(props.column.cfg.options || []), ...(props.modelValue || [])]));
+});
+
+const value = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit('update:modelValue', value);
   },
 });
 </script>

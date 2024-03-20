@@ -44,10 +44,10 @@
     <span v-if="value">
       <i class="mdi mdi-clock-outline" />
       {{
-        $moment(
+        moment(
           column.cfg.dateFormat.includes('Y-m-d')
             ? value
-            : `${$moment().format('YYYY-MM-DD')} ${value}`,
+            : `${moment().format('YYYY-MM-DD')} ${value}`,
         ).format(
           column.cfg.dateFormat
             .replace('Y', 'YYYY')
@@ -62,54 +62,46 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed } from 'vue';
 import { resolveColumnTitle } from '@utils';
+import moment from '@utils/moment';
 import FlatPickr from '@components/FlatPickr';
-export default defineComponent({
-  components: {
-    FlatPickr,
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'EDIT',
   },
-  props: {
-    type: {
-      type: String,
-      default: 'EDIT',
-    },
-    column: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    modelValue: {
-      type: [String, Date],
-      default: () => null,
-    },
-    required: {
-      type: [Boolean, Number],
-      default: () => false,
-    },
-    editable: {
-      type: [Boolean, Number],
-      default: () => true,
-    },
-    error: {
-      type: String,
-      default: () => null,
+  column: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    return {
-      resolveColumnTitle,
-      value: computed({
-        get() {
-          return props.modelValue;
-        },
-        set(value) {
-          emit('update:modelValue', value || null);
-        },
-      }),
-    };
+  modelValue: {
+    type: [String, Date],
+    default: () => null,
+  },
+  required: {
+    type: [Boolean, Number],
+    default: () => false,
+  },
+  editable: {
+    type: [Boolean, Number],
+    default: () => true,
+  },
+  error: {
+    type: String,
+    default: () => null,
+  },
+});
+const emit = defineEmits(['update:modelValue']);
+const value = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit('update:modelValue', value || null);
   },
 });
 </script>

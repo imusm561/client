@@ -1,8 +1,8 @@
-import { getCurrentInstance, reactive, toRefs, watch } from 'vue';
-import store from '@store';
 import crypto from 'crypto';
-import { getDataDefault, getDataSource, getDataValue } from '@api/data';
 import { transform, isEqual } from 'lodash'; // isObject, isArray
+import store from '@store';
+import { getDataDefault, getDataSource, getDataValue } from '@api/data';
+const { BASE_URL } = process.env;
 
 export const isEmpty = (value) => {
   if (value === null || value === undefined || value === '') {
@@ -22,20 +22,6 @@ export const isMobile = () => {
   return regExp.test(navigator.userAgent);
 };
 
-export const useRouter = () => {
-  const vm = getCurrentInstance()?.proxy;
-  const state = reactive({
-    route: vm.$route,
-  });
-  watch(
-    () => vm.$route,
-    (r) => {
-      state.route = r;
-    },
-  );
-  return { ...toRefs(state), router: vm.$router };
-};
-
 export const generateApiQuery = (params) => {
   let query = '?';
   for (let key in params) {
@@ -46,7 +32,7 @@ export const generateApiQuery = (params) => {
 
 export const clearUserData = () => {
   // Remove accessToken from localStorage
-  localStorage.removeItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`);
+  localStorage.removeItem(`${BASE_URL.replace(/\//g, '_')}accessToken`);
   // Remove data from vuex
   store.dispatch('user/setUser', {});
   store.commit('user/SET_FORMS', []);
@@ -283,7 +269,7 @@ export const replaceVariables = (expr, alias) => {
         alias?.[variable]
           ? `data.${alias[variable]}`
           : variable === 'username' || variable === 'fullname'
-          ? sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`) ||
+          ? sessionStorage.getItem(`${BASE_URL.replace(/\//g, '_')}pubun`) ||
             store.state.user.data?.[variable] ||
             item
           : store.state.user.data?.[variable] || store.state.sys?.[variable] || item,
@@ -407,11 +393,11 @@ export const getDataByFormula = async (
           return store.state.org.users.map((user) => {
             return { text: user.fullname, value: user.username };
           });
-        } else if (sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`)) {
+        } else if (sessionStorage.getItem(`${BASE_URL.replace(/\//g, '_')}pubun`)) {
           return [
             {
-              text: sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`),
-              value: sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`),
+              text: sessionStorage.getItem(`${BASE_URL.replace(/\//g, '_')}pubun`),
+              value: sessionStorage.getItem(`${BASE_URL.replace(/\//g, '_')}pubun`),
             },
           ];
         } else {

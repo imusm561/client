@@ -23,31 +23,20 @@
   </li>
 </template>
 
-<script>
-import Header from './header.vue';
-import Link from './link.vue';
-export default {
-  name: 'Group',
-  props: {
-    item: {
-      type: Object,
-      required: true,
-    },
+<script setup>
+import { defineProps } from 'vue';
+import Header from './Header.vue';
+import Group from './Group.vue';
+import Link from './Link.vue';
+defineProps({
+  item: {
+    type: Object,
+    required: true,
   },
-  components: {
-    Header,
-    Link,
-  },
-  setup() {
-    const resolveNavItemComponent = (item) => {
-      if (item.header) return 'header';
-      if (item.children && item.children.length) return 'group';
-      return 'link';
-    };
-
-    return {
-      resolveNavItemComponent,
-    };
-  },
+});
+const resolveNavItemComponent = (item) => {
+  if (item.header) return Header;
+  if (item.children && item.children.length) return Group;
+  return Link;
 };
 </script>

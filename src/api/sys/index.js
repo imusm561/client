@@ -1,5 +1,5 @@
-import axios from '@utils/axios';
 import { generateApiQuery } from '@utils';
+import axios from '@utils/axios';
 
 export const uploadSysFile = (data) => {
   return axios.post('/cor/sys/upload', data);

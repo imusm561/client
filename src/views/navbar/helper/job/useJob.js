@@ -1,5 +1,5 @@
 import i18n from '@utils/i18n';
-const moment = window.moment;
+import moment from '@utils/moment';
 export default function useJob() {
   const resolveJobStatus = (job) => {
     if (job.status === 0)

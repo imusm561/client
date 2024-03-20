@@ -677,12 +677,13 @@
   </div>
 </template>
 
-<script>
-import Breadcrumb from '@layouts/breadcrumb';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import store from '@store';
+<script setup>
+import { defineOptions, computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+
 import {
-  useRouter,
   replaceVariables,
   getDataByFormula,
   getRulesByFormula,
@@ -694,10 +695,12 @@ import {
   decryptData,
   hashData,
 } from '@utils';
-import { getDataEdit, getDataTitle, createData, checkData, forceData, updateData } from '@api/data';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
 import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+
+import store from '@store';
+
+import Breadcrumb from '@layouts/breadcrumb';
 import UserSelector from '@components/UserSelector';
 import Avatar from '@components/Avatar';
 
@@ -720,19 +723,17 @@ import LayoutButton from '@components/Column/Layout/Button/index.vue';
 import LayoutTitle from '@components/Column/Layout/Title/index.vue';
 import LayoutSeparator from '@components/Column/Layout/Separator/index.vue';
 import LayoutTab from '@components/Column/Layout/Tab/index.vue';
-export default {
-  components: {
-    Breadcrumb,
-    UserSelector,
-    Avatar,
 
+import { getDataEdit, getDataTitle, createData, checkData, forceData, updateData } from '@api/data';
+
+defineOptions({
+  components: {
     InputText,
     InputNumber,
     InputMaska,
     InputTextarea,
     InputRichtext,
     InputCode,
-
     SelectSingle,
     SelectMultiple,
     SelectTags,
@@ -740,161 +741,526 @@ export default {
     SelectPosition,
     SelectFile,
     SelectSwitch,
-
     LayoutButton,
     LayoutTitle,
     LayoutSeparator,
     LayoutTab,
   },
-  setup() {
-    const { route, router } = useRouter();
-    const toast = useToast();
-    const moment = window.moment;
+});
 
-    const form = ref({});
-    const columns = ref([]);
-    const flow = ref({});
-    const ribbon_mode = ref(false);
-    const tabs = ref([]);
-    const current_tab = ref(0);
-    const alias = ref({});
-    const data = ref({ id: 0 });
-    const init_data = ref({ id: 0 });
-    const titles = ref([{ id: 0, title: i18n.global.t('data.edit.create') }]);
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
 
-    const formData = computed(() => {
-      return JSON.parse(JSON.stringify(data.value));
+const form = ref({});
+const columns = ref([]);
+const flow = ref({});
+const ribbon_mode = ref(false);
+const tabs = ref([]);
+const current_tab = ref(0);
+const alias = ref({});
+const data = ref({ id: 0 });
+const init_data = ref({ id: 0 });
+const titles = ref([{ id: 0, title: i18n.global.t('data.edit.create') }]);
+
+const formData = computed(() => {
+  return JSON.parse(JSON.stringify(data.value));
+});
+
+const initialized = ref(false);
+onMounted(() => {
+  watch(
+    () => route.params,
+    (newVal = {}, oldVal = {}) => {
+      if (
+        route.name === 'edit' &&
+        ((Number(newVal.rid) === 0 && !store.state.user.data?.permissions?.[newVal.tid]?.create) ||
+          (Number(newVal.rid) !== 0 && !store.state.user.data?.permissions?.[newVal.tid]?.edit))
+      ) {
+        router.replace({ name: 'permissionDenied' });
+        return;
+      }
+      if (route.name === 'edit' && (newVal.tid !== oldVal.tid || newVal.rid !== oldVal.rid)) {
+        if (Number(init_data.value.id))
+          forceData({
+            tid: newVal.tid,
+            rid: Number(init_data.value.id),
+            user: null,
+          });
+        fetchDataEdit(newVal.tid, newVal.rid);
+      }
+    },
+    { immediate: true, deep: true },
+  );
+
+  watch(
+    () => formData.value,
+    (newVal = {}, oldVal = {}) => {
+      if (initialized.value) {
+        const changes = getChanges(newVal, oldVal);
+        for (let field in changes) {
+          columns.value
+            .filter(
+              (column) =>
+                column.visible?.includes(`data.${field}`) ||
+                column.required?.includes(`data.${field}`) ||
+                column.editable?.includes(`data.${field}`) ||
+                column.__default?.includes(`data.${field}`) ||
+                column.cfg?.__source?.includes(`data.${field}`) ||
+                column.cfg?.prefix?.includes(`data.${field}`) ||
+                column.cfg?.href?.includes(`data.${field}`) ||
+                (typeof column.cfg?.min === 'string' &&
+                  column.cfg?.min?.includes(`data.${field}`)) ||
+                (typeof column.cfg?.max === 'string' && column.cfg?.max?.includes(`data.${field}`)),
+            )
+            .forEach(async (column) => {
+              if (
+                column.visible?.includes(`data.${field}`) ||
+                column.required?.includes(`data.${field}`) ||
+                column.editable?.includes(`data.${field}`)
+              )
+                await setColumnRules(column);
+              else await setColumnConfiguration(column);
+            });
+        }
+      }
+    },
+    { immediate: true, deep: true },
+  );
+});
+
+onUnmounted(() => {
+  if (Number(init_data.value.id))
+    forceData({ tid: form.value.id, rid: Number(init_data.value.id), user: null });
+});
+
+const { BASE_URL } = process.env;
+const fetchDataEdit = async (tid, rid) => {
+  const { code, data: res, msg } = await getDataEdit({ tid, rid });
+  if (code === 200) {
+    initialized.value = false;
+    form.value = res.form;
+    columns.value = res.columns;
+    alias.value = res.alias;
+    data.value = res.data;
+    flow.value = res.flow;
+    init_data.value = JSON.parse(JSON.stringify(res.data));
+    await setFormConfiguration();
+    await setFormColumns();
+    fetchDataTitle();
+    current_tab.value = current_tab.value || 0;
+    initialized.value = true;
+    const staged = localStorage.getItem(
+      `${BASE_URL.replace(/\//g, '_')}${hashData(
+        `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+      )}`,
+    );
+    if (staged) document.getElementById('showUseStageDataConfirmModalBtn').click();
+  } else {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: msg,
+      },
     });
+  }
+};
 
-    const initialized = ref(false);
-    onMounted(() => {
-      watch(
-        () => route.value.params,
-        (newVal = {}, oldVal = {}) => {
-          if (
-            route.value.name === 'edit' &&
-            ((Number(newVal.rid) === 0 &&
-              !store.state.user.data?.permissions?.[newVal.tid]?.create) ||
-              (Number(newVal.rid) !== 0 && !store.state.user.data?.permissions?.[newVal.tid]?.edit))
-          ) {
-            router.replace({ name: 'permissionDenied' });
-            return;
-          }
-          if (
-            route.value.name === 'edit' &&
-            (newVal.tid !== oldVal.tid || newVal.rid !== oldVal.rid)
-          ) {
-            if (Number(init_data.value.id))
-              forceData({
-                tid: newVal.tid,
-                rid: Number(init_data.value.id),
-                user: null,
-              });
-            fetchDataEdit(newVal.tid, newVal.rid);
-          }
+const handleToggleRibbonMode = () => {
+  ribbon_mode.value = !ribbon_mode.value;
+};
+
+const handleRefetchDataEdit = () => {
+  fetchDataEdit(form.value.id, data.value.id);
+};
+
+const fetchDataTitle = (search = '', loading) => {
+  if (loading) loading(true);
+  const params = {
+    tid: form.value.id,
+    rid: data.value.id,
+  };
+  if (search.length) params.search = search;
+  getDataTitle(params).then(({ code, data, msg }) => {
+    if (code === 200) {
+      titles.value = [
+        ...(store.state.user.data.permissions?.[form.value.id]?.create
+          ? [{ id: 0, title: i18n.global.t('data.edit.create') }]
+          : []),
+        ...data,
+      ];
+      if (loading) loading(false);
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
         },
-        { immediate: true, deep: true },
-      );
+      });
+    }
+  });
+};
 
-      watch(
-        () => formData.value,
-        (newVal = {}, oldVal = {}) => {
-          if (initialized.value) {
-            const changes = getChanges(newVal, oldVal);
-            for (let field in changes) {
-              columns.value
-                .filter(
-                  (column) =>
-                    column.visible?.includes(`data.${field}`) ||
-                    column.required?.includes(`data.${field}`) ||
-                    column.editable?.includes(`data.${field}`) ||
-                    column.__default?.includes(`data.${field}`) ||
-                    column.cfg?.__source?.includes(`data.${field}`) ||
-                    column.cfg?.prefix?.includes(`data.${field}`) ||
-                    column.cfg?.href?.includes(`data.${field}`) ||
-                    (typeof column.cfg?.min === 'string' &&
-                      column.cfg?.min?.includes(`data.${field}`)) ||
-                    (typeof column.cfg?.max === 'string' &&
-                      column.cfg?.max?.includes(`data.${field}`)),
-                )
-                .forEach(async (column) => {
-                  if (
-                    column.visible?.includes(`data.${field}`) ||
-                    column.required?.includes(`data.${field}`) ||
-                    column.editable?.includes(`data.${field}`)
-                  )
-                    await setColumnRules(column);
-                  else await setColumnConfiguration(column);
-                });
-            }
-          }
-        },
-        { immediate: true, deep: true },
+const setFormConfiguration = () => {
+  if (form.value.script) form.value.script = replaceVariables(form.value.script, alias.value);
+  form.value.flow = form.value.flow?.length ? generateFlowByCurrentUser(form.value.flow) : null;
+  if (form.value.style) {
+    const style = document.createElement('style');
+    style.innerHTML = form.value.style;
+    document.querySelector('head').appendChild(style);
+  }
+};
+
+const resolveFlowUsers = computed(() => {
+  return (users) => {
+    return users.map((username) => {
+      return (
+        store.state.org.users.find((user) => user.username === username) || {
+          username: username,
+          fullname: username,
+        }
       );
     });
+  };
+});
 
-    onUnmounted(() => {
-      if (Number(init_data.value.id))
-        forceData({ tid: form.value.id, rid: Number(init_data.value.id), user: null });
-    });
+const setFormColumns = async () => {
+  const BasicColumns = columns.value.filter((column) => column.component.includes('Basic'));
+  const FormColumns = columns.value.filter((column) => !column.component.includes('Basic'));
+  const HasTabs = FormColumns.find((column) => column.component === 'LayoutTab') ? true : false;
 
-    const fetchDataEdit = async (tid, rid) => {
-      const { code, data: res, msg } = await getDataEdit({ tid, rid });
-      if (code === 200) {
-        initialized.value = false;
-        form.value = res.form;
-        columns.value = res.columns;
-        alias.value = res.alias;
-        data.value = res.data;
-        flow.value = res.flow;
-        init_data.value = JSON.parse(JSON.stringify(res.data));
-        await setFormConfiguration();
-        await setFormColumns();
-        fetchDataTitle();
-        current_tab.value = current_tab.value || 0;
-        initialized.value = true;
-        const staged = localStorage.getItem(
-          `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-            `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
-          )}`,
+  if (Number(data.value.id) === 0) {
+    BasicColumns.forEach((column) => {
+      if (column.field === 'acl_view') {
+        data.value.acl_view = Array.from(
+          new Set([
+            ...(form.value.acl_view.length
+              ? form.value.acl_view
+              : getUserLeaders(store.state.user.data)),
+            ...(form.value.flow?.length
+              ? form.value.flow
+                  .map((item) => {
+                    return item.users.map((user) => {
+                      return user.username;
+                    });
+                  })
+                  .flat()
+              : []),
+          ]),
         );
-        if (staged) document.getElementById('showUseStageDataConfirmModalBtn').click();
+      }
+      if (column.field === 'acl_edit') {
+        data.value.acl_edit = form.value.flow?.length
+          ? [store.state.user.data.username]
+          : form.value.acl_edit.length
+          ? form.value.acl_edit
+          : [store.state.user.data.username];
+      }
+      if (column.field === 'data_state' && form.value.flow?.length)
+        data.value.data_state = 'drafted';
+    });
+
+    // for await (let column of BasicColumns) {
+    //   if (column.field === 'acl_view') {
+    //     data.value.acl_view = Array.from(
+    //       new Set([
+    //         ...(form.value.acl_view.length
+    //           ? form.value.acl_view
+    //           : getUserLeaders(store.state.user.data)),
+    //         ...(form.value.flow?.length
+    //           ? form.value.flow
+    //               .map((item) => {
+    //                 return item.users.map((user) => {
+    //                   return user.username;
+    //                 });
+    //               })
+    //               .flat()
+    //           : []),
+    //       ]),
+    //     );
+    //   }
+    //   if (column.field === 'acl_edit') {
+    //     data.value.acl_edit = form.value.flow?.length
+    //       ? [store.state.user.data.username]
+    //       : form.value.acl_edit.length
+    //       ? form.value.acl_edit
+    //       : [store.state.user.data.username];
+    //   }
+    //   if (column.field === 'data_state' && form.value.flow?.length)
+    //     data.value.data_state = 'drafted';
+    // }
+  }
+
+  tabs.value = [];
+
+  if (HasTabs)
+    FormColumns.forEach((column) => {
+      if (column.component === 'LayoutTab')
+        tabs.value.push({ ...column, ...{ children: [], columns: [] } });
+      else tabs.value[tabs.value.length - 1].children.push(column);
+    });
+  else
+    tabs.value.push({
+      children: FormColumns,
+      columns: [],
+    });
+
+  // for (let tab of tabs.value) {
+  //   for await (let column of tab.children) {
+  //     column.key = hashData(JSON.stringify(column));
+  //     await replaceColumnVariables(column);
+  //     await setColumnConfiguration(column);
+  //     await setColumnRules(column);
+  //   }
+  //   tab.columns = tab.children;
+  // }
+
+  tabs.value.forEach((tab) => {
+    tab.children.forEach(async (column) => {
+      column._visible = true;
+      column._required = false;
+      column._editable = true;
+      column.key = hashData(JSON.stringify(column));
+      await replaceColumnVariables(column);
+      await setColumnConfiguration(column);
+      await setColumnRules(column);
+    });
+    tab.columns = tab.children;
+  });
+};
+
+const replaceColumnVariables = (column) => {
+  if (column.visible) column.visible = replaceVariables(column.visible, alias.value);
+  if (column.required) column.required = replaceVariables(column.required, alias.value);
+  if (column.editable) column.editable = replaceVariables(column.editable, alias.value);
+  if (column.default) column.__default = replaceVariables(column.default, alias.value);
+  if (column.cfg?.source) column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
+  if (column.cfg?.prefix) column.cfg.prefix = replaceVariables(column.cfg.prefix, alias.value);
+  if (column.cfg?.href) column.cfg.href = replaceVariables(column.cfg.href, alias.value);
+  if (typeof column.cfg?.min === 'string')
+    column.cfg.min = replaceVariables(column.cfg.min, alias.value);
+  if (typeof column.cfg?.max === 'string')
+    column.cfg.max = replaceVariables(column.cfg.max, alias.value);
+};
+
+const setColumnConfiguration = async (column) => {
+  if (Number(data.value.id) === 0 || initialized.value) {
+    if (column.default) {
+      const val = await getDataByFormula(data.value, column.__default);
+      const res =
+        column.component === 'SelectTags'
+          ? val.split(',')
+          : column.component === 'SelectDatetime'
+          ? moment(
+              column.cfg.dateFormat.includes('Y-m-d')
+                ? val
+                : `${moment().format('YYYY-MM-DD')} ${val}`,
+            ).format(
+              column.cfg.dateFormat
+                .replace('Y', 'YYYY')
+                .replace('m', 'MM')
+                .replace('d', 'DD')
+                .replace('H', 'HH')
+                .replace('i', 'mm')
+                .replace('S', 'ss'),
+            )
+          : val;
+
+      if (
+        res &&
+        typeof res === 'string' &&
+        (res.includes('Error: ') ||
+          (column.component === 'SelectDatetime' && res === 'Invalid date'))
+      )
+        column.cfg.placeholder = res;
+      else data.value[column.field] = res;
+    }
+
+    if (column.alias && route.query[column.alias])
+      data.value[column.field] = route.query[column.alias];
+  }
+
+  if (column.cfg?.source) {
+    column.cfg.search = [];
+    column.cfg.options = await getDataByFormula(data.value, column.cfg.__source, {
+      value: !initialized.value ? data.value[column.field] : null,
+    });
+
+    column.cfg.selected = [];
+    if (column.cfg.options.length) {
+      data.value[column.field] =
+        column.component == 'SelectMultiple'
+          ? column.cfg.options
+              .filter((option) =>
+                data.value[column.field]
+                  ?.map((value) => {
+                    return isNaN(Number(value)) ? value : Number(value);
+                  })
+                  ?.includes(option.value),
+              )
+              .map((option) => {
+                return option.value;
+              })
+          : column.cfg.options.find((option) => option.value == data.value[column.field])?.value ||
+            null;
+    } else {
+      data.value[column.field] = column.component == 'SelectMultiple' ? [] : null;
+    }
+  }
+
+  if (column.cfg?.prefix)
+    column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
+
+  if (column.cfg?.href) column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
+
+  if (typeof column.cfg?.min === 'string') {
+    const minDate = await getDataByFormula(data.value, column.cfg.min);
+    if (isNaN(minDate) && !isNaN(Date.parse(minDate))) {
+      column.cfg.minDate = minDate;
+      column.key = hashData(JSON.stringify(column));
+    }
+  }
+  if (typeof column.cfg?.max === 'string') {
+    const maxDate = await getDataByFormula(data.value, column.cfg.max);
+    if (isNaN(maxDate) && !isNaN(Date.parse(maxDate))) {
+      column.cfg.maxDate = maxDate;
+      column.key = hashData(JSON.stringify(column));
+    }
+  }
+};
+
+const setColumnRules = async (column) => {
+  const { visible, required, editable } = await getRulesByFormula(data.value, column);
+  if (column._visible != visible || column._required != required || column._editable != editable)
+    column.key = hashData(JSON.stringify(column));
+
+  // column._visible = visible;
+  column._required = required;
+  column._editable = editable;
+
+  if (column._visible != visible) {
+    column._visible = visible;
+    if (column._visible) await setColumnConfiguration(column);
+    else
+      data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
+        column.component,
+      )
+        ? []
+        : null;
+  }
+};
+
+const handleSelectDataTitle = (e) => {
+  // data.value.id = init_data.value.id;
+  // const changes = getChanges(data.value, init_data.value);
+  // if (Object.keys(changes).length) {
+  //   toast({
+  //     component: ToastificationContent,
+  //     props: {
+  //       variant: 'danger',
+  //       icon: 'mdi-alert',
+  //       text: `Column${Object.keys(changes).length > 1 ? 's' : ''} ${Object.keys(changes).join(', ')} ${Object.keys(changes).length > 1 ? 'have' : 'has'} been changed.`,
+  //     },
+  //   });
+  // } else
+  router.push({ name: 'edit', params: { tid: form.value.id, rid: e.id } });
+};
+
+const handleSelecterSearch = async ({ search, loading, column }) => {
+  loading(true);
+  column.cfg.search = await getDataByFormula(data.value, column.cfg.__source, { search });
+  loading(false);
+};
+
+const update_conflicts = ref(null);
+const result = ref({});
+const handleSubmitFormData = (force = false) => {
+  const formdata = JSON.parse(JSON.stringify(data.value));
+  columns.value.forEach((column) => {
+    if (!column.component.includes('Basic') && !column._visible) delete formdata[column.field];
+  });
+
+  if (form.value.script) {
+    let formScriptResult = null;
+    try {
+      const fn = new Function('data', form.value.script);
+      formScriptResult = fn(formdata);
+    } catch (error) {
+      formScriptResult = error.message;
+    }
+    if (formScriptResult) {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: formScriptResult,
+        },
+      });
+      return;
+    }
+  }
+
+  if (formdata.id === 0) {
+    formdata.tid = form.value.id;
+    formdata.flow = form.value.flow;
+    createData(formdata).then((res) => {
+      if (res.code === 200) {
+        result.value = res;
+        data.value = res.data;
+        init_data.value = JSON.parse(JSON.stringify(res.data));
+        titles.value.splice(1, 0, { id: res.data.id, title: res.data.title });
+        forceData({ tid: form.value.id, rid: data.value.id });
+        document.getElementById('showResultModalBtn').click();
       } else {
         toast({
           component: ToastificationContent,
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: msg,
+            text: res.msg,
           },
         });
       }
-    };
-
-    const handleToggleRibbonMode = () => {
-      ribbon_mode.value = !ribbon_mode.value;
-    };
-
-    const handleRefetchDataEdit = () => {
-      fetchDataEdit(form.value.id, data.value.id);
-    };
-
-    const fetchDataTitle = (search = '', loading) => {
-      if (loading) loading(true);
-      const params = {
-        tid: form.value.id,
-        rid: data.value.id,
-      };
-      if (search.length) params.search = search;
-      getDataTitle(params).then(({ code, data, msg }) => {
+    });
+  } else {
+    const changes = getChanges(formdata, init_data.value);
+    if (Object.keys(changes).length) {
+      changes.tid = form.value.id;
+      changes.id = formdata.id;
+      changes.data_state = formdata.data_state;
+      changes.flow = form.value.flow;
+      checkData({ tid: form.value.id, rid: formdata.id }).then(({ code, data: editing, msg }) => {
         if (code === 200) {
-          titles.value = [
-            ...(store.state.user.data.permissions?.[form.value.id]?.create
-              ? [{ id: 0, title: i18n.global.t('data.edit.create') }]
-              : []),
-            ...data,
-          ];
-          if (loading) loading(false);
+          if (editing === null || editing === store.state.user.data.username || force) {
+            updateData(changes).then((res) => {
+              document.getElementById('hideUpdateConflictsModalBtn').click();
+              forceData({ tid: changes.tid, rid: changes.id });
+              if (res.code === 200) {
+                result.value = res;
+                data.value = res.data;
+                init_data.value = JSON.parse(JSON.stringify(res.data));
+                document.getElementById('showResultModalBtn').click();
+                handleDiscardStagedData();
+              } else {
+                toast({
+                  component: ToastificationContent,
+                  props: {
+                    variant: 'danger',
+                    icon: 'mdi-alert',
+                    text: res.msg,
+                  },
+                });
+              }
+            });
+          } else {
+            update_conflicts.value = editing;
+            document.getElementById('showUpdateConflictsModalBtn').click();
+          }
         } else {
           toast({
             component: ToastificationContent,
@@ -906,477 +1272,62 @@ export default {
           });
         }
       });
-    };
+    }
+  }
+};
 
-    const setFormConfiguration = () => {
-      if (form.value.script) form.value.script = replaceVariables(form.value.script, alias.value);
-      form.value.flow = form.value.flow?.length ? generateFlowByCurrentUser(form.value.flow) : null;
-      if (form.value.style) {
-        const style = document.createElement('style');
-        style.innerHTML = form.value.style;
-        document.querySelector('head').appendChild(style);
+const handleStagedUpdate = (callback) => {
+  localStorage.setItem(
+    `${BASE_URL.replace(/\//g, '_')}${hashData(
+      `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+    )}`,
+    encryptData(JSON.stringify(data.value)),
+  );
+  document.getElementById('hideUpdateConflictsModalBtn').click();
+  callback && callback();
+};
+
+const handleApplyStagedData = () => {
+  const staged = localStorage.getItem(
+    `${BASE_URL.replace(/\//g, '_')}${hashData(
+      `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+    )}`,
+  );
+  try {
+    data.value = JSON.parse(decryptData(staged));
+  } catch (error) {
+    // console.error(error);
+  }
+  localStorage.removeItem(
+    `${BASE_URL.replace(/\//g, '_')}${hashData(
+      `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+    )}`,
+  );
+};
+
+const handleDiscardStagedData = () => {
+  localStorage.removeItem(
+    `${BASE_URL.replace(/\//g, '_')}${hashData(
+      `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+    )}`,
+  );
+};
+
+const cancel_edit_confirm = ref(null);
+const handleCancelEdit = (callback) => {
+  cancel_edit_confirm.value = null;
+  const changes = getChanges(data.value, init_data.value);
+  if (Object.keys(changes).length === 0) {
+    callback(true);
+  } else {
+    document.getElementById('showConfirmCancelEditModalBtn').click();
+    let interval;
+    interval = setInterval(() => {
+      if (cancel_edit_confirm.value != null) {
+        callback(cancel_edit_confirm.value);
+        clearInterval(interval);
       }
-    };
-
-    const resolveFlowUsers = computed(() => {
-      return (users) => {
-        return users.map((username) => {
-          return (
-            store.state.org.users.find((user) => user.username === username) || {
-              username: username,
-              fullname: username,
-            }
-          );
-        });
-      };
-    });
-
-    const setFormColumns = async () => {
-      const BasicColumns = columns.value.filter((column) => column.component.includes('Basic'));
-      const FormColumns = columns.value.filter((column) => !column.component.includes('Basic'));
-      const HasTabs = FormColumns.find((column) => column.component === 'LayoutTab') ? true : false;
-
-      if (Number(data.value.id) === 0) {
-        BasicColumns.forEach((column) => {
-          if (column.field === 'acl_view') {
-            data.value.acl_view = Array.from(
-              new Set([
-                ...(form.value.acl_view.length
-                  ? form.value.acl_view
-                  : getUserLeaders(store.state.user.data)),
-                ...(form.value.flow?.length
-                  ? form.value.flow
-                      .map((item) => {
-                        return item.users.map((user) => {
-                          return user.username;
-                        });
-                      })
-                      .flat()
-                  : []),
-              ]),
-            );
-          }
-          if (column.field === 'acl_edit') {
-            data.value.acl_edit = form.value.flow?.length
-              ? [store.state.user.data.username]
-              : form.value.acl_edit.length
-              ? form.value.acl_edit
-              : [store.state.user.data.username];
-          }
-          if (column.field === 'data_state' && form.value.flow?.length)
-            data.value.data_state = 'drafted';
-        });
-
-        // for await (let column of BasicColumns) {
-        //   if (column.field === 'acl_view') {
-        //     data.value.acl_view = Array.from(
-        //       new Set([
-        //         ...(form.value.acl_view.length
-        //           ? form.value.acl_view
-        //           : getUserLeaders(store.state.user.data)),
-        //         ...(form.value.flow?.length
-        //           ? form.value.flow
-        //               .map((item) => {
-        //                 return item.users.map((user) => {
-        //                   return user.username;
-        //                 });
-        //               })
-        //               .flat()
-        //           : []),
-        //       ]),
-        //     );
-        //   }
-        //   if (column.field === 'acl_edit') {
-        //     data.value.acl_edit = form.value.flow?.length
-        //       ? [store.state.user.data.username]
-        //       : form.value.acl_edit.length
-        //       ? form.value.acl_edit
-        //       : [store.state.user.data.username];
-        //   }
-        //   if (column.field === 'data_state' && form.value.flow?.length)
-        //     data.value.data_state = 'drafted';
-        // }
-      }
-
-      tabs.value = [];
-
-      if (HasTabs)
-        FormColumns.forEach((column) => {
-          if (column.component === 'LayoutTab')
-            tabs.value.push({ ...column, ...{ children: [], columns: [] } });
-          else tabs.value[tabs.value.length - 1].children.push(column);
-        });
-      else
-        tabs.value.push({
-          children: FormColumns,
-          columns: [],
-        });
-
-      // for (let tab of tabs.value) {
-      //   for await (let column of tab.children) {
-      //     column.key = hashData(JSON.stringify(column));
-      //     await replaceColumnVariables(column);
-      //     await setColumnConfiguration(column);
-      //     await setColumnRules(column);
-      //   }
-      //   tab.columns = tab.children;
-      // }
-
-      tabs.value.forEach((tab) => {
-        tab.children.forEach(async (column) => {
-          column._visible = true;
-          column._required = false;
-          column._editable = true;
-          column.key = hashData(JSON.stringify(column));
-          await replaceColumnVariables(column);
-          await setColumnConfiguration(column);
-          await setColumnRules(column);
-        });
-        tab.columns = tab.children;
-      });
-    };
-
-    const replaceColumnVariables = (column) => {
-      if (column.visible) column.visible = replaceVariables(column.visible, alias.value);
-      if (column.required) column.required = replaceVariables(column.required, alias.value);
-      if (column.editable) column.editable = replaceVariables(column.editable, alias.value);
-      if (column.default) column.__default = replaceVariables(column.default, alias.value);
-      if (column.cfg?.source)
-        column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
-      if (column.cfg?.prefix) column.cfg.prefix = replaceVariables(column.cfg.prefix, alias.value);
-      if (column.cfg?.href) column.cfg.href = replaceVariables(column.cfg.href, alias.value);
-      if (typeof column.cfg?.min === 'string')
-        column.cfg.min = replaceVariables(column.cfg.min, alias.value);
-      if (typeof column.cfg?.max === 'string')
-        column.cfg.max = replaceVariables(column.cfg.max, alias.value);
-    };
-
-    const setColumnConfiguration = async (column) => {
-      if (Number(data.value.id) === 0 || initialized.value) {
-        if (column.default) {
-          const val = await getDataByFormula(data.value, column.__default);
-          const res =
-            column.component === 'SelectTags'
-              ? val.split(',')
-              : column.component === 'SelectDatetime'
-              ? moment(
-                  column.cfg.dateFormat.includes('Y-m-d')
-                    ? val
-                    : `${moment().format('YYYY-MM-DD')} ${val}`,
-                ).format(
-                  column.cfg.dateFormat
-                    .replace('Y', 'YYYY')
-                    .replace('m', 'MM')
-                    .replace('d', 'DD')
-                    .replace('H', 'HH')
-                    .replace('i', 'mm')
-                    .replace('S', 'ss'),
-                )
-              : val;
-
-          if (
-            res &&
-            typeof res === 'string' &&
-            (res.includes('Error: ') ||
-              (column.component === 'SelectDatetime' && res === 'Invalid date'))
-          )
-            column.cfg.placeholder = res;
-          else data.value[column.field] = res;
-        }
-
-        if (column.alias && route.value.query[column.alias])
-          data.value[column.field] = route.value.query[column.alias];
-      }
-
-      if (column.cfg?.source) {
-        column.cfg.search = [];
-        column.cfg.options = await getDataByFormula(data.value, column.cfg.__source, {
-          value: !initialized.value ? data.value[column.field] : null,
-        });
-
-        column.cfg.selected = [];
-        if (column.cfg.options.length) {
-          data.value[column.field] =
-            column.component == 'SelectMultiple'
-              ? column.cfg.options
-                  .filter((option) =>
-                    data.value[column.field]
-                      ?.map((value) => {
-                        return isNaN(Number(value)) ? value : Number(value);
-                      })
-                      ?.includes(option.value),
-                  )
-                  .map((option) => {
-                    return option.value;
-                  })
-              : column.cfg.options.find((option) => option.value == data.value[column.field])
-                  ?.value || null;
-        } else {
-          data.value[column.field] = column.component == 'SelectMultiple' ? [] : null;
-        }
-      }
-
-      if (column.cfg?.prefix)
-        column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
-
-      if (column.cfg?.href) column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
-
-      if (typeof column.cfg?.min === 'string') {
-        const minDate = await getDataByFormula(data.value, column.cfg.min);
-        if (isNaN(minDate) && !isNaN(Date.parse(minDate))) {
-          column.cfg.minDate = minDate;
-          column.key = hashData(JSON.stringify(column));
-        }
-      }
-      if (typeof column.cfg?.max === 'string') {
-        const maxDate = await getDataByFormula(data.value, column.cfg.max);
-        if (isNaN(maxDate) && !isNaN(Date.parse(maxDate))) {
-          column.cfg.maxDate = maxDate;
-          column.key = hashData(JSON.stringify(column));
-        }
-      }
-    };
-
-    const setColumnRules = async (column) => {
-      const { visible, required, editable } = await getRulesByFormula(data.value, column);
-      if (
-        column._visible != visible ||
-        column._required != required ||
-        column._editable != editable
-      )
-        column.key = hashData(JSON.stringify(column));
-
-      // column._visible = visible;
-      column._required = required;
-      column._editable = editable;
-
-      if (column._visible != visible) {
-        column._visible = visible;
-        if (column._visible) await setColumnConfiguration(column);
-        else
-          data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
-            column.component,
-          )
-            ? []
-            : null;
-      }
-    };
-
-    const handleSelectDataTitle = (e) => {
-      // data.value.id = init_data.value.id;
-      // const changes = getChanges(data.value, init_data.value);
-      // if (Object.keys(changes).length) {
-      //   toast({
-      //     component: ToastificationContent,
-      //     props: {
-      //       variant: 'danger',
-      //       icon: 'mdi-alert',
-      //       text: `Column${Object.keys(changes).length > 1 ? 's' : ''} ${Object.keys(changes).join(', ')} ${Object.keys(changes).length > 1 ? 'have' : 'has'} been changed.`,
-      //     },
-      //   });
-      // } else
-      router.push({ name: 'edit', params: { tid: form.value.id, rid: e.id } });
-    };
-
-    const handleSelecterSearch = async ({ search, loading, column }) => {
-      loading(true);
-      column.cfg.search = await getDataByFormula(data.value, column.cfg.__source, { search });
-      loading(false);
-    };
-
-    const update_conflicts = ref(null);
-    const result = ref({});
-    const handleSubmitFormData = (force = false) => {
-      const formdata = JSON.parse(JSON.stringify(data.value));
-      columns.value.forEach((column) => {
-        if (!column.component.includes('Basic') && !column._visible) delete formdata[column.field];
-      });
-
-      if (form.value.script) {
-        let formScriptResult = null;
-        try {
-          const fn = new Function('data', form.value.script);
-          formScriptResult = fn(formdata);
-        } catch (error) {
-          formScriptResult = error.message;
-        }
-        if (formScriptResult) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: formScriptResult,
-            },
-          });
-          return;
-        }
-      }
-
-      if (formdata.id === 0) {
-        formdata.tid = form.value.id;
-        formdata.flow = form.value.flow;
-        createData(formdata).then((res) => {
-          if (res.code === 200) {
-            result.value = res;
-            data.value = res.data;
-            init_data.value = JSON.parse(JSON.stringify(res.data));
-            titles.value.splice(1, 0, { id: res.data.id, title: res.data.title });
-            forceData({ tid: form.value.id, rid: data.value.id });
-            document.getElementById('showResultModalBtn').click();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: res.msg,
-              },
-            });
-          }
-        });
-      } else {
-        const changes = getChanges(formdata, init_data.value);
-        if (Object.keys(changes).length) {
-          changes.tid = form.value.id;
-          changes.id = formdata.id;
-          changes.data_state = formdata.data_state;
-          changes.flow = form.value.flow;
-          checkData({ tid: form.value.id, rid: formdata.id }).then(
-            ({ code, data: editing, msg }) => {
-              if (code === 200) {
-                if (editing === null || editing === store.state.user.data.username || force) {
-                  updateData(changes).then((res) => {
-                    document.getElementById('hideUpdateConflictsModalBtn').click();
-                    forceData({ tid: changes.tid, rid: changes.id });
-                    if (res.code === 200) {
-                      result.value = res;
-                      data.value = res.data;
-                      init_data.value = JSON.parse(JSON.stringify(res.data));
-                      document.getElementById('showResultModalBtn').click();
-                      handleDiscardStagedData();
-                    } else {
-                      toast({
-                        component: ToastificationContent,
-                        props: {
-                          variant: 'danger',
-                          icon: 'mdi-alert',
-                          text: res.msg,
-                        },
-                      });
-                    }
-                  });
-                } else {
-                  update_conflicts.value = editing;
-                  document.getElementById('showUpdateConflictsModalBtn').click();
-                }
-              } else {
-                toast({
-                  component: ToastificationContent,
-                  props: {
-                    variant: 'danger',
-                    icon: 'mdi-alert',
-                    text: msg,
-                  },
-                });
-              }
-            },
-          );
-        }
-      }
-    };
-
-    const handleStagedUpdate = (callback) => {
-      localStorage.setItem(
-        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-          `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
-        )}`,
-        encryptData(JSON.stringify(data.value)),
-      );
-      document.getElementById('hideUpdateConflictsModalBtn').click();
-      callback && callback();
-    };
-
-    const handleApplyStagedData = () => {
-      const staged = localStorage.getItem(
-        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-          `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
-        )}`,
-      );
-      try {
-        data.value = JSON.parse(decryptData(staged));
-      } catch (error) {
-        // console.error(error);
-      }
-      localStorage.removeItem(
-        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-          `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
-        )}`,
-      );
-    };
-
-    const handleDiscardStagedData = () => {
-      localStorage.removeItem(
-        `${process.env.BASE_URL.replace(/\//g, '_')}${hashData(
-          `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
-        )}`,
-      );
-    };
-
-    const cancel_edit_confirm = ref(null);
-    const handleCancelEdit = (callback) => {
-      cancel_edit_confirm.value = null;
-      const changes = getChanges(data.value, init_data.value);
-      if (Object.keys(changes).length === 0) {
-        callback(true);
-      } else {
-        document.getElementById('showConfirmCancelEditModalBtn').click();
-        let interval;
-        interval = setInterval(() => {
-          if (cancel_edit_confirm.value != null) {
-            callback(cancel_edit_confirm.value);
-            clearInterval(interval);
-          }
-        }, 100);
-      }
-    };
-
-    return {
-      form,
-      columns,
-      data,
-      init_data,
-      flow,
-
-      ribbon_mode,
-      tabs,
-      current_tab,
-      titles,
-
-      fetchDataEdit,
-      handleToggleRibbonMode,
-      handleRefetchDataEdit,
-      fetchDataTitle,
-      handleSelectDataTitle,
-      handleSelecterSearch,
-
-      setColumnConfiguration,
-
-      resolveFlowUsers,
-
-      handleSubmitFormData,
-      result,
-
-      update_conflicts,
-      getUserInfo,
-
-      handleStagedUpdate,
-      handleApplyStagedData,
-      handleDiscardStagedData,
-
-      cancel_edit_confirm,
-      handleCancelEdit,
-    };
-  },
+    }, 100);
+  }
 };
 </script>

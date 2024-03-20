@@ -20,7 +20,7 @@
                 class="form-control"
                 :placeholder="$t('layout.navbar.search.placeholder')"
                 autocomplete="off"
-                id="search-options"
+                id="search-options-md"
                 v-model="search.keyword"
                 @input="handleSearch"
                 @keyup.enter.stop="handleEnter"
@@ -68,6 +68,7 @@
                       type="text"
                       class="form-control"
                       :placeholder="$t('layout.navbar.search.placeholder')"
+                      id="search-options-xs"
                       v-model="search.keyword"
                       @input="handleSearch"
                       @keyup.enter.stop="handleEnter"
@@ -93,7 +94,7 @@
             </div>
           </div>
 
-          <div class="dropdown topbar-head-dropdown ms-1 header-item">
+          <div v-if="show.helper" class="dropdown topbar-head-dropdown ms-1 header-item">
             <button
               type="button"
               class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
@@ -114,49 +115,49 @@
 
               <div class="p-2">
                 <div class="row g-0">
-                  <div v-permission="'org'" class="col-4">
+                  <div v-if="show.org" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'org' }">
                       <img src="@/assets/images/navbar/helper/org.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.org') }}</span>
                     </router-link>
                   </div>
-                  <div v-permission="'form'" class="col-4">
+                  <div v-if="show.form" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'form' }">
                       <img src="@/assets/images/navbar/helper/form.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.form') }}</span>
                     </router-link>
                   </div>
-                  <div v-permission="'job'" class="col-4">
+                  <div v-if="show.job" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'job' }">
                       <img src="@/assets/images/navbar/helper/job.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.job') }}</span>
                     </router-link>
                   </div>
-                  <div v-permission="'code'" class="col-4">
+                  <div v-if="show.code" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'code' }">
                       <img src="@/assets/images/navbar/helper/code.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.code') }}</span>
                     </router-link>
                   </div>
-                  <div v-permission="'weixin'" class="col-4">
+                  <div v-if="show.weixin" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'weixin' }">
                       <img src="@/assets/images/navbar/helper/weixin.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.weixin') }}</span>
                     </router-link>
                   </div>
-                  <div v-permission="'log'" class="col-4">
+                  <div v-if="show.log" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'log' }">
                       <img src="@/assets/images/navbar/helper/log.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.log') }}</span>
                     </router-link>
                   </div>
-                  <div v-permission="'sql'" class="col-4">
+                  <div v-if="show.sql" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'sql' }">
                       <img src="@/assets/images/navbar/helper/sql.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.sql') }}</span>
                     </router-link>
                   </div>
-                  <div v-permission="'redis'" class="col-4">
+                  <div v-if="show.redis" class="col-4">
                     <router-link class="dropdown-icon-item" :to="{ name: 'redis' }">
                       <img src="@/assets/images/navbar/helper/redis.png" loading="lazy" />
                       <span>{{ $t('layout.navbar.helper.redis') }}</span>
@@ -324,7 +325,7 @@
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                             <span>
                               <i class="mdi mdi-clock-outline"></i>
-                              {{ $moment(item.chat_data[0].created_at).fromNow() }}
+                              {{ moment(item.chat_data[0].created_at).fromNow() }}
                             </span>
                           </p>
                         </div>
@@ -369,7 +370,7 @@
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                             <span>
                               <i class="mdi mdi-clock-outline"></i>
-                              {{ $moment(mail.created_at).fromNow() }}
+                              {{ moment(mail.created_at).fromNow() }}
                             </span>
                           </p>
                         </div>
@@ -405,7 +406,7 @@
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                             <span>
                               <i class="mdi mdi-clock-outline"></i>
-                              {{ $moment(comment.created_at).fromNow() }}
+                              {{ moment(comment.created_at).fromNow() }}
                             </span>
                           </p>
                         </div>
@@ -443,7 +444,7 @@
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                             <span>
                               <i class="mdi mdi-clock-outline"></i>
-                              {{ $moment(flow.updated_at || flow.created_at).fromNow() }}
+                              {{ moment(flow.updated_at || flow.created_at).fromNow() }}
                             </span>
                           </p>
                         </div>
@@ -552,17 +553,13 @@
   </header>
 </template>
 
-<script>
+<script setup>
 import { ref, reactive, computed, onMounted, inject } from 'vue';
-import store from '@store';
-import { userLogout } from '@api/user';
-import { getSearchResult } from '@api/com/search';
-import { icons } from '@utils/icons';
-import i18n from '@utils/i18n';
+import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import { setWatermark } from '@utils/watermark';
 import ToastificationContent from '@components/ToastificationContent';
 import {
-  useRouter,
   clearUserData,
   getUserInfo,
   replaceHtml,
@@ -570,433 +567,410 @@ import {
   copyToClipboard,
   debounce,
 } from '@utils';
-import { setWatermark } from '@utils/watermark';
+import { icons } from '@utils/icons';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
 import SearchResultPanel from '@components/SearchResultPanel';
-export default {
-  components: {
-    Avatar,
-    Empty,
-    SearchResultPanel,
+import store from '@store';
+import { userLogout } from '@api/user';
+import { getSearchResult } from '@api/com/search';
+
+const reload = inject('reload');
+const router = useRouter();
+const toast = useToast();
+
+const toggleMenu = () => {
+  document.body.classList.add('vertical-sidebar-enable');
+};
+
+const search = reactive({
+  keyword: null,
+  result: {
+    recent: [],
+    user: [],
+    form: [],
+    data: [],
+    file: [],
+    icon: [],
   },
-  setup() {
-    const { router } = useRouter();
-    const moment = window.moment;
-    const reload = inject('reload');
-    const toast = useToast();
+});
 
-    const toggleMenu = () => {
-      document.body.classList.add('vertical-sidebar-enable');
-    };
+const handleSearch = debounce(() => {
+  if (!search.keyword) return;
+  search.keyword = search.keyword.trim();
 
-    const search = reactive({
-      keyword: null,
-      result: {
-        recent: [],
-        user: [],
-        form: [],
-        data: [],
-        file: [],
-        icon: [],
-      },
-    });
-    const handleSearch = debounce(() => {
-      if (!search.keyword) return;
-      search.keyword = search.keyword.trim();
-
-      getSearchResult({
-        keyword: search.keyword,
-      }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          search.result.recent = data.recent;
-          search.result.file = data.file;
-          search.result.data = data.data;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+  getSearchResult({
+    keyword: search.keyword,
+  }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      search.result.recent = data.recent;
+      search.result.file = data.file;
+      search.result.data = data.data;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
+    }
+  });
 
-      let tid = Number(search.keyword) > 0 ? Number(search.keyword) : null;
-      let rid = null;
+  let tid = Number(search.keyword) > 0 ? Number(search.keyword) : null;
+  let rid = null;
 
-      if (
-        search.keyword.includes('/') &&
-        search.keyword.split('/')[0]?.length &&
-        search.keyword.split('/')[1]?.length
-      ) {
-        tid =
-          Number(search.keyword.split('/')[0]) > 0 ? Number(search.keyword.split('/')[0]) : null;
-        rid =
-          Number(search.keyword.split('/')[1]) >= 0 ? Number(search.keyword.split('/')[1]) : null;
-      }
+  if (
+    search.keyword.includes('/') &&
+    search.keyword.split('/')[0]?.length &&
+    search.keyword.split('/')[1]?.length
+  ) {
+    tid = Number(search.keyword.split('/')[0]) > 0 ? Number(search.keyword.split('/')[0]) : null;
+    rid = Number(search.keyword.split('/')[1]) >= 0 ? Number(search.keyword.split('/')[1]) : null;
+  }
 
-      search.result.form = JSON.parse(JSON.stringify(store.state.user.forms)).filter(
-        (form) =>
-          store.state.user.forms.every((f) => f.pid != form.id) &&
-          (form.title?.toLowerCase().includes(search.keyword?.toLowerCase()) || form.id === tid),
-      );
-      if (rid != null) {
-        search.result.form = search.result.form
-          .filter((form) => form.route && !form.redirect && form.status && form.id === tid)
-          .map((form) => {
-            form.rid = rid;
-            form.title = `${form.title}/${rid}`;
-            form.route = {
-              path: rid === 0 ? `/data/edit/${tid}/${rid}` : `/data/view/${tid}/${rid}`,
-            };
-            return form;
-          });
-      }
-
-      search.result.user = store.state.org.users.filter(
-        (user) =>
-          user.username != store.state.user.data.username &&
-          (user.username?.toLowerCase().includes(search.keyword?.toLowerCase()) ||
-            user.fullname?.toLowerCase().includes(search.keyword?.toLowerCase())),
-      );
-
-      search.result.icon =
-        search.keyword.length > 2
-          ? icons.filter((icon) => icon.name?.toLowerCase().includes(search.keyword?.toLowerCase()))
-          : [];
-    }, 500);
-
-    const handleEnter = () => {
-      if (!search.keyword) return;
-      if (search.result.icon.length) {
-        copyToClipboard(`mdi mdi-${search.result.icon[0].name}`)
-          .then(() => {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'success',
-                icon: 'mdi-check-circle',
-                text: i18n.global.t('layout.navbar.search.icon.copy.success'),
-              },
-            });
-          })
-          .catch((error) => {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: error.message,
-              },
-            });
-          });
-        return;
-      }
-
-      if (search.result.user.length) {
-        router.push({
-          name: 'chat',
-          query: {
-            contact: search.result.user[0].username,
-          },
-        });
-        return;
-      }
-
-      if (search.result.form.length) {
-        const forms = search.result.form.filter(
-          (form) => form.status === 1 && (form.redirect || form.route),
-        );
-        if (forms?.[0]?.route) {
-          router.push(forms[0].route);
-          return;
-        }
-        if (forms?.[0]?.redirect) {
-          window.open(forms[0].redirect, '_blank');
-          return;
-        }
-      }
-
-      if (search.result.data.length) {
-        router.push({
-          name: 'view',
-          params: {
-            tid: search.result.data[0].tid,
-            rid: search.result.data[0].rid,
-          },
-        });
-        return;
-      }
-
-      if (search.result.file.length) {
-        router.push({
-          name: 'preview',
-          params: { uuid: search.result.file[0].uuid },
-        });
-        return;
-      }
-    };
-
-    onMounted(() => {
-      document.addEventListener('scroll', scrollHandler);
-      document.addEventListener('webkitfullscreenchange', fullScreenHandler);
-      document.addEventListener('mozfullscreenchange', fullScreenHandler);
-      document.addEventListener('fullscreenchange', fullScreenHandler);
-
-      fullScreenHandler();
-      isCustomDropdown();
-    });
-
-    const scrollHandler = () => {
-      var pageTopbar = document.getElementById('page-topbar');
-      if (pageTopbar) {
-        document.body.scrollTop >= 50 || document.documentElement.scrollTop >= 50
-          ? pageTopbar.classList.add('topbar-shadow')
-          : pageTopbar.classList.remove('topbar-shadow');
-      }
-    };
-
-    const fullScreenHandler = () => {
-      if (
-        !document.fullscreenElement &&
-        !document.mozFullScreenElement &&
-        !document.webkitFullscreenElement
-      )
-        isFullScreen.value = false;
-      else isFullScreen.value = true;
-    };
-
-    const isCustomDropdown = () => {
-      const dropdown = document.getElementById('search-dropdown');
-
-      const searchInput = document.getElementById('search-options');
-      if (searchInput) {
-        searchInput.addEventListener('focus', () => {
-          var inputLength = searchInput.value.length;
-          if (inputLength > 0) {
-            dropdown.classList.add('show');
-            searchOptions.classList.remove('d-none');
-          } else {
-            dropdown.classList.remove('show');
-            search.keyword = '';
-            searchOptions.classList.add('d-none');
-          }
-        });
-
-        searchInput.addEventListener('keyup', () => {
-          var inputLength = searchInput.value.length;
-          if (inputLength > 0) {
-            dropdown.classList.add('show');
-            searchOptions.classList.remove('d-none');
-          } else {
-            dropdown.classList.remove('show');
-            search.keyword = '';
-            searchOptions.classList.add('d-none');
-          }
-        });
-      }
-
-      const searchOptions = document.getElementById('search-close-options');
-      if (searchOptions) {
-        searchOptions.addEventListener('click', () => {
-          searchInput.value = '';
-          dropdown.classList.remove('show');
-          search.keyword = '';
-          searchOptions.classList.add('d-none');
-        });
-      }
-
-      document.body.addEventListener('click', (e) => {
-        if (e.target.getAttribute('id') !== 'search-options') {
-          dropdown.classList.remove('show');
-          search.keyword = '';
-          searchOptions.classList.add('d-none');
-        }
+  search.result.form = JSON.parse(JSON.stringify(store.state.user.forms)).filter(
+    (form) =>
+      store.state.user.forms.every((f) => f.pid != form.id) &&
+      (form.title?.toLowerCase().includes(search.keyword?.toLowerCase()) || form.id === tid),
+  );
+  if (rid != null) {
+    search.result.form = search.result.form
+      .filter((form) => form.route && !form.redirect && form.status && form.id === tid)
+      .map((form) => {
+        form.rid = rid;
+        form.title = `${form.title}/${rid}`;
+        form.route = {
+          path: rid === 0 ? `/data/edit/${tid}/${rid}` : `/data/view/${tid}/${rid}`,
+        };
+        return form;
       });
-    };
+  }
 
-    const chat_notices = computed(() => {
-      return store.getters['user/chat_notices'];
-    });
+  search.result.user = store.state.org.users.filter(
+    (user) =>
+      user.username != store.state.user.data.username &&
+      (user.username?.toLowerCase().includes(search.keyword?.toLowerCase()) ||
+        user.fullname?.toLowerCase().includes(search.keyword?.toLowerCase())),
+  );
 
-    const handleClickChatNotice = (chat) => {
-      router
-        .replace({
-          name: 'chat',
-          query: {
-            contact: chat.username,
+  search.result.icon =
+    search.keyword.length > 2
+      ? icons.filter((icon) => icon.name?.toLowerCase().includes(search.keyword?.toLowerCase()))
+      : [];
+}, 500);
+
+const handleEnter = () => {
+  if (!search.keyword) return;
+  if (search.result.icon.length) {
+    copyToClipboard(`mdi mdi-${search.result.icon[0].name}`)
+      .then(() => {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'success',
+            icon: 'mdi-check-circle',
+            text: i18n.global.t('layout.navbar.search.icon.copy.success'),
           },
-        })
-        .then(() => {
-          store.dispatch('user/delNotice', {
-            app: 'chat',
-            data: chat,
-          });
         });
-    };
-
-    const mail_notices = computed(() => {
-      return store.getters['user/mail_notices'];
-    });
-
-    const handleClickMailNotice = (mail) => {
-      router
-        .replace({
-          name: 'mail',
-          query: {
-            id: mail.id,
+      })
+      .catch((error) => {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: error.message,
           },
-        })
-        .then(() => {
-          store.dispatch('user/delNotice', {
-            app: 'mail',
-            data: mail,
-          });
-        });
-    };
-
-    const comment_notices = computed(() => {
-      return store.getters['user/comment_notices'];
-    });
-
-    const handleClickCommentNotice = (comment) => {
-      router.replace({ path: comment.source, query: { tab: 'comment', id: comment.id } });
-      // .then(() => {
-      //   store.dispatch('user/delNotice', {
-      //     app: 'comment',
-      //     data: comment,
-      //   });
-      // });
-    };
-
-    const flow_notices = computed(() => {
-      return store.getters['user/flow_notices'];
-    });
-
-    const handleClickFlowNotice = (flow) => {
-      router.replace({ path: `/data/view/${flow.tid}/${flow.rid}` }).then(() => {
-        store.dispatch('user/delNotice', {
-          app: 'flow',
-          data: flow,
         });
       });
-    };
+    return;
+  }
 
-    const theme = computed({
-      get: () => store.state.sys.theme,
-      set: (value) => {
-        store.dispatch('sys/toggleTheme', value);
-        localStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}theme`, value);
+  if (search.result.user.length) {
+    router.push({
+      name: 'chat',
+      query: {
+        contact: search.result.user[0].username,
       },
     });
+    return;
+  }
 
-    const languages = ref([
-      {
-        flag: require('@/assets/images/flags/usa.png'),
-        language: 'en-us',
-        title: 'English',
-      },
-      {
-        flag: require('@/assets/images/flags/china.png'),
-        language: 'zh-cn',
-        title: '简体中文',
-      },
-    ]);
+  if (search.result.form.length) {
+    const forms = search.result.form.filter(
+      (form) => form.status === 1 && (form.redirect || form.route),
+    );
+    if (forms?.[0]?.route) {
+      router.push(forms[0].route);
+      return;
+    }
+    if (forms?.[0]?.redirect) {
+      window.open(forms[0].redirect, '_blank');
+      return;
+    }
+  }
 
-    const lang = computed({
-      get: () => store.state.sys.lang,
-      set: (value) => {
-        store.dispatch('sys/toggleLang', value);
-        if (store.state.sys.cfg.waterMark && store.state.user.data.id) {
-          setWatermark(
-            `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
-            moment().format('ll'),
-          );
-        }
-        reload();
+  if (search.result.data.length) {
+    router.push({
+      name: 'view',
+      params: {
+        tid: search.result.data[0].tid,
+        rid: search.result.data[0].rid,
       },
     });
+    return;
+  }
 
-    const handleChangeLang = (value) => {
-      if (value != lang.value) lang.value = value;
-    };
+  if (search.result.file.length) {
+    router.push({
+      name: 'preview',
+      params: { uuid: search.result.file[0].uuid },
+    });
+    return;
+  }
+};
 
-    const isFullScreen = ref(false);
-    const toggleFullScreen = () => {
-      if (
-        !document.fullscreenElement &&
-        !document.mozFullScreenElement &&
-        !document.webkitFullscreenElement
-      ) {
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen();
-        } else if (document.documentElement.mozRequestFullScreen) {
-          document.documentElement.mozRequestFullScreen();
-        } else if (document.documentElement.webkitRequestFullscreen) {
-          document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
+const show = {
+  helper: false,
+  org: false,
+  form: false,
+  job: false,
+  code: false,
+  weixin: false,
+  log: false,
+  sql: false,
+  redis: false,
+};
+
+for (let key of Object.keys(show)) {
+  if (key === 'helper') continue;
+  const route = router.getRoutes().find((route) => route.name === key);
+  const tags = route?.meta?.auth || [];
+  show[key] = tags.every((tag) => store.state.user.data.tags.includes(tag));
+  if (show[key]) show.helper = show[key];
+}
+
+onMounted(() => {
+  document.addEventListener('scroll', scrollHandler);
+  document.addEventListener('webkitfullscreenchange', fullScreenHandler);
+  document.addEventListener('mozfullscreenchange', fullScreenHandler);
+  document.addEventListener('fullscreenchange', fullScreenHandler);
+
+  fullScreenHandler();
+  isCustomDropdown();
+});
+
+const scrollHandler = () => {
+  var pageTopbar = document.getElementById('page-topbar');
+  if (pageTopbar) {
+    document.body.scrollTop >= 50 || document.documentElement.scrollTop >= 50
+      ? pageTopbar.classList.add('topbar-shadow')
+      : pageTopbar.classList.remove('topbar-shadow');
+  }
+};
+
+const fullScreenHandler = () => {
+  if (
+    !document.fullscreenElement &&
+    !document.mozFullScreenElement &&
+    !document.webkitFullscreenElement
+  )
+    isFullScreen.value = false;
+  else isFullScreen.value = true;
+};
+
+const isCustomDropdown = () => {
+  const dropdown = document.getElementById('search-dropdown');
+
+  const searchInput = document.getElementById('search-options-md');
+  if (searchInput) {
+    searchInput.addEventListener('focus', () => {
+      var inputLength = searchInput.value.length;
+      if (inputLength > 0) {
+        dropdown.classList.add('show');
+        searchOptions.classList.remove('d-none');
       } else {
-        if (document.cancelFullScreen) {
-          document.cancelFullScreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.webkitCancelFullScreen) {
-          document.webkitCancelFullScreen();
-        }
+        dropdown.classList.remove('show');
+        search.keyword = '';
+        searchOptions.classList.add('d-none');
       }
-    };
-
-    const handleUserLogout = () => {
-      userLogout().then(async () => {
-        // Clean user information
-        clearUserData();
-        // Redirect to login page
-        router.replace({ name: 'login' });
-      });
-    };
-
-    const logo = computed(() => {
-      return store.getters['sys/logo'];
     });
 
-    return {
-      getUserInfo,
+    searchInput.addEventListener('keyup', () => {
+      var inputLength = searchInput.value.length;
+      if (inputLength > 0) {
+        dropdown.classList.add('show');
+        searchOptions.classList.remove('d-none');
+      } else {
+        dropdown.classList.remove('show');
+        search.keyword = '';
+        searchOptions.classList.add('d-none');
+      }
+    });
+  }
 
-      toggleMenu,
-      search,
-      handleSearch,
-      handleEnter,
+  const searchOptions = document.getElementById('search-close-options');
+  if (searchOptions) {
+    searchOptions.addEventListener('click', () => {
+      searchInput.value = '';
+      dropdown.classList.remove('show');
+      search.keyword = '';
+      searchOptions.classList.add('d-none');
+    });
+  }
 
-      chat_notices,
-      decryptData,
-      handleClickChatNotice,
+  document.body.addEventListener('click', (e) => {
+    if (e.target.getAttribute('id') !== 'search-options-md') {
+      dropdown.classList.remove('show');
+      search.keyword = '';
+      searchOptions.classList.add('d-none');
+    }
+  });
+};
 
-      mail_notices,
-      handleClickMailNotice,
+const chat_notices = computed(() => {
+  return store.getters['user/chat_notices'];
+});
 
-      comment_notices,
-      handleClickCommentNotice,
-      replaceHtml,
+const handleClickChatNotice = (chat) => {
+  router
+    .replace({
+      name: 'chat',
+      query: {
+        contact: chat.username,
+      },
+    })
+    .then(() => {
+      store.dispatch('user/delNotice', {
+        app: 'chat',
+        data: chat,
+      });
+    });
+};
 
-      flow_notices,
-      handleClickFlowNotice,
+const mail_notices = computed(() => {
+  return store.getters['user/mail_notices'];
+});
 
-      theme,
+const handleClickMailNotice = (mail) => {
+  router
+    .replace({
+      name: 'mail',
+      query: {
+        id: mail.id,
+      },
+    })
+    .then(() => {
+      store.dispatch('user/delNotice', {
+        app: 'mail',
+        data: mail,
+      });
+    });
+};
 
-      languages,
-      lang,
-      handleChangeLang,
+const comment_notices = computed(() => {
+  return store.getters['user/comment_notices'];
+});
 
-      isFullScreen,
-      toggleFullScreen,
+const handleClickCommentNotice = (comment) => {
+  router.replace({ path: comment.source, query: { tab: 'comment', id: comment.id } });
+  // .then(() => {
+  //   store.dispatch('user/delNotice', {
+  //     app: 'comment',
+  //     data: comment,
+  //   });
+  // });
+};
 
-      handleUserLogout,
+const flow_notices = computed(() => {
+  return store.getters['user/flow_notices'];
+});
 
-      logo,
-    };
+const handleClickFlowNotice = (flow) => {
+  router.replace({ path: `/data/view/${flow.tid}/${flow.rid}` }).then(() => {
+    store.dispatch('user/delNotice', {
+      app: 'flow',
+      data: flow,
+    });
+  });
+};
+
+const { BASE_URL } = process.env;
+const theme = computed({
+  get: () => store.state.sys.theme,
+  set: (value) => {
+    store.dispatch('sys/toggleTheme', value);
+    localStorage.setItem(`${BASE_URL.replace(/\//g, '_')}theme`, value);
   },
+});
+
+const languages = [
+  {
+    flag: require('@/assets/images/flags/usa.png'),
+    language: 'en-us',
+    title: 'English',
+  },
+  {
+    flag: require('@/assets/images/flags/china.png'),
+    language: 'zh-cn',
+    title: '简体中文',
+  },
+];
+
+const lang = computed({
+  get: () => store.state.sys.lang,
+  set: (value) => {
+    store.dispatch('sys/toggleLang', value);
+    if (store.state.sys.cfg.waterMark && store.state.user.data.id) {
+      setWatermark(
+        `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
+        moment().format('ll'),
+      );
+    }
+    reload();
+  },
+});
+
+const handleChangeLang = (value) => {
+  if (value != lang.value) lang.value = value;
+};
+
+const isFullScreen = ref(false);
+const toggleFullScreen = () => {
+  if (
+    !document.fullscreenElement &&
+    !document.mozFullScreenElement &&
+    !document.webkitFullscreenElement
+  ) {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) {
+      document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.webkitRequestFullscreen) {
+      document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+    }
+  } else {
+    if (document.cancelFullScreen) {
+      document.cancelFullScreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitCancelFullScreen) {
+      document.webkitCancelFullScreen();
+    }
+  }
+};
+
+const handleUserLogout = () => {
+  userLogout().then(async () => {
+    // Clean user information
+    clearUserData();
+    // Redirect to login page
+    router.replace({ name: 'login' });
+  });
 };
 </script>

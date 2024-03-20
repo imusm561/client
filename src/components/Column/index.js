@@ -1,5 +1,5 @@
 import i18n from '@utils/i18n';
-const columns = [
+export default [
   {
     title: 'layout.navbar.helper.form.column.components.input',
     icon: 'mdi-form-textbox',
@@ -380,5 +380,3 @@ const columns = [
     ],
   },
 ];
-
-export { columns };

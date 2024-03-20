@@ -14,38 +14,30 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed } from 'vue';
 import CKEditor from '@components/CKEditor';
-export default defineComponent({
-  components: {
-    CKEditor,
-  },
-  props: {
-    modelValue: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    errors: {
-      type: Object,
-      default: () => {
-        return {};
-      },
+const props = defineProps({
+  modelValue: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    return {
-      column: computed({
-        get() {
-          return props.modelValue;
-        },
-        set(value) {
-          emit('update:modelValue', value);
-        },
-      }),
-    };
+  errors: {
+    type: Object,
+    default: () => {
+      return {};
+    },
+  },
+});
+const emit = defineEmits(['update:modelValue']);
+const column = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit('update:modelValue', value);
   },
 });
 </script>

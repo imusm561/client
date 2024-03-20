@@ -43,26 +43,13 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue';
 import Breadcrumb from '@layouts/breadcrumb';
 import Dept from './components/dept.vue';
 import Role from './components/role.vue';
 import User from './components/user.vue';
-export default {
-  components: {
-    Breadcrumb,
-    Dept,
-    Role,
-    User,
-  },
-  setup() {
-    const depts = ref([]);
-    const role = ref({});
-    return {
-      depts,
-      role,
-    };
-  },
-};
+
+const depts = ref([]);
+const role = ref({});
 </script>

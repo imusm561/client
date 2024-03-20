@@ -1,5 +1,5 @@
-import axios from '@utils/axios';
 import { generateApiQuery } from '@utils';
+import axios from '@utils/axios';
 
 export const getPubs = (params) => {
   return axios.get('/cor/pub/list' + generateApiQuery(params));

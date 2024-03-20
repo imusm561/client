@@ -256,208 +256,176 @@
   </div>
 </template>
 
-<script>
-import { ref, computed, onMounted, onUnmounted, watch, reactive } from 'vue';
+<script setup>
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { hashData } from '@utils';
+import { socket } from '@utils/socket';
+import store from '@store';
 import { userLogin, getUserData } from '@api/user';
 import { getQRCode } from '@api/weixin';
 import { sendVerificationCode } from '@api/com/sms';
-import { useRouter, hashData } from '@utils';
-import store from '@store';
-export default {
-  page: {
-    title: 'Login',
+
+const route = useRoute();
+const router = useRouter();
+
+const types = reactive([
+  {
+    icon: 'mdi-account',
+    name: 'account_password',
+    class: 'btn-primary',
   },
-  setup() {
-    const { router, route } = useRouter();
-    const socket = window.socket;
+  {
+    icon: 'mdi-cellphone-message',
+    name: 'sms_verification',
+    class: 'btn-danger',
+  },
+]);
 
-    const types = reactive([
-      {
-        icon: 'mdi-account',
-        name: 'account_password',
-        class: 'btn-primary',
-      },
-      {
-        icon: 'mdi-cellphone-message',
-        name: 'sms_verification',
-        class: 'btn-danger',
-      },
-    ]);
+if (store.state.sys.cfg.weixin)
+  types.push({
+    icon: 'mdi-wechat',
+    name: 'scan_qrcode',
+    class: 'btn-success',
+  });
 
-    if (store.state.sys.cfg.weixin)
-      types.push({
-        icon: 'mdi-wechat',
-        name: 'scan_qrcode',
-        class: 'btn-success',
-      });
+const logintype = ref(types[0].name);
 
-    const logintype = ref(types[0].name);
+watch(
+  () => logintype.value,
+  (val) => {
+    if (val === 'scan_qrcode') generateQRCode();
+  },
+  { immediate: true },
+);
 
-    watch(
-      () => logintype.value,
-      (val) => {
-        if (val === 'scan_qrcode') generateQRCode();
-      },
-      { immediate: true },
-    );
+const qr = reactive({
+  src: null,
+  scene: null,
+  scaned: false,
+});
 
-    const qr = reactive({
-      src: null,
-      scene: null,
-      scaned: false,
-    });
+const generateQRCode = () => {
+  qr.src = null;
+  qr.scene = `login:${Math.random().toString(36).slice(-6)}`;
+  qr.scaned = false;
 
-    const generateQRCode = () => {
-      qr.src = null;
-      qr.scene = `login:${Math.random().toString(36).slice(-6)}`;
-      qr.scaned = false;
+  const params = {
+    soid: store.state.sys.cfg.weixin.soid,
+    scene: qr.scene,
+    expire: 60,
+  };
 
-      const params = {
-        soid: store.state.sys.cfg.weixin.soid,
-        scene: qr.scene,
-        expire: 60,
-      };
+  getQRCode(params).then(({ code, data }) => {
+    if (code === 200) qr.src = data.src;
+  });
+};
 
-      getQRCode(params).then(({ code, data }) => {
-        if (code === 200) qr.src = data.src;
-      });
+const QRCodeScanHandler = ({ scene }) => {
+  if (logintype.value === 'scan_qrcode' && !qr.scaned && scene === qr.scene) {
+    qr.scaned = true;
+  }
+};
+
+const QRCodeLoginHandler = ({ scene }) => {
+  if (logintype.value === 'scan_qrcode' && qr.scaned && scene === qr.scene) {
+    canSubmit.value = true;
+    handleFormSubmit();
+  }
+};
+
+onMounted(() => {
+  socket.on('QRCodeScan', QRCodeScanHandler);
+  socket.on('QRCodeLogin', QRCodeLoginHandler);
+});
+
+onUnmounted(() => {
+  socket.off('QRCodeScan', QRCodeScanHandler);
+  socket.off('QRCodeLogin', QRCodeLoginHandler);
+});
+
+const username = ref('');
+const password = ref('');
+const isPasswordVisible = ref(false);
+
+const phone = ref('');
+const code = ref('');
+
+const remember = ref(false);
+
+const res = ref({});
+
+const canSendVerificationCode = ref(true);
+const resendVerificationCodeCountDown = ref(60);
+const handleSendVerificationCode = () => {
+  if (canSendVerificationCode.value) {
+    canSendVerificationCode.value = false;
+    let params = {
+      template: 'login',
+      phone: phone.value,
     };
-
-    const QRCodeScanHandler = ({ scene }) => {
-      if (logintype.value === 'scan_qrcode' && !qr.scaned && scene === qr.scene) {
-        qr.scaned = true;
-      }
-    };
-
-    const QRCodeLoginHandler = ({ scene }) => {
-      if (logintype.value === 'scan_qrcode' && qr.scaned && scene === qr.scene) {
-        canSubmit.value = true;
-        handleFormSubmit();
-      }
-    };
-
-    onMounted(() => {
-      socket.on('QRCodeScan', QRCodeScanHandler);
-      socket.on('QRCodeLogin', QRCodeLoginHandler);
-    });
-
-    onUnmounted(() => {
-      socket.off('QRCodeScan', QRCodeScanHandler);
-      socket.off('QRCodeLogin', QRCodeLoginHandler);
-    });
-
-    const username = ref('');
-    const password = ref('');
-    const isPasswordVisible = ref(false);
-
-    const phone = ref('');
-    const code = ref('');
-
-    const remember = ref(false);
-
-    const res = ref({});
-
-    const canSendVerificationCode = ref(true);
-    const resendVerificationCodeCountDown = ref(60);
-    const handleSendVerificationCode = () => {
-      if (canSendVerificationCode.value) {
-        canSendVerificationCode.value = false;
-        let params = {
-          template: 'login',
-          phone: phone.value,
-        };
-        sendVerificationCode(params).then(({ code, data }) => {
-          if (code === 200) {
-            let interval;
-            interval = setInterval(() => {
-              resendVerificationCodeCountDown.value -= 1;
-              if (resendVerificationCodeCountDown.value === 0) {
-                clearInterval(interval);
-                canSendVerificationCode.value = true;
-                resendVerificationCodeCountDown.value = 60;
-              }
-            }, 1000);
-          } else {
+    sendVerificationCode(params).then(({ code, data }) => {
+      if (code === 200) {
+        let interval;
+        interval = setInterval(() => {
+          resendVerificationCodeCountDown.value -= 1;
+          if (resendVerificationCodeCountDown.value === 0) {
+            clearInterval(interval);
             canSendVerificationCode.value = true;
-            res.value = data;
+            resendVerificationCodeCountDown.value = 60;
           }
-        });
+        }, 1000);
+      } else {
+        canSendVerificationCode.value = true;
+        res.value = data;
       }
-    };
+    });
+  }
+};
 
-    const canSubmit = ref(true);
-    const handleFormSubmit = async () => {
-      if (canSubmit.value) {
-        canSubmit.value = false;
-        /*
+const { BASE_URL } = process.env;
+const canSubmit = ref(true);
+const handleFormSubmit = async () => {
+  if (canSubmit.value) {
+    canSubmit.value = false;
+    /*
           1. Make HTTP request to get accessToken
           2. Store received token in localStorage for future use
           3. Make another HTTP request for getting user information
           4. On successful response of user information redirect to home page
         */
-        const params = {};
-        params.logintype = logintype.value;
-        params.remember = remember.value;
-        if (params.logintype == 'account_password') {
-          params.username = username.value;
-          params.password = hashData(password.value);
-        } else if (params.logintype == 'sms_verification') {
-          params.phone = phone.value;
-          params.code = code.value;
-        } else if (params.logintype == 'scan_qrcode') {
-          params.soid = store.state.sys.cfg.weixin.soid;
-          params.scene = qr.scene;
-        }
-        userLogin(params).then(({ code, data }) => {
-          if (code === 200) {
-            const { token } = data;
-            // Set access token in localStorage so axios interceptor can use it
-            localStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}accessToken`, token);
-            // Getting user information
-            getUserData().then(() => {
-              // Redirect to home or query.redirect
-              router.replace(
-                route.value.query.redirect ? { path: route.value.query.redirect } : '/',
-              );
-            });
-          } else {
-            canSubmit.value = true;
-            res.value = data;
-          }
+    const params = {};
+    params.logintype = logintype.value;
+    params.remember = remember.value;
+    if (params.logintype == 'account_password') {
+      params.username = username.value;
+      params.password = hashData(password.value);
+    } else if (params.logintype == 'sms_verification') {
+      params.phone = phone.value;
+      params.code = code.value;
+    } else if (params.logintype == 'scan_qrcode') {
+      params.soid = store.state.sys.cfg.weixin.soid;
+      params.scene = qr.scene;
+    }
+    userLogin(params).then(({ code, data }) => {
+      if (code === 200) {
+        const { token } = data;
+        // Set access token in localStorage so axios interceptor can use it
+        localStorage.setItem(`${BASE_URL.replace(/\//g, '_')}accessToken`, token);
+        // Getting user information
+        getUserData().then(() => {
+          // Redirect to home or query.redirect
+          router.replace(route.query.redirect ? { path: route.query.redirect } : '/');
         });
+      } else {
+        canSubmit.value = true;
+        res.value = data;
       }
-    };
-
-    const logo = computed(() => {
-      return store.getters['sys/logo'];
     });
-
-    return {
-      types,
-      logintype,
-
-      qr,
-
-      username,
-      password,
-      isPasswordVisible,
-
-      phone,
-      code,
-
-      remember,
-
-      res,
-
-      canSendVerificationCode,
-      resendVerificationCodeCountDown,
-      handleSendVerificationCode,
-
-      canSubmit,
-      handleFormSubmit,
-
-      logo,
-    };
-  },
+  }
 };
+
+const logo = computed(() => {
+  return store.getters['sys/logo'];
+});
 </script>

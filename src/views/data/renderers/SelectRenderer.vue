@@ -36,35 +36,30 @@
   <span v-else></span>
 </template>
 
-<script>
-import { defineComponent, onBeforeMount, ref } from 'vue';
-import { useRouter, getDataByFormula } from '@utils';
-export default defineComponent({
-  setup(props) {
-    const column = JSON.parse(JSON.stringify(props.params._column));
-    const data = ref(null);
+<script setup>
+import { defineProps, onBeforeMount, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { getDataByFormula } from '@utils';
 
-    onBeforeMount(async () => {
-      if (column.cfg?.__source) {
-        data.value = await getDataByFormula(props.params.data, column.cfg.__source, {
-          view: true,
-          value: props.params.value,
-        });
-      } else {
-        data.value = JSON.parse(JSON.stringify(props.params.value || null));
-      }
+const props = defineProps(['params']);
+
+const column = JSON.parse(JSON.stringify(props.params._column));
+const data = ref(null);
+
+onBeforeMount(async () => {
+  if (column.cfg?.__source) {
+    data.value = await getDataByFormula(props.params.data, column.cfg.__source, {
+      view: true,
+      value: props.params.value,
     });
-
-    const { router } = useRouter();
-    const handleClickValue = (item) => {
-      const { href } = router.resolve({ name: 'view', params: { tid: item.tid, rid: item.rid } });
-      window.open(href, '_blank');
-    };
-
-    return {
-      data,
-      handleClickValue,
-    };
-  },
+  } else {
+    data.value = JSON.parse(JSON.stringify(props.params.value || null));
+  }
 });
+
+const router = useRouter();
+const handleClickValue = (item) => {
+  const { href } = router.resolve({ name: 'view', params: { tid: item.tid, rid: item.rid } });
+  window.open(href, '_blank');
+};
 </script>

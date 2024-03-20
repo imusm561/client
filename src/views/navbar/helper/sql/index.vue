@@ -46,65 +46,56 @@
   </div>
 </template>
 
-<script>
-import Breadcrumb from '@layouts/breadcrumb';
-import MonacoEditor from '@components/MonacoEditor';
-import i18n from '@utils/i18n';
+<script setup>
 import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
+import i18n from '@utils/i18n';
 import ToastificationContent from '@components/ToastificationContent';
+import Breadcrumb from '@layouts/breadcrumb';
+import MonacoEditor from '@components/MonacoEditor';
 import { query } from '@api/com/sql';
-export default {
-  components: {
-    Breadcrumb,
-    MonacoEditor,
-  },
-  setup() {
-    const toast = useToast();
-    const sql = ref(null);
-    const res = ref(null);
 
-    const handleQuery = () => {
-      if (!sql.value) return;
+const toast = useToast();
+const sql = ref(null);
+const res = ref(null);
 
-      if (
-        sql.value.toLowerCase().includes('use ') ||
-        sql.value.toLowerCase().includes('drop') ||
-        sql.value.toLowerCase().includes('delete ') ||
-        sql.value.toLowerCase().includes('truncate ') ||
-        sql.value.toLowerCase().includes('create ') ||
-        sql.value.toLowerCase().includes('alter ')
-      ) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.sql.query.error'),
-          },
-        });
-        return;
-      }
+const handleQuery = () => {
+  if (!sql.value) return;
 
-      res.value = null;
-      query({ sql: sql.value }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          res.value = JSON.stringify(data, null, 2);
-          document.getElementById('showResultOffcanvasBtn').click();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+  if (
+    sql.value.toLowerCase().includes('use ') ||
+    sql.value.toLowerCase().includes('drop') ||
+    sql.value.toLowerCase().includes('delete ') ||
+    sql.value.toLowerCase().includes('truncate ') ||
+    sql.value.toLowerCase().includes('create ') ||
+    sql.value.toLowerCase().includes('alter ')
+  ) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.sql.query.error'),
+      },
+    });
+    return;
+  }
+
+  res.value = null;
+  query({ sql: sql.value }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      res.value = JSON.stringify(data, null, 2);
+      document.getElementById('showResultOffcanvasBtn').click();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
-
-    return { sql, handleQuery, res };
-  },
+    }
+  });
 };
 </script>

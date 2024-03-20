@@ -9,32 +9,23 @@
   </ul>
 </template>
 
-<script>
-import Header from './header.vue';
-import Group from './group.vue';
-import Link from './link.vue';
-export default {
-  props: {
-    items: {
-      type: Array,
-      required: true,
-    },
+<script setup>
+import { defineOptions, defineProps } from 'vue';
+import Header from './Header.vue';
+import Group from './Group.vue';
+import Link from './Link.vue';
+defineOptions({
+  name: 'Menu',
+});
+defineProps({
+  items: {
+    type: Array,
+    required: true,
   },
-  components: {
-    Header,
-    Link,
-    Group,
-  },
-  setup() {
-    const resolveNavItemComponent = (item) => {
-      if (item.header) return 'Header';
-      if (item.children && item.children.length) return 'Group';
-      return 'Link';
-    };
-
-    return {
-      resolveNavItemComponent,
-    };
-  },
+});
+const resolveNavItemComponent = (item) => {
+  if (item.header) return Header;
+  if (item.children && item.children.length) return Group;
+  return Link;
 };
 </script>

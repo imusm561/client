@@ -184,21 +184,21 @@
   </div>
 </template>
 
-<script>
-import { onMounted, ref, computed, watch } from 'vue';
-import { createData } from '@api/data';
-import { getPubForm } from '@api/pub';
+<script setup>
+import { defineOptions, onMounted, ref, computed, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
+
 import {
-  useRouter,
   replaceVariables,
   getDataByFormula,
   getRulesByFormula,
   getChanges,
   hashData,
 } from '@utils';
-
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
+import moment from '@utils/moment';
+import { socket } from '@utils/socket';
 
 import InputText from '@components/Column/Input/Text/index.vue';
 import InputNumber from '@components/Column/Input/Number/index.vue';
@@ -219,7 +219,11 @@ import LayoutButton from '@components/Column/Layout/Button/index.vue';
 import LayoutTitle from '@components/Column/Layout/Title/index.vue';
 import LayoutSeparator from '@components/Column/Layout/Separator/index.vue';
 import LayoutTab from '@components/Column/Layout/Tab/index.vue';
-export default {
+
+import { createData } from '@api/data';
+import { getPubForm } from '@api/pub';
+
+defineOptions({
   components: {
     InputText,
     InputNumber,
@@ -241,382 +245,353 @@ export default {
     LayoutSeparator,
     LayoutTab,
   },
-  setup() {
-    const { route } = useRouter();
-    const socket = window.socket;
-    const toast = useToast();
-    const moment = window.moment;
+});
 
-    const pub = ref({});
-    const form = ref({});
-    const columns = ref([]);
-    const ribbon_mode = ref(false);
-    const tabs = ref([]);
-    const current_tab = ref(0);
-    const alias = ref({});
-    const data = ref({ id: 0 });
+const route = useRoute();
+const toast = useToast();
 
-    const formData = computed(() => {
-      return JSON.parse(JSON.stringify(data.value));
+const pub = ref({});
+const form = ref({});
+const columns = ref([]);
+const ribbon_mode = ref(false);
+const tabs = ref([]);
+const current_tab = ref(0);
+const alias = ref({});
+const data = ref({ id: 0 });
+
+const formData = computed(() => {
+  return JSON.parse(JSON.stringify(data.value));
+});
+
+const initialized = ref(false);
+onMounted(() => {
+  watch(
+    () => route.params.uuid,
+    (newVal, oldVal) => {
+      if (route.name === 'pubForm' && newVal !== oldVal) {
+        fetchPubForm(newVal);
+      }
+    },
+    { immediate: true },
+  );
+
+  watch(
+    () => formData.value,
+    (newVal, oldVal) => {
+      if (initialized.value) {
+        const changes = getChanges(newVal || {}, oldVal || {});
+        for (let field in changes) {
+          columns.value
+            .filter(
+              (column) =>
+                column.visible?.includes(`data.${field}`) ||
+                column.required?.includes(`data.${field}`) ||
+                column.editable?.includes(`data.${field}`) ||
+                column.__default?.includes(`data.${field}`) ||
+                column.cfg?.__source?.includes(`data.${field}`) ||
+                column.cfg?.prefix?.includes(`data.${field}`) ||
+                column.cfg?.href?.includes(`data.${field}`) ||
+                (typeof column.cfg?.min === 'string' &&
+                  column.cfg?.min?.includes(`data.${field}`)) ||
+                (typeof column.cfg?.max === 'string' && column.cfg?.max?.includes(`data.${field}`)),
+            )
+            .map(async (column) => {
+              if (
+                column.visible?.includes(`data.${field}`) ||
+                column.required?.includes(`data.${field}`) ||
+                column.editable?.includes(`data.${field}`)
+              )
+                await setColumnRules(column);
+              else await setColumnConfiguration(column);
+            });
+        }
+      }
+    },
+    { immediate: true, deep: true },
+  );
+});
+
+const { BASE_URL } = process.env;
+const fetchPubForm = async (uuid) => {
+  const { code, data: res, msg } = await getPubForm({ uuid });
+  if (code === 200) {
+    initialized.value = false;
+    sessionStorage.setItem(`${BASE_URL.replace(/\//g, '_')}pubtk`, res.token);
+    sessionStorage.setItem(`${BASE_URL.replace(/\//g, '_')}pubun`, res.username);
+    socket.emit('login', { username: res.username });
+    pub.value = res.pub;
+    document.title = pub.value.title;
+
+    form.value = res.form;
+    columns.value = res.columns;
+    alias.value = res.alias;
+    data.value = res.data;
+
+    await Promise.all([setFormConfiguration(), setFormColumns()]);
+    current_tab.value = current_tab.value || 0;
+    initialized.value = true;
+  } else {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: msg,
+      },
+    });
+  }
+};
+
+const handleRefetchPubForm = () => {
+  fetchPubForm(route.params.uuid);
+};
+
+const handleToggleRibbonMode = () => {
+  ribbon_mode.value = !ribbon_mode.value;
+};
+
+const setFormConfiguration = () => {
+  if (form.value.script) form.value.script = replaceVariables(form.value.script, alias.value);
+  if (form.value.style) {
+    const style = document.createElement('style');
+    style.innerHTML = form.value.style;
+    document.querySelector('head').appendChild(style);
+  }
+};
+
+const setFormColumns = async () => {
+  const BasicColumns = columns.value.filter((column) => column.component.includes('Basic'));
+  const FormColumns = columns.value.filter((column) => !column.component.includes('Basic'));
+  const HasTabs = FormColumns.find((column) => column.component === 'LayoutTab') ? true : false;
+
+  if (Number(data.value.id) === 0) {
+    BasicColumns.forEach((column) => {
+      if (column.field === 'acl_view' && form.value.acl_view.length)
+        data.value.acl_view = Array.from(
+          new Set([...form.value.acl_view, ...(data.value.acl_view || [])]),
+        );
+      if (column.field === 'acl_edit' && form.value.acl_edit.length)
+        data.value.acl_edit = Array.from(
+          new Set([...form.value.acl_edit, ...(data.value.acl_edit || [])]),
+        );
     });
 
-    const initialized = ref(false);
-    onMounted(() => {
-      watch(
-        () => route.value.params.uuid,
-        (newVal, oldVal) => {
-          if (route.value.name === 'pubForm' && newVal !== oldVal) {
-            fetchPubForm(newVal);
-          }
-        },
-        { immediate: true },
-      );
+    // for (let column of BasicColumns) {
+    //   if (column.field === 'acl_view' && form.value.acl_view.length)
+    //     data.value.acl_view = Array.from(
+    //       new Set([...form.value.acl_view, ...(data.value.acl_view || [])]),
+    //     );
+    //   if (column.field === 'acl_edit' && form.value.acl_edit.length)
+    //     data.value.acl_edit = Array.from(
+    //       new Set([...form.value.acl_edit, ...(data.value.acl_edit || [])]),
+    //     );
+    // }
+  }
 
-      watch(
-        () => formData.value,
-        (newVal, oldVal) => {
-          if (initialized.value) {
-            const changes = getChanges(newVal || {}, oldVal || {});
-            for (let field in changes) {
-              columns.value
-                .filter(
-                  (column) =>
-                    column.visible?.includes(`data.${field}`) ||
-                    column.required?.includes(`data.${field}`) ||
-                    column.editable?.includes(`data.${field}`) ||
-                    column.__default?.includes(`data.${field}`) ||
-                    column.cfg?.__source?.includes(`data.${field}`) ||
-                    column.cfg?.prefix?.includes(`data.${field}`) ||
-                    column.cfg?.href?.includes(`data.${field}`) ||
-                    (typeof column.cfg?.min === 'string' &&
-                      column.cfg?.min?.includes(`data.${field}`)) ||
-                    (typeof column.cfg?.max === 'string' &&
-                      column.cfg?.max?.includes(`data.${field}`)),
-                )
-                .map(async (column) => {
-                  if (
-                    column.visible?.includes(`data.${field}`) ||
-                    column.required?.includes(`data.${field}`) ||
-                    column.editable?.includes(`data.${field}`)
-                  )
-                    await setColumnRules(column);
-                  else await setColumnConfiguration(column);
-                });
-            }
-          }
-        },
-        { immediate: true, deep: true },
-      );
+  tabs.value = [];
+
+  if (HasTabs)
+    FormColumns.forEach((column) => {
+      if (column.component === 'LayoutTab')
+        tabs.value.push({ ...column, ...{ children: [], columns: [] } });
+      else tabs.value[tabs.value.length - 1].children.push(column);
+    });
+  else
+    tabs.value.push({
+      children: FormColumns,
+      columns: [],
     });
 
-    const fetchPubForm = async (uuid) => {
-      const { code, data: res, msg } = await getPubForm({ uuid });
-      if (code === 200) {
-        initialized.value = false;
-        sessionStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubtk`, res.token);
-        sessionStorage.setItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubun`, res.username);
-        socket.emit('login', { username: res.username });
-        pub.value = res.pub;
-        document.title = pub.value.title;
+  // for (let tab of tabs.value) {
+  //   for await (let column of tab.children) {
+  //     column.key = hashData(JSON.stringify(column));
+  //     await replaceColumnVariables(column);
+  //     await setColumnConfiguration(column);
+  //     await setColumnRules(column);
+  //   }
+  //   tab.columns = tab.children;
+  // }
 
-        form.value = res.form;
-        columns.value = res.columns;
-        alias.value = res.alias;
-        data.value = res.data;
+  tabs.value.forEach((tab) => {
+    tab.children.forEach(async (column) => {
+      column._visible = true;
+      column._required = false;
+      column._editable = true;
+      column.key = hashData(JSON.stringify(column));
+      await replaceColumnVariables(column);
+      await setColumnConfiguration(column);
+      await setColumnRules(column);
+    });
+    tab.columns = tab.children;
+  });
+};
 
-        await Promise.all([setFormConfiguration(), setFormColumns()]);
-        current_tab.value = current_tab.value || 0;
-        initialized.value = true;
-      } else {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: msg,
-          },
-        });
-      }
-    };
+const replaceColumnVariables = (column) => {
+  if (column.visible) column.visible = replaceVariables(column.visible, alias.value);
+  if (column.required) column.required = replaceVariables(column.required, alias.value);
+  if (column.editable) column.editable = replaceVariables(column.editable, alias.value);
+  if (column.default) column.__default = replaceVariables(column.default, alias.value);
+  if (column.cfg?.source) column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
+  if (column.cfg?.prefix) column.cfg.prefix = replaceVariables(column.cfg.prefix, alias.value);
+  if (column.cfg?.href) column.cfg.href = replaceVariables(column.cfg.href, alias.value);
+  if (typeof column.cfg?.min === 'string')
+    column.cfg.min = replaceVariables(column.cfg.min, alias.value);
+  if (typeof column.cfg?.max === 'string')
+    column.cfg.max = replaceVariables(column.cfg.max, alias.value);
+};
 
-    const handleRefetchPubForm = () => {
-      fetchPubForm(route.value.params.uuid);
-    };
+const setColumnConfiguration = async (column) => {
+  if (column.default) {
+    if (Number(data.value.id) === 0 || initialized.value) {
+      const val = await getDataByFormula(data.value, column.__default);
+      const res =
+        column.component === 'SelectTags'
+          ? val.split(',')
+          : column.component === 'SelectDatetime'
+          ? moment(
+              column.cfg.dateFormat.includes('Y-m-d')
+                ? val
+                : `${moment().format('YYYY-MM-DD')} ${val}`,
+            ).format(
+              column.cfg.dateFormat
+                .replace('Y', 'YYYY')
+                .replace('m', 'MM')
+                .replace('d', 'DD')
+                .replace('H', 'HH')
+                .replace('i', 'mm')
+                .replace('S', 'ss'),
+            )
+          : val;
 
-    const handleToggleRibbonMode = () => {
-      ribbon_mode.value = !ribbon_mode.value;
-    };
-
-    const setFormConfiguration = () => {
-      if (form.value.script) form.value.script = replaceVariables(form.value.script, alias.value);
-      if (form.value.style) {
-        const style = document.createElement('style');
-        style.innerHTML = form.value.style;
-        document.querySelector('head').appendChild(style);
-      }
-    };
-
-    const setFormColumns = async () => {
-      const BasicColumns = columns.value.filter((column) => column.component.includes('Basic'));
-      const FormColumns = columns.value.filter((column) => !column.component.includes('Basic'));
-      const HasTabs = FormColumns.find((column) => column.component === 'LayoutTab') ? true : false;
-
-      if (Number(data.value.id) === 0) {
-        BasicColumns.forEach((column) => {
-          if (column.field === 'acl_view' && form.value.acl_view.length)
-            data.value.acl_view = Array.from(
-              new Set([...form.value.acl_view, ...(data.value.acl_view || [])]),
-            );
-          if (column.field === 'acl_edit' && form.value.acl_edit.length)
-            data.value.acl_edit = Array.from(
-              new Set([...form.value.acl_edit, ...(data.value.acl_edit || [])]),
-            );
-        });
-
-        // for (let column of BasicColumns) {
-        //   if (column.field === 'acl_view' && form.value.acl_view.length)
-        //     data.value.acl_view = Array.from(
-        //       new Set([...form.value.acl_view, ...(data.value.acl_view || [])]),
-        //     );
-        //   if (column.field === 'acl_edit' && form.value.acl_edit.length)
-        //     data.value.acl_edit = Array.from(
-        //       new Set([...form.value.acl_edit, ...(data.value.acl_edit || [])]),
-        //     );
-        // }
-      }
-
-      tabs.value = [];
-
-      if (HasTabs)
-        FormColumns.forEach((column) => {
-          if (column.component === 'LayoutTab')
-            tabs.value.push({ ...column, ...{ children: [], columns: [] } });
-          else tabs.value[tabs.value.length - 1].children.push(column);
-        });
-      else
-        tabs.value.push({
-          children: FormColumns,
-          columns: [],
-        });
-
-      // for (let tab of tabs.value) {
-      //   for await (let column of tab.children) {
-      //     column.key = hashData(JSON.stringify(column));
-      //     await replaceColumnVariables(column);
-      //     await setColumnConfiguration(column);
-      //     await setColumnRules(column);
-      //   }
-      //   tab.columns = tab.children;
-      // }
-
-      tabs.value.forEach((tab) => {
-        tab.children.forEach(async (column) => {
-          column._visible = true;
-          column._required = false;
-          column._editable = true;
-          column.key = hashData(JSON.stringify(column));
-          await replaceColumnVariables(column);
-          await setColumnConfiguration(column);
-          await setColumnRules(column);
-        });
-        tab.columns = tab.children;
-      });
-    };
-
-    const replaceColumnVariables = (column) => {
-      if (column.visible) column.visible = replaceVariables(column.visible, alias.value);
-      if (column.required) column.required = replaceVariables(column.required, alias.value);
-      if (column.editable) column.editable = replaceVariables(column.editable, alias.value);
-      if (column.default) column.__default = replaceVariables(column.default, alias.value);
-      if (column.cfg?.source)
-        column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
-      if (column.cfg?.prefix) column.cfg.prefix = replaceVariables(column.cfg.prefix, alias.value);
-      if (column.cfg?.href) column.cfg.href = replaceVariables(column.cfg.href, alias.value);
-      if (typeof column.cfg?.min === 'string')
-        column.cfg.min = replaceVariables(column.cfg.min, alias.value);
-      if (typeof column.cfg?.max === 'string')
-        column.cfg.max = replaceVariables(column.cfg.max, alias.value);
-    };
-
-    const setColumnConfiguration = async (column) => {
-      if (column.default) {
-        if (Number(data.value.id) === 0 || initialized.value) {
-          const val = await getDataByFormula(data.value, column.__default);
-          const res =
-            column.component === 'SelectTags'
-              ? val.split(',')
-              : column.component === 'SelectDatetime'
-              ? moment(
-                  column.cfg.dateFormat.includes('Y-m-d')
-                    ? val
-                    : `${moment().format('YYYY-MM-DD')} ${val}`,
-                ).format(
-                  column.cfg.dateFormat
-                    .replace('Y', 'YYYY')
-                    .replace('m', 'MM')
-                    .replace('d', 'DD')
-                    .replace('H', 'HH')
-                    .replace('i', 'mm')
-                    .replace('S', 'ss'),
-                )
-              : val;
-
-          if (
-            res &&
-            typeof res === 'string' &&
-            (res.includes('Error: ') ||
-              (column.component === 'SelectDatetime' && res === 'Invalid date'))
-          )
-            column.cfg.placeholder = res;
-          else data.value[column.field] = res;
-        }
-      }
-
-      if (column.cfg?.source) {
-        column.cfg.search = [];
-        column.cfg.options = await getDataByFormula(data.value, column.cfg.__source, {
-          value: !initialized.value ? data.value[column.field] : null,
-        });
-
-        column.cfg.selected = [];
-        if (column.cfg.options.length) {
-          data.value[column.field] =
-            column.component == 'SelectMultiple'
-              ? column.cfg.options
-                  .filter((option) =>
-                    data.value[column.field]
-                      ?.map((value) => {
-                        return isNaN(Number(value)) ? value : Number(value);
-                      })
-                      ?.includes(option.value),
-                  )
-                  .map((option) => {
-                    return option.value;
-                  })
-              : column.cfg.options.find((option) => option.value == data.value[column.field])
-                  ?.value || null;
-        } else {
-          data.value[column.field] = column.component == 'SelectMultiple' ? [] : null;
-        }
-      }
-
-      if (column.cfg?.prefix)
-        column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
-      if (column.cfg?.href) column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
-
-      if (typeof column.cfg?.min === 'string') {
-        const minDate = await getDataByFormula(data.value, column.cfg.min);
-        if (isNaN(minDate) && !isNaN(Date.parse(minDate))) {
-          column.cfg.minDate = minDate;
-          column.key = hashData(JSON.stringify(column));
-        }
-      }
-      if (typeof column.cfg?.max === 'string') {
-        const maxDate = await getDataByFormula(data.value, column.cfg.max);
-        if (isNaN(maxDate) && !isNaN(Date.parse(maxDate))) {
-          column.cfg.maxDate = maxDate;
-          column.key = hashData(JSON.stringify(column));
-        }
-      }
-    };
-
-    const setColumnRules = async (column) => {
-      const { visible, required, editable } = await getRulesByFormula(data.value, column);
       if (
-        column._visible != visible ||
-        column._required != required ||
-        column._editable != editable
+        res &&
+        typeof res === 'string' &&
+        (res.includes('Error: ') ||
+          (column.component === 'SelectDatetime' && res === 'Invalid date'))
       )
-        column.key = hashData(JSON.stringify(column));
+        column.cfg.placeholder = res;
+      else data.value[column.field] = res;
+    }
+  }
 
-      // column._visible = visible;
-      column._required = required;
-      column._editable = editable;
+  if (column.cfg?.source) {
+    column.cfg.search = [];
+    column.cfg.options = await getDataByFormula(data.value, column.cfg.__source, {
+      value: !initialized.value ? data.value[column.field] : null,
+    });
 
-      if (column._visible != visible) {
-        column._visible = visible;
-        if (column._visible) await setColumnConfiguration(column);
-        else
-          data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
-            column.component,
-          )
-            ? []
-            : null;
-      }
-    };
+    column.cfg.selected = [];
+    if (column.cfg.options.length) {
+      data.value[column.field] =
+        column.component == 'SelectMultiple'
+          ? column.cfg.options
+              .filter((option) =>
+                data.value[column.field]
+                  ?.map((value) => {
+                    return isNaN(Number(value)) ? value : Number(value);
+                  })
+                  ?.includes(option.value),
+              )
+              .map((option) => {
+                return option.value;
+              })
+          : column.cfg.options.find((option) => option.value == data.value[column.field])?.value ||
+            null;
+    } else {
+      data.value[column.field] = column.component == 'SelectMultiple' ? [] : null;
+    }
+  }
 
-    const handleSelecterSearch = async ({ search, loading, column }) => {
-      loading(true);
-      column.cfg.search = await getDataByFormula(data.value, column.cfg.__source, { search });
-      loading(false);
-    };
+  if (column.cfg?.prefix)
+    column.cfg.__prefix = await getDataByFormula(data.value, column.cfg.prefix);
+  if (column.cfg?.href) column.cfg.__href = await getDataByFormula(data.value, column.cfg.href);
 
-    const handleSubmitFormData = () => {
-      const formdata = JSON.parse(JSON.stringify(data.value));
-      formdata.tid = form.value.id;
-      formdata.id = 0;
-      columns.value.forEach((column) => {
-        if (!column.component.includes('Basic') && !column._visible) delete formdata[column.field];
+  if (typeof column.cfg?.min === 'string') {
+    const minDate = await getDataByFormula(data.value, column.cfg.min);
+    if (isNaN(minDate) && !isNaN(Date.parse(minDate))) {
+      column.cfg.minDate = minDate;
+      column.key = hashData(JSON.stringify(column));
+    }
+  }
+  if (typeof column.cfg?.max === 'string') {
+    const maxDate = await getDataByFormula(data.value, column.cfg.max);
+    if (isNaN(maxDate) && !isNaN(Date.parse(maxDate))) {
+      column.cfg.maxDate = maxDate;
+      column.key = hashData(JSON.stringify(column));
+    }
+  }
+};
+
+const setColumnRules = async (column) => {
+  const { visible, required, editable } = await getRulesByFormula(data.value, column);
+  if (column._visible != visible || column._required != required || column._editable != editable)
+    column.key = hashData(JSON.stringify(column));
+
+  // column._visible = visible;
+  column._required = required;
+  column._editable = editable;
+
+  if (column._visible != visible) {
+    column._visible = visible;
+    if (column._visible) await setColumnConfiguration(column);
+    else
+      data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
+        column.component,
+      )
+        ? []
+        : null;
+  }
+};
+
+const handleSelecterSearch = async ({ search, loading, column }) => {
+  loading(true);
+  column.cfg.search = await getDataByFormula(data.value, column.cfg.__source, { search });
+  loading(false);
+};
+
+const handleSubmitFormData = () => {
+  const formdata = JSON.parse(JSON.stringify(data.value));
+  formdata.tid = form.value.id;
+  formdata.id = 0;
+  columns.value.forEach((column) => {
+    if (!column.component.includes('Basic') && !column._visible) delete formdata[column.field];
+  });
+
+  if (form.value.script) {
+    let formScriptResult = null;
+    try {
+      const fn = new Function('data', form.value.script);
+      formScriptResult = fn(formdata);
+    } catch (error) {
+      formScriptResult = error.message;
+    }
+    if (formScriptResult) {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: formScriptResult,
+        },
       });
+      return;
+    }
+  }
 
-      if (form.value.script) {
-        let formScriptResult = null;
-        try {
-          const fn = new Function('data', form.value.script);
-          formScriptResult = fn(formdata);
-        } catch (error) {
-          formScriptResult = error.message;
-        }
-        if (formScriptResult) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: formScriptResult,
-            },
-          });
-          return;
-        }
-      }
-
-      createData(formdata).then((res) => {
-        if (res.code === 200) {
-          data.value = res.data;
-          document.getElementById('showResultModalBtn').click();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: res.msg,
-            },
-          });
-        }
+  createData(formdata).then((res) => {
+    if (res.code === 200) {
+      data.value = res.data;
+      document.getElementById('showResultModalBtn').click();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: res.msg,
+        },
       });
-    };
-
-    return {
-      pub,
-      form,
-      columns,
-      data,
-
-      ribbon_mode,
-      tabs,
-      current_tab,
-
-      fetchPubForm,
-      handleRefetchPubForm,
-      handleToggleRibbonMode,
-
-      handleSelecterSearch,
-
-      setColumnConfiguration,
-
-      handleSubmitFormData,
-    };
-  },
+    }
+  });
 };
 </script>

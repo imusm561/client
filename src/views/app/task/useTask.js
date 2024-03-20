@@ -1,6 +1,6 @@
-export default function useTask() {
-  const moment = window.moment;
+import moment from '@utils/moment';
 
+export default function useTask() {
   const resolveTaskVariant = (task) => {
     if (task.status === 'completed') return 'bg-soft-success';
     if (moment(task.due_date).valueOf() < moment().valueOf()) return 'bg-soft-danger';

@@ -1,8 +1,8 @@
-import store from '@store';
+const monaco = require('monaco-editor/esm/vs/editor/editor.api');
 import { setLocaleData } from 'monaco-editor-nls';
 import zh_CN from 'monaco-editor-nls/locale/zh-hans';
 if (store.state.sys.lang === 'zh-cn') setLocaleData(zh_CN);
-const monaco = require('monaco-editor/esm/vs/editor/editor.api');
+import store from '@store';
 
 monaco.editor.defineTheme('vs-readonly', {
   base: 'vs',

@@ -13,52 +13,43 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed } from 'vue';
 import { resolveColumnTitle } from '@utils';
 import UserSelector from '@components/UserSelector';
-export default defineComponent({
-  components: {
-    UserSelector,
-  },
-  props: {
-    column: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    modelValue: {
-      type: Array,
-      default: () => {
-        return [];
-      },
-    },
-    required: {
-      type: [Boolean, Number],
-      default: () => false,
-    },
-    editable: {
-      type: [Boolean, Number],
-      default: () => true,
-    },
-    error: {
-      type: String,
-      default: () => null,
+const props = defineProps({
+  column: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    return {
-      resolveColumnTitle,
-      value: computed({
-        get() {
-          return props.modelValue || [];
-        },
-        set(value) {
-          emit('update:modelValue', value);
-        },
-      }),
-    };
+  modelValue: {
+    type: Array,
+    default: () => {
+      return [];
+    },
+  },
+  required: {
+    type: [Boolean, Number],
+    default: () => false,
+  },
+  editable: {
+    type: [Boolean, Number],
+    default: () => true,
+  },
+  error: {
+    type: String,
+    default: () => null,
+  },
+});
+const emit = defineEmits(['update:modelValue']);
+const value = computed({
+  get() {
+    return props.modelValue || [];
+  },
+  set(value) {
+    emit('update:modelValue', value);
   },
 });
 </script>

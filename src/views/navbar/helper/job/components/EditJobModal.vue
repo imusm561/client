@@ -191,130 +191,117 @@
   </div>
 </template>
 
-<script>
-import { ref, watch } from 'vue';
-import { createJob, updateJob } from '@api/job';
-import CKEditor from '@components/CKEditor';
-import MonacoEditor from '@components/MonacoEditor';
-import FlatPickr from '@components/FlatPickr';
+<script setup>
+import { defineProps, defineEmits, ref, reactive, watch } from 'vue';
 import parser from 'cron-parser';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
+import moment from '@utils/moment';
+import CKEditor from '@components/CKEditor';
+import MonacoEditor from '@components/MonacoEditor';
+import FlatPickr from '@components/FlatPickr';
+import { createJob, updateJob } from '@api/job';
 
-export default {
-  components: {
-    CKEditor,
-    MonacoEditor,
-    FlatPickr,
-  },
-  props: {
-    currentJob: {
-      type: Object,
-      default: () => {
-        return {};
-      },
+const props = defineProps({
+  currentJob: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    const toast = useToast();
-    const moment = window.moment;
-    const job = ref({});
-    const syntax_error = ref(null);
-    const expression = ref({
-      interval: [],
-      error: null,
-    });
+});
 
-    watch(
-      () => props.currentJob,
-      (val) => {
-        job.value = JSON.parse(JSON.stringify(val));
-      },
-      { immediate: true, deep: true },
-    );
+const emit = defineEmits(['submit']);
 
-    watch(
-      () => job.value,
-      (val) => {
-        if (val) {
-          expression.value = { interval: [], error: null };
-          try {
-            let interval = parser.parseExpression(val.rule, {
-              currentDate:
-                moment(val.start).valueOf() > moment.valueOf()
-                  ? moment(val.start).toDate()
-                  : moment().toDate(),
-              endDate: moment(val.end).toDate(),
-              tz: 'Asia/Shanghai',
-            });
-            for (let i = 0; i < 10; i++) {
-              expression.value.interval.push(
-                moment(new Date(interval.next().toString())).format('YYYY-MM-DD HH:mm:ss'),
-              );
-            }
-            expression.value.error = null;
-          } catch (error) {
-            expression.value.error = error.message;
-          }
-        }
-      },
-      { immediate: true, deep: true },
-    );
+const toast = useToast();
 
-    const handleChangeDuration = (e) => {
-      if (e.target.value) {
-        if (e.target.value.split(' ').length === 5) {
-          job.value.start = `${e.target.value.split(' ')[0]} ${e.target.value.split(' ')[1]}`;
-          job.value.end = `${e.target.value.split(' ')[3]} ${e.target.value.split(' ')[4]}`;
-        } else {
-          job.value.start = job.value.end = e.target.value;
-        }
-      }
-    };
+const job = ref({});
+const syntax_error = ref(null);
+const expression = reactive({
+  interval: [],
+  error: null,
+});
 
-    const handleSubmitJob = () => {
-      if (job.value.id) {
-        updateJob(job.value).then(({ code, msg }) => {
-          if (code === 200) {
-            emit('submit');
-            document.getElementById('hideEditJobModalBtn').click();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
-      } else {
-        createJob(job.value).then(({ code, msg }) => {
-          if (code === 200) {
-            emit('submit');
-            document.getElementById('hideEditJobModalBtn').click();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
-      }
-    };
-
-    return {
-      job,
-      syntax_error,
-      expression,
-      handleChangeDuration,
-      handleSubmitJob,
-    };
+watch(
+  () => props.currentJob,
+  (val) => {
+    job.value = JSON.parse(JSON.stringify(val));
   },
+  { immediate: true, deep: true },
+);
+
+watch(
+  () => job.value,
+  (val) => {
+    if (val) {
+      Object.assign(expression, { interval: [], error: null });
+      try {
+        let interval = parser.parseExpression(val.rule, {
+          currentDate:
+            moment(val.start).valueOf() > moment.valueOf()
+              ? moment(val.start).toDate()
+              : moment().toDate(),
+          endDate: moment(val.end).toDate(),
+          tz: 'Asia/Shanghai',
+        });
+        for (let i = 0; i < 10; i++) {
+          expression.interval.push(
+            moment(new Date(interval.next().toString())).format('YYYY-MM-DD HH:mm:ss'),
+          );
+        }
+        expression.error = null;
+      } catch (error) {
+        expression.error = error.message;
+      }
+    }
+  },
+  { immediate: true, deep: true },
+);
+
+const handleChangeDuration = (e) => {
+  if (e.target.value) {
+    if (e.target.value.split(' ').length === 5) {
+      job.value.start = `${e.target.value.split(' ')[0]} ${e.target.value.split(' ')[1]}`;
+      job.value.end = `${e.target.value.split(' ')[3]} ${e.target.value.split(' ')[4]}`;
+    } else {
+      job.value.start = job.value.end = e.target.value;
+    }
+  }
+};
+
+const handleSubmitJob = () => {
+  if (job.value.id) {
+    updateJob(job.value).then(({ code, msg }) => {
+      if (code === 200) {
+        emit('submit');
+        document.getElementById('hideEditJobModalBtn').click();
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  } else {
+    createJob(job.value).then(({ code, msg }) => {
+      if (code === 200) {
+        emit('submit');
+        document.getElementById('hideEditJobModalBtn').click();
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
 };
 </script>

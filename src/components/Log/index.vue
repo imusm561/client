@@ -18,9 +18,9 @@
                   />
                 </span>
                 <span class="d-block fs-12 text-muted">
-                  {{ $moment(log.created_at).format('llll') }}
+                  {{ moment(log.created_at).format('llll') }}
                   <span class="badge bg-soft-info text-info align-middle ms-2">
-                    {{ $moment(log.created_at).fromNow() }}
+                    {{ moment(log.created_at).fromNow() }}
                   </span>
                 </span>
               </span>
@@ -68,129 +68,115 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, ref, onMounted, onUnmounted, nextTick } from 'vue';
+<script setup>
+import { defineProps, ref, reactive, onMounted, onUnmounted, nextTick } from 'vue';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
 import { getUserInfo } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
 import Empty from '@components/Empty';
 import Avatar from '@components/Avatar';
 import MonacoEditor from '@components/MonacoEditor';
 import { getLogs } from '@api/com/log';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
-import i18n from '@utils/i18n';
-export default defineComponent({
-  props: {
-    type: {
-      type: String,
-      default: () => '',
-    },
-    tid: {
-      type: Number,
-      default: () => 0,
-      requried: true,
-    },
-    rid: {
-      type: Number,
-      default: () => 0,
-      requried: true,
-    },
-    limit: {
-      type: Number,
-      default: () => 10,
-    },
+const props = defineProps({
+  type: {
+    type: String,
+    default: () => '',
   },
-  components: {
-    Empty,
-    Avatar,
-    MonacoEditor,
+  tid: {
+    type: Number,
+    default: () => 0,
+    requried: true,
   },
-  setup(props) {
-    const toast = useToast();
-    const logs = ref([]);
-    const loading = ref({ enable: true, show: false });
-
-    const fetchLogs = (callback) => {
-      loading.value.show = true;
-
-      const params = { tid: props.tid, rid: props.rid, limit: props.limit };
-      if (logs.value.length) params.lid = logs.value[logs.value.length - 1].id;
-
-      getLogs(params).then(({ code, data, msg }) => {
-        if (code === 200) {
-          logs.value = [...logs.value, ...data];
-          loading.value.show = false;
-          if (data.length != props.limit) loading.value.enable = false;
-          callback && callback();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const scrollHandler = () => {
-      const logsList = document.getElementById('logs')?.querySelector('.simplebar-content-wrapper');
-      if (
-        logsList &&
-        logsList.scrollHeight - (logsList.scrollTop + logsList.offsetHeight) < 2 &&
-        loading.value.enable &&
-        !loading.value.show
-      ) {
-        fetchLogs();
-      }
-    };
-
-    onMounted(() => {
-      fetchLogs(() => {
-        nextTick(() => {
-          setTimeout(() => {
-            const logsList = document
-              .getElementById('logs')
-              ?.querySelector('.simplebar-content-wrapper');
-            if (logsList) logsList.addEventListener('scroll', scrollHandler);
-          }, 100);
-        });
-      });
-    });
-
-    onUnmounted(() => {
-      const logsList = document.getElementById('logs')?.querySelector('.simplebar-content-wrapper');
-      if (logsList) logsList.removeEventListener('scroll', scrollHandler);
-    });
-
-    const current_log = ref({});
-    const handleViewLogData = (log) => {
-      current_log.value = log;
-      document.getElementById(`show${props.type}LogDataOffcanvasBtn`).click();
-    };
-
-    return {
-      getUserInfo,
-      loading,
-      log_types: {
-        10: i18n.global.t('components.log.type.createForm'),
-        11: i18n.global.t('components.log.type.updateForm'),
-        12: i18n.global.t('components.log.type.backupForm'),
-        13: i18n.global.t('components.log.type.truncateForm'),
-        20: i18n.global.t('components.log.type.createColumns'),
-        21: i18n.global.t('components.log.type.updateColumns'),
-        30: i18n.global.t('components.log.type.createData'),
-        31: i18n.global.t('components.log.type.importData'),
-        32: i18n.global.t('components.log.type.viewData'),
-        33: i18n.global.t('components.log.type.updateData'),
-        34: i18n.global.t('components.log.type.batchUpdate'),
-        35: i18n.global.t('components.log.type.deleteData'),
-      },
-      logs,
-      current_log,
-      handleViewLogData,
-    };
+  rid: {
+    type: Number,
+    default: () => 0,
+    requried: true,
+  },
+  limit: {
+    type: Number,
+    default: () => 10,
   },
 });
+
+const log_types = {
+  10: i18n.global.t('components.log.type.createForm'),
+  11: i18n.global.t('components.log.type.updateForm'),
+  12: i18n.global.t('components.log.type.backupForm'),
+  13: i18n.global.t('components.log.type.truncateForm'),
+  20: i18n.global.t('components.log.type.createColumns'),
+  21: i18n.global.t('components.log.type.updateColumns'),
+  30: i18n.global.t('components.log.type.createData'),
+  31: i18n.global.t('components.log.type.importData'),
+  32: i18n.global.t('components.log.type.viewData'),
+  33: i18n.global.t('components.log.type.updateData'),
+  34: i18n.global.t('components.log.type.batchUpdate'),
+  35: i18n.global.t('components.log.type.deleteData'),
+};
+
+const toast = useToast();
+const logs = ref([]);
+const loading = reactive({ enable: true, show: false });
+
+const fetchLogs = (callback) => {
+  loading.show = true;
+
+  const params = { tid: props.tid, rid: props.rid, limit: props.limit };
+  if (logs.value.length) params.lid = logs.value[logs.value.length - 1].id;
+
+  getLogs(params).then(({ code, data, msg }) => {
+    if (code === 200) {
+      logs.value = [...logs.value, ...data];
+      loading.show = false;
+      if (data.length != props.limit) loading.enable = false;
+      callback && callback();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const scrollHandler = () => {
+  const logsList = document.getElementById('logs')?.querySelector('.simplebar-content-wrapper');
+  if (
+    logsList &&
+    logsList.scrollHeight - (logsList.scrollTop + logsList.offsetHeight) < 2 &&
+    loading.enable &&
+    !loading.show
+  ) {
+    fetchLogs();
+  }
+};
+
+onMounted(() => {
+  fetchLogs(() => {
+    nextTick(() => {
+      setTimeout(() => {
+        const logsList = document
+          .getElementById('logs')
+          ?.querySelector('.simplebar-content-wrapper');
+        if (logsList) logsList.addEventListener('scroll', scrollHandler);
+      }, 100);
+    });
+  });
+});
+
+onUnmounted(() => {
+  const logsList = document.getElementById('logs')?.querySelector('.simplebar-content-wrapper');
+  if (logsList) logsList.removeEventListener('scroll', scrollHandler);
+});
+
+const current_log = ref({});
+const handleViewLogData = (log) => {
+  current_log.value = log;
+  document.getElementById(`show${props.type}LogDataOffcanvasBtn`).click();
+};
 </script>

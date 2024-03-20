@@ -142,168 +142,150 @@
   </div>
 </template>
 
-<script>
-import Breadcrumb from '@layouts/breadcrumb';
-import MonacoEditor from '@components/MonacoEditor';
+<script setup>
+import { ref, onMounted, computed } from 'vue';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
-import { ref, onMounted, computed } from 'vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
+import Breadcrumb from '@layouts/breadcrumb';
+import MonacoEditor from '@components/MonacoEditor';
 import { getKeys, getKey, delKey } from '@api/com/redis';
-export default {
-  components: {
-    Breadcrumb,
-    ElTree,
-    MonacoEditor,
-  },
-  setup() {
-    const toast = useToast();
-    const keys = ref([]);
-    const current = ref({});
 
-    onMounted(() => {
-      handleGetKeys();
-    });
+const toast = useToast();
+const keys = ref([]);
+const current = ref({});
 
-    const handleGetKeys = () => {
-      getKeys().then(({ code, data, msg }) => {
-        if (code === 200) {
-          keys.value = data.sort();
-          if (!current.value.detail || Array.isArray(JSON.parse(current.value.detail))) {
-            current.value.name = '*';
-            current.value.key = '*';
-            current.value.detail = JSON.stringify(keys.value, null, 2);
-          }
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+onMounted(() => {
+  handleGetKeys();
+});
+
+const handleGetKeys = () => {
+  getKeys().then(({ code, data, msg }) => {
+    if (code === 200) {
+      keys.value = data.sort();
+      if (!current.value.detail || Array.isArray(JSON.parse(current.value.detail))) {
+        current.value.name = '*';
+        current.value.key = '*';
+        current.value.detail = JSON.stringify(keys.value, null, 2);
+      }
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const tree = computed(() => {
-      const keyToTree = (keys) => {
-        let root = [];
-        for (let i = 0; i < keys.length; i++) {
-          let chain = keys[i].split(':');
-          let currentNode = root;
-          for (let j = 0; j < chain.length; j++) {
-            let name = chain[j];
-            let lastNode = currentNode;
+const tree = computed(() => {
+  const keyToTree = (keys) => {
+    let root = [];
+    for (let i = 0; i < keys.length; i++) {
+      let chain = keys[i].split(':');
+      let currentNode = root;
+      for (let j = 0; j < chain.length; j++) {
+        let name = chain[j];
+        let lastNode = currentNode;
 
-            for (let k = 0; k < currentNode.length; k++) {
-              if (currentNode[k].name === name) {
-                currentNode = currentNode[k].children;
-                break;
-              }
-            }
-
-            if (lastNode === currentNode) {
-              let newNode = {
-                name: name,
-              };
-
-              if (j === chain.length - 1) {
-                newNode.key = keys[i];
-              } else {
-                newNode.key = chain.slice(0, j + 1).join(':') + ':*';
-                newNode.children = [];
-              }
-
-              currentNode.push(newNode);
-              currentNode = newNode.children;
-            }
+        for (let k = 0; k < currentNode.length; k++) {
+          if (currentNode[k].name === name) {
+            currentNode = currentNode[k].children;
+            break;
           }
         }
-        return root;
-      };
-      return keyToTree(keys.value);
-    });
 
-    const defaultExpandKeys = ref([]);
-    const removeChildrenKeys = (data) => {
-      if (data.children) {
-        data.children.forEach((item) => {
-          const index = defaultExpandKeys.value.indexOf(item.key);
-          if (index != -1) defaultExpandKeys.value.splice(index, 1);
-          removeChildrenKeys(item);
-        });
-      }
-    };
-    const handleNodeToggle = (data, expanded) => {
-      if (expanded) {
-        if (!defaultExpandKeys.value.includes(data.key)) defaultExpandKeys.value.push(data.key);
-      } else {
-        const index = defaultExpandKeys.value.indexOf(data.key);
-        if (index != -1) defaultExpandKeys.value.splice(index, 1);
-      }
-      removeChildrenKeys(data);
-    };
+        if (lastNode === currentNode) {
+          let newNode = {
+            name: name,
+          };
 
-    const handleClickKey = (e) => {
-      current.value = JSON.parse(JSON.stringify(e));
-      if (current.value.children) {
-        current.value.detail = JSON.stringify(
-          current.value.children.map((child) => {
-            return child.key;
-          }),
-          null,
-          2,
-        );
-      } else {
-        getKey({ key: current.value.key }).then(({ code, data, msg }) => {
-          if (code === 200) {
-            current.value.detail = JSON.stringify(data, null, 2);
-            document.getElementById('showKeyDataOffcanvasBtn').click();
+          if (j === chain.length - 1) {
+            newNode.key = keys[i];
           } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
+            newNode.key = chain.slice(0, j + 1).join(':') + ':*';
+            newNode.children = [];
           }
+
+          currentNode.push(newNode);
+          currentNode = newNode.children;
+        }
+      }
+    }
+    return root;
+  };
+  return keyToTree(keys.value);
+});
+
+const defaultExpandKeys = ref([]);
+const removeChildrenKeys = (data) => {
+  if (data.children) {
+    data.children.forEach((item) => {
+      const index = defaultExpandKeys.value.indexOf(item.key);
+      if (index != -1) defaultExpandKeys.value.splice(index, 1);
+      removeChildrenKeys(item);
+    });
+  }
+};
+const handleNodeToggle = (data, expanded) => {
+  if (expanded) {
+    if (!defaultExpandKeys.value.includes(data.key)) defaultExpandKeys.value.push(data.key);
+  } else {
+    const index = defaultExpandKeys.value.indexOf(data.key);
+    if (index != -1) defaultExpandKeys.value.splice(index, 1);
+  }
+  removeChildrenKeys(data);
+};
+
+const handleClickKey = (e) => {
+  current.value = JSON.parse(JSON.stringify(e));
+  if (current.value.children) {
+    current.value.detail = JSON.stringify(
+      current.value.children.map((child) => {
+        return child.key;
+      }),
+      null,
+      2,
+    );
+  } else {
+    getKey({ key: current.value.key }).then(({ code, data, msg }) => {
+      if (code === 200) {
+        current.value.detail = JSON.stringify(data, null, 2);
+        document.getElementById('showKeyDataOffcanvasBtn').click();
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
         });
       }
-    };
+    });
+  }
+};
 
-    const handleDelKey = () => {
-      delKey({
-        key: current.value.key,
-      }).then(({ code, msg }) => {
-        if (code === 200) {
-          handleGetKeys();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+const handleDelKey = () => {
+  delKey({
+    key: current.value.key,
+  }).then(({ code, msg }) => {
+    if (code === 200) {
+      handleGetKeys();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
-
-    return {
-      tree,
-      current,
-      handleGetKeys,
-      defaultExpandKeys,
-      handleNodeToggle,
-      handleClickKey,
-      handleDelKey,
-    };
-  },
+    }
+  });
 };
 </script>

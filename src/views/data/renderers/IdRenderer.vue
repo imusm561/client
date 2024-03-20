@@ -13,45 +13,42 @@
   <span v-else></span>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
+<script setup>
+import { defineProps } from 'vue';
+import { useRouter } from 'vue-router';
 import store from '@store';
-import router from '@router';
-export default defineComponent({
-  setup(props) {
-    let timer = null;
-    const handleViewData = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        router.push({
-          name: 'view',
-          params: { tid: props.params._form.id, rid: props.params.value },
-        });
-      }, 200);
-    };
-    const handleEditData = () => {
-      clearTimeout(timer);
-      if (
-        (!props.params._form.flow?.length || props.params.node?.data?.data_state === 'drafted') &&
-        store.state.user.data?.permissions?.[props.params._form.id]?.edit &&
-        (props.params.node?.data?.created_by === store.state.user.data.username ||
-          props.params.node?.data?.updated_by === store.state.user.data.username ||
-          props.params.node?.data?.acl_edit.includes(store.state.user.data.username) ||
-          (props.params.node?.data?.acl_edit.length === 0 &&
-            props.params.node?.data?.acl_view.includes(store.state.user.data.username)) ||
-          (props.params.node?.data?.acl_view.length === 0 &&
-            props.params.node?.data?.acl_edit.length === 0))
-      ) {
-        router.push({
-          name: 'edit',
-          params: { tid: props.params._form.id, rid: props.params.value },
-        });
-      }
-    };
-    return {
-      handleViewData,
-      handleEditData,
-    };
-  },
-});
+
+const props = defineProps(['params']);
+const router = useRouter();
+
+let timer = null;
+const handleViewData = () => {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    router.push({
+      name: 'view',
+      params: { tid: props.params._form.id, rid: props.params.value },
+    });
+  }, 200);
+};
+
+const handleEditData = () => {
+  clearTimeout(timer);
+  if (
+    (!props.params._form.flow?.length || props.params.node?.data?.data_state === 'drafted') &&
+    store.state.user.data?.permissions?.[props.params._form.id]?.edit &&
+    (props.params.node?.data?.created_by === store.state.user.data.username ||
+      props.params.node?.data?.updated_by === store.state.user.data.username ||
+      props.params.node?.data?.acl_edit.includes(store.state.user.data.username) ||
+      (props.params.node?.data?.acl_edit.length === 0 &&
+        props.params.node?.data?.acl_view.includes(store.state.user.data.username)) ||
+      (props.params.node?.data?.acl_view.length === 0 &&
+        props.params.node?.data?.acl_edit.length === 0))
+  ) {
+    router.push({
+      name: 'edit',
+      params: { tid: props.params._form.id, rid: props.params.value },
+    });
+  }
+};
 </script>

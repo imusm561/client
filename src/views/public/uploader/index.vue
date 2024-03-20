@@ -23,89 +23,78 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { onMounted, ref, watch } from 'vue';
-import { useRouter } from '@utils';
-import { initUploader, change } from '@api/file';
+import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Uploader from '@components/Uploader';
-export default {
-  components: {
-    Uploader,
-  },
-  setup() {
-    const toast = useToast();
-    const { route } = useRouter();
+import { initUploader, change } from '@api/file';
 
-    const files = ref([]);
-    const options = ref({});
+const toast = useToast();
+const route = useRoute();
 
-    onMounted(() => {
-      initUploader({
-        options: route.value.params.options,
-      }).then(({ code, msg, data }) => {
-        if (code === 200) {
-          options.value = data;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+const files = ref([]);
+const options = ref({});
+
+onMounted(() => {
+  initUploader({
+    options: route.params.options,
+  }).then(({ code, msg, data }) => {
+    if (code === 200) {
+      options.value = data;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    });
+    }
+  });
+});
 
-    watch(
-      () => files.value,
-      (newList, oldList) => {
-        newList = newList || [];
-        oldList = oldList || [];
-        const data = {};
-        if (newList.length !== oldList.length) {
-          if (newList.length > oldList.length) {
-            data.files = newList.filter((oldItem) =>
-              oldList.every((newItem) => newItem.id != oldItem.id),
-            );
-            data.type = 'add';
-          } else {
-            data.files = oldList.filter((oldItem) =>
-              newList.every((newItem) => newItem.id != oldItem.id),
-            );
-            data.type = 'del';
-          }
-          data.files.forEach((file) => {
-            change({
-              username: options.value.username,
-              code: options.value.code,
-              file,
-              type: data.type,
-            }).then(({ code, msg }) => {
-              if (code !== 200) {
-                toast({
-                  component: ToastificationContent,
-                  props: {
-                    variant: 'danger',
-                    icon: 'mdi-alert',
-                    text: msg,
-                  },
-                });
-              }
+watch(
+  () => files.value,
+  (newList, oldList) => {
+    newList = newList || [];
+    oldList = oldList || [];
+    const data = {};
+    if (newList.length !== oldList.length) {
+      if (newList.length > oldList.length) {
+        data.files = newList.filter((oldItem) =>
+          oldList.every((newItem) => newItem.id != oldItem.id),
+        );
+        data.type = 'add';
+      } else {
+        data.files = oldList.filter((oldItem) =>
+          newList.every((newItem) => newItem.id != oldItem.id),
+        );
+        data.type = 'del';
+      }
+      data.files.forEach((file) => {
+        change({
+          username: options.value.username,
+          code: options.value.code,
+          file,
+          type: data.type,
+        }).then(({ code, msg }) => {
+          if (code !== 200) {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: msg,
+              },
             });
-          });
-        }
-      },
-      { immediate: true, deep: true },
-    );
-
-    return {
-      files,
-      options,
-    };
+          }
+        });
+      });
+    }
   },
-};
+  { immediate: true, deep: true },
+);
 </script>

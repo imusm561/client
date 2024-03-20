@@ -77,7 +77,7 @@
                   {{
                     $t('layout.navbar.helper.form.create', {
                       user: getUserInfo(current_form.created_by).fullname,
-                      time: $moment(current_form.created_at).format('llll'),
+                      time: moment(current_form.created_at).format('llll'),
                     })
                   }}
                 </div>
@@ -86,7 +86,7 @@
                   {{
                     $t('layout.navbar.helper.form.update', {
                       user: getUserInfo(current_form.updated_by).fullname,
-                      time: $moment(current_form.updated_at).format('llll'),
+                      time: moment(current_form.updated_at).format('llll'),
                     })
                   }}
                 </div>
@@ -306,7 +306,7 @@
                           () => {
                             current_form.alias =
                               current_form.alias ||
-                              $pinyin(current_form.title, { toneType: 'none', type: 'array' })
+                              pinyin(current_form.title, { toneType: 'none', type: 'array' })
                                 .map((item) => {
                                   return item.charAt(0).toUpperCase() + item.slice(1);
                                 })
@@ -424,22 +424,22 @@
                               #{{ item.id }} {{ item.title }}
                             </h6>
                             <small class="text-muted" v-if="item.start == item.end">
-                              {{ $moment(item.start).format('ll') }}
+                              {{ moment(item.start).format('ll') }}
                             </small>
                             <small class="text-muted" v-else>
-                              {{ $moment(item.start).format('ll') }} -
-                              {{ $moment(item.end).format('ll') }}
+                              {{ moment(item.start).format('ll') }} -
+                              {{ moment(item.end).format('ll') }}
                             </small>
                           </div>
                         </div>
                         <div class="flex-shrink-0">
                           <span class="text-success" @click="handleShowPubFormQr">
                             {{
-                              $moment().valueOf() > $moment(item.end).add(1, 'd').valueOf()
+                              moment().valueOf() > moment(item.end).add(1, 'd').valueOf()
                                 ? $t('layout.navbar.helper.form.tab.pubForm.state.expired')
                                 : item.status === 0
                                 ? $t('layout.navbar.helper.form.tab.pubForm.state.disabled')
-                                : $moment(item.start).valueOf() > $moment().valueOf()
+                                : moment(item.start).valueOf() > moment().valueOf()
                                 ? $t('layout.navbar.helper.form.tab.pubForm.state.notStart')
                                 : $t('layout.navbar.helper.form.tab.pubForm.state.inEffect')
                             }}
@@ -472,7 +472,7 @@
                 id="approval_flow"
               >
                 <ul class="list-group">
-                  <draggable
+                  <Draggable
                     class="accordion accordion-flush"
                     id="accordionFlushFlow"
                     :list="current_form.flow"
@@ -682,7 +682,7 @@
                         </div>
                       </div>
                     </li>
-                  </draggable>
+                  </Draggable>
                 </ul>
               </div>
             </div>
@@ -1104,347 +1104,222 @@
   </div>
 </template>
 
-<script>
-import { computed, onMounted, ref, watch, nextTick } from 'vue';
+<script setup>
+import { defineProps, defineEmits, computed, onMounted, ref, reactive, watch, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
+import { VueDraggableNext as Draggable } from 'vue-draggable-next';
 import QRCode from 'qrcodejs2';
-import store from '@store';
-import i18n from '@utils/i18n';
-import { getForms, createForm, updateForm, dropForm, backupForm, truncateForm } from '@api/form';
-import { getPubs, createPub, updatePub } from '@api/pub';
-import { getUserData } from '@api/user';
-import { listToTree, getChanges, useRouter, getUserInfo } from '@utils';
+import { pinyin } from 'pinyin-pro';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
+
+import { listToTree, getChanges, getUserInfo } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+
+import store from '@store';
+
 import { icons } from '@utils/icons';
 import CKEditor from '@components/CKEditor';
 import Avatar from '@components/Avatar';
 import UserSelector from '@components/UserSelector';
 import MonacoEditor from '@components/MonacoEditor';
 import FlatPickr from '@components/FlatPickr';
-import { VueDraggableNext } from 'vue-draggable-next';
-export default {
-  components: {
-    ElTree,
-    CKEditor,
-    Avatar,
-    UserSelector,
-    MonacoEditor,
-    FlatPickr,
-    draggable: VueDraggableNext,
+
+import { getForms, createForm, updateForm, dropForm, backupForm, truncateForm } from '@api/form';
+import { getPubs, createPub, updatePub } from '@api/pub';
+import { getUserData } from '@api/user';
+
+const props = defineProps({
+  columnsChanged: {
+    type: Boolean,
+    default: () => false,
   },
-  props: {
-    columnsChanged: {
-      type: Boolean,
-      default: () => false,
-    },
+});
+
+const emit = defineEmits(['setForm']);
+
+const router = useRouter();
+const toast = useToast();
+
+const forms = ref([]);
+const current_form = ref({});
+const current_tab = ref('basic_info');
+const delete_form = ref({});
+const default_expanded_keys = ref([]);
+const pubs = ref([]);
+const current_pub = ref({});
+
+const changes = ref({});
+
+watch(
+  () => current_form.value,
+  (newVal, oldVal) => {
+    emit('setForm', current_form.value);
+    if (newVal?.id && newVal.id !== oldVal?.id) {
+      current_tab.value = 'basic_info';
+      default_expanded_keys.value = [current_form.value.id, current_form.value.pid];
+      if (!isParentOrHasRedirect(current_form.value)) fetchPubs(newVal.id);
+    }
+    const server_form = forms.value.find((form) => form.id === newVal.id);
+    changes.value = getChanges(newVal, server_form);
+    delete changes.value.is_parent;
   },
-  setup(props, { emit }) {
-    const { router } = useRouter();
-    const toast = useToast();
-    const moment = window.moment;
+  { immediate: true, deep: true },
+);
 
-    const forms = ref([]);
-    const current_form = ref({});
-    const current_tab = ref('basic_info');
-    const delete_form = ref({});
-    const default_expanded_keys = ref([]);
-    const pubs = ref([]);
-    const current_pub = ref({});
-
-    const changes = ref({});
-
-    watch(
-      () => current_form.value,
-      (newVal, oldVal) => {
-        emit('setForm', current_form.value);
-        if (newVal?.id && newVal.id !== oldVal?.id) {
-          current_tab.value = 'basic_info';
-          default_expanded_keys.value = [current_form.value.id, current_form.value.pid];
-          if (!isParentOrHasRedirect(current_form.value)) fetchPubs(newVal.id);
-        }
-        const server_form = forms.value.find((form) => form.id === newVal.id);
-        changes.value = getChanges(newVal, server_form);
-        delete changes.value.is_parent;
-      },
-      { immediate: true, deep: true },
-    );
-
-    const fetchForms = (id) => {
-      getForms().then(({ code, data, msg }) => {
-        if (code === 200) {
-          forms.value = data;
-          if (id || current_form.value.id) {
-            current_form.value = {
-              ...JSON.parse(
-                JSON.stringify(
-                  forms.value.find((form) => form.id === (id || current_form.value.id)),
-                ),
-              ),
-              ...{
-                is_parent:
-                  forms.value.filter((form) => form.pid === (id || current_form.value.id)).length !=
-                  0,
-              },
-            };
-            randerVsUsers();
-          }
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const fetchPubs = (tid) => {
-      getPubs({ tid }).then(({ code, data, msg }) => {
-        if (code === 200) {
-          pubs.value = data;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    onMounted(() => {
-      fetchForms();
-    });
-
-    const tree = computed(() => {
-      return listToTree(JSON.parse(JSON.stringify(forms.value)));
-    });
-
-    let timer = null;
-
-    const isModified = (items, notify = false) => {
-      if (Object.keys(changes.value).length && items.includes('form')) {
-        if (notify)
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.form.modified'),
-            },
-          });
-        return true;
+const fetchForms = (id) => {
+  getForms().then(({ code, data, msg }) => {
+    if (code === 200) {
+      forms.value = data;
+      if (id || current_form.value.id) {
+        current_form.value = {
+          ...JSON.parse(
+            JSON.stringify(forms.value.find((form) => form.id === (id || current_form.value.id))),
+          ),
+          ...{
+            is_parent:
+              forms.value.filter((form) => form.pid === (id || current_form.value.id)).length != 0,
+          },
+        };
+        randerVsUsers();
       }
-      if (props.columnsChanged && items.includes('columns')) {
-        if (notify)
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.form.column.modified'),
-            },
-          });
-        return true;
-      }
-      return false;
-    };
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
 
-    const isParentOrHasRedirect = (form) => {
-      return !!form.redirect || !!form.is_parent;
-    };
+const fetchPubs = (tid) => {
+  getPubs({ tid }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      pubs.value = data;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
 
-    const handleSelectForm = (node) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        if (current_form.value.id !== node.id) {
-          if (isModified(['form', 'columns'], true)) return;
-          current_form.value = {
-            ...JSON.parse(JSON.stringify(forms.value.find((form) => form.id === node.id))),
-            ...{ is_parent: forms.value.filter((form) => form.pid === node.id).length != 0 },
-          };
-          randerVsUsers();
-        }
-      }, 200);
-    };
+onMounted(() => {
+  fetchForms();
+});
 
-    const handleAddForm = (node) => {
+const tree = computed(() => {
+  return listToTree(JSON.parse(JSON.stringify(forms.value)));
+});
+
+let timer = null;
+
+const isModified = (items, notify = false) => {
+  if (Object.keys(changes.value).length && items.includes('form')) {
+    if (notify)
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: i18n.global.t('layout.navbar.helper.form.modified'),
+        },
+      });
+    return true;
+  }
+  if (props.columnsChanged && items.includes('columns')) {
+    if (notify)
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: i18n.global.t('layout.navbar.helper.form.column.modified'),
+        },
+      });
+    return true;
+  }
+  return false;
+};
+
+const isParentOrHasRedirect = (form) => {
+  return !!form.redirect || !!form.is_parent;
+};
+
+const handleSelectForm = (node) => {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    if (current_form.value.id !== node.id) {
       if (isModified(['form', 'columns'], true)) return;
-      if (node) {
-        const child = { pid: node.data.id, title: '', title_old: '', edit: true };
-        if (!node.data.children) node.data.children = [];
-        node.data.children.push(child);
-        node.expanded = true;
-        nextTick(() => document.getElementById('node_edit').focus());
+      current_form.value = {
+        ...JSON.parse(JSON.stringify(forms.value.find((form) => form.id === node.id))),
+        ...{ is_parent: forms.value.filter((form) => form.pid === node.id).length != 0 },
+      };
+      randerVsUsers();
+    }
+  }, 200);
+};
+
+const handleAddForm = (node) => {
+  if (isModified(['form', 'columns'], true)) return;
+  if (node) {
+    const child = { pid: node.data.id, title: '', title_old: '', edit: true };
+    if (!node.data.children) node.data.children = [];
+    node.data.children.push(child);
+    node.expanded = true;
+    nextTick(() => document.getElementById('node_edit').focus());
+  } else {
+    createForm({ pid: 0 }).then(({ code, data, msg }) => {
+      if (code === 200) {
+        fetchForms(data.id);
+        getUserData();
       } else {
-        createForm({ pid: 0 }).then(({ code, data, msg }) => {
-          if (code === 200) {
-            fetchForms(data.id);
-            getUserData();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
         });
       }
-    };
+    });
+  }
+};
 
-    const handleEditFormTitle = (node) => {
-      clearTimeout(timer);
-      if (isModified(['form'], true)) return;
-      node.data.title_old = node.data.title;
-      node.data.edit = true;
-      nextTick(() => document.getElementById('node_edit').focus());
-    };
+const handleEditFormTitle = (node) => {
+  clearTimeout(timer);
+  if (isModified(['form'], true)) return;
+  node.data.title_old = node.data.title;
+  node.data.edit = true;
+  nextTick(() => document.getElementById('node_edit').focus());
+};
 
-    const handleSaveFormTitle = (node) => {
-      node.data.title = node.data.title.trim();
-      if (!node.data.title) node.data.title = node.data.title_old;
-      if (node.data.id) {
-        if (node.data.title != node.data.title_old) {
-          updateForm({
-            id: node.data.id,
-            title: node.data.title,
-          }).then(({ code, msg }) => {
-            if (code === 200) {
-              fetchForms(node.data.id);
-              getUserData();
-              node.data.edit = false;
-            } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-            }
-          });
-        } else {
-          node.data.edit = false;
-        }
-      } else {
-        node.data.edit = false;
-        createForm(node.data).then(({ code, data, msg }) => {
-          if (code === 200) {
-            fetchForms(data.id);
-            getUserData();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
-      }
-    };
-
-    const handleDropForm = (draggingNode, dropNode, type) => {
-      const updates = [];
-      if (type == 'inner') {
-        dropNode.childNodes.forEach((node, index) => {
-          const update = { id: node.data.id, pid: dropNode.data.id, sort: index + 1 };
-          const origin = forms.value.find((form) => form.id === update.id);
-          if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
-        });
-      } else if (dropNode.parent.level === 0) {
-        dropNode.parent.childNodes.forEach((node, index) => {
-          const update = { id: node.data.id, pid: 0, sort: index + 1 };
-          const origin = forms.value.find((form) => form.id === update.id);
-          if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
-        });
-      } else {
-        dropNode.parent.childNodes.forEach((node, index) => {
-          const update = { id: node.data.id, pid: dropNode.parent.data.id, sort: index + 1 };
-          const origin = forms.value.find((form) => form.id === update.id);
-          if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
-        });
-      }
-      dropForm({ forms: updates }).then(({ code, msg }) => {
-        if (code === 200) {
-          fetchForms(draggingNode.data.id);
-          getUserData();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const handleCopyForm = (node) => {
-      const data = JSON.parse(JSON.stringify(node.data));
-      data.tid = data.id;
-      delete data.id;
-      delete data.uuid;
-      delete data.created_at;
-      delete data.created_by;
-      delete data.updated_at;
-      delete data.updated_by;
-      delete data.route;
-      delete data.flow;
-      delete data.alias;
-      data.data_state = 'published';
-      data.title = `${data.title}-${i18n.global.t('layout.navbar.helper.form.copy')}`;
-      data.sort = data.sort - 1;
-
-      createForm(data).then(({ code, data, msg }) => {
-        if (code === 200) {
-          fetchForms(data.id);
-          getUserData();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const handleConfirmDelForm = (node) => {
-      delete_form.value = node.data;
-      default_expanded_keys.value = [delete_form.value.id, delete_form.value.pid];
-    };
-
-    const handleDelForm = () => {
+const handleSaveFormTitle = (node) => {
+  node.data.title = node.data.title.trim();
+  if (!node.data.title) node.data.title = node.data.title_old;
+  if (node.data.id) {
+    if (node.data.title != node.data.title_old) {
       updateForm({
-        id: delete_form.value.id,
-        data_state: 'deleted',
+        id: node.data.id,
+        title: node.data.title,
       }).then(({ code, msg }) => {
         if (code === 200) {
-          fetchForms();
+          fetchForms(node.data.id);
           getUserData();
-          if (current_form.value.id === delete_form.value.id) current_form.value = {};
-          delete_form.value = {};
-          document.getElementById('hideDeleteFormModalBtn').click();
+          node.data.edit = false;
         } else {
           toast({
             component: ToastificationContent,
@@ -1456,70 +1331,189 @@ export default {
           });
         }
       });
-    };
-
-    const iconOptions = ref([]);
-    const fetchIconOptions = (search, loading) => {
-      iconOptions.value = [];
-      if (search.length > 2) {
-        loading(true);
-        iconOptions.value = icons.filter((item) => item.name.includes(search));
-        loading(false);
-      }
-    };
-
-    const vs = ref({
-      acl_view: [],
-      acl_edit: [],
-    });
-
-    const users = JSON.parse(JSON.stringify(store.state.org.users)).map((user) => {
-      return {
-        value: user.username,
-        label: user.fullname,
-        dept: user.dept,
-        avatar: user.avatar,
-        gender: user.gender,
-      };
-    });
-    const depts = JSON.parse(JSON.stringify(store.state.org.depts))
-      .map((dept) => {
-        return {
-          value: dept.id,
-          label: dept.name,
-          users: users
-            .filter((user) => user.dept === dept.id)
-            .map((user) => {
-              return {
-                username: user.value,
-                fullname: user.label,
-              };
-            }),
-        };
-      })
-      .filter((dept) => dept.users.length != 0);
-
-    const options4acl_view = ref([...depts, ...users]);
-    const options4acl_edit = ref([...depts, ...users]);
-
-    const handleSelectValue = (field) => {
-      current_form.value[field] = [];
-      if (vs.value[field].includes(0)) {
-        vs.value[field] = [0];
-        current_form.value[field] = users.map((user) => {
-          return user.value;
-        });
+    } else {
+      node.data.edit = false;
+    }
+  } else {
+    node.data.edit = false;
+    createForm(node.data).then(({ code, data, msg }) => {
+      if (code === 200) {
+        fetchForms(data.id);
+        getUserData();
       } else {
-        vs.value[field].forEach((value) => {
-          if (typeof value === 'number') {
-            const dept = depts.find((dept) => dept.value === value);
-            current_form.value[field] = [
-              ...current_form.value[field],
-              ...dept.users.map((user) => {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
+};
+
+const handleDropForm = (draggingNode, dropNode, type) => {
+  const updates = [];
+  if (type == 'inner') {
+    dropNode.childNodes.forEach((node, index) => {
+      const update = { id: node.data.id, pid: dropNode.data.id, sort: index + 1 };
+      const origin = forms.value.find((form) => form.id === update.id);
+      if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
+    });
+  } else if (dropNode.parent.level === 0) {
+    dropNode.parent.childNodes.forEach((node, index) => {
+      const update = { id: node.data.id, pid: 0, sort: index + 1 };
+      const origin = forms.value.find((form) => form.id === update.id);
+      if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
+    });
+  } else {
+    dropNode.parent.childNodes.forEach((node, index) => {
+      const update = { id: node.data.id, pid: dropNode.parent.data.id, sort: index + 1 };
+      const origin = forms.value.find((form) => form.id === update.id);
+      if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
+    });
+  }
+  dropForm({ forms: updates }).then(({ code, msg }) => {
+    if (code === 200) {
+      fetchForms(draggingNode.data.id);
+      getUserData();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const handleCopyForm = (node) => {
+  const data = JSON.parse(JSON.stringify(node.data));
+  data.tid = data.id;
+  delete data.id;
+  delete data.uuid;
+  delete data.created_at;
+  delete data.created_by;
+  delete data.updated_at;
+  delete data.updated_by;
+  delete data.route;
+  delete data.flow;
+  delete data.alias;
+  data.data_state = 'published';
+  data.title = `${data.title}-${i18n.global.t('layout.navbar.helper.form.copy')}`;
+  data.sort = data.sort - 1;
+
+  createForm(data).then(({ code, data, msg }) => {
+    if (code === 200) {
+      fetchForms(data.id);
+      getUserData();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const handleConfirmDelForm = (node) => {
+  delete_form.value = node.data;
+  default_expanded_keys.value = [delete_form.value.id, delete_form.value.pid];
+};
+
+const handleDelForm = () => {
+  updateForm({
+    id: delete_form.value.id,
+    data_state: 'deleted',
+  }).then(({ code, msg }) => {
+    if (code === 200) {
+      fetchForms();
+      getUserData();
+      if (current_form.value.id === delete_form.value.id) current_form.value = {};
+      delete_form.value = {};
+      document.getElementById('hideDeleteFormModalBtn').click();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const iconOptions = ref([]);
+const fetchIconOptions = (search, loading) => {
+  iconOptions.value = [];
+  if (search.length > 2) {
+    loading(true);
+    iconOptions.value = icons.filter((item) => item.name.includes(search));
+    loading(false);
+  }
+};
+
+const vs = reactive({
+  acl_view: [],
+  acl_edit: [],
+});
+
+const users = JSON.parse(JSON.stringify(store.state.org.users)).map((user) => {
+  return {
+    value: user.username,
+    label: user.fullname,
+    dept: user.dept,
+    avatar: user.avatar,
+    gender: user.gender,
+  };
+});
+const depts = JSON.parse(JSON.stringify(store.state.org.depts))
+  .map((dept) => {
+    return {
+      value: dept.id,
+      label: dept.name,
+      users: users
+        .filter((user) => user.dept === dept.id)
+        .map((user) => {
+          return {
+            username: user.value,
+            fullname: user.label,
+          };
+        }),
+    };
+  })
+  .filter((dept) => dept.users.length != 0);
+
+const randerVsUsers = () => {
+  ['acl_view', 'acl_edit'].forEach((field) => {
+    vs[field] = JSON.parse(JSON.stringify(current_form.value[field] || []));
+    if (current_form.value[field] && current_form.value[field].length === 0) vs[field] = [];
+    else if (current_form.value[field] && current_form.value[field].length === users.length)
+      vs[field] = [0];
+    else {
+      JSON.parse(JSON.stringify(depts))
+        .reverse()
+        .forEach((dept) => {
+          if (
+            dept.users
+              .map((user) => {
                 return user.username;
-              }),
-            ];
-            vs.value[field] = vs.value[field].filter(
+              })
+              .every((username) => vs[field].includes(username))
+          ) {
+            vs[field].unshift(dept.value);
+            vs[field] = vs[field].filter(
               (item) =>
                 !dept.users
                   .map((user) => {
@@ -1527,300 +1521,177 @@ export default {
                   })
                   .includes(item),
             );
-          } else {
-            current_form.value[field].push(value);
           }
         });
-        depts
-          .filter((dept) => !vs.value[field].includes(dept.value))
-          .forEach((dept) => {
-            if (
-              dept.users
-                .map((user) => {
-                  return user.username;
-                })
-                .every((username) => vs.value[field].includes(username))
-            ) {
-              vs.value[field].push(dept.value);
-              vs.value[field] = vs.value[field].filter(
-                (item) =>
-                  !dept.users
-                    .map((user) => {
-                      return user.username;
-                    })
-                    .includes(item),
-              );
-            }
-          });
-      }
-    };
+    }
+  });
+};
 
-    const randerVsUsers = () => {
-      ['acl_view', 'acl_edit'].forEach((field) => {
-        vs.value[field] = JSON.parse(JSON.stringify(current_form.value[field] || []));
-        if (current_form.value[field] && current_form.value[field].length === 0)
-          vs.value[field] = [];
-        else if (current_form.value[field] && current_form.value[field].length === users.length)
-          vs.value[field] = [0];
-        else {
-          JSON.parse(JSON.stringify(depts))
-            .reverse()
-            .forEach((dept) => {
-              if (
-                dept.users
-                  .map((user) => {
-                    return user.username;
-                  })
-                  .every((username) => vs.value[field].includes(username))
-              ) {
-                vs.value[field].unshift(dept.value);
-                vs.value[field] = vs.value[field].filter(
-                  (item) =>
-                    !dept.users
-                      .map((user) => {
-                        return user.username;
-                      })
-                      .includes(item),
-                );
-              }
-            });
-        }
-      });
-    };
-
-    const resolveFlowUsers = computed(() => {
-      return ({ users }) => {
-        let _users = [];
-        users.forEach((user) => {
-          _users.push(
-            [...[store.state.org.leader], ...store.state.org.users].find(
-              (item) => item.username === user,
-            ),
-          );
-        });
-        return _users.length === 1 ? _users[0] : _users;
-      };
-    });
-
-    const handleSaveFormInfo = () => {
-      if (changes.value.alias) {
-        changes.value.alias = changes.value.alias.trim();
-        if (forms.value.find((form) => form.alias === changes.value.alias)) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.form.tab.basicInfo.alias.duplicate', {
-                alias: changes.value.alias,
-              }),
-            },
-          });
-          return;
-        }
-      }
-      const flow_error = changes.value.flow
-        ? changes.value.flow.find((item) => !item.title || item.users.length === 0)
-        : null;
-      if (flow_error) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.form.tab.approvalFlow.error'),
-          },
-        });
-        return;
-      }
-      changes.value.id = current_form.value.id;
-      updateForm(changes.value).then(({ code, msg }) => {
-        if (code === 200) {
-          fetchForms();
-          getUserData();
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: msg,
-            },
-          });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const handleRestoreFormInfo = () => {
-      current_form.value = {
-        ...JSON.parse(
-          JSON.stringify(forms.value.find((form) => form.id === current_form.value.id)),
+const resolveFlowUsers = computed(() => {
+  return ({ users }) => {
+    let _users = [];
+    users.forEach((user) => {
+      _users.push(
+        [...[store.state.org.leader], ...store.state.org.users].find(
+          (item) => item.username === user,
         ),
-        ...{
-          is_parent: forms.value.filter((form) => form.pid === current_form.value.id).length != 0,
+      );
+    });
+    return _users.length === 1 ? _users[0] : _users;
+  };
+});
+
+const handleSaveFormInfo = () => {
+  if (changes.value.alias) {
+    changes.value.alias = changes.value.alias.trim();
+    if (forms.value.find((form) => form.alias === changes.value.alias)) {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: i18n.global.t('layout.navbar.helper.form.tab.basicInfo.alias.duplicate', {
+            alias: changes.value.alias,
+          }),
         },
-      };
-    };
-
-    const confirm = ref(null);
-    const handleBackupFormData = () => {
-      backupForm({ id: current_form.value.id }).then(({ code, data: { tname }, msg }) => {
-        if (code === 200) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: tname,
-            },
-          });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
       });
-    };
-
-    const handleTruncateFormData = () => {
-      truncateForm({ id: current_form.value.id }).then(({ code, data: { tname }, msg }) => {
-        if (code === 200) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: tname,
-            },
-          });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+      return;
+    }
+  }
+  const flow_error = changes.value.flow
+    ? changes.value.flow.find((item) => !item.title || item.users.length === 0)
+    : null;
+  if (flow_error) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.form.tab.approvalFlow.error'),
+      },
+    });
+    return;
+  }
+  changes.value.id = current_form.value.id;
+  updateForm(changes.value).then(({ code, msg }) => {
+    if (code === 200) {
+      fetchForms();
+      getUserData();
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          text: msg,
+        },
       });
-    };
-
-    const qrCodeKey = ref(null);
-    const handleCreatePubForm = () => {
-      current_pub.value = {
-        key: Math.random().toString(36).slice(-6),
-        tid: current_form.value.id,
-        status: 1,
-      };
-      document.getElementById('showViewAndEditPubModalBtn').click();
-      qrCodeKey.value = null;
-    };
-
-    const handleChangeDuration = (e) => {
-      if (e.target.value) {
-        if (e.target.value.split(' ').length === 3) {
-          current_pub.value.start = e.target.value.split(' ')[0];
-          current_pub.value.end = e.target.value.split(' ')[2];
-        } else {
-          current_pub.value.start = current_pub.value.end = e.target.value;
-        }
-      }
-    };
-
-    const handleSubmitPubForm = () => {
-      const data = JSON.parse(JSON.stringify(current_pub.value));
-      delete data.duration;
-      if (data.id) {
-        const changes = getChanges(
-          data,
-          pubs.value.find((pub) => pub.id === data.id),
-        );
-        if (Object.keys(changes).length) {
-          changes.id = data.id;
-          updatePub(changes).then(({ code, msg }) => {
-            if (code === 200) {
-              fetchPubs(current_form.value.id);
-              document.getElementById('hideViewAndEditPubModalBtn').click();
-              current_pub.value = {};
-            } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-            }
-          });
-        }
-      } else {
-        createPub(data).then(({ code, msg }) => {
-          if (code === 200) {
-            fetchPubs(current_form.value.id);
-            document.getElementById('hideViewAndEditPubModalBtn').click();
-            current_pub.value = {};
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
-      }
-    };
-
-    const handleEditPubForm = (item) => {
-      current_pub.value = JSON.parse(JSON.stringify(item));
-      current_pub.value.duration = [
-        moment(item.start).format('YYYY-MM-DD'),
-        moment(item.end).format('YYYY-MM-DD'),
-      ];
-      document.getElementById('showViewAndEditPubModalBtn').click();
-      qrCodeKey.value = Math.random().toString(36).slice(-6);
-      nextTick(() => {
-        new QRCode(document.getElementById('qrcode'), {
-          text: `${location.origin}${process.env.BASE_URL}form/${current_pub.value.uuid}`,
-          width: 100,
-          height: 100,
-          colorDark: '#000000',
-          colorLight: '#ffffff',
-          correctLevel: 3,
-        });
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const handleDbclickQrcode = (uuid) => {
-      const route = router.resolve({ name: 'pubForm', params: { uuid } });
-      window.open(route.href, '_blank');
-    };
+const handleRestoreFormInfo = () => {
+  current_form.value = {
+    ...JSON.parse(JSON.stringify(forms.value.find((form) => form.id === current_form.value.id))),
+    ...{
+      is_parent: forms.value.filter((form) => form.pid === current_form.value.id).length != 0,
+    },
+  };
+};
 
-    const handleDelPubForm = () => {
-      updatePub({
-        id: current_pub.value.id,
-        data_state: 'deleted',
-      }).then(({ code, msg }) => {
+const confirm = ref(null);
+const handleBackupFormData = () => {
+  backupForm({ id: current_form.value.id }).then(({ code, data: { tname }, msg }) => {
+    if (code === 200) {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          text: tname,
+        },
+      });
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const handleTruncateFormData = () => {
+  truncateForm({ id: current_form.value.id }).then(({ code, data: { tname }, msg }) => {
+    if (code === 200) {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          text: tname,
+        },
+      });
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const qrCodeKey = ref(null);
+const handleCreatePubForm = () => {
+  current_pub.value = {
+    key: Math.random().toString(36).slice(-6),
+    tid: current_form.value.id,
+    status: 1,
+  };
+  document.getElementById('showViewAndEditPubModalBtn').click();
+  qrCodeKey.value = null;
+};
+
+const handleChangeDuration = (e) => {
+  if (e.target.value) {
+    if (e.target.value.split(' ').length === 3) {
+      current_pub.value.start = e.target.value.split(' ')[0];
+      current_pub.value.end = e.target.value.split(' ')[2];
+    } else {
+      current_pub.value.start = current_pub.value.end = e.target.value;
+    }
+  }
+};
+
+const handleSubmitPubForm = () => {
+  const data = JSON.parse(JSON.stringify(current_pub.value));
+  delete data.duration;
+  if (data.id) {
+    const changes = getChanges(
+      data,
+      pubs.value.find((pub) => pub.id === data.id),
+    );
+    if (Object.keys(changes).length) {
+      changes.id = data.id;
+      updatePub(changes).then(({ code, msg }) => {
         if (code === 200) {
           fetchPubs(current_form.value.id);
-          document.getElementById('hideDeletePubModalBtn').click();
+          document.getElementById('hideViewAndEditPubModalBtn').click();
           current_pub.value = {};
         } else {
           toast({
@@ -1833,54 +1704,72 @@ export default {
           });
         }
       });
-    };
+    }
+  } else {
+    createPub(data).then(({ code, msg }) => {
+      if (code === 200) {
+        fetchPubs(current_form.value.id);
+        document.getElementById('hideViewAndEditPubModalBtn').click();
+        current_pub.value = {};
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
+};
 
-    return {
-      getUserInfo,
+const { BASE_URL } = process.env;
+const handleEditPubForm = (item) => {
+  current_pub.value = JSON.parse(JSON.stringify(item));
+  current_pub.value.duration = [
+    moment(item.start).format('YYYY-MM-DD'),
+    moment(item.end).format('YYYY-MM-DD'),
+  ];
+  document.getElementById('showViewAndEditPubModalBtn').click();
+  qrCodeKey.value = Math.random().toString(36).slice(-6);
+  nextTick(() => {
+    new QRCode(document.getElementById('qrcode'), {
+      text: `${location.origin}${BASE_URL}form/${current_pub.value.uuid}`,
+      width: 100,
+      height: 100,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: 3,
+    });
+  });
+};
 
-      tree,
-      current_form,
-      current_tab,
-      delete_form,
-      default_expanded_keys,
-      pubs,
-      current_pub,
+const handleDbclickQrcode = (uuid) => {
+  const route = router.resolve({ name: 'pubForm', params: { uuid } });
+  window.open(route.href, '_blank');
+};
 
-      changes,
-      isModified,
-      isParentOrHasRedirect,
-
-      handleSelectForm,
-      handleAddForm,
-      handleEditFormTitle,
-      handleSaveFormTitle,
-      handleDropForm,
-      handleCopyForm,
-      handleConfirmDelForm,
-      handleDelForm,
-
-      iconOptions,
-      fetchIconOptions,
-      vs,
-      options4acl_view,
-      options4acl_edit,
-      handleSelectValue,
-      resolveFlowUsers,
-      handleSaveFormInfo,
-      handleRestoreFormInfo,
-
-      confirm,
-      handleBackupFormData,
-      handleTruncateFormData,
-
-      handleCreatePubForm,
-      handleChangeDuration,
-      handleSubmitPubForm,
-      qrCodeKey,
-      handleEditPubForm,
-      handleDbclickQrcode,
-      handleDelPubForm,
-    };
-  },
+const handleDelPubForm = () => {
+  updatePub({
+    id: current_pub.value.id,
+    data_state: 'deleted',
+  }).then(({ code, msg }) => {
+    if (code === 200) {
+      fetchPubs(current_form.value.id);
+      document.getElementById('hideDeletePubModalBtn').click();
+      current_pub.value = {};
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
 };
 </script>

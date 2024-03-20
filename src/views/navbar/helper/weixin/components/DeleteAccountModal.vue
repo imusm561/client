@@ -53,58 +53,52 @@
   </div>
 </template>
 
-<script>
-import { ref, watch } from 'vue';
-import { updateAccount } from '@api/weixin';
+<script setup>
+import { defineProps, defineEmits, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
+import { updateAccount } from '@api/weixin';
 
-export default {
-  props: {
-    data: {
-      type: Object,
-      default: () => {
-        return {};
-      },
+const props = defineProps({
+  data: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    const toast = useToast();
-    const account = ref({});
+});
 
-    watch(
-      () => props.data,
-      (val) => {
-        account.value = JSON.parse(JSON.stringify(val));
-      },
-      { immediate: true, deep: true },
-    );
+const emit = defineEmits(['confirm']);
 
-    const handleDeleteAccount = () => {
-      updateAccount({
-        id: account.value.id,
-        data_state: 'deleted',
-      }).then(({ code, msg }) => {
-        if (code === 200) {
-          emit('confirm');
-          document.getElementById('hideDeleteAccountModalBtn').click();
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
+const toast = useToast();
+const account = ref({});
 
-    return {
-      account,
-      handleDeleteAccount,
-    };
+watch(
+  () => props.data,
+  (val) => {
+    account.value = JSON.parse(JSON.stringify(val));
   },
+  { immediate: true, deep: true },
+);
+
+const handleDeleteAccount = () => {
+  updateAccount({
+    id: account.value.id,
+    data_state: 'deleted',
+  }).then(({ code, msg }) => {
+    if (code === 200) {
+      emit('confirm');
+      document.getElementById('hideDeleteAccountModalBtn').click();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
 };
 </script>

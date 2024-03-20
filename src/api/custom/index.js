@@ -1,5 +1,5 @@
-import axios from '@utils/axios';
 import { generateApiQuery } from '@utils';
+import axios from '@utils/axios';
 
 export const getCustomFilter = (params) => {
   return axios.get('/cor/custom/filter' + generateApiQuery(params));

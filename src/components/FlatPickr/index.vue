@@ -8,113 +8,101 @@
   ></flat-pickr>
 </template>
 
-<script>
-import { defineComponent, computed, ref } from 'vue';
+<script setup>
+import { defineProps, defineEmits, reactive, computed } from 'vue';
 import flatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
-import store from '@store';
 import { Mandarin } from 'flatpickr/dist/l10n/zh.js';
-export default defineComponent({
-  components: {
-    flatPickr,
-  },
-  props: {
-    modelValue: {
-      type: [String, Array, Date],
-      default: () => {
-        return '';
-      },
-    },
-    placeholder: {
-      type: String,
-      default: () => {
-        return '';
-      },
-    },
-    disabled: {
-      type: Boolean,
-      default: () => {
-        return false;
-      },
-    },
-    config: {
-      type: Object,
-      default: () => {
-        return {};
-      },
+import store from '@store';
+const props = defineProps({
+  modelValue: {
+    type: [String, Array, Date],
+    default: () => {
+      return '';
     },
   },
-  setup(props, { emit }) {
-    const configuration = ref({
-      ...{
-        mode: 'single', // 'single', 'multiple' or 'range'
-        allowInput: true,
-        dateFormat: 'Y-m-d',
-        enableTime: false,
-        enableSeconds: false,
-        noCalendar: false,
-        defaultHour: 9,
-        defaultMinute: 0,
-        minuteIncrement: 5,
-        // maxDate: '2022-07-31',
-        // minDate: '2022-06-01',
-        // disable: [(date) => { return [0,6].includes(date.getDay())}] // ['2022-07-25', '2022-07-26']
-      },
-      ...props.config,
-    });
+  placeholder: {
+    type: String,
+    default: () => {
+      return '';
+    },
+  },
+  disabled: {
+    type: Boolean,
+    default: () => {
+      return false;
+    },
+  },
+  config: {
+    type: Object,
+    default: () => {
+      return {};
+    },
+  },
+});
+const emit = defineEmits(['update:modelValue']);
 
-    if (
-      !['Y-m-d H:i:S', 'Y-m-d H:i', 'Y-m-d', 'H:i:S', 'H:i'].includes(
-        configuration.value.dateFormat,
-      )
-    )
-      configuration.value.dateFormat = 'Y-m-d';
+const configuration = reactive({
+  ...{
+    mode: 'single', // 'single', 'multiple' or 'range'
+    allowInput: true,
+    dateFormat: 'Y-m-d',
+    enableTime: false,
+    enableSeconds: false,
+    noCalendar: false,
+    defaultHour: 9,
+    defaultMinute: 0,
+    minuteIncrement: 5,
+    // maxDate: '2022-07-31',
+    // minDate: '2022-06-01',
+    // disable: [(date) => { return [0,6].includes(date.getDay())}] // ['2022-07-25', '2022-07-26']
+  },
+  ...props.config,
+});
 
-    switch (configuration.value.dateFormat) {
-      case 'Y-m-d H:i:S':
-        configuration.value.enableTime = true;
-        configuration.value.enableSeconds = true;
-        configuration.value.noCalendar = false;
-        break;
+if (!['Y-m-d H:i:S', 'Y-m-d H:i', 'Y-m-d', 'H:i:S', 'H:i'].includes(configuration.dateFormat))
+  configuration.dateFormat = 'Y-m-d';
 
-      case 'Y-m-d H:i':
-        configuration.value.enableTime = true;
-        configuration.value.enableSeconds = false;
-        configuration.value.noCalendar = false;
-        break;
+switch (configuration.dateFormat) {
+  case 'Y-m-d H:i:S':
+    configuration.enableTime = true;
+    configuration.enableSeconds = true;
+    configuration.noCalendar = false;
+    break;
 
-      case 'H:i:S':
-        configuration.value.enableTime = true;
-        configuration.value.enableSeconds = true;
-        configuration.value.noCalendar = true;
-        break;
+  case 'Y-m-d H:i':
+    configuration.enableTime = true;
+    configuration.enableSeconds = false;
+    configuration.noCalendar = false;
+    break;
 
-      case 'H:i':
-        configuration.value.enableTime = true;
-        configuration.value.enableSeconds = false;
-        configuration.value.noCalendar = true;
-        break;
+  case 'H:i:S':
+    configuration.enableTime = true;
+    configuration.enableSeconds = true;
+    configuration.noCalendar = true;
+    break;
 
-      default:
-        configuration.value.enableTime = false;
-        configuration.value.enableSeconds = false;
-        configuration.value.noCalendar = false;
-        break;
-    }
+  case 'H:i':
+    configuration.enableTime = true;
+    configuration.enableSeconds = false;
+    configuration.noCalendar = true;
+    break;
 
-    if (store.state.sys.lang === 'zh-cn') configuration.value.locale = Mandarin;
+  default:
+    configuration.enableTime = false;
+    configuration.enableSeconds = false;
+    configuration.noCalendar = false;
+    break;
+}
 
-    return {
-      configuration,
-      date: computed({
-        get() {
-          return props.modelValue;
-        },
-        set(value) {
-          emit('update:modelValue', value);
-        },
-      }),
-    };
+if (store.state.sys.lang === 'zh-cn') configuration.locale = Mandarin;
+
+const date = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit('update:modelValue', value);
   },
 });
 </script>

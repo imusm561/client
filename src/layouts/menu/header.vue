@@ -4,14 +4,12 @@
   </li>
 </template>
 
-<script>
-export default {
-  props: {
-    item: {
-      type: Object,
-      required: true,
-    },
+<script setup>
+import { defineProps } from 'vue';
+defineProps({
+  item: {
+    type: Object,
+    required: true,
   },
-  setup() {},
-};
+});
 </script>

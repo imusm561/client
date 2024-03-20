@@ -134,7 +134,7 @@
               <td>{{ user.website }}</td>
               <td>{{ user.about }}</td>
               <td>{{ user.login_count }}</td>
-              <td>{{ user.last_login_at && $moment(user.last_login_at).fromNow() }}</td>
+              <td>{{ user.last_login_at && moment(user.last_login_at).fromNow() }}</td>
             </tr>
           </tbody>
         </table>
@@ -820,299 +820,268 @@
   </div>
 </template>
 
-<script>
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-import store from '@store';
-import i18n from '@utils/i18n';
-import { getUserList, updateUser, createUser } from '@api/user';
+<script setup>
+import { defineProps, defineEmits, computed, onMounted, onUnmounted, ref, reactive } from 'vue';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
 import { getChanges, getUserInfo } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+import store from '@store';
 import FlatPickr from '@components/FlatPickr';
 import Pagination from '@components/Pagination';
 import Avatar from '@components/Avatar';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
 import Empty from '@components/Empty';
-export default {
-  components: {
-    Avatar,
-    FlatPickr,
-    Pagination,
-    Empty,
-  },
-  props: {
-    depts: {
-      type: Array,
-      default: () => {
-        return [];
-      },
-    },
-    role: {
-      type: Object,
-      default: () => {
-        return {};
-      },
+import { getUserList, updateUser, createUser } from '@api/user';
+
+const props = defineProps({
+  depts: {
+    type: Array,
+    default: () => {
+      return [];
     },
   },
-  setup(props, { emit }) {
-    const toast = useToast();
+  role: {
+    type: Object,
+    default: () => {
+      return {};
+    },
+  },
+});
 
-    const pagination = ref({
-      pageNum: 1,
-      pageSize: 200,
-      totalCount: 0,
-    });
+const emit = defineEmits(['clearDepts', 'clearRole']);
 
-    const _users = ref([]);
+const toast = useToast();
 
-    onMounted(() => {
+const pagination = reactive({
+  pageNum: 1,
+  pageSize: 200,
+  totalCount: 0,
+});
+
+const _users = ref([]);
+
+onMounted(() => {
+  getData();
+});
+
+const handlePaginationChange = ({ pageNum, pageSize }) => {
+  pagination.pageNum = pageNum;
+  pagination.pageSize = pageSize;
+  getData();
+};
+
+const getData = () => {
+  getUserList({ pageNum: pagination.pageNum, pageSize: pagination.pageSize }).then(
+    ({ code, msg, data }) => {
+      if (code === 200) {
+        _users.value = data.rows;
+        pagination.totalCount = data.count;
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    },
+  );
+};
+
+const deptQuery = computed({
+  get() {
+    return props.depts.length
+      ? {
+          text: props.depts
+            .map((dept) => {
+              return dept.name;
+            })
+            .join(', '),
+          value: props.depts.map((dept) => {
+            return dept.id;
+          }),
+        }
+      : null;
+  },
+  set() {
+    emit('clearDepts');
+  },
+});
+
+const roleQuery = computed({
+  get() {
+    return props.role.id
+      ? {
+          text: props.role.name,
+          value: props.role.id,
+        }
+      : null;
+  },
+  set() {
+    emit('clearRole');
+  },
+});
+
+const userQuery = ref('');
+
+const users = computed(() => {
+  return _users.value
+    .filter((user) => (deptQuery.value ? deptQuery.value.value.includes(user.dept) : true))
+    .filter((user) => (roleQuery.value ? user.role.includes(roleQuery.value.value) : true))
+    .filter((user) =>
+      userQuery.value
+        ? `${user.username}|${user.fullname}|${user.phone}|${user.email}`.includes(userQuery.value)
+        : true,
+    );
+});
+
+const current_user = ref({});
+const is_editing = ref(false);
+
+const viewAndEditUserModalHiddenHandler = () => {
+  is_editing.value = false;
+};
+
+onMounted(() => {
+  const viewAndEditUserModal = document.getElementById('viewAndEditUserModal');
+  if (viewAndEditUserModal)
+    viewAndEditUserModal.addEventListener('hidden.bs.modal', viewAndEditUserModalHiddenHandler);
+});
+
+onUnmounted(() => {
+  const viewAndEditUserModal = document.getElementById('viewAndEditUserModal');
+  if (viewAndEditUserModal)
+    viewAndEditUserModal.removeEventListener('hidden.bs.modal', viewAndEditUserModalHiddenHandler);
+});
+
+const viewAndEditUserModalKey = ref(null);
+
+const handleClickUserId = (user) => {
+  current_user.value = JSON.parse(JSON.stringify(user));
+  handleSelectDept();
+  viewAndEditUserModalKey.value = Math.random().toString(36).slice(-6);
+  document.getElementById('showViewAndEditUserModalBtn').click();
+};
+
+const handleCreateUser = () => {
+  current_user.value = { status: 1 };
+  is_editing.value = true;
+  viewAndEditUserModalKey.value = Math.random().toString(36).slice(-6);
+  document.getElementById('showViewAndEditUserModalBtn').click();
+};
+
+const handleDelUser = (confirm) => {
+  if (confirm) {
+    updateUser({
+      id: current_user.value.id,
+      data_state: 'deleted',
+    }).then(() => {
       getData();
+      document.getElementById('hideDeleteUserModalBtn').click();
     });
-
-    const handlePaginationChange = ({ pageNum, pageSize }) => {
-      pagination.value.pageNum = pageNum;
-      pagination.value.pageSize = pageSize;
-      getData();
-    };
-
-    const getData = () => {
-      getUserList({ pageNum: pagination.value.pageNum, pageSize: pagination.value.pageSize }).then(
-        ({ code, msg, data }) => {
-          if (code === 200) {
-            _users.value = data.rows;
-            pagination.value.totalCount = data.count;
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
+  } else {
+    if (
+      store.state.org.users.filter(
+        (user) => user.id != current_user.value.id && user.leader === current_user.value.id,
+      ).length
+    ) {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: i18n.global.t('layout.navbar.helper.org.user.delete.error'),
         },
-      );
-    };
+      });
+      return;
+    }
+    document.getElementById('showDeleteUserModalBth').click();
+  }
+};
 
-    const deptQuery = computed({
-      get() {
-        return props.depts.length
-          ? {
-              text: props.depts
-                .map((dept) => {
-                  return dept.name;
-                })
-                .join(', '),
-              value: props.depts.map((dept) => {
-                return dept.id;
-              }),
-            }
-          : null;
+const options4leader = ref([]);
+const handleSelectDept = (autoSelect = false) => {
+  options4leader.value = store.state.org.users.filter(
+    (user) =>
+      user.dept === current_user.value.dept ||
+      user.dept === store.state.org.depts.find((dept) => dept.id === current_user.value.dept).pid,
+  );
+  if (autoSelect) {
+    if (options4leader.value.length === 1) current_user.value.leader = options4leader.value[0].id;
+    else current_user.value.leader = null;
+  }
+};
+
+const handleSubmitUser = () => {
+  if (
+    !current_user.value.id &&
+    store.state.org.users.filter((user) => user.username === current_user.value.username).length
+  ) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.org.user.create.username.error', {
+          username: current_user.value.username,
+        }),
       },
-      set() {
-        emit('clearDepts');
+    });
+    return;
+  }
+  if (
+    store.state.org.users.filter(
+      (user) => user.id != current_user.value.id && user.phone === current_user.value.phone,
+    ).length
+  ) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.org.user.create.phone.error', {
+          phone: current_user.value.phone,
+        }),
       },
     });
-
-    const roleQuery = computed({
-      get() {
-        return props.role.id
-          ? {
-              text: props.role.name,
-              value: props.role.id,
-            }
-          : null;
+    return;
+  }
+  if (
+    store.state.org.users.filter(
+      (user) => user.id != current_user.value.id && user.email === current_user.value.email,
+    ).length
+  ) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.org.user.create.email.error', {
+          email: current_user.value.email,
+        }),
       },
-      set() {
-        emit('clearRole');
-      },
     });
-
-    const userQuery = ref('');
-
-    const users = computed(() => {
-      return _users.value
-        .filter((user) => (deptQuery.value ? deptQuery.value.value.includes(user.dept) : true))
-        .filter((user) => (roleQuery.value ? user.role.includes(roleQuery.value.value) : true))
-        .filter((user) =>
-          userQuery.value
-            ? `${user.username}|${user.fullname}|${user.phone}|${user.email}`.includes(
-                userQuery.value,
-              )
-            : true,
-        );
+    return;
+  }
+  if (current_user.value.id) {
+    const changes = getChanges(current_user.value, getUserInfo(current_user.value.id, 'id'));
+    if (Object.keys(changes).length) {
+      changes.id = current_user.value.id;
+      updateUser(changes).then(() => {
+        getData();
+        document.getElementById('hideViewAndEditUserModalBtn').click();
+      });
+    } else {
+      document.getElementById('hideViewAndEditUserModalBtn').click();
+    }
+  } else {
+    createUser(current_user.value).then(() => {
+      getData();
+      document.getElementById('hideViewAndEditUserModalBtn').click();
     });
-
-    const current_user = ref({});
-    const is_editing = ref(false);
-
-    const viewAndEditUserModalHiddenHandler = () => {
-      is_editing.value = false;
-    };
-
-    onMounted(() => {
-      const viewAndEditUserModal = document.getElementById('viewAndEditUserModal');
-      if (viewAndEditUserModal)
-        viewAndEditUserModal.addEventListener('hidden.bs.modal', viewAndEditUserModalHiddenHandler);
-    });
-
-    onUnmounted(() => {
-      const viewAndEditUserModal = document.getElementById('viewAndEditUserModal');
-      if (viewAndEditUserModal)
-        viewAndEditUserModal.removeEventListener(
-          'hidden.bs.modal',
-          viewAndEditUserModalHiddenHandler,
-        );
-    });
-
-    const viewAndEditUserModalKey = ref(null);
-
-    const handleClickUserId = (user) => {
-      current_user.value = JSON.parse(JSON.stringify(user));
-      handleSelectDept();
-      viewAndEditUserModalKey.value = Math.random().toString(36).slice(-6);
-      document.getElementById('showViewAndEditUserModalBtn').click();
-    };
-
-    const handleCreateUser = () => {
-      current_user.value = { status: 1 };
-      is_editing.value = true;
-      viewAndEditUserModalKey.value = Math.random().toString(36).slice(-6);
-      document.getElementById('showViewAndEditUserModalBtn').click();
-    };
-
-    const handleDelUser = (confirm) => {
-      if (confirm) {
-        updateUser({
-          id: current_user.value.id,
-          data_state: 'deleted',
-        }).then(() => {
-          getData();
-          document.getElementById('hideDeleteUserModalBtn').click();
-        });
-      } else {
-        if (
-          store.state.org.users.filter(
-            (user) => user.id != current_user.value.id && user.leader === current_user.value.id,
-          ).length
-        ) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.org.user.delete.error'),
-            },
-          });
-          return;
-        }
-        document.getElementById('showDeleteUserModalBth').click();
-      }
-    };
-
-    const options4leader = ref([]);
-    const handleSelectDept = (autoSelect = false) => {
-      options4leader.value = store.state.org.users.filter(
-        (user) =>
-          user.dept === current_user.value.dept ||
-          user.dept ===
-            store.state.org.depts.find((dept) => dept.id === current_user.value.dept).pid,
-      );
-      if (autoSelect) {
-        if (options4leader.value.length === 1)
-          current_user.value.leader = options4leader.value[0].id;
-        else current_user.value.leader = null;
-      }
-    };
-
-    const handleSubmitUser = () => {
-      if (
-        !current_user.value.id &&
-        store.state.org.users.filter((user) => user.username === current_user.value.username).length
-      ) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.org.user.create.username.error', {
-              username: current_user.value.username,
-            }),
-          },
-        });
-        return;
-      }
-      if (
-        store.state.org.users.filter(
-          (user) => user.id != current_user.value.id && user.phone === current_user.value.phone,
-        ).length
-      ) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.org.user.create.phone.error', {
-              phone: current_user.value.phone,
-            }),
-          },
-        });
-        return;
-      }
-      if (
-        store.state.org.users.filter(
-          (user) => user.id != current_user.value.id && user.email === current_user.value.email,
-        ).length
-      ) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.org.user.create.email.error', {
-              email: current_user.value.email,
-            }),
-          },
-        });
-        return;
-      }
-      if (current_user.value.id) {
-        const changes = getChanges(current_user.value, getUserInfo(current_user.value.id, 'id'));
-        if (Object.keys(changes).length) {
-          changes.id = current_user.value.id;
-          updateUser(changes).then(() => {
-            getData();
-            document.getElementById('hideViewAndEditUserModalBtn').click();
-          });
-        } else {
-          document.getElementById('hideViewAndEditUserModalBtn').click();
-        }
-      } else {
-        createUser(current_user.value).then(() => {
-          getData();
-          document.getElementById('hideViewAndEditUserModalBtn').click();
-        });
-      }
-    };
-
-    return {
-      getUserInfo,
-      deptQuery,
-      roleQuery,
-      userQuery,
-      users,
-      pagination,
-      handlePaginationChange,
-      current_user,
-      is_editing,
-      viewAndEditUserModalKey,
-      handleClickUserId,
-      handleCreateUser,
-      handleDelUser,
-      options4leader,
-      handleSelectDept,
-      handleSubmitUser,
-    };
-  },
+  }
 };
 </script>

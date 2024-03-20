@@ -10,7 +10,7 @@
       <span :class="`fw-semibold me-auto text-truncate text-${variant}`">
         {{ title ? title : user ? user.fullname : $store.state.sys.name }}
       </span>
-      <small v-if="time" style="white-space: nowrap">{{ $moment(time).fromNow() }}</small>
+      <small v-if="time" style="white-space: nowrap">{{ moment(time).fromNow() }}</small>
       <button type="button" class="btn-close" @click="$emit('close-toast')"></button>
     </div>
     <div
@@ -24,57 +24,51 @@
   </div>
 </template>
 
-<script>
-import { useRouter } from '@utils';
+<script setup>
+import { defineProps, defineEmits } from 'vue';
+import { useRouter } from 'vue-router';
+import moment from '@utils/moment';
 import Avatar from '@components/Avatar';
-export default {
-  components: {
-    Avatar,
+const props = defineProps({
+  variant: {
+    type: String,
+    default: null,
   },
-  props: {
-    variant: {
-      type: String,
-      default: null,
-    },
-    user: {
-      type: Object,
-      default: null,
-    },
-    icon: {
-      type: String,
-      default: null,
-    },
-    title: {
-      type: String,
-      default: null,
-    },
-    text: {
-      type: String,
-      default: null,
-    },
-    time: {
-      type: String,
-      default: null,
-    },
-    to: {
-      type: String,
-      default: null,
-    },
+  user: {
+    type: Object,
+    default: null,
   },
-  setup(props, { emit }) {
-    const { router } = useRouter();
-    const handleClickText = () => {
-      if (props.to) {
-        const to = JSON.parse(JSON.stringify(props.to));
-        to.query = to.query || {};
-        to.query.t = new Date().getTime();
-        router.replace(to);
-        emit('close-toast');
-      }
-    };
-    return {
-      handleClickText,
-    };
+  icon: {
+    type: String,
+    default: null,
   },
+  title: {
+    type: String,
+    default: null,
+  },
+  text: {
+    type: String,
+    default: null,
+  },
+  time: {
+    type: String,
+    default: null,
+  },
+  to: {
+    type: String,
+    default: null,
+  },
+});
+const emit = defineEmits(['close-toast']);
+
+const router = useRouter();
+const handleClickText = () => {
+  if (props.to) {
+    const to = JSON.parse(JSON.stringify(props.to));
+    to.query = to.query || {};
+    to.query.t = new Date().getTime();
+    router.replace(to);
+    emit('close-toast');
+  }
 };
 </script>

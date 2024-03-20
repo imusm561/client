@@ -1,6 +1,6 @@
+import { generateApiQuery, decryptData } from '@utils';
 import axios from '@utils/axios';
 import store from '@store';
-import { generateApiQuery, decryptData } from '@utils';
 
 export const userLogin = (data) => {
   return axios.post('/cor/user/login', data);
@@ -10,9 +10,10 @@ export const userLogout = () => {
   return axios.post('/cor/user/logout');
 };
 
+const { BASE_URL } = process.env;
+
 export const getUserData = () => {
-  if (sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubtk`))
-    return new Promise.resolve();
+  if (sessionStorage.getItem(`${BASE_URL.replace(/\//g, '_')}pubtk`)) return new Promise.resolve();
   return axios.get('/cor/user/data').then(({ code, data }) => {
     if (code === 200) {
       const { depts, roles, users, onlines, user, forms, notices } = JSON.parse(decryptData(data));

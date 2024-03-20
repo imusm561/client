@@ -537,9 +537,9 @@
                       {{ uaParser(item.agent).device.type || 'desktop' }}
                     </div>
                     <p class="text-muted mb-0">
-                      {{ item.ip }} - {{ $moment(item.created_at).format('llll') }}
+                      {{ item.ip }} - {{ moment(item.created_at).format('llll') }}
                       <span class="badge bg-soft-info text-dark ms-1">
-                        {{ $moment(item.created_at).fromNow() }}
+                        {{ moment(item.created_at).fromNow() }}
                       </span>
                     </p>
                   </div>
@@ -1178,41 +1178,193 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted, computed, reactive } from 'vue';
-import store from '@store';
-import i18n from '@utils/i18n';
+<script setup>
+import { ref, reactive, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { VueCropper } from 'vue-cropper';
 import 'vue-cropper/dist/index.css';
-import { base64ToFile } from '@utils';
-import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
-import { uploadSysFile } from '@api/sys';
-import { useRouter, clearUserData, getChanges, hashData } from '@utils';
+import uaParser from 'ua-parser-js';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
+
+import { clearUserData, getChanges, hashData, base64ToFile } from '@utils';
+import i18n from '@utils/i18n';
+import moment from '@utils/moment';
+
 import FlatPickr from '@components/FlatPickr';
 import Avatar from '@components/Avatar';
 import MonacoEditor from '@components/MonacoEditor';
-import uaParser from 'ua-parser-js';
-export default {
-  components: {
-    FlatPickr,
-    Avatar,
-    VueCropper,
-    MonacoEditor,
-  },
-  setup() {
-    const { router } = useRouter();
-    const toast = useToast();
 
-    const user = ref(JSON.parse(JSON.stringify(store.state.user.data)));
+import store from '@store';
 
-    const login_history = ref([]);
+import { uploadAvatar, updateUser, changePassword, getUserLogs } from '@api/user';
+import { uploadSysFile } from '@api/sys';
 
-    onMounted(() => {
-      getUserLogs({ type: 1 }).then(({ code, data, msg }) => {
+const { BASE_URL } = process.env;
+const router = useRouter();
+const toast = useToast();
+
+const user = reactive(JSON.parse(JSON.stringify(store.state.user.data)));
+
+const login_history = ref([]);
+
+onMounted(() => {
+  getUserLogs({ type: 1 }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      login_history.value = data;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+});
+
+const resolveDeviceIcon = computed(() => {
+  return (type) => {
+    if (type.toLowerCase().includes('mobile')) return 'mdi-cellphone';
+    else if (type.toLowerCase().includes('safari')) return 'mdi-tablet';
+    else return 'mdi-desktop-mac';
+  };
+});
+
+const currentpassword = ref('');
+const newpassword = ref('');
+const confirmpassword = ref('');
+
+const isCurrentPasswordVisible = ref(false);
+const isNewPasswordVisible = ref(false);
+const isConfirmPasswordVisible = ref(false);
+
+const cropper = ref(null);
+const option = reactive({
+  file: null,
+  img: null,
+  outputSize: 1,
+  outputType: 'png',
+  info: true,
+  canScale: true,
+  autoCrop: true,
+  autoCropWidth: 200,
+  autoCropHeight: 200,
+  fixed: true,
+  fixedNumber: [1, 1],
+  full: false,
+  fixedBox: true,
+  canMove: true,
+  canMoveBox: false,
+  original: false,
+  centerBox: false,
+  high: true,
+  infoTrue: false,
+  maxImgSize: 2000,
+  enlarge: 1,
+  mode: 'cover',
+});
+
+const handleInputAvatar = (e) => {
+  option.type = 'avatar';
+  option.fixed = true;
+  option.fixedBox = true;
+  option.canMoveBox = false;
+  option.file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    let data;
+    if (typeof e.target.result === 'object') {
+      data = window.URL.createObjectURL(new Blob([e.target.result]));
+    } else {
+      data = e.target.result;
+    }
+    option.img = data;
+    document.getElementById('showCropperModalBtn').click();
+  };
+  reader.readAsDataURL(option.file);
+};
+
+const handleInputFavicon = (e) => {
+  const formData = new FormData();
+  formData.append('file', e.target.files[0], e.target.files[0].name);
+  formData.append('filename', 'favicon.ico');
+  uploadSysFile(formData).then(({ code, msg }) => {
+    if (code === 200) {
+      const ico = document.getElementById('favicon');
+      if (ico?.src) ico.src = ico.src.split('.ico')[0] + `.ico?t=${new Date().getTime()}`;
+      const favicon = document.querySelector('link[rel="icon"]');
+      if (favicon?.href)
+        favicon.href = favicon.href.split('.ico')[0] + `.ico?t=${new Date().getTime()}`;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const handleInputLogoLight = (e) => {
+  option.type = 'logo-light';
+  option.fixed = false;
+  option.fixedBox = false;
+  option.canMoveBox = true;
+  option.file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    let data;
+    if (typeof e.target.result === 'object') {
+      data = window.URL.createObjectURL(new Blob([e.target.result]));
+    } else {
+      data = e.target.result;
+    }
+    option.img = data;
+    document.getElementById('showCropperModalBtn').click();
+  };
+  reader.readAsDataURL(option.file);
+};
+
+const handleInputLogoDark = (e) => {
+  option.type = 'logo-dark';
+  option.fixed = false;
+  option.fixedBox = false;
+  option.canMoveBox = true;
+  option.file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    let data;
+    if (typeof e.target.result === 'object') {
+      data = window.URL.createObjectURL(new Blob([e.target.result]));
+    } else {
+      data = e.target.result;
+    }
+    option.img = data;
+    document.getElementById('showCropperModalBtn').click();
+  };
+  reader.readAsDataURL(option.file);
+};
+
+const handleUploadFile = () => {
+  cropper.value.getCropData((data) => {
+    const file = base64ToFile(
+      data,
+      `${option.file.name.substring(0, option.file.name.lastIndexOf('.'))}[${
+        option.autoCropWidth
+      }x${option.autoCropHeight}].${option.outputType}`,
+    );
+    const formData = new FormData();
+    if (option.type === 'avatar') {
+      formData.append('avatar', file, file.name);
+      uploadAvatar(formData).then(({ code, msg, data }) => {
         if (code === 200) {
-          login_history.value = data;
+          user.avatar = data.url;
         } else {
           toast({
             component: ToastificationContent,
@@ -1224,81 +1376,15 @@ export default {
           });
         }
       });
-    });
-
-    const resolveDeviceIcon = computed(() => {
-      return (type) => {
-        if (type.toLowerCase().includes('mobile')) return 'mdi-cellphone';
-        else if (type.toLowerCase().includes('safari')) return 'mdi-tablet';
-        else return 'mdi-desktop-mac';
-      };
-    });
-
-    const currentpassword = ref('');
-    const newpassword = ref('');
-    const confirmpassword = ref('');
-
-    const isCurrentPasswordVisible = ref(false);
-    const isNewPasswordVisible = ref(false);
-    const isConfirmPasswordVisible = ref(false);
-
-    const cropper = ref(null);
-    const option = ref({
-      file: null,
-      img: null,
-      outputSize: 1,
-      outputType: 'png',
-      info: true,
-      canScale: true,
-      autoCrop: true,
-      autoCropWidth: 200,
-      autoCropHeight: 200,
-      fixed: true,
-      fixedNumber: [1, 1],
-      full: false,
-      fixedBox: true,
-      canMove: true,
-      canMoveBox: false,
-      original: false,
-      centerBox: false,
-      high: true,
-      infoTrue: false,
-      maxImgSize: 2000,
-      enlarge: 1,
-      mode: 'cover',
-    });
-
-    const handleInputAvatar = (e) => {
-      option.value.type = 'avatar';
-      option.value.fixed = true;
-      option.value.fixedBox = true;
-      option.value.canMoveBox = false;
-      option.value.file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        let data;
-        if (typeof e.target.result === 'object') {
-          data = window.URL.createObjectURL(new Blob([e.target.result]));
-        } else {
-          data = e.target.result;
-        }
-        option.value.img = data;
-        document.getElementById('showCropperModalBtn').click();
-      };
-      reader.readAsDataURL(option.value.file);
-    };
-
-    const handleInputFavicon = (e) => {
-      const formData = new FormData();
-      formData.append('file', e.target.files[0], e.target.files[0].name);
-      formData.append('filename', 'favicon.ico');
+    } else {
+      formData.append('file', file, file.name);
+      formData.append('filename', `${option.type}.png`);
       uploadSysFile(formData).then(({ code, msg }) => {
         if (code === 200) {
-          const ico = document.getElementById('favicon');
-          if (ico?.src) ico.src = ico.src.split('.ico')[0] + `.ico?t=${new Date().getTime()}`;
-          const favicon = document.querySelector('link[rel="icon"]');
-          if (favicon?.href)
-            favicon.href = favicon.href.split('.ico')[0] + `.ico?t=${new Date().getTime()}`;
+          const logoImgs = document.querySelectorAll('.sys-logo');
+          logoImgs.forEach((img) => {
+            if (img?.src) img.src = img.src.split('.png')[0] + `.png?t=${new Date().getTime()}`;
+          });
         } else {
           toast({
             component: ToastificationContent,
@@ -1310,172 +1396,53 @@ export default {
           });
         }
       });
-    };
-
-    const handleInputLogoLight = (e) => {
-      option.value.type = 'logo-light';
-      option.value.fixed = false;
-      option.value.fixedBox = false;
-      option.value.canMoveBox = true;
-      option.value.file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        let data;
-        if (typeof e.target.result === 'object') {
-          data = window.URL.createObjectURL(new Blob([e.target.result]));
-        } else {
-          data = e.target.result;
-        }
-        option.value.img = data;
-        document.getElementById('showCropperModalBtn').click();
-      };
-      reader.readAsDataURL(option.value.file);
-    };
-
-    const handleInputLogoDark = (e) => {
-      option.value.type = 'logo-dark';
-      option.value.fixed = false;
-      option.value.fixedBox = false;
-      option.value.canMoveBox = true;
-      option.value.file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        let data;
-        if (typeof e.target.result === 'object') {
-          data = window.URL.createObjectURL(new Blob([e.target.result]));
-        } else {
-          data = e.target.result;
-        }
-        option.value.img = data;
-        document.getElementById('showCropperModalBtn').click();
-      };
-      reader.readAsDataURL(option.value.file);
-    };
-
-    const handleUploadFile = () => {
-      cropper.value.getCropData((data) => {
-        const file = base64ToFile(
-          data,
-          `${option.value.file.name.substring(0, option.value.file.name.lastIndexOf('.'))}[${
-            option.value.autoCropWidth
-          }x${option.value.autoCropHeight}].${option.value.outputType}`,
-        );
-        const formData = new FormData();
-        if (option.value.type === 'avatar') {
-          formData.append('avatar', file, file.name);
-          uploadAvatar(formData).then(({ code, msg, data }) => {
-            if (code === 200) {
-              user.value.avatar = data.url;
-            } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-            }
-          });
-        } else {
-          formData.append('file', file, file.name);
-          formData.append('filename', `${option.value.type}.png`);
-          uploadSysFile(formData).then(({ code, msg }) => {
-            if (code === 200) {
-              const logoImgs = document.querySelectorAll('.sys-logo');
-              logoImgs.forEach((img) => {
-                if (img?.src) img.src = img.src.split('.png')[0] + `.png?t=${new Date().getTime()}`;
-              });
-            } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-            }
-          });
-        }
-      });
-    };
-
-    const handleSaveUserInfo = () => {
-      const changes = getChanges(user.value, store.state.user.data);
-      if (Object.keys(changes).length) {
-        changes.id = user.value.id;
-        updateUser(changes).then(() => {
-          // user.value = JSON.parse(JSON.stringify(store.state.user.data));
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'success',
-              icon: 'mdi-check-circle',
-              text: i18n.global.t('layout.navbar.user.dropdown.setting.save.success'),
-            },
-          });
-        });
-      }
-    };
-    const handleChangePassword = () => {
-      changePassword({
-        currentpassword: hashData(currentpassword.value),
-        newpassword: hashData(newpassword.value),
-      }).then(async ({ code, msg }) => {
-        if (code === 200) {
-          // Clean user information
-          clearUserData();
-          // Redirect to login page
-          router.replace({ name: 'login' });
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    };
-
-    const syntax_error = reactive({
-      aliyunSmsTemplates: null,
-      mail: null,
-      task: null,
-      vars: null,
-    });
-
-    return {
-      user,
-
-      uaParser,
-      login_history,
-
-      resolveDeviceIcon,
-
-      currentpassword,
-      newpassword,
-      confirmpassword,
-
-      isCurrentPasswordVisible,
-      isNewPasswordVisible,
-      isConfirmPasswordVisible,
-
-      cropper,
-      option,
-      handleInputAvatar,
-      handleInputFavicon,
-      handleInputLogoLight,
-      handleInputLogoDark,
-      handleUploadFile,
-      handleSaveUserInfo,
-      handleChangePassword,
-
-      syntax_error,
-    };
-  },
+    }
+  });
 };
+
+const handleSaveUserInfo = () => {
+  const changes = getChanges(user, store.state.user.data);
+  if (Object.keys(changes).length) {
+    changes.id = user.id;
+    updateUser(changes).then(() => {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'success',
+          icon: 'mdi-check-circle',
+          text: i18n.global.t('layout.navbar.user.dropdown.setting.save.success'),
+        },
+      });
+    });
+  }
+};
+const handleChangePassword = () => {
+  changePassword({
+    currentpassword: hashData(currentpassword.value),
+    newpassword: hashData(newpassword.value),
+  }).then(async ({ code, msg }) => {
+    if (code === 200) {
+      // Clean user information
+      clearUserData();
+      // Redirect to login page
+      router.replace({ name: 'login' });
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
+};
+
+const syntax_error = reactive({
+  aliyunSmsTemplates: null,
+  mail: null,
+  task: null,
+  vars: null,
+});
 </script>

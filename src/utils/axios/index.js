@@ -1,7 +1,9 @@
 import axios from 'axios';
-import store from '@store';
-import router from '@router';
 import { clearUserData } from '@utils';
+import router from '@router';
+import store from '@store';
+
+const { BASE_URL } = process.env;
 // const HTTP_STATUS_CODE = {
 //   400: '400 Bad Request',
 //   401: '401 Unauthorized',
@@ -18,7 +20,7 @@ import { clearUserData } from '@utils';
 // };
 
 const instance = axios.create({
-  baseURL: process.env.BASE_URL,
+  baseURL: BASE_URL,
   timeout: 3 * 60 * 1000,
   headers: {
     'X-Custom-Header': 'foobar',
@@ -36,12 +38,10 @@ instance.interceptors.request.use(
     config.headers = config.headers || {};
     config.headers.lang = store.state.sys.lang;
 
-    let access_token = localStorage.getItem(
-      `${process.env.BASE_URL.replace(/\//g, '_')}accessToken`,
-    );
+    let access_token = localStorage.getItem(`${BASE_URL.replace(/\//g, '_')}accessToken`);
     if (access_token) config.headers.Authorization = `Bearer ${access_token}`;
 
-    let public_token = sessionStorage.getItem(`${process.env.BASE_URL.replace(/\//g, '_')}pubtk`);
+    let public_token = sessionStorage.getItem(`${BASE_URL.replace(/\//g, '_')}pubtk`);
     if (public_token) config.headers.Authorization = `Bearer ${public_token}`;
 
     return config;

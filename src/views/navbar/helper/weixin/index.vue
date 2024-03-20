@@ -161,93 +161,68 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted, nextTick } from 'vue';
+import { useToast } from 'vue-toastification';
+import { replaceHtml } from '@utils';
+import ToastificationContent from '@components/ToastificationContent';
 import Breadcrumb from '@layouts/breadcrumb';
 import EditAccountModal from './components/EditAccountModal';
 import DeleteAccountModal from './components/DeleteAccountModal';
 import Empty from '@components/Empty';
-import { ref, onMounted, nextTick } from 'vue';
-import { getAccounts } from '@api/weixin';
-import { useToast } from 'vue-toastification';
-import ToastificationContent from '@components/ToastificationContent';
 import useWeixin from './useWeixin';
-import { replaceHtml } from '@utils';
-export default {
-  components: {
-    Breadcrumb,
-    EditAccountModal,
-    DeleteAccountModal,
-    Empty,
-  },
-  setup() {
-    const toast = useToast();
+import { getAccounts } from '@api/weixin';
 
-    onMounted(() => {
-      fetchAccounts();
-    });
+const toast = useToast();
 
-    const accounts = ref([]);
-    const fetchAccounts = () => {
-      getAccounts().then(({ code, data, msg }) => {
-        if (code === 200) {
-          accounts.value = data;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
+onMounted(() => {
+  fetchAccounts();
+});
+
+const accounts = ref([]);
+const fetchAccounts = () => {
+  getAccounts().then(({ code, data, msg }) => {
+    if (code === 200) {
+      accounts.value = data;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
       });
-    };
+    }
+  });
+};
 
-    const { serviceTypeOptions } = useWeixin();
+const { serviceTypeOptions } = useWeixin();
 
-    const search_keyword = ref('');
-    const search_type = ref(null);
+const search_keyword = ref('');
+const search_type = ref(null);
 
-    const current_account = ref({});
+const current_account = ref({});
 
-    const handleCreateAccount = () => {
-      const account = {
-        key: Math.random().toString(36).slice(-6),
-        title: '',
-        service_type: 'serviceAccount',
-        description: '',
-      };
-      current_account.value = account;
-      nextTick(() => document.getElementById('showEditAccountModalBtn').click());
-    };
+const handleCreateAccount = () => {
+  const account = {
+    key: Math.random().toString(36).slice(-6),
+    title: '',
+    service_type: 'serviceAccount',
+    description: '',
+  };
+  current_account.value = account;
+  nextTick(() => document.getElementById('showEditAccountModalBtn').click());
+};
 
-    const handleEditAccount = (account) => {
-      current_account.value = JSON.parse(JSON.stringify(account));
-      current_account.value.key = Math.random().toString(36).slice(-6);
-      nextTick(() => document.getElementById('showEditAccountModalBtn').click());
-    };
+const handleEditAccount = (account) => {
+  current_account.value = JSON.parse(JSON.stringify(account));
+  current_account.value.key = Math.random().toString(36).slice(-6);
+  nextTick(() => document.getElementById('showEditAccountModalBtn').click());
+};
 
-    const handleDelAccount = (account) => {
-      current_account.value = JSON.parse(JSON.stringify(account));
-      document.getElementById('showDeleteAccountModalBtn').click();
-    };
-    return {
-      replaceHtml,
-
-      accounts,
-      fetchAccounts,
-
-      serviceTypeOptions,
-
-      search_keyword,
-      search_type,
-
-      current_account,
-      handleCreateAccount,
-      handleEditAccount,
-      handleDelAccount,
-    };
-  },
+const handleDelAccount = (account) => {
+  current_account.value = JSON.parse(JSON.stringify(account));
+  document.getElementById('showDeleteAccountModalBtn').click();
 };
 </script>

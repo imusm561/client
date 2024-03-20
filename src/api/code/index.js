@@ -1,5 +1,5 @@
-import axios from '@utils/axios';
 import { generateApiQuery } from '@utils';
+import axios from '@utils/axios';
 
 export const getCodeDirs = (params) => {
   return axios.get('/cor/code/dirs' + generateApiQuery(params));

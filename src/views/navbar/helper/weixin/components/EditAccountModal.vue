@@ -422,99 +422,87 @@
   </div>
 </template>
 
-<script>
-import { ref, watch } from 'vue';
-import { createAccount, updateAccount } from '@api/weixin';
-import CKEditor from '@components/CKEditor';
-import MonacoEditor from '@components/MonacoEditor';
+<script setup>
+import { defineProps, defineEmits, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
+import CKEditor from '@components/CKEditor';
+import MonacoEditor from '@components/MonacoEditor';
+import { createAccount, updateAccount } from '@api/weixin';
 import useWeixin from '../useWeixin';
 
-export default {
-  components: {
-    CKEditor,
-    MonacoEditor,
-  },
-  props: {
-    data: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    accounts: {
-      type: Array,
-      default: () => {
-        return [];
-      },
+const props = defineProps({
+  data: {
+    type: Object,
+    default: () => {
+      return {};
     },
   },
-  setup(props, { emit }) {
-    const toast = useToast();
-    const account = ref({});
-    const syntax_error = ref(null);
-    const { serviceTypeOptions } = useWeixin();
+  accounts: {
+    type: Array,
+    default: () => {
+      return [];
+    },
+  },
+});
 
-    watch(
-      () => props.data,
-      (val) => {
-        account.value = JSON.parse(JSON.stringify(val));
-      },
-      { immediate: true, deep: true },
-    );
+const emit = defineEmits(['submit']);
 
-    watch(
-      () => account.value.service_type,
-      (val) => {
-        account.value.soid = val === '3rdPartyPlatform' ? null : props.data.soid;
-        account.value.platform = val === '3rdPartyPlatform' ? null : props.data.platform;
-      },
-      { immediate: true, deep: true },
-    );
+const toast = useToast();
+const account = ref({});
+const syntax_error = ref(null);
+const { serviceTypeOptions } = useWeixin();
 
-    const handleSubmitAccount = () => {
-      if (account.value.id) {
-        updateAccount(account.value).then(({ code, msg }) => {
-          if (code === 200) {
-            emit('submit');
-            document.getElementById('hideEditAccountModalBtn').click();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
+watch(
+  () => props.data,
+  (val) => {
+    account.value = JSON.parse(JSON.stringify(val));
+  },
+  { immediate: true, deep: true },
+);
+
+watch(
+  () => account.value.service_type,
+  (val) => {
+    account.value.soid = val === '3rdPartyPlatform' ? null : props.data.soid;
+    account.value.platform = val === '3rdPartyPlatform' ? null : props.data.platform;
+  },
+  { immediate: true, deep: true },
+);
+
+const handleSubmitAccount = () => {
+  if (account.value.id) {
+    updateAccount(account.value).then(({ code, msg }) => {
+      if (code === 200) {
+        emit('submit');
+        document.getElementById('hideEditAccountModalBtn').click();
       } else {
-        createAccount(account.value).then(({ code, msg }) => {
-          if (code === 200) {
-            emit('submit');
-            document.getElementById('hideEditAccountModalBtn').click();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
         });
       }
-    };
-
-    return {
-      account,
-      serviceTypeOptions,
-      syntax_error,
-      handleSubmitAccount,
-    };
-  },
+    });
+  } else {
+    createAccount(account.value).then(({ code, msg }) => {
+      if (code === 200) {
+        emit('submit');
+        document.getElementById('hideEditAccountModalBtn').click();
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
 };
 </script>

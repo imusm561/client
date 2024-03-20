@@ -14,51 +14,42 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { onMounted, ref } from 'vue';
-import { useRouter } from '@utils';
+import { useRoute } from 'vue-router';
 import store from '@store';
 import { getFileInfo } from '@api/file';
-export default {
-  setup() {
-    const { route } = useRouter();
-    const file = ref({});
-    const height = ref(`${document.documentElement.clientHeight}px`);
 
-    onMounted(() => {
-      getFileInfo(route.value.params).then(({ code, data }) => {
-        if (code === 200) {
-          document.title = data?.name
-            ? data.name + ' - ' + store.state.sys.name
-            : store.state.sys.name;
-          file.value.url = `${process.env.BASE_URL}cor/file/load/${route.value.params.uuid}`;
-          if (data.token) {
-            file.value.url += `?token=${data.token}`;
-            delete data.token;
-          }
-          file.value = { ...file.value, ...data };
-          if (file.value.category === 'office') {
-            file.value.url = `${
-              store.state.sys.cfg.officeViewer || '//view.officeapps.live.com/op/view.aspx?src='
-            }${encodeURIComponent(`${location.origin}${file.value.url}`)}`;
-          }
-          if (file.value.category === 'unknown') {
-            let downloadElement = document.createElement('a');
-            downloadElement.href = file.value.url;
-            downloadElement.download = file.value.name;
-            document.body.appendChild(downloadElement);
-            downloadElement.click();
-            document.body.removeChild(downloadElement);
-            window.close();
-          }
-        }
-      });
-    });
+const route = useRoute();
+const file = ref({});
+const height = document.documentElement.clientHeight + 'px';
+const { BASE_URL } = process.env;
 
-    return {
-      file,
-      height,
-    };
-  },
-};
+onMounted(() => {
+  getFileInfo(route.params).then(({ code, data }) => {
+    if (code === 200) {
+      document.title = data?.name ? data.name + ' - ' + store.state.sys.name : store.state.sys.name;
+      file.value.url = `${BASE_URL}cor/file/load/${route.params.uuid}`;
+      if (data.token) {
+        file.value.url += `?token=${data.token}`;
+        delete data.token;
+      }
+      file.value = { ...file.value, ...data };
+      if (file.value.category === 'office') {
+        file.value.url = `${
+          store.state.sys.cfg.officeViewer || '//view.officeapps.live.com/op/view.aspx?src='
+        }${encodeURIComponent(`${location.origin}${file.value.url}`)}`;
+      }
+      if (file.value.category === 'unknown') {
+        let downloadElement = document.createElement('a');
+        downloadElement.href = file.value.url;
+        downloadElement.download = file.value.name;
+        document.body.appendChild(downloadElement);
+        downloadElement.click();
+        document.body.removeChild(downloadElement);
+        window.close();
+      }
+    }
+  });
+});
 </script>

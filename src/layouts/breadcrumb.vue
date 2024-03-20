@@ -52,7 +52,7 @@
               <span class="fw-medium">{{ $t('layout.breadcrumb.formInfoModal.creation') }}</span>
               <span class="badge bg-primary">
                 {{ getUserInfo(form.created_by).fullname }} @
-                {{ $moment(form.created_at).format('llll') }}
+                {{ moment(form.created_at).format('llll') }}
               </span>
             </li>
             <li
@@ -62,7 +62,7 @@
               <span class="fw-medium">{{ $t('layout.breadcrumb.formInfoModal.lastUpdate') }}</span>
               <span class="badge bg-secondary">
                 {{ getUserInfo(form.updated_by).fullname }} @
-                {{ $moment(form.updated_at).format('llll') }}
+                {{ moment(form.updated_at).format('llll') }}
               </span>
             </li>
             <li
@@ -197,96 +197,73 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed } from 'vue';
-import {
-  useRouter,
-  getListPath,
-  getParentsById,
-  getUserInfo,
-  generateFlowByCurrentUser,
-} from '@utils';
-import store from '@store';
+import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import { getDataForm } from '@api/data';
+import { getListPath, getParentsById, getUserInfo, generateFlowByCurrentUser } from '@utils';
+import moment from '@utils/moment';
 import Empty from '@components/Empty';
 import Log from '@components/Log';
-export default {
-  components: {
-    Empty,
-    Log,
-  },
-  setup() {
-    const title = ref('');
-    const items = ref([]);
-    const { route } = useRouter();
-    const path = getListPath(route.value.path);
-    const page = store.state.user.forms.find((item) => item.route && item.route.path == path);
-    if (page) {
-      title.value = page.title;
-      items.value = getParentsById(store.state.user.forms, page.id);
-    } else {
-      title.value = route.value?.meta?.title || '';
-      items.value = route.value?.meta?.items || [];
-    }
+import store from '@store';
+import { getDataForm } from '@api/data';
 
-    const toast = useToast();
-    const form = ref({});
-    const columns = ref([]);
-    const records = ref({});
+const title = ref('');
+const items = ref([]);
+const route = useRoute();
+const path = getListPath(route.path);
+const page = store.state.user.forms.find((item) => item.route && item.route.path == path);
+if (page) {
+  title.value = page.title;
+  items.value = getParentsById(store.state.user.forms, page.id);
+} else {
+  title.value = route.meta?.title || '';
+  items.value = route.meta?.items || [];
+}
 
-    const fetchDataForm = async () => {
-      const { code, data, msg } = await getDataForm({ tid: Number(route.value.params.tid) });
-      if (code === 200) {
-        form.value = data.form;
-        form.value.flow = form.value.flow.length
-          ? generateFlowByCurrentUser(form.value.flow)
-          : null;
-        columns.value = data.columns;
-        records.value = data.records;
-      } else {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: msg,
-          },
-        });
-      }
-    };
+const toast = useToast();
+const form = ref({});
+const columns = ref([]);
+const records = ref({});
 
-    const resolveDataStateVariant = computed(() => {
-      return (state) => {
-        switch (state) {
-          case 'published':
-            return 'bg-primary';
-          case 'deleted':
-            return 'bg-danger';
-          case 'drafted':
-            return 'bg-info';
-          case 'archived':
-            return 'bg-success';
-          case 'approving':
-            return 'bg-secondary';
-          default:
-            return 'bg-warning';
-        }
-      };
+const fetchDataForm = async () => {
+  const { code, data, msg } = await getDataForm({ tid: Number(route.params.tid) });
+  if (code === 200) {
+    form.value = data.form;
+    form.value.flow = form.value.flow.length ? generateFlowByCurrentUser(form.value.flow) : null;
+    columns.value = data.columns;
+    records.value = data.records;
+  } else {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: msg,
+      },
     });
-
-    if (['list', 'view', 'edit'].includes(route.value.name)) fetchDataForm();
-
-    return {
-      title,
-      items,
-      form,
-      columns,
-      records,
-      getUserInfo,
-      resolveDataStateVariant,
-    };
-  },
+  }
 };
+
+const resolveDataStateVariant = computed(() => {
+  return (state) => {
+    switch (state) {
+      case 'published':
+        return 'bg-primary';
+      case 'deleted':
+        return 'bg-danger';
+      case 'drafted':
+        return 'bg-info';
+      case 'archived':
+        return 'bg-success';
+      case 'approving':
+        return 'bg-secondary';
+      default:
+        return 'bg-warning';
+    }
+  };
+});
+
+if (['list', 'view', 'edit'].includes(route.name)) fetchDataForm();
 </script>
