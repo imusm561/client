@@ -54,7 +54,7 @@ router.beforeEach((to, from, next) => {
   NProgress.start();
   let interval;
   interval = setInterval(() => {
-    if (socket) {
+    if (socket.connected) {
       clearInterval(interval);
       const modelEl = document.getElementsByClassName('modal show')?.[0];
       if (modelEl) {
