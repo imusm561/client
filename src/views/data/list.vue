@@ -230,7 +230,7 @@
 <script setup>
 import { defineOptions, onMounted, onUnmounted, watch, ref, reactive, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { nanoid } from 'nanoid';
+// import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -1382,8 +1382,11 @@ const getRowClass = (params) => {
   }
 };
 
-const getRowId = (params) => {
-  return params.data.id || nanoid();
+const getRowId = ({ data, level, parentKeys = [] }) => {
+  // return params.data.id || nanoid();
+  if (data.id) return data.id;
+  else if (level === 0) return data[Object.keys(data)[0]];
+  else return parentKeys.join('-') + '-' + data[Object.keys(data)[0]];
 };
 
 const serverSideDatasource = {
