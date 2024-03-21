@@ -822,6 +822,7 @@
 
 <script setup>
 import { defineProps, defineEmits, computed, onMounted, onUnmounted, ref, reactive } from 'vue';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getChanges, getUserInfo } from '@utils';
@@ -962,14 +963,14 @@ const viewAndEditUserModalKey = ref(null);
 const handleClickUserId = (user) => {
   current_user.value = JSON.parse(JSON.stringify(user));
   handleSelectDept();
-  viewAndEditUserModalKey.value = Math.random().toString(36).slice(-6);
+  viewAndEditUserModalKey.value = nanoid();
   document.getElementById('showViewAndEditUserModalBtn').click();
 };
 
 const handleCreateUser = () => {
   current_user.value = { status: 1 };
   is_editing.value = true;
-  viewAndEditUserModalKey.value = Math.random().toString(36).slice(-6);
+  viewAndEditUserModalKey.value = nanoid();
   document.getElementById('showViewAndEditUserModalBtn').click();
 };
 

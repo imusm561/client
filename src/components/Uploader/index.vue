@@ -219,6 +219,7 @@ import {
 import { useRouter } from 'vue-router';
 import SparkMD5 from 'spark-md5';
 import QRCode from 'qrcodejs2';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { isMobile, encryptData, getFileSuffix, size2Str, copyToClipboard } from '@utils';
@@ -335,7 +336,7 @@ const files = computed({
 
 const onFileAdded = (file) => {
   emit('upload-start');
-  file.key = Math.random().toString(36).slice(-6);
+  file.key = nanoid();
   file.pause();
   file['_status'] = { value: 'computing', text: 0 };
   file['extension'] = getFileSuffix(file.name);
@@ -578,7 +579,7 @@ const hendleClickMobileUpload = () => {
   options.username =
     sessionStorage.getItem(`${BASE_URL.replace(/\//g, '_')}pubun`) ||
     store.state.user.data.username;
-  qrcode.value = options.code = Math.random().toString(36).slice(-6);
+  qrcode.value = options.code = nanoid();
   let url = `${location.origin}${BASE_URL}uploader/${encodeURIComponent(
     encryptData(JSON.stringify(options)),
   )}`;

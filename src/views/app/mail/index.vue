@@ -775,6 +775,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch, reactive, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { replaceHtml, getUserInfo, hashData, encryptData, decryptData } from '@utils';
@@ -792,7 +793,7 @@ const toast = useToast();
 const route = useRoute();
 
 const new_mail = ref({
-  key: Math.random().toString(36).slice(-6),
+  key: nanoid(),
   to: [],
   cc: [],
   bcc: [],
@@ -1188,7 +1189,7 @@ const handleOpenMail = (mail) => {
   if (mail.data_state === 'drafted') {
     handleCloseMail();
     new_mail.value = JSON.parse(JSON.stringify(mail));
-    new_mail.value.key = Math.random().toString(36).slice(-6);
+    new_mail.value.key = nanoid();
     nextTick(() => document.getElementById('showDraftMailModalBtn').click());
   } else {
     store.dispatch('user/delNotice', {
@@ -1382,7 +1383,7 @@ const showCancelConfirmModal = () => {
 const handleCancelCompose = (discard = true) => {
   if (discard) {
     new_mail.value = {
-      key: Math.random().toString(36).slice(-6),
+      key: nanoid(),
       to: [],
       cc: [],
       bcc: [],

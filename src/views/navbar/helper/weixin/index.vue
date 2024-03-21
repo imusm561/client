@@ -163,6 +163,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import { replaceHtml } from '@utils';
 import ToastificationContent from '@components/ToastificationContent';
@@ -206,7 +207,7 @@ const current_account = ref({});
 
 const handleCreateAccount = () => {
   const account = {
-    key: Math.random().toString(36).slice(-6),
+    key: nanoid(),
     title: '',
     service_type: 'serviceAccount',
     description: '',
@@ -217,7 +218,7 @@ const handleCreateAccount = () => {
 
 const handleEditAccount = (account) => {
   current_account.value = JSON.parse(JSON.stringify(account));
-  current_account.value.key = Math.random().toString(36).slice(-6);
+  current_account.value.key = nanoid();
   nextTick(() => document.getElementById('showEditAccountModalBtn').click());
 };
 

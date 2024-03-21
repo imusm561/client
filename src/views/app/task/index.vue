@@ -422,6 +422,7 @@
 <script setup>
 import { onMounted, onUnmounted, ref, reactive, watch, computed, nextTick } from 'vue';
 import { VueDraggableNext as Draggable } from 'vue-draggable-next';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { replaceHtml, getUserInfo, debounce } from '@utils';
@@ -580,7 +581,7 @@ const current_task = ref({});
 
 const handleCreateTask = () => {
   current_task.value = {
-    key: Math.random().toString(36).slice(-6),
+    key: nanoid(),
     title: '',
     description: '',
     tags: [],

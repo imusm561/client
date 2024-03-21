@@ -448,6 +448,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { listToTree, getChanges, copyToClipboard, pasteFromClipboard } from '@utils';
@@ -482,7 +483,7 @@ const editOrCreateRoleModalKey = ref(null);
 const handleCreateOrEditRole = (role) => {
   current_role.value = JSON.parse(JSON.stringify(role || {}));
   current_role.value.permissions = current_role.value.permissions || {};
-  editOrCreateRoleModalKey.value = Math.random().toString(36).slice(-6);
+  editOrCreateRoleModalKey.value = nanoid();
   document.getElementById('showEditOrCreateRoleModalBtn').click();
 };
 

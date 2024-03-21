@@ -149,6 +149,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { replaceHtml } from '@utils';
@@ -206,7 +207,7 @@ const current_job = ref({});
 
 const handleCreateJob = () => {
   const job = {
-    key: Math.random().toString(36).slice(-6),
+    key: nanoid(),
     title: '',
     status: 1,
     rule: '0 0 * * * *',
@@ -231,7 +232,7 @@ const handleEditJob = (job) => {
     moment(job.start).format('YYYY-MM-DD HH:mm:ss'),
     moment(job.end).format('YYYY-MM-DD HH:mm:ss'),
   ];
-  current_job.value.key = Math.random().toString(36).slice(-6);
+  current_job.value.key = nanoid();
   nextTick(() => document.getElementById('showEditJobModalBtn').click());
 };
 

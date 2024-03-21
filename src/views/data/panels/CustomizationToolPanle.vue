@@ -296,6 +296,7 @@
 <script setup>
 import { defineProps, onMounted, onUnmounted, ref, reactive } from 'vue';
 import { useRoute } from 'vue-router';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getChanges, getUserInfo } from '@utils';
@@ -781,7 +782,7 @@ const create_filter = ref({});
 const handleCreateFilter = () => {
   const stringifyFilterModel = JSON.stringify(props.params.api.getFilterModel(), null, 2);
   create_filter.value = {
-    key: Math.random().toString(36).slice(-6),
+    key: nanoid(),
     name: create_filter.value.data === stringifyFilterModel ? create_filter.value.name : '',
     data: stringifyFilterModel,
   };

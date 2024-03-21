@@ -1112,6 +1112,7 @@ import QRCode from 'qrcodejs2';
 import { pinyin } from 'pinyin-pro';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 
@@ -1659,7 +1660,7 @@ const handleTruncateFormData = () => {
 const qrCodeKey = ref(null);
 const handleCreatePubForm = () => {
   current_pub.value = {
-    key: Math.random().toString(36).slice(-6),
+    key: nanoid(),
     tid: current_form.value.id,
     status: 1,
   };
@@ -1733,7 +1734,7 @@ const handleEditPubForm = (item) => {
     moment(item.end).format('YYYY-MM-DD'),
   ];
   document.getElementById('showViewAndEditPubModalBtn').click();
-  qrCodeKey.value = Math.random().toString(36).slice(-6);
+  qrCodeKey.value = nanoid();
   nextTick(() => {
     new QRCode(document.getElementById('qrcode'), {
       text: `${location.origin}${BASE_URL}form/${current_pub.value.uuid}`,

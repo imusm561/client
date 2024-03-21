@@ -243,6 +243,7 @@
 <script setup>
 import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 
@@ -445,7 +446,7 @@ watch(
       chart.options.xaxis.categories = [];
       chart.options.yaxis.max = 100;
     }
-    chart.key = Math.random().toString(36).slice(-6);
+    chart.key = nanoid();
   },
   { immediate: true, deep: true },
 );
@@ -477,7 +478,7 @@ const handleEditJob = () => {
     moment(job.value.start).format('YYYY-MM-DD HH:mm:ss'),
     moment(job.value.end).format('YYYY-MM-DD HH:mm:ss'),
   ];
-  temp_job.value.key = Math.random().toString(36).slice(-6);
+  temp_job.value.key = nanoid();
   nextTick(() => document.getElementById('showEditJobModalBtn').click());
 };
 

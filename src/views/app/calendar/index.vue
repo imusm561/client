@@ -428,6 +428,7 @@
 </template>
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import FullCalendar from '@fullcalendar/vue3';
@@ -585,7 +586,7 @@ const handleDateClick = (e) => {
     users: [store.state.user.data.username],
   };
   is_editing.value = true;
-  viewAndEditEventModalKey.value = Math.random().toString(36).slice(-6);
+  viewAndEditEventModalKey.value = nanoid();
   document.getElementById('showViewAndEditEventModalBtn').click();
 };
 
@@ -740,7 +741,7 @@ onUnmounted(() => {
 
 const handleCreateEvent = () => {
   current_event.value = {
-    key: Math.random().toString(36).slice(-6),
+    key: nanoid(),
 
     title: '',
     description: '',
@@ -759,7 +760,7 @@ const handleCreateEvent = () => {
     users: [store.state.user.data.username],
   };
   is_editing.value = true;
-  viewAndEditEventModalKey.value = Math.random().toString(36).slice(-6);
+  viewAndEditEventModalKey.value = nanoid();
   document.getElementById('showViewAndEditEventModalBtn').click();
 };
 

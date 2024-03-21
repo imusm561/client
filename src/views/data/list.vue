@@ -121,13 +121,11 @@
           :localeText="localeText"
           :serverSideDatasource="serverSideDatasource"
           :serverSideSortAllLevels="true"
-          :serverSideFilterAllLevels="true"
-          :serverSideSortOnServer="true"
-          :serverSideFilterOnServer="true"
           rowGroupPanelShow="always"
           :getContextMenuItems="getContextMenuItems"
           rowSelection="multiple"
           :getRowClass="getRowClass"
+          :getRowId="getRowId"
           :enableRangeSelection="true"
           :suppressRowClickSelection="true"
           :isRowSelectable="isRowSelectable"
@@ -232,6 +230,7 @@
 <script setup>
 import { defineOptions, onMounted, onUnmounted, watch, ref, reactive, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -397,7 +396,7 @@ const defaultColDef = ref({
 });
 const columnDefs = ref([]);
 
-const sideBar = ref({
+const sideBar = {
   toolPanels: [
     {
       id: 'columns',
@@ -439,7 +438,7 @@ const sideBar = ref({
       width: 250,
     },
   ],
-});
+};
 
 const statusBar = ref({
   statusPanels: [
@@ -514,7 +513,7 @@ const fetchDataForm = async (callback) => {
       nextTick(() => {
         if (customs.value) {
           customs.value.data.forEach((custom, index) => {
-            gridColumnApi.moveColumn(custom.colId, index);
+            gridApi.moveColumns([custom.colId], index);
           });
           ready.setCustom = true;
         } else {
@@ -609,10 +608,8 @@ const setFormConfiguration = () => {
 };
 
 let gridApi = null;
-let gridColumnApi = null;
 const onGridReady = (params) => {
   gridApi = params.api;
-  gridColumnApi = params.columnApi;
   gridApi.getTheme = () => {
     return theme.value.data;
   };
@@ -639,7 +636,7 @@ const onGridReady = (params) => {
     nextTick(() => {
       if (customs.value) {
         customs.value.data.forEach((custom, index) => {
-          gridColumnApi.moveColumn(custom.colId, index);
+          gridApi.moveColumns([custom.colId], index);
         });
         ready.setCustom = true;
       } else {
@@ -655,7 +652,7 @@ const handleColumnChanged = () => {
   if (!ready.setCustom) return;
   const tid = Number(route.params.tid);
   if (tid) {
-    const data = gridColumnApi.getColumnState();
+    const data = gridApi.getColumnState();
     if (timer) clearTimeout(timer);
     timer = setTimeout(async () => {
       if (customs.value) {
@@ -1383,6 +1380,10 @@ const getRowClass = (params) => {
     default:
       return null;
   }
+};
+
+const getRowId = (params) => {
+  return params.data.id || nanoid();
 };
 
 const serverSideDatasource = {

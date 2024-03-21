@@ -1084,6 +1084,7 @@
 <script setup>
 import { onMounted, onUnmounted, reactive, ref, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 
@@ -1235,7 +1236,7 @@ onUnmounted(() => {
 
 const handleEditAccount = () => {
   _account.value = JSON.parse(JSON.stringify(account.value));
-  _account.value.key = Math.random().toString(36).slice(-6);
+  _account.value.key = nanoid();
   nextTick(() => document.getElementById('showEditAccountModalBtn').click());
 };
 
@@ -1277,7 +1278,7 @@ const viewAndEditStrategyModalKey = ref(null);
 const handleClickStrategyId = (strategy) => {
   is_editing.value = false;
   current_strategy.value = JSON.parse(JSON.stringify(strategy));
-  viewAndEditStrategyModalKey.value = Math.random().toString(36).slice(-6);
+  viewAndEditStrategyModalKey.value = nanoid();
   document.getElementById('showviewAndEditStrategyModalBtn').click();
 };
 
@@ -1303,7 +1304,7 @@ const handleDelStrategy = () => {
 const handleCreateStrategy = () => {
   current_strategy.value = { soid: account.value.soid, weight: 0 };
   is_editing.value = true;
-  viewAndEditStrategyModalKey.value = Math.random().toString(36).slice(-6);
+  viewAndEditStrategyModalKey.value = nanoid();
   document.getElementById('showviewAndEditStrategyModalBtn').click();
 };
 

@@ -104,6 +104,7 @@
 <script setup>
 import { defineProps, defineEmits, ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { listToTree, getUserInfo } from '@utils';
@@ -212,7 +213,7 @@ watch(
 );
 
 const comment = reactive({
-  key: Math.random().toString(36).slice(-6),
+  key: nanoid(),
   content: '',
   reply: null,
 });
@@ -237,7 +238,7 @@ const handleCreateComment = () => {
       fetchComments(() => {
         scrollToComment(data);
         Object.assign(comment, {
-          key: Math.random().toString(36).slice(-6),
+          key: nanoid(),
           content: '',
           reply: null,
         });
