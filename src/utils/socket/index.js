@@ -16,7 +16,7 @@ import { getUserData } from '@api/user';
 
 const { BASE_URL } = process.env;
 
-export let socket = {};
+export let socket = null;
 
 const loading = { instance: null, count: 0, interval: null };
 const toast = useToast();
