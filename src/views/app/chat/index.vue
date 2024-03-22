@@ -709,16 +709,8 @@ onMounted(() => {
           };
         });
 
-      watch(
-        () => route.query,
-        (val) => {
-          if (val.contact) {
-            let contact = _contacts.value.find((contact) => contact.username === val.contact);
-            if (contact) handleClickContact(contact);
-          }
-        },
-        { immediate: true },
-      );
+      let contact = _contacts.value.find((contact) => contact.username === route.query.contact);
+      if (contact) handleClickContact(contact);
     } else {
       toast({
         component: ToastificationContent,

@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, reactive, onMounted, onUnmounted, nextTick } from 'vue';
+import { defineProps, ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getUserInfo } from '@utils';
@@ -158,14 +158,10 @@ const scrollHandler = () => {
 
 onMounted(() => {
   fetchLogs(() => {
-    nextTick(() => {
-      setTimeout(() => {
-        const logsList = document
-          .getElementById('logs')
-          ?.querySelector('.simplebar-content-wrapper');
-        if (logsList) logsList.addEventListener('scroll', scrollHandler);
-      }, 100);
-    });
+    setTimeout(() => {
+      const logsList = document.getElementById('logs')?.querySelector('.simplebar-content-wrapper');
+      if (logsList) logsList.addEventListener('scroll', scrollHandler);
+    }, 100);
   });
 });
 

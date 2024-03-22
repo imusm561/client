@@ -678,7 +678,7 @@
 </template>
 
 <script setup>
-import { defineOptions, computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { defineOptions, computed, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -768,66 +768,6 @@ const formData = computed(() => {
 });
 
 const initialized = ref(false);
-onMounted(() => {
-  watch(
-    () => route.params,
-    (newVal = {}, oldVal = {}) => {
-      if (
-        route.name === 'edit' &&
-        ((Number(newVal.rid) === 0 && !store.state.user.data?.permissions?.[newVal.tid]?.create) ||
-          (Number(newVal.rid) !== 0 && !store.state.user.data?.permissions?.[newVal.tid]?.edit))
-      ) {
-        router.replace({ name: 'permissionDenied' });
-        return;
-      }
-      if (route.name === 'edit' && (newVal.tid !== oldVal.tid || newVal.rid !== oldVal.rid)) {
-        if (Number(init_data.value.id))
-          forceData({
-            tid: newVal.tid,
-            rid: Number(init_data.value.id),
-            user: null,
-          });
-        fetchDataEdit(newVal.tid, newVal.rid);
-      }
-    },
-    { immediate: true, deep: true },
-  );
-
-  watch(
-    () => formData.value,
-    (newVal = {}, oldVal = {}) => {
-      if (initialized.value) {
-        const changes = getChanges(newVal, oldVal);
-        for (let field in changes) {
-          columns.value
-            .filter(
-              (column) =>
-                column.visible?.includes(`data.${field}`) ||
-                column.required?.includes(`data.${field}`) ||
-                column.editable?.includes(`data.${field}`) ||
-                column.__default?.includes(`data.${field}`) ||
-                column.cfg?.__source?.includes(`data.${field}`) ||
-                column.cfg?.prefix?.includes(`data.${field}`) ||
-                column.cfg?.href?.includes(`data.${field}`) ||
-                (typeof column.cfg?.min === 'string' &&
-                  column.cfg?.min?.includes(`data.${field}`)) ||
-                (typeof column.cfg?.max === 'string' && column.cfg?.max?.includes(`data.${field}`)),
-            )
-            .forEach(async (column) => {
-              if (
-                column.visible?.includes(`data.${field}`) ||
-                column.required?.includes(`data.${field}`) ||
-                column.editable?.includes(`data.${field}`)
-              )
-                await setColumnRules(column);
-              else await setColumnConfiguration(column);
-            });
-        }
-      }
-    },
-    { immediate: true, deep: true },
-  );
-});
 
 onUnmounted(() => {
   if (Number(init_data.value.id))
@@ -867,6 +807,64 @@ const fetchDataEdit = async (tid, rid) => {
     });
   }
 };
+
+watch(
+  () => route.params,
+  (newVal = {}, oldVal = {}) => {
+    if (
+      route.name === 'edit' &&
+      ((Number(newVal.rid) === 0 && !store.state.user.data?.permissions?.[newVal.tid]?.create) ||
+        (Number(newVal.rid) !== 0 && !store.state.user.data?.permissions?.[newVal.tid]?.edit))
+    ) {
+      router.replace({ name: 'permissionDenied' });
+      return;
+    }
+    if (route.name === 'edit' && (newVal.tid !== oldVal.tid || newVal.rid !== oldVal.rid)) {
+      if (Number(init_data.value.id))
+        forceData({
+          tid: newVal.tid,
+          rid: Number(init_data.value.id),
+          user: null,
+        });
+      fetchDataEdit(newVal.tid, newVal.rid);
+    }
+  },
+  { immediate: true, deep: true },
+);
+
+watch(
+  () => formData.value,
+  (newVal = {}, oldVal = {}) => {
+    if (initialized.value) {
+      const changes = getChanges(newVal, oldVal);
+      for (let field in changes) {
+        columns.value
+          .filter(
+            (column) =>
+              column.visible?.includes(`data.${field}`) ||
+              column.required?.includes(`data.${field}`) ||
+              column.editable?.includes(`data.${field}`) ||
+              column.__default?.includes(`data.${field}`) ||
+              column.cfg?.__source?.includes(`data.${field}`) ||
+              column.cfg?.prefix?.includes(`data.${field}`) ||
+              column.cfg?.href?.includes(`data.${field}`) ||
+              (typeof column.cfg?.min === 'string' && column.cfg?.min?.includes(`data.${field}`)) ||
+              (typeof column.cfg?.max === 'string' && column.cfg?.max?.includes(`data.${field}`)),
+          )
+          .forEach(async (column) => {
+            if (
+              column.visible?.includes(`data.${field}`) ||
+              column.required?.includes(`data.${field}`) ||
+              column.editable?.includes(`data.${field}`)
+            )
+              await setColumnRules(column);
+            else await setColumnConfiguration(column);
+          });
+      }
+    }
+  },
+  { immediate: true, deep: true },
+);
 
 const handleToggleRibbonMode = () => {
   ribbon_mode.value = !ribbon_mode.value;

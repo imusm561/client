@@ -185,7 +185,7 @@
 </template>
 
 <script setup>
-import { defineOptions, onMounted, ref, computed, watch } from 'vue';
+import { defineOptions, ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -264,52 +264,6 @@ const formData = computed(() => {
 });
 
 const initialized = ref(false);
-onMounted(() => {
-  watch(
-    () => route.params.uuid,
-    (newVal, oldVal) => {
-      if (route.name === 'pubForm' && newVal !== oldVal) {
-        fetchPubForm(newVal);
-      }
-    },
-    { immediate: true },
-  );
-
-  watch(
-    () => formData.value,
-    (newVal, oldVal) => {
-      if (initialized.value) {
-        const changes = getChanges(newVal || {}, oldVal || {});
-        for (let field in changes) {
-          columns.value
-            .filter(
-              (column) =>
-                column.visible?.includes(`data.${field}`) ||
-                column.required?.includes(`data.${field}`) ||
-                column.editable?.includes(`data.${field}`) ||
-                column.__default?.includes(`data.${field}`) ||
-                column.cfg?.__source?.includes(`data.${field}`) ||
-                column.cfg?.prefix?.includes(`data.${field}`) ||
-                column.cfg?.href?.includes(`data.${field}`) ||
-                (typeof column.cfg?.min === 'string' &&
-                  column.cfg?.min?.includes(`data.${field}`)) ||
-                (typeof column.cfg?.max === 'string' && column.cfg?.max?.includes(`data.${field}`)),
-            )
-            .map(async (column) => {
-              if (
-                column.visible?.includes(`data.${field}`) ||
-                column.required?.includes(`data.${field}`) ||
-                column.editable?.includes(`data.${field}`)
-              )
-                await setColumnRules(column);
-              else await setColumnConfiguration(column);
-            });
-        }
-      }
-    },
-    { immediate: true, deep: true },
-  );
-});
 
 const { BASE_URL } = process.env;
 const fetchPubForm = async (uuid) => {
@@ -594,4 +548,48 @@ const handleSubmitFormData = () => {
     }
   });
 };
+
+watch(
+  () => route.params.uuid,
+  (newVal, oldVal) => {
+    if (route.name === 'pubForm' && newVal !== oldVal) {
+      fetchPubForm(newVal);
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => formData.value,
+  (newVal, oldVal) => {
+    if (initialized.value) {
+      const changes = getChanges(newVal || {}, oldVal || {});
+      for (let field in changes) {
+        columns.value
+          .filter(
+            (column) =>
+              column.visible?.includes(`data.${field}`) ||
+              column.required?.includes(`data.${field}`) ||
+              column.editable?.includes(`data.${field}`) ||
+              column.__default?.includes(`data.${field}`) ||
+              column.cfg?.__source?.includes(`data.${field}`) ||
+              column.cfg?.prefix?.includes(`data.${field}`) ||
+              column.cfg?.href?.includes(`data.${field}`) ||
+              (typeof column.cfg?.min === 'string' && column.cfg?.min?.includes(`data.${field}`)) ||
+              (typeof column.cfg?.max === 'string' && column.cfg?.max?.includes(`data.${field}`)),
+          )
+          .map(async (column) => {
+            if (
+              column.visible?.includes(`data.${field}`) ||
+              column.required?.includes(`data.${field}`) ||
+              column.editable?.includes(`data.${field}`)
+            )
+              await setColumnRules(column);
+            else await setColumnConfiguration(column);
+          });
+      }
+    }
+  },
+  { immediate: true, deep: true },
+);
 </script>

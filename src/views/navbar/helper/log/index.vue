@@ -301,34 +301,34 @@ const refetchLogsHandler = () => {
 
 onMounted(() => {
   fetchLogs();
-  watch(
-    () => search_user.value,
-    (newVal, oldVal) => {
-      if (oldVal !== undefined) {
-        pagination.pageNum = 1;
-        fetchLogs();
-      }
-    },
-    { immediate: true },
-  );
-
-  watch(
-    () => search_url.value,
-    (newVal, oldVal) => {
-      if (oldVal !== undefined) {
-        pagination.pageNum = 1;
-        fetchLogs();
-      }
-    },
-    { immediate: true },
-  );
-
   socket.on('refetchLogs', refetchLogsHandler);
 });
 
 onUnmounted(() => {
   socket.off('refetchLogs', refetchLogsHandler);
 });
+
+watch(
+  () => search_user.value,
+  (newVal, oldVal) => {
+    if (oldVal !== undefined) {
+      pagination.pageNum = 1;
+      fetchLogs();
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => search_url.value,
+  (newVal, oldVal) => {
+    if (oldVal !== undefined) {
+      pagination.pageNum = 1;
+      fetchLogs();
+    }
+  },
+  { immediate: true },
+);
 
 const fetchLogs = () => {
   getSysUrl().then(({ code, data, msg }) => {

@@ -998,27 +998,6 @@ onMounted(async () => {
   }
 
   fetchMails(() => {
-    watch(
-      () => [mails.menu, mails.label],
-      (newVal, oldVal) => {
-        if (newVal && oldVal) {
-          handleCloseMail();
-          const checkall = document.getElementById('checkall');
-          checkall.checked = false;
-          checkall.indeterminate = false;
-          checkedMailIds.value = [];
-
-          mails.total = 0;
-          mails.pageNum = 1;
-          mails.pageSize = 20;
-          mails.list = [];
-
-          fetchMails();
-        }
-      },
-      { immediate: true },
-    );
-
     const list = document.getElementById('email-list')?.querySelector('.simplebar-content-wrapper');
     if (list) list.addEventListener('scroll', scrollHandler);
   });
@@ -1074,6 +1053,26 @@ onUnmounted(() => {
     composeModal.removeEventListener('hidden.bs.modal', composeModalHiddenHandler);
   }
 });
+
+watch(
+  () => [mails.menu, mails.label],
+  (newVal, oldVal) => {
+    if (newVal && oldVal) {
+      handleCloseMail();
+      const checkall = document.getElementById('checkall');
+      checkall.checked = false;
+      checkall.indeterminate = false;
+      checkedMailIds.value = [];
+
+      mails.total = 0;
+      mails.pageNum = 1;
+      mails.pageSize = 20;
+      mails.list = [];
+
+      fetchMails();
+    }
+  },
+);
 
 const handleClickMenuBtn = () => {
   document.getElementById('menusidebar').classList.add('menubar-show');

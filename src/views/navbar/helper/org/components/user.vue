@@ -862,10 +862,6 @@ const pagination = reactive({
 
 const _users = ref([]);
 
-onMounted(() => {
-  getData();
-});
-
 const handlePaginationChange = ({ pageNum, pageSize }) => {
   pagination.pageNum = pageNum;
   pagination.pageSize = pageSize;
@@ -947,6 +943,7 @@ const viewAndEditUserModalHiddenHandler = () => {
 };
 
 onMounted(() => {
+  getData();
   const viewAndEditUserModal = document.getElementById('viewAndEditUserModal');
   if (viewAndEditUserModal)
     viewAndEditUserModal.addEventListener('hidden.bs.modal', viewAndEditUserModalHiddenHandler);

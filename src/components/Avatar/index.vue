@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { defineProps, onMounted, ref, watch } from 'vue';
+import { defineProps, ref, watch } from 'vue';
 const props = defineProps({
   data: {
     type: [Object, Array],
@@ -96,32 +96,30 @@ const fs = {
   xl: 'fs-48',
 };
 
-onMounted(() => {
-  watch(
-    () => props.data,
-    (val) => {
-      const data = JSON.parse(JSON.stringify(val));
-      if (Array.isArray(data)) {
-        isGroup.value = true;
-        if (data.length < 6) users.value = data;
-        else {
-          const collapse_users_object = {};
-          collapse_users_object.collapse = true;
-          collapse_users_object[props.keyUsername] = '···';
-          collapse_users_object[props.keyFullname] = data
-            .slice(4)
-            .map((item) => {
-              return item[props.keyFullname];
-            })
-            .toString();
-          users.value = [...data.slice(0, 4), ...[collapse_users_object]];
-        }
-      } else {
-        isGroup.value = false;
-        user.value = data;
+watch(
+  () => props.data,
+  (val) => {
+    const data = JSON.parse(JSON.stringify(val));
+    if (Array.isArray(data)) {
+      isGroup.value = true;
+      if (data.length < 6) users.value = data;
+      else {
+        const collapse_users_object = {};
+        collapse_users_object.collapse = true;
+        collapse_users_object[props.keyUsername] = '···';
+        collapse_users_object[props.keyFullname] = data
+          .slice(4)
+          .map((item) => {
+            return item[props.keyFullname];
+          })
+          .toString();
+        users.value = [...data.slice(0, 4), ...[collapse_users_object]];
       }
-    },
-    { immediate: true, deep: true },
-  );
-});
+    } else {
+      isGroup.value = false;
+      user.value = data;
+    }
+  },
+  { immediate: true, deep: true },
+);
 </script>

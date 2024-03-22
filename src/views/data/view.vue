@@ -671,16 +671,6 @@ const refetchDataViewHandler = (res) => {
 };
 
 onMounted(() => {
-  watch(
-    () => route.params,
-    (newVal = {}, oldVal = {}) => {
-      if (route.name === 'view' && (newVal.tid !== oldVal.tid || newVal.rid !== oldVal.rid)) {
-        fetchDataView(newVal.tid, newVal.rid);
-      }
-    },
-    { immediate: true, deep: true },
-  );
-
   socket.on('refetchDataView', refetchDataViewHandler);
 });
 
@@ -717,6 +707,16 @@ const fetchDataView = async (tid, rid) => {
     });
   }
 };
+
+watch(
+  () => route.params,
+  (newVal = {}, oldVal = {}) => {
+    if (route.name === 'view' && (newVal.tid !== oldVal.tid || newVal.rid !== oldVal.rid)) {
+      fetchDataView(newVal.tid, newVal.rid);
+    }
+  },
+  { immediate: true, deep: true },
+);
 
 const setFormConfiguration = () => {
   if (form.value.script) form.value.script = replaceVariables(form.value.script, alias.value);

@@ -92,14 +92,16 @@ onMounted(() => {
     document.body.classList.remove('vertical-sidebar-enable');
   });
 
-  watch(
-    () => route,
-    (value) => {
-      onRoutechange(value);
-    },
-    { immediate: true, deep: true },
-  );
+  onRoutechange(route);
 });
+
+watch(
+  () => route,
+  (value) => {
+    onRoutechange(value);
+  },
+  { deep: true },
+);
 
 const logo = computed(() => {
   return store.getters['sys/logo'];

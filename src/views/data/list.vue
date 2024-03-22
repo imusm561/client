@@ -457,19 +457,6 @@ const refetchDataListHandler = (res) => {
 };
 
 onMounted(() => {
-  watch(
-    () => route.params,
-    (newVal = {}, oldVal = {}) => {
-      if (newVal.tid && newVal.tid !== oldVal.tid) {
-        ready.getRows = false;
-        columnDefs.value = [];
-        fetchDataForm();
-        selectedRows.value = [];
-      }
-    },
-    { immediate: true, deep: true },
-  );
-
   socket.on('refetchDataList', refetchDataListHandler);
 });
 
@@ -1245,7 +1232,7 @@ const handleSelecterSearch = async ({ search, loading, column }) => {
   loading(false);
 };
 
-const batch = ref({
+const batch = reactive({
   columns: [],
   column: null,
   value: null,
@@ -1263,7 +1250,7 @@ const handleSubmitBatchUpdate = (action) => {
         updateData({
           tid,
           ids,
-          ...(action ? { action } : { field: batch.value.column.field, value: batch.value.value }),
+          ...(action ? { action } : { field: batch.column.field, value: batch.value }),
         }).then(({ code, msg }) => {
           if (code === 200) {
             if (action) {
@@ -1326,8 +1313,8 @@ const setFormColumnDefs = async () => {
       ]
     : [];
 
-  batch.value.columns = [];
-  batch.value.column = null;
+  batch.columns = [];
+  batch.column = null;
 
   columns.value.forEach((column) => {
     replaceColumnVariables(column);
@@ -1346,7 +1333,7 @@ const setFormColumnDefs = async () => {
       !column.__default?.includes('data.') &&
       !column.cfg?.__source?.includes('data.')
     )
-      batch.value.columns.push(JSON.parse(JSON.stringify(column)));
+      batch.columns.push(JSON.parse(JSON.stringify(column)));
 
     if (column.component === 'LayoutTab') {
       defs.push({
@@ -1691,4 +1678,17 @@ const getDataListForHtml = () => {
     }
   });
 };
+
+watch(
+  () => route.params,
+  (newVal = {}, oldVal = {}) => {
+    if (newVal.tid && newVal.tid !== oldVal.tid) {
+      ready.getRows = false;
+      columnDefs.value = [];
+      fetchDataForm();
+      selectedRows.value = [];
+    }
+  },
+  { immediate: true, deep: true },
+);
 </script>
