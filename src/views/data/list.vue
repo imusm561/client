@@ -478,7 +478,6 @@ onUnmounted(() => {
 });
 
 const fetchDataForm = async (callback) => {
-  ready.setCustom = false;
   const { code, data, msg } = await getDataForm({ tid: Number(route.params.tid) });
   if (code === 200) {
     form.value = data.form;
@@ -510,16 +509,16 @@ const fetchDataForm = async (callback) => {
         : { pageSize: 500 };
       await setFormConfiguration();
       await setFormColumnDefs();
-      nextTick(() => {
-        if (customs.value) {
-          customs.value.data.forEach((custom, index) => {
-            gridApi.moveColumns([custom.colId], index);
-          });
-          ready.setCustom = true;
-        } else {
-          ready.setCustom = true;
-        }
-      });
+      ready.setCustom = false;
+      if (customs.value) {
+        gridApi.moveColumns(
+          customs.value.data.map((column) => column.colId),
+          0,
+        );
+      }
+      setTimeout(() => {
+        ready.setCustom = true;
+      }, 1000);
       const filter = {
         data_state: {
           filterType: 'set',
@@ -633,16 +632,15 @@ const onGridReady = (params) => {
     }
     await setFormColumnDefs();
     ready.setCustom = false;
-    nextTick(() => {
-      if (customs.value) {
-        customs.value.data.forEach((custom, index) => {
-          gridApi.moveColumns([custom.colId], index);
-        });
-        ready.setCustom = true;
-      } else {
-        ready.setCustom = true;
-      }
-    });
+    if (customs.value) {
+      gridApi.moveColumns(
+        customs.value.data.map((column) => column.colId),
+        0,
+      );
+    }
+    setTimeout(() => {
+      ready.setCustom = true;
+    }, 1000);
     gridApi.refreshServerSide({ purge: true });
   };
 };
