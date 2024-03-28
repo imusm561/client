@@ -16,3 +16,7 @@ export const getSysUrl = () => {
 export const getSysLog = (params) => {
   return axios.get('/cor/sys/log' + generateApiQuery(params));
 };
+
+export const getSysLogById = (id) => {
+  return axios.get('/cor/sys/log/' + id);
+};

@@ -272,7 +272,7 @@ import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
 import MonacoEditor from '@components/MonacoEditor';
 
-import { getSysUrl, getSysLog } from '@api/sys';
+import { getSysUrl, getSysLog, getSysLogById } from '@api/sys';
 
 const toast = useToast();
 
@@ -284,7 +284,7 @@ const search_url = ref(null);
 
 const pagination = reactive({
   pageNum: 1,
-  pageSize: 200,
+  pageSize: 100,
   totalCount: 0,
 });
 
@@ -405,8 +405,21 @@ const resolveDeviceIcon = computed(() => {
 });
 
 const current_log = ref({});
-const handleViewLogData = (log) => {
-  current_log.value = log;
-  document.getElementById('showLogDataOffcanvasBtn').click();
+const handleViewLogData = ({ id }) => {
+  getSysLogById(id).then(({ code, data, msg }) => {
+    if (code === 200) {
+      current_log.value = data;
+      document.getElementById('showLogDataOffcanvasBtn').click();
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
 };
 </script>
