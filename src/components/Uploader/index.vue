@@ -9,199 +9,205 @@
     <uploader-btn ref="fileUploadRef" class="d-none" :attrs="{ accept }"></uploader-btn>
     <uploader-btn ref="folderUploadRef" class="d-none" :directory="true"></uploader-btn>
 
-    <div id="file-list" data-simplebar style="max-height: 30vh">
-      <div class="d-flex align-items-center mb-2" v-for="file in files" :key="file.identifier">
-        <div class="flex-shrink-0 me-2 mt-1">
-          <img
-            v-if="file.category === 'image'"
-            :src="`${BASE_URL}cor/file/load/${file.uuid}`"
-            class="rounded avatar-xs cursor-pointer"
-            @click="
-              () => {
-                const images = files.filter((file) => file.category === 'image');
-                $viewerApi({
-                  options: {
-                    focus: false,
-                    movable: false,
-                    initialViewIndex: images.findIndex((image) => image.uuid == file.uuid),
-                  },
-                  images: images.map((image) => {
-                    return `${BASE_URL}cor/file/load/${image.uuid}`;
-                  }),
-                });
-              }
-            "
-            loading="lazy"
-          />
-          <i v-else class="file-icon" :class="FileIcons.getClassWithColor(file.name)" />
-        </div>
-        <div class="flex-grow-1 w-75">
-          <div class="d-flex">
-            <div
-              class="flex-grow-1 mt-1 cursor-pointer text-truncate"
-              @dblclick="handlePreviewFile(file)"
-            >
-              <b>{{ file.name }}</b>
-            </div>
-            <div class="flex-shrink-0 mb-1">
-              <i
-                v-if="!readonly && !disabled"
-                class="mdi mdi-close cursor-pointer text-danger me-2"
-                @click="handleRemoveUpload(file)"
-              />
-            </div>
-          </div>
-          <small class="text-muted">
-            {{ size2Str(file.size) }}
-            <i
-              class="mdi mdi-download cursor-pointer text-primary"
-              @click="handleDownloadFile(file)"
+    <uploader-drop>
+      <div id="file-list" data-simplebar style="max-height: 30vh">
+        <div class="d-flex align-items-center mb-2" v-for="file in files" :key="file.identifier">
+          <div class="flex-shrink-0 me-2 mt-1">
+            <img
+              v-if="file.category === 'image'"
+              :src="`${BASE_URL}cor/file/load/${file.uuid}`"
+              class="rounded avatar-xs cursor-pointer"
+              @click="
+                () => {
+                  const images = files.filter((file) => file.category === 'image');
+                  $viewerApi({
+                    options: {
+                      focus: false,
+                      movable: false,
+                      initialViewIndex: images.findIndex((image) => image.uuid == file.uuid),
+                    },
+                    images: images.map((image) => {
+                      return `${BASE_URL}cor/file/load/${image.uuid}`;
+                    }),
+                  });
+                }
+              "
+              loading="lazy"
             />
-          </small>
+            <i v-else class="file-icon" :class="FileIcons.getClassWithColor(file.name)" />
+          </div>
+          <div class="flex-grow-1 w-75">
+            <div class="d-flex">
+              <div
+                class="flex-grow-1 mt-1 cursor-pointer text-truncate"
+                @dblclick="handlePreviewFile(file)"
+              >
+                <b>{{ file.name }}</b>
+              </div>
+              <div class="flex-shrink-0 mb-1">
+                <i
+                  v-if="!readonly && !disabled"
+                  class="mdi mdi-close cursor-pointer text-danger me-2"
+                  @click="handleRemoveUpload(file)"
+                />
+              </div>
+            </div>
+            <small class="text-muted">
+              {{ size2Str(file.size) }}
+              <i
+                class="mdi mdi-download cursor-pointer text-primary"
+                @click="handleDownloadFile(file)"
+              />
+            </small>
+          </div>
+        </div>
+        <uploader-files id="upload-list">
+          <template #default="props">
+            <div v-for="file in props.files" :key="file.id" class="mb-75">
+              <uploader-file :file="file" class="upload-file">
+                <template #default="props">
+                  <div class="d-flex align-items-center mb-2">
+                    <div class="flex-shrink-0 me-2 mt-1">
+                      <i class="file-icon" :class="FileIcons.getClassWithColor(file.name)" />
+                    </div>
+                    <div class="flex-grow-1 w-75">
+                      <div class="d-flex">
+                        <div class="flex-grow-1 mt-1 text-truncate">
+                          <b>{{ file.name }}</b>
+                          <small class="text-muted text-capitalize ms-2">
+                            {{
+                              file._status.value == 'computing'
+                                ? `${$t('components.uploader.status.computing')} [${
+                                    file._status.text
+                                  }%]`
+                                : file._status.value == 'uploading'
+                                ? `${file._status.text} [${size2Str(props.currentSpeed)}/S]`
+                                : `${file._status.text}`
+                            }}
+                          </small>
+                        </div>
+                        <div class="flex-shrink-0 mb-1">
+                          <i
+                            v-if="['waiting', 'uploading', 'paused'].includes(file._status.value)"
+                            :class="`mdi mdi-${
+                              file._status.value == 'paused' ? 'play' : 'pause'
+                            } cursor-pointer text-primary me-2`"
+                            @click="
+                              () => {
+                                if (file._status.value == 'paused') {
+                                  handleResumeUpload(file);
+                                } else {
+                                  handlePauseUpload(file);
+                                }
+                              }
+                            "
+                          />
+                          <i
+                            class="mdi mdi-close cursor-pointer text-danger me-2"
+                            @click.stop="handleCancelUpload(file)"
+                          />
+                        </div>
+                      </div>
+                      <div class="mt-1 mb-1">
+                        <div class="progress" v-if="['computing'].includes(file._status.value)">
+                          <div
+                            class="progress-bar bg-info"
+                            :style="{ width: `${file._status.text}%` }"
+                          ></div>
+                        </div>
+                        <div
+                          class="progress"
+                          v-else-if="
+                            ['waiting', 'uploading', 'paused'].includes(file._status.value)
+                          "
+                        >
+                          <div
+                            class="progress-bar bg-primary"
+                            :style="{ width: `${props.progress}%` }"
+                          >
+                            <div class="label">{{ props.progress }}%</div>
+                          </div>
+                        </div>
+                        <div class="progress" v-else>
+                          <div
+                            :class="`progress-bar bg-${
+                              file._status.value == 'merging' ? 'warning' : 'success'
+                            }`"
+                            style="width: 100%"
+                          >
+                            <div class="label">100%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </uploader-file>
+            </div>
+          </template>
+        </uploader-files>
+      </div>
+
+      <div class="mt-1 d-flex">
+        <div class="btn-group float-start" v-if="!readonly && (multiple || files.length === 0)">
+          <button
+            id="uploadFile"
+            type="button"
+            :disabled="disabled"
+            class="btn btn-sm"
+            :class="fieldClass"
+            @click="$refs.fileUploadRef.$el.click()"
+          >
+            {{ placeholder }}
+          </button>
+          <button
+            type="button"
+            :disabled="disabled"
+            :id="`${id}_uploadDropdownMenu`"
+            class="btn btn-sm dropdown-toggle dropdown-toggle-split"
+            :class="fieldClass"
+            data-bs-toggle="dropdown"
+            :data-bs-auto-close="qrable ? 'inside' : 'true'"
+            aria-expanded="false"
+          ></button>
+          <ul class="dropdown-menu">
+            <li>
+              <a
+                class="dropdown-item cursor-pointer"
+                :class="{ disabled }"
+                @click="$refs.fileUploadRef.$el.click()"
+              >
+                <i class="mdi mdi-file-upload" />
+                <span class="ms-1">
+                  {{
+                    $t('components.uploader.selectFile', {
+                      count: accept == '*' && multiple ? 2 : 1,
+                    })
+                  }}
+                </span>
+              </a>
+            </li>
+            <li v-if="accept == '*' && multiple">
+              <a
+                class="dropdown-item cursor-pointer"
+                :class="{ disabled }"
+                @click="$refs.folderUploadRef.$el.click()"
+              >
+                <i class="mdi mdi-folder-upload" />
+                <span class="ms-1">{{ $t('components.uploader.selectFolder') }}</span>
+              </a>
+            </li>
+            <div v-if="qrable && !isMobile()">
+              <div class="dropdown-divider"></div>
+              <div class="mb-0 text-center text-muted">
+                <b>{{ qrcode }}</b>
+              </div>
+              <div class="p-2 pb-0" id="qrcode" :key="qrcode"></div>
+            </div>
+          </ul>
         </div>
       </div>
-      <uploader-files id="upload-list">
-        <template #default="props">
-          <div v-for="file in props.files" :key="file.id" class="mb-75">
-            <uploader-file :file="file" class="upload-file">
-              <template #default="props">
-                <div class="d-flex align-items-center mb-2">
-                  <div class="flex-shrink-0 me-2 mt-1">
-                    <i class="file-icon" :class="FileIcons.getClassWithColor(file.name)" />
-                  </div>
-                  <div class="flex-grow-1 w-75">
-                    <div class="d-flex">
-                      <div class="flex-grow-1 mt-1 text-truncate">
-                        <b>{{ file.name }}</b>
-                        <small class="text-muted text-capitalize ms-2">
-                          {{
-                            file._status.value == 'computing'
-                              ? `${$t('components.uploader.status.computing')} [${
-                                  file._status.text
-                                }%]`
-                              : file._status.value == 'uploading'
-                              ? `${file._status.text} [${size2Str(props.currentSpeed)}/S]`
-                              : `${file._status.text}`
-                          }}
-                        </small>
-                      </div>
-                      <div class="flex-shrink-0 mb-1">
-                        <i
-                          v-if="['waiting', 'uploading', 'paused'].includes(file._status.value)"
-                          :class="`mdi mdi-${
-                            file._status.value == 'paused' ? 'play' : 'pause'
-                          } cursor-pointer text-primary me-2`"
-                          @click="
-                            () => {
-                              if (file._status.value == 'paused') {
-                                handleResumeUpload(file);
-                              } else {
-                                handlePauseUpload(file);
-                              }
-                            }
-                          "
-                        />
-                        <i
-                          class="mdi mdi-close cursor-pointer text-danger me-2"
-                          @click.stop="handleCancelUpload(file)"
-                        />
-                      </div>
-                    </div>
-                    <div class="mt-1 mb-1">
-                      <div class="progress" v-if="['computing'].includes(file._status.value)">
-                        <div
-                          class="progress-bar bg-info"
-                          :style="{ width: `${file._status.text}%` }"
-                        ></div>
-                      </div>
-                      <div
-                        class="progress"
-                        v-else-if="['waiting', 'uploading', 'paused'].includes(file._status.value)"
-                      >
-                        <div
-                          class="progress-bar bg-primary"
-                          :style="{ width: `${props.progress}%` }"
-                        >
-                          <div class="label">{{ props.progress }}%</div>
-                        </div>
-                      </div>
-                      <div class="progress" v-else>
-                        <div
-                          :class="`progress-bar bg-${
-                            file._status.value == 'merging' ? 'warning' : 'success'
-                          }`"
-                          style="width: 100%"
-                        >
-                          <div class="label">100%</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </template>
-            </uploader-file>
-          </div>
-        </template>
-      </uploader-files>
-    </div>
-
-    <div class="mt-1 d-flex">
-      <div class="btn-group float-start" v-if="!readonly && (multiple || files.length === 0)">
-        <button
-          id="uploadFile"
-          type="button"
-          :disabled="disabled"
-          class="btn btn-sm"
-          :class="fieldClass"
-          @click="$refs.fileUploadRef.$el.click()"
-        >
-          {{ placeholder }}
-        </button>
-        <button
-          type="button"
-          :disabled="disabled"
-          :id="`${id}_uploadDropdownMenu`"
-          class="btn btn-sm dropdown-toggle dropdown-toggle-split"
-          :class="fieldClass"
-          data-bs-toggle="dropdown"
-          :data-bs-auto-close="qrable ? 'inside' : 'true'"
-          aria-expanded="false"
-        ></button>
-        <ul class="dropdown-menu">
-          <li>
-            <a
-              class="dropdown-item cursor-pointer"
-              :class="{ disabled }"
-              @click="$refs.fileUploadRef.$el.click()"
-            >
-              <i class="mdi mdi-file-upload" />
-              <span class="ms-1">
-                {{
-                  $t('components.uploader.selectFile', { count: accept == '*' && multiple ? 2 : 1 })
-                }}
-              </span>
-            </a>
-          </li>
-          <li v-if="accept == '*' && multiple">
-            <a
-              class="dropdown-item cursor-pointer"
-              :class="{ disabled }"
-              @click="$refs.folderUploadRef.$el.click()"
-            >
-              <i class="mdi mdi-folder-upload" />
-              <span class="ms-1">{{ $t('components.uploader.selectFolder') }}</span>
-            </a>
-          </li>
-          <div v-if="qrable && !isMobile()">
-            <div class="dropdown-divider"></div>
-            <div class="mb-0 text-center text-muted">
-              <b>{{ qrcode }}</b>
-            </div>
-            <div class="p-2 pb-0" id="qrcode" :key="qrcode"></div>
-          </div>
-        </ul>
-      </div>
-    </div>
+    </uploader-drop>
   </uploader>
 </template>
 
@@ -215,6 +221,7 @@ import {
   nextTick,
   onMounted,
   onUnmounted,
+  shallowReactive,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import SparkMD5 from 'spark-md5';
@@ -360,6 +367,7 @@ const onFileAdded = (file) => {
 };
 
 const computeFile = (file) => {
+  file = shallowReactive(file);
   let fileReader = new FileReader();
   let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
   let currentChunk = 0;
@@ -370,11 +378,16 @@ const computeFile = (file) => {
     spark.append(e.target.result);
     currentChunk++;
     if (currentChunk < chunks) {
-      file['_status'] = {
-        value: 'computing',
-        text: ((currentChunk / chunks) * 100).toFixed(0),
-      };
-      loadNext();
+      if (file['_status']) {
+        const text = ((currentChunk / chunks) * 100).toFixed(0);
+        if (file['_status'].text != text) {
+          file['_status'] = {
+            value: 'computing',
+            text,
+          };
+        }
+        loadNext();
+      }
     } else {
       let md5 = spark.end();
       spark.destroy();
@@ -419,6 +432,7 @@ const onFileSuccess = (_, file, response) => {
 
 const handleCancelUpload = (file, msg) => {
   file.cancel();
+  delete file['_status'];
   if (msg) {
     toast({
       component: ToastificationContent,
@@ -445,11 +459,12 @@ const uploadWaitingFiles = () => {
     // let pausedFiles = uploaderRef.value.uploader.files.filter((file) => file._status.value == 'paused');
     // let mergingFiles = uploaderRef.value.uploader.files.filter((file) => file._status.value == 'merging');
     if (!uploadingFile && waitingFiles.length) {
-      waitingFiles[0]['_status'] = {
+      const file = shallowReactive(waitingFiles[0]);
+      file['_status'] = {
         value: 'uploading',
         text: i18n.global.t('components.uploader.status.uploading'),
       };
-      waitingFiles[0].resume();
+      file.resume();
     }
   }, 500);
 };
@@ -604,5 +619,10 @@ const hendleClickMobileUpload = () => {
   line-height: unset !important;
   overflow: auto;
   border-bottom: unset !important;
+}
+.uploader-drop {
+  padding: 0;
+  border: 0;
+  background-color: unset;
 }
 </style>
