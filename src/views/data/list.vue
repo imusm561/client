@@ -457,12 +457,26 @@ const refetchDataListHandler = (res) => {
 };
 
 onMounted(() => {
+  fetchDataForm();
   socket.on('refetchDataList', refetchDataListHandler);
 });
 
 onUnmounted(() => {
   socket.off('refetchDataList', refetchDataListHandler);
 });
+
+watch(
+  () => route.params,
+  (newVal = {}, oldVal = {}) => {
+    if (newVal.tid && newVal.tid !== oldVal.tid) {
+      ready.getRows = false;
+      columnDefs.value = [];
+      fetchDataForm();
+      selectedRows.value = [];
+    }
+  },
+  { deep: true },
+);
 
 const fetchDataForm = async (callback) => {
   const { code, data, msg } = await getDataForm({ tid: Number(route.params.tid) });
@@ -1678,17 +1692,4 @@ const getDataListForHtml = () => {
     }
   });
 };
-
-watch(
-  () => route.params,
-  (newVal = {}, oldVal = {}) => {
-    if (newVal.tid && newVal.tid !== oldVal.tid) {
-      ready.getRows = false;
-      columnDefs.value = [];
-      fetchDataForm();
-      selectedRows.value = [];
-    }
-  },
-  { immediate: true, deep: true },
-);
 </script>

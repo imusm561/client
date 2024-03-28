@@ -62,17 +62,17 @@ onMounted(() => {
   monacoEditor = createEditor(editorRef.value, props.options);
   updateMonacoValue(monacoEditor);
 
-  if (monacoEditor.onDidChangeModelContent)
+  if (monacoEditor?.onDidChangeModelContent)
     monacoEditor.onDidChangeModelContent(() => {
       emit('update:modelValue', monacoEditor?.getValue());
     });
 
-  if (monacoEditor.onDidBlurEditorText)
+  if (monacoEditor?.onDidBlurEditorText)
     monacoEditor.onDidBlurEditorText(() => {
       emit('blur');
     });
 
-  if (monacoEditor.onDidUpdateDiff)
+  if (monacoEditor?.onDidUpdateDiff)
     monacoEditor.onDidUpdateDiff(() => {
       emit('update:modelValue', monacoEditor?.getModel()?.modified?.getValue());
     });
