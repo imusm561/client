@@ -29,9 +29,9 @@ onMounted(() => {
   getFileInfo(route.params).then(({ code, data }) => {
     if (code === 200) {
       document.title = data?.name ? data.name + ' - ' + store.state.sys.name : store.state.sys.name;
-      file.value.url = `${BASE_URL}cor/file/load/${route.params.uuid}`;
+      file.value.url = `${BASE_URL}cor/file/load/${route.params.uuid}?raw=1`;
       if (data.token) {
-        file.value.url += `?token=${data.token}`;
+        file.value.url += `&token=${data.token}`;
         delete data.token;
       }
       file.value = { ...file.value, ...data };
