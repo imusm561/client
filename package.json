@@ -66,7 +66,7 @@
     "ua-parser-js": "^1.0.2",
     "v-viewer": "^3.0.10",
     "vee-validate": "^4.5.11",
-    "vue": "3.3.4",
+    "vue": "^3.4.21",
     "vue-cropper": "^1.0.5",
     "vue-draggable-next": "^2.1.1",
     "vue-flatpickr-component": "^9.0.5",

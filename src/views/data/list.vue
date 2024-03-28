@@ -457,26 +457,12 @@ const refetchDataListHandler = (res) => {
 };
 
 onMounted(() => {
-  fetchDataForm();
   socket.on('refetchDataList', refetchDataListHandler);
 });
 
 onUnmounted(() => {
   socket.off('refetchDataList', refetchDataListHandler);
 });
-
-watch(
-  () => route.params,
-  (newVal = {}, oldVal = {}) => {
-    if (newVal.tid && newVal.tid !== oldVal.tid) {
-      ready.getRows = false;
-      columnDefs.value = [];
-      fetchDataForm();
-      selectedRows.value = [];
-    }
-  },
-  { deep: true },
-);
 
 const fetchDataForm = async (callback) => {
   const { code, data, msg } = await getDataForm({ tid: Number(route.params.tid) });
@@ -510,16 +496,6 @@ const fetchDataForm = async (callback) => {
         : { pageSize: 500 };
       await setFormConfiguration();
       await setFormColumnDefs();
-      ready.setCustom = false;
-      if (customs.value) {
-        gridApi.moveColumns(
-          customs.value.data.map((column) => column.colId),
-          0,
-        );
-      }
-      setTimeout(() => {
-        ready.setCustom = true;
-      }, 1000);
       const filter = {
         data_state: {
           filterType: 'set',
@@ -588,6 +564,16 @@ const fetchDataForm = async (callback) => {
         }
       }
       gridApi.setFilterModel(filter);
+      if (customs.value) {
+        ready.setCustom = false;
+        gridApi.moveColumns(
+          customs.value.data.map((column) => column.colId),
+          0,
+        );
+        setTimeout(() => {
+          ready.setCustom = true;
+        }, 1000);
+      }
       callback && callback();
     }
   } else {
@@ -610,6 +596,7 @@ const setFormConfiguration = () => {
 let gridApi = null;
 const onGridReady = (params) => {
   gridApi = params.api;
+
   gridApi.getTheme = () => {
     return theme.value.data;
   };
@@ -1692,4 +1679,17 @@ const getDataListForHtml = () => {
     }
   });
 };
+
+watch(
+  () => route.params,
+  (newVal = {}, oldVal = {}) => {
+    if (newVal.tid && newVal.tid !== oldVal.tid) {
+      fetchDataForm();
+      ready.getRows = false;
+      columnDefs.value = [];
+      selectedRows.value = [];
+    }
+  },
+  { immediate: true, deep: true },
+);
 </script>
