@@ -238,9 +238,9 @@ const props = defineProps({
 const emit = defineEmits([
   'update:modelValue',
   'upload-start',
-  'file-add',
   'upload-end',
-  'completed',
+  'file-added', // @chat
+  'file-uploaded', // @chat
 ]);
 
 const updateValue = () => {
@@ -344,7 +344,7 @@ const onFileAdded = (file) => {
       break;
     }
   }
-  emit('file-add', file);
+  emit('file-added', file);
   files.push(file);
   nextTick(() => {
     const fileList = document
@@ -407,7 +407,7 @@ const computeFile = (file) => {
           progress: 0,
         };
       }
-      uploadWaitingFiles();
+      checkUploadTasks();
     }
   };
   loadNext();
@@ -439,14 +439,18 @@ const toast = useToast();
 const handleRemoveFile = (file, msg) => {
   if (file.uuid) {
     const index = files.findIndex((item) => item.md5 === file.md5);
-    files.splice(index, 1);
-    updateValue();
+    if (index != -1) {
+      files.splice(index, 1);
+      updateValue();
+    }
   } else {
     file.cancel();
-    uploadWaitingFiles();
+    checkUploadTasks();
     const index = files.findIndex((item) => item === file);
-    files.splice(index, 1);
-    delete file.status;
+    if (index != -1) {
+      files.splice(index, 1);
+      delete file.status;
+    }
   }
 
   if (msg) {
@@ -461,7 +465,7 @@ const handleRemoveFile = (file, msg) => {
   }
 };
 
-const uploadWaitingFiles = () => {
+const checkUploadTasks = () => {
   Promise.resolve().then(() => {
     let uploadingFile = files.find((file) => file.status?.name === 'uploading');
     if (uploadingFile) return;
@@ -481,7 +485,7 @@ const uploadWaitingFiles = () => {
 
 const handlePauseFileUpload = (file) => {
   file.pause();
-  uploadWaitingFiles();
+  checkUploadTasks();
   file.status = {
     name: 'paused',
     text: i18n.global.t('components.uploader.status.paused'),
@@ -518,7 +522,7 @@ const handleMergeFile = (file) => {
     text: i18n.global.t('components.uploader.status.merging'),
     progress: 100,
   };
-  uploadWaitingFiles();
+  checkUploadTasks();
   mergeFile({
     name: file.name,
     extension: file.extension,
@@ -540,10 +544,12 @@ const handleAddUpload = (file, data) => {
   addUpload(data).then(({ code, msg, data }) => {
     if (code === 200) {
       const index = files.findIndex((file) => file.uniqueIdentifier === data.md5);
-      files[index] = data;
-      uploadWaitingFiles();
-      updateValue();
-      emit('completed', { ...file, data });
+      if (index != -1) {
+        files[index] = data;
+        updateValue();
+        emit('file-uploaded', { ...file, data });
+      }
+      checkUploadTasks();
     } else {
       toast({
         component: ToastificationContent,
@@ -575,8 +581,13 @@ const handleDownloadFile = (file) => {
 const fileChangedHandler = ({ type, code, file }) => {
   if (code === qrcode.value) {
     if (type === 'add') {
-      files.push(file);
-      updateValue();
+      const index = files.findIndex(
+        (item) => item.md5 === file.md5 || item.uniqueIdentifier === file.md5,
+      );
+      if (index === -1) {
+        files.push(file);
+        updateValue();
+      }
     } else if (type === 'del') handleRemoveFile(file);
   }
 };

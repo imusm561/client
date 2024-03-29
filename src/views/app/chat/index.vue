@@ -388,8 +388,8 @@
                   <Uploader
                     class="d-none"
                     :multiple="true"
-                    @fileAdd="handleFileAdd"
-                    @completed="handleCompletedFile"
+                    @fileAdded="handleFileAdded"
+                    @fileUploaded="handleFileUploaded"
                   />
                   <!-- <i class="fs-20 me-2 text-muted mdi mdi-content-cut"></i> -->
                 </div>
@@ -840,7 +840,7 @@ const handleClickFileInput = () => {
   document.getElementById('uploadFile').click();
 };
 
-const handleFileAdd = (e) => {
+const handleFileAdded = (e) => {
   const temp_file = {
     category: e.category,
     extension: e.extension,
@@ -860,7 +860,7 @@ const handleFileAdd = (e) => {
   current_chat.value.chat_data.push(temp_data);
 };
 
-const handleCompletedFile = (e) => {
+const handleFileUploaded = (e) => {
   const temp_data = current_chat.value.chat_data.find((item) => item.key === e.key);
   if (temp_data) {
     temp_data.message = encryptData(JSON.stringify(e.data));
