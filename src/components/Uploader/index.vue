@@ -262,23 +262,23 @@ const categories = {
 
 const options = {
   target: `${BASE_URL}cor/file/upload`,
-  chunkSize: chunkSize,
-  testChunks: true,
-  singleFile: !props.multiple,
-  categoryMap: categories,
+  chunkSize,
   allowDuplicateUploads: true,
-  successStatuses: [200, 201, 202],
+  testChunks: true,
   checkChunkUploadedByResponse: (chunk, res) => {
     res = JSON.parse(res);
     if (res.code == 200) {
       return true;
     } else {
       let chunkNumber = chunk.offset + 1;
-      if (chunkNumber == chunk.file.chunks.length && (res.chunks || []).includes(chunkNumber))
+      if (chunkNumber == chunk.file.chunks.length && (res.chunks || []).includes(chunkNumber)) {
         handleMergeFile(chunk.file);
+      }
       return (res.chunks || []).includes(chunkNumber);
     }
   },
+  successStatuses: [200, 201, 202],
+  initialPaused: true,
 };
 let uploader = new Uploader(options);
 
@@ -302,6 +302,7 @@ onMounted(() => {
 
   uploader.on('fileAdded', onFileAdded);
   uploader.on('fileSuccess', onFileSuccess);
+  uploader.on('fileProgress', onFileProgress);
 
   const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
   if (uploadDropdownMenu) {
@@ -315,6 +316,7 @@ onUnmounted(() => {
 
   uploader.off('fileAdded', onFileAdded);
   uploader.off('fileSuccess', onFileSuccess);
+  uploader.off('fileProgress', onFileProgress);
 
   uploader = null;
 
@@ -327,7 +329,6 @@ onUnmounted(() => {
 
 const onFileAdded = (file) => {
   emit('upload-start');
-  file.pause();
   file = shallowReactive(file);
   file.key = nanoid();
   file.status = {
@@ -379,7 +380,6 @@ const computeFile = (file) => {
         const progress = ((currentChunk / chunks) * 100).toFixed(0);
         if (file.status.progress != progress) {
           file.status = { ...file.status, progress };
-          console.log(`computing ${file.name} :`, progress);
         }
         loadNext();
       }
@@ -413,14 +413,22 @@ const computeFile = (file) => {
   loadNext();
 };
 
-const onFileSuccess = (_, file, message) => {
-  if (file.interval) {
-    clearInterval(file.interval);
-    delete file.interval;
+const onFileProgress = (_, file) => {
+  file = files.find((item) => item.uniqueIdentifier === file.uniqueIdentifier);
+  if (file.status.name === 'uploading') {
+    file.status = {
+      name: 'uploading',
+      text: i18n.global.t('components.uploader.status.uploading'),
+      speed: size2Str(file.currentSpeed),
+      progress: Math.floor(file.progress() * 100),
+    };
   }
+};
+
+const onFileSuccess = (_, file, message) => {
   message = JSON.parse(message);
   if (message.code == 200) {
-    handleAddFile(file, message.data);
+    handleAddUpload(file, message.data);
   } else if (message.code == 201) {
     handleMergeFile(file);
   }
@@ -435,10 +443,7 @@ const handleRemoveFile = (file, msg) => {
     updateValue();
   } else {
     file.cancel();
-    if (file.interval) {
-      clearInterval(file.interval);
-      delete file.interval;
-    }
+    uploadWaitingFiles();
     const index = files.findIndex((item) => item === file);
     files.splice(index, 1);
     delete file.status;
@@ -454,12 +459,10 @@ const handleRemoveFile = (file, msg) => {
       },
     });
   }
-
-  uploadWaitingFiles();
 };
 
 const uploadWaitingFiles = () => {
-  setTimeout(() => {
+  Promise.resolve().then(() => {
     let uploadingFile = files.find((file) => file.status?.name === 'uploading');
     if (uploadingFile) return;
 
@@ -473,17 +476,17 @@ const uploadWaitingFiles = () => {
     let pausedFile = files.find((file) => file.status?.name === 'paused');
     let mergingFile = files.find((file) => file.status?.name === 'merging');
     if (!(computingFile || pausedFile || mergingFile)) emit('upload-end');
-  }, 500);
+  });
 };
 
 const handlePauseFileUpload = (file) => {
   file.pause();
+  uploadWaitingFiles();
   file.status = {
     name: 'paused',
     text: i18n.global.t('components.uploader.status.paused'),
     progress: file.status.progress,
   };
-  uploadWaitingFiles();
 };
 
 const handleResumeFileUpload = (file) => {
@@ -507,16 +510,6 @@ const resumeFileUpload = (file) => {
     progress: Math.floor(file.progress() * 100),
   };
   file.resume();
-  file.interval = setInterval(() => {
-    if (!file.isUploading()) {
-      clearInterval(file.interval);
-      delete file.interval;
-    } else {
-      const speed = size2Str(file.currentSpeed);
-      const progress = Math.floor(file.progress() * 100);
-      file.status = { ...file.status, speed, progress };
-    }
-  }, 500);
 };
 
 const handleMergeFile = (file) => {
@@ -535,20 +528,20 @@ const handleMergeFile = (file) => {
     size: file.size,
   }).then(({ code, msg, data }) => {
     if (code === 200) {
-      handleAddFile(file, data);
+      handleAddUpload(file, data);
     } else {
       handleRemoveFile(file, msg);
     }
   });
 };
 
-const handleAddFile = (file, data) => {
+const handleAddUpload = (file, data) => {
   data.name = `${props.prefix}${file.name}`;
-  uploadWaitingFiles();
   addUpload(data).then(({ code, msg, data }) => {
     if (code === 200) {
       const index = files.findIndex((file) => file.uniqueIdentifier === data.md5);
       files[index] = data;
+      uploadWaitingFiles();
       updateValue();
       emit('completed', { ...file, data });
     } else {
