@@ -298,7 +298,7 @@ import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import { getFileSuffix, getUserInfo } from '@utils';
+import { getFileExt, getUserInfo } from '@utils';
 import i18n from '@utils/i18n';
 import moment from '@utils/moment';
 import Breadcrumb from '@layouts/breadcrumb';
@@ -328,7 +328,7 @@ const editable = computed(() => {
   return (item) => {
     return (
       item.type === 'file' &&
-      ['txt', 'md', 'json', 'html', 'css', 'js'].includes(getFileSuffix(item.name))
+      ['txt', 'md', 'json', 'html', 'css', 'js'].includes(getFileExt(item.name))
     );
   };
 });
@@ -432,7 +432,7 @@ const tree = computed(() => {
           newNode.type = arr.find((item) => item.path === newNode.path)?.type || 'directory';
 
           if (newNode.type === 'file') {
-            switch (getFileSuffix(newNode.name)) {
+            switch (getFileExt(newNode.name)) {
               case 'log':
                 newNode.language = 'log';
                 break;

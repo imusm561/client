@@ -163,7 +163,7 @@ export const size2Str = (size) => {
   }
 };
 
-export const getFileSuffix = (str) => {
+export const getFileExt = (str) => {
   if (!str) return '';
   else
     return str

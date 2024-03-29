@@ -387,7 +387,7 @@
                   ></i>
                   <Uploader
                     class="d-none"
-                    :multiple="false"
+                    :multiple="true"
                     @fileAdd="handleFileAdd"
                     @completed="handleCompletedFile"
                   />

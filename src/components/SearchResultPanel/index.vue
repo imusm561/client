@@ -294,7 +294,7 @@ const handleViewFileSource = (source) => {
 
 const handleDownloadFile = (file) => {
   let downloadElement = document.createElement('a');
-  downloadElement.href = `${BASE_URL}cor/file/load/${file.uuid}`;
+  downloadElement.href = `${BASE_URL}cor/file/load/${file.uuid}?raw=1`;
   downloadElement.download = file.name;
   document.body.appendChild(downloadElement);
   downloadElement.click();

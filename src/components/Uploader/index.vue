@@ -1,43 +1,34 @@
 <template>
-  <uploader
-    ref="uploaderRef"
-    :options="options"
-    :autoStart="false"
-    @file-added="onFileAdded"
-    @file-success="onFileSuccess"
-  >
-    <uploader-btn ref="fileUploadRef" class="d-none" :attrs="{ accept }"></uploader-btn>
-    <uploader-btn ref="folderUploadRef" class="d-none" :directory="true"></uploader-btn>
-
-    <uploader-drop>
-      <div id="file-list" data-simplebar style="max-height: 30vh">
-        <div class="d-flex align-items-center mb-2" v-for="file in files" :key="file.identifier">
-          <div class="flex-shrink-0 me-2 mt-1">
-            <img
-              v-if="file.category === 'image'"
-              :src="`${BASE_URL}cor/file/load/${file.uuid}`"
-              class="rounded avatar-xs cursor-pointer"
-              @click="
-                () => {
-                  const images = files.filter((file) => file.category === 'image');
-                  $viewerApi({
-                    options: {
-                      focus: false,
-                      movable: false,
-                      initialViewIndex: images.findIndex((image) => image.uuid == file.uuid),
-                    },
-                    images: images.map((image) => {
-                      return `${BASE_URL}cor/file/load/${image.uuid}`;
-                    }),
-                  });
-                }
-              "
-              loading="lazy"
-            />
-            <i v-else class="file-icon" :class="FileIcons.getClassWithColor(file.name)" />
-          </div>
-          <div class="flex-grow-1 w-75">
-            <div class="d-flex">
+  <div ref="dropRef">
+    <div id="file-list" data-simplebar style="max-height: 30vh">
+      <div class="d-flex align-items-center mb-2" v-for="file in files" :key="file.identifier">
+        <div class="flex-shrink-0 me-2 mt-1">
+          <img
+            v-if="file.uuid && file.category === 'image'"
+            :src="`${BASE_URL}cor/file/load/${file.uuid}`"
+            class="rounded avatar-xs cursor-pointer"
+            @click="
+              () => {
+                const images = files.filter((file) => file.category === 'image');
+                $viewerApi({
+                  options: {
+                    focus: false,
+                    movable: false,
+                    initialViewIndex: images.findIndex((image) => image.uuid == file.uuid),
+                  },
+                  images: images.map((image) => {
+                    return `${BASE_URL}cor/file/load/${image.uuid}`;
+                  }),
+                });
+              }
+            "
+            loading="lazy"
+          />
+          <i v-else class="file-icon" :class="FileIcons.getClassWithColor(file.name)" />
+        </div>
+        <div class="flex-grow-1 w-75">
+          <div class="d-flex">
+            <template v-if="file.uuid">
               <div
                 class="flex-grow-1 mt-1 cursor-pointer text-truncate"
                 @dblclick="handlePreviewFile(file)"
@@ -48,192 +39,149 @@
                 <i
                   v-if="!readonly && !disabled"
                   class="mdi mdi-close cursor-pointer text-danger me-2"
-                  @click="handleRemoveUpload(file)"
+                  @click="handleRemoveFile(file)"
                 />
               </div>
+            </template>
+            <template v-else>
+              <div class="flex-grow-1 mt-1 text-truncate">
+                <b>{{ file.name }}</b>
+                <small class="text-muted text-capitalize ms-2">
+                  {{
+                    file.status.name == 'computing'
+                      ? `${file.status.text} [${file.status.progress}%]`
+                      : file.status.name == 'uploading'
+                      ? `${file.status.text} [${file.status.speed}/S]`
+                      : `${file.status.text}`
+                  }}
+                </small>
+              </div>
+              <div class="flex-shrink-0 mb-1">
+                <i
+                  v-if="['waiting', 'uploading', 'paused'].includes(file.status.name)"
+                  :class="`mdi mdi-${
+                    file.status.name == 'paused' ? 'play' : 'pause'
+                  } cursor-pointer text-primary me-2`"
+                  @click="
+                    () => {
+                      if (file.status.name == 'paused') {
+                        handleResumeFileUpload(file);
+                      } else {
+                        handlePauseFileUpload(file);
+                      }
+                    }
+                  "
+                />
+                <i
+                  class="mdi mdi-close cursor-pointer text-danger me-2"
+                  @click.stop="handleRemoveFile(file)"
+                />
+              </div>
+            </template>
+          </div>
+          <small v-if="file.uuid" class="text-muted">
+            {{ size2Str(file.size) }}
+            <i
+              class="mdi mdi-download cursor-pointer text-primary"
+              @click="handleDownloadFile(file)"
+            />
+          </small>
+          <div v-else class="mt-1 mb-1">
+            <div class="progress">
+              <div
+                class="progress-bar bg-success"
+                :class="{
+                  'bg-info': ['computing'].includes(file.status.name),
+                  'bg-primary': ['waiting', 'uploading', 'paused'].includes(file.status.name),
+                  'bg-warning': ['merging'].includes(file.status.name),
+                }"
+                :style="{ width: `${file.status.progress || 0}%` }"
+              >
+                <div class="label">{{ file.status.progress || 0 }}%</div>
+              </div>
             </div>
-            <small class="text-muted">
-              {{ size2Str(file.size) }}
-              <i
-                class="mdi mdi-download cursor-pointer text-primary"
-                @click="handleDownloadFile(file)"
-              />
-            </small>
           </div>
         </div>
-        <uploader-files id="upload-list">
-          <template #default="props">
-            <div v-for="file in props.files" :key="file.id" class="mb-75">
-              <uploader-file :file="file" class="upload-file">
-                <template #default="props">
-                  <div class="d-flex align-items-center mb-2">
-                    <div class="flex-shrink-0 me-2 mt-1">
-                      <i class="file-icon" :class="FileIcons.getClassWithColor(file.name)" />
-                    </div>
-                    <div class="flex-grow-1 w-75">
-                      <div class="d-flex">
-                        <div class="flex-grow-1 mt-1 text-truncate">
-                          <b>{{ file.name }}</b>
-                          <small class="text-muted text-capitalize ms-2">
-                            {{
-                              file._status.value == 'computing'
-                                ? `${$t('components.uploader.status.computing')} [${
-                                    file._status.text
-                                  }%]`
-                                : file._status.value == 'uploading'
-                                ? `${file._status.text} [${size2Str(props.currentSpeed)}/S]`
-                                : `${file._status.text}`
-                            }}
-                          </small>
-                        </div>
-                        <div class="flex-shrink-0 mb-1">
-                          <i
-                            v-if="['waiting', 'uploading', 'paused'].includes(file._status.value)"
-                            :class="`mdi mdi-${
-                              file._status.value == 'paused' ? 'play' : 'pause'
-                            } cursor-pointer text-primary me-2`"
-                            @click="
-                              () => {
-                                if (file._status.value == 'paused') {
-                                  handleResumeUpload(file);
-                                } else {
-                                  handlePauseUpload(file);
-                                }
-                              }
-                            "
-                          />
-                          <i
-                            class="mdi mdi-close cursor-pointer text-danger me-2"
-                            @click.stop="handleCancelUpload(file)"
-                          />
-                        </div>
-                      </div>
-                      <div class="mt-1 mb-1">
-                        <div class="progress" v-if="['computing'].includes(file._status.value)">
-                          <div
-                            class="progress-bar bg-info"
-                            :style="{ width: `${file._status.text}%` }"
-                          ></div>
-                        </div>
-                        <div
-                          class="progress"
-                          v-else-if="
-                            ['waiting', 'uploading', 'paused'].includes(file._status.value)
-                          "
-                        >
-                          <div
-                            class="progress-bar bg-primary"
-                            :style="{ width: `${props.progress}%` }"
-                          >
-                            <div class="label">{{ props.progress }}%</div>
-                          </div>
-                        </div>
-                        <div class="progress" v-else>
-                          <div
-                            :class="`progress-bar bg-${
-                              file._status.value == 'merging' ? 'warning' : 'success'
-                            }`"
-                            style="width: 100%"
-                          >
-                            <div class="label">100%</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </template>
-              </uploader-file>
-            </div>
-          </template>
-        </uploader-files>
       </div>
-
-      <div class="mt-1 d-flex">
-        <div class="btn-group float-start" v-if="!readonly && (multiple || files.length === 0)">
-          <button
-            id="uploadFile"
-            type="button"
-            :disabled="disabled"
-            class="btn btn-sm"
-            :class="fieldClass"
-            @click="$refs.fileUploadRef.$el.click()"
-          >
-            {{ placeholder }}
-          </button>
-          <button
-            type="button"
-            :disabled="disabled"
-            :id="`${id}_uploadDropdownMenu`"
-            class="btn btn-sm dropdown-toggle dropdown-toggle-split"
-            :class="fieldClass"
-            data-bs-toggle="dropdown"
-            :data-bs-auto-close="qrable ? 'inside' : 'true'"
-            aria-expanded="false"
-          ></button>
-          <ul class="dropdown-menu">
-            <li>
-              <a
-                class="dropdown-item cursor-pointer"
-                :class="{ disabled }"
-                @click="$refs.fileUploadRef.$el.click()"
-              >
-                <i class="mdi mdi-file-upload" />
-                <span class="ms-1">
-                  {{
-                    $t('components.uploader.selectFile', {
-                      count: accept == '*' && multiple ? 2 : 1,
-                    })
-                  }}
-                </span>
-              </a>
-            </li>
-            <li v-if="accept == '*' && multiple">
-              <a
-                class="dropdown-item cursor-pointer"
-                :class="{ disabled }"
-                @click="$refs.folderUploadRef.$el.click()"
-              >
-                <i class="mdi mdi-folder-upload" />
-                <span class="ms-1">{{ $t('components.uploader.selectFolder') }}</span>
-              </a>
-            </li>
-            <div v-if="qrable && !isMobile()">
-              <div class="dropdown-divider"></div>
-              <div class="mb-0 text-center text-muted">
-                <b>{{ qrcode }}</b>
-              </div>
-              <div class="p-2 pb-0" id="qrcode" :key="qrcode"></div>
+    </div>
+    <div class="mt-1 d-flex">
+      <div class="btn-group float-start" v-if="!readonly && (multiple || files.length === 0)">
+        <button
+          id="uploadFile"
+          type="button"
+          :disabled="disabled"
+          class="btn btn-sm"
+          :class="fieldClass"
+          ref="uploadRef"
+        >
+          {{ placeholder }}
+        </button>
+        <button
+          type="button"
+          :disabled="disabled"
+          :id="`${id}_uploadDropdownMenu`"
+          class="btn btn-sm dropdown-toggle dropdown-toggle-split"
+          :class="fieldClass"
+          data-bs-toggle="dropdown"
+          :data-bs-auto-close="qrable ? 'inside' : 'true'"
+          aria-expanded="false"
+        ></button>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="dropdown-item cursor-pointer" :class="{ disabled }" ref="fileUploadRef">
+              <i class="mdi mdi-file-upload" />
+              <span class="ms-1">
+                {{
+                  $t('components.uploader.selectFile', {
+                    count: accept == '*' && multiple ? 2 : 1,
+                  })
+                }}
+              </span>
+            </a>
+          </li>
+          <li v-if="accept == '*' && multiple">
+            <a class="dropdown-item cursor-pointer" :class="{ disabled }" ref="folderUploadRef">
+              <i class="mdi mdi-folder-upload" />
+              <span class="ms-1">{{ $t('components.uploader.selectFolder') }}</span>
+            </a>
+          </li>
+          <div v-if="qrable && !isMobile()">
+            <div class="dropdown-divider"></div>
+            <div class="mb-0 text-center text-muted">
+              <b>{{ qrcode }}</b>
             </div>
-          </ul>
-        </div>
+            <div class="p-2 pb-0" id="qrcode" :key="qrcode"></div>
+          </div>
+        </ul>
       </div>
-    </uploader-drop>
-  </uploader>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import {
   defineProps,
   defineEmits,
-  computed,
-  ref,
-  reactive,
-  nextTick,
   onMounted,
   onUnmounted,
+  ref,
+  reactive,
   shallowReactive,
+  nextTick,
 } from 'vue';
 import { useRouter } from 'vue-router';
+import Uploader from 'simple-uploader.js';
 import SparkMD5 from 'spark-md5';
 import QRCode from 'qrcodejs2';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import { isMobile, encryptData, getFileSuffix, size2Str, copyToClipboard } from '@utils';
+import { getFileExt, isMobile, encryptData, size2Str, copyToClipboard } from '@utils';
 import i18n from '@utils/i18n';
 import { socket } from '@utils/socket';
-import { mergeFile, addUpload } from '@api/file';
 import store from '@store';
+import { mergeFile, addUpload } from '@api/file';
+
 const props = defineProps({
   id: {
     type: String,
@@ -286,6 +234,7 @@ const props = defineProps({
     requried: true,
   },
 });
+
 const emit = defineEmits([
   'update:modelValue',
   'upload-start',
@@ -294,14 +243,13 @@ const emit = defineEmits([
   'completed',
 ]);
 
+const updateValue = () => {
+  const value = files.filter((file) => file.md5);
+  emit('update:modelValue', value.length ? value : null);
+};
+
 const { FileIcons } = window;
 const { BASE_URL } = process.env;
-
-const router = useRouter();
-const toast = useToast();
-const uploaderRef = ref(null);
-const fileUploadRef = ref(null);
-const folderUploadRef = ref(null);
 
 const chunkSize = 1024 * 1024 * 1;
 const categories = {
@@ -312,12 +260,13 @@ const categories = {
   document: ['txt', 'log', 'json', 'cnf', 'conf', 'ini', 'js', 'html', 'css', 'pdf', 'md', 'xml'],
 };
 
-const options = reactive({
+const options = {
   target: `${BASE_URL}cor/file/upload`,
   chunkSize: chunkSize,
   testChunks: true,
   singleFile: !props.multiple,
   categoryMap: categories,
+  allowDuplicateUploads: true,
   successStatuses: [200, 201, 202],
   checkChunkUploadedByResponse: (chunk, res) => {
     res = JSON.parse(res);
@@ -326,34 +275,76 @@ const options = reactive({
     } else {
       let chunkNumber = chunk.offset + 1;
       if (chunkNumber == chunk.file.chunks.length && (res.chunks || []).includes(chunkNumber))
-        mergingFile(chunk.file);
+        handleMergeFile(chunk.file);
       return (res.chunks || []).includes(chunkNumber);
     }
   },
+};
+let uploader = new Uploader(options);
+
+const files = reactive(JSON.parse(JSON.stringify(props.modelValue)) || []);
+
+const dropRef = ref(null);
+const uploadRef = ref(null);
+const fileUploadRef = ref(null);
+const folderUploadRef = ref(null);
+
+onMounted(() => {
+  socket.on('fileChanged', fileChangedHandler);
+
+  if (dropRef.value) uploader.assignDrop(dropRef.value);
+  if (uploadRef.value)
+    uploader.assignBrowse(uploadRef.value, false, props.multiple, { accept: props.accept });
+  if (fileUploadRef.value)
+    uploader.assignBrowse(fileUploadRef.value, false, props.multiple, { accept: props.accept });
+  if (folderUploadRef.value)
+    uploader.assignBrowse(folderUploadRef.value, true, props.multiple, { accept: props.accept });
+
+  uploader.on('fileAdded', onFileAdded);
+  uploader.on('fileSuccess', onFileSuccess);
+
+  const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
+  if (uploadDropdownMenu) {
+    uploadDropdownMenu.addEventListener('show.bs.dropdown', uploadDropdownMenuShowHandler);
+    uploadDropdownMenu.addEventListener('hide.bs.dropdown', uploadDropdownMenuHideHandler);
+  }
 });
 
-const files = computed({
-  get() {
-    return props.modelValue || [];
-  },
-  set(value) {
-    emit('update:modelValue', value);
-  },
+onUnmounted(() => {
+  socket.off('fileChanged', fileChangedHandler);
+
+  uploader.off('fileAdded', onFileAdded);
+  uploader.off('fileSuccess', onFileSuccess);
+
+  uploader = null;
+
+  const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
+  if (uploadDropdownMenu) {
+    uploadDropdownMenu.removeEventListener('show.bs.dropdown', uploadDropdownMenuShowHandler);
+    uploadDropdownMenu.removeEventListener('hide.bs.dropdown', uploadDropdownMenuHideHandler);
+  }
 });
 
 const onFileAdded = (file) => {
   emit('upload-start');
-  file.key = nanoid();
   file.pause();
-  file['_status'] = { value: 'computing', text: 0 };
-  file['extension'] = getFileSuffix(file.name);
-  let fileCategory = 'unknown';
+  file = shallowReactive(file);
+  file.key = nanoid();
+  file.status = {
+    name: 'computing',
+    text: i18n.global.t('components.uploader.status.computing'),
+    progress: 0,
+  };
+  file.extension = getFileExt(file.name);
+  file.category = 'unknown';
   for (let category in categories) {
-    if (categories[category].includes(file.extension)) fileCategory = category;
+    if (categories[category].includes(file.extension)) {
+      file.category = category;
+      break;
+    }
   }
-  file['category'] = fileCategory;
   emit('file-add', file);
-  computeFile(file);
+  files.push(file);
   nextTick(() => {
     const fileList = document
       .getElementById('file-list')
@@ -364,75 +355,95 @@ const onFileAdded = (file) => {
         behavior: 'smooth',
       });
   });
+  computeFile(file);
 };
 
 const computeFile = (file) => {
-  file = shallowReactive(file);
   let fileReader = new FileReader();
   let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
   let currentChunk = 0;
   let chunks = Math.ceil(file.size / chunkSize);
   let spark = new SparkMD5.ArrayBuffer();
 
+  const loadNext = () => {
+    const start = currentChunk * chunkSize,
+      end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+    fileReader.readAsArrayBuffer(blobSlice.call(file.file, start, end));
+  };
+
   fileReader.onload = (e) => {
     spark.append(e.target.result);
     currentChunk++;
     if (currentChunk < chunks) {
-      if (file['_status']) {
-        const text = ((currentChunk / chunks) * 100).toFixed(0);
-        if (file['_status'].text != text) {
-          file['_status'] = {
-            value: 'computing',
-            text,
-          };
+      if (file.status?.name === 'computing') {
+        const progress = ((currentChunk / chunks) * 100).toFixed(0);
+        if (file.status.progress != progress) {
+          file.status = { ...file.status, progress };
+          console.log(`computing ${file.name} :`, progress);
         }
         loadNext();
       }
     } else {
-      let md5 = spark.end();
+      const md5 = spark.end();
+      file.uniqueIdentifier = md5;
       spark.destroy();
-      if (files.value.find((file) => file.identifier === md5)) {
-        handleCancelUpload(
+      if (
+        files.find((item) => item.uuid && item.md5 === md5) ||
+        files.find((item) => item != file && item.uniqueIdentifier === md5)
+      ) {
+        handleRemoveFile(
           file,
           i18n.global.t('components.uploader.cancel.duplicate', { name: file.name }),
         );
       } else if (file.size === 0) {
-        handleCancelUpload(
+        handleRemoveFile(
           file,
           i18n.global.t('components.uploader.cancel.empty', { name: file.name }),
         );
       } else {
-        file.uniqueIdentifier = md5;
-        file['_status'] = {
-          value: 'waiting',
+        file.status = {
+          name: 'waiting',
           text: i18n.global.t('components.uploader.status.waiting'),
+          progress: 0,
         };
       }
       uploadWaitingFiles();
     }
   };
-
-  let loadNext = () => {
-    let start = currentChunk * chunkSize,
-      end = start + chunkSize >= file.size ? file.size : start + chunkSize;
-    fileReader.readAsArrayBuffer(blobSlice.call(file.file, start, end));
-  };
-
   loadNext();
 };
 
-const onFileSuccess = (_, file, response) => {
-  response = JSON.parse(response);
-  if (response.code == 200) {
-    onFileCompleted(file, response.data);
-  } else if (response.code == 201) {
-    mergingFile(file);
+const onFileSuccess = (_, file, message) => {
+  if (file.interval) {
+    clearInterval(file.interval);
+    delete file.interval;
+  }
+  message = JSON.parse(message);
+  if (message.code == 200) {
+    handleAddFile(file, message.data);
+  } else if (message.code == 201) {
+    handleMergeFile(file);
   }
 };
 
-const handleCancelUpload = (file, msg) => {
-  file.cancel();
-  delete file['_status'];
+const toast = useToast();
+
+const handleRemoveFile = (file, msg) => {
+  if (file.uuid) {
+    const index = files.findIndex((item) => item.md5 === file.md5);
+    files.splice(index, 1);
+    updateValue();
+  } else {
+    file.cancel();
+    if (file.interval) {
+      clearInterval(file.interval);
+      delete file.interval;
+    }
+    const index = files.findIndex((item) => item === file);
+    files.splice(index, 1);
+    delete file.status;
+  }
+
   if (msg) {
     toast({
       component: ToastificationContent,
@@ -443,81 +454,102 @@ const handleCancelUpload = (file, msg) => {
       },
     });
   }
-  if (uploaderRef.value.uploader.files.length) uploadWaitingFiles();
-  else emit('upload-end');
+
+  uploadWaitingFiles();
 };
 
 const uploadWaitingFiles = () => {
   setTimeout(() => {
-    // let computingFiles = uploaderRef.value.uploader.files.filter((file) => file._status.value == 'computing');
-    let waitingFiles = uploaderRef.value.uploader.files.filter(
-      (file) => file._status.value == 'waiting',
-    );
-    let uploadingFile = uploaderRef.value.uploader.files.find(
-      (file) => file._status.value == 'uploading',
-    );
-    // let pausedFiles = uploaderRef.value.uploader.files.filter((file) => file._status.value == 'paused');
-    // let mergingFiles = uploaderRef.value.uploader.files.filter((file) => file._status.value == 'merging');
-    if (!uploadingFile && waitingFiles.length) {
-      const file = shallowReactive(waitingFiles[0]);
-      file['_status'] = {
-        value: 'uploading',
-        text: i18n.global.t('components.uploader.status.uploading'),
-      };
-      file.resume();
+    let uploadingFile = files.find((file) => file.status?.name === 'uploading');
+    if (uploadingFile) return;
+
+    let waitingFile = files.find((file) => file.status?.name === 'waiting');
+    if (waitingFile) {
+      resumeFileUpload(waitingFile);
+      return;
+    }
+
+    let computingFile = files.find((file) => file.status?.name === 'computing');
+    let pausedFile = files.find((file) => file.status?.name === 'paused');
+    let mergingFile = files.find((file) => file.status?.name === 'merging');
+    if (!(computingFile || pausedFile || mergingFile)) emit('upload-end');
+  }, 500);
+};
+
+const handlePauseFileUpload = (file) => {
+  file.pause();
+  file.status = {
+    name: 'paused',
+    text: i18n.global.t('components.uploader.status.paused'),
+    progress: file.status.progress,
+  };
+  uploadWaitingFiles();
+};
+
+const handleResumeFileUpload = (file) => {
+  let uploadingFile = files.find((file) => file?.status?.name === 'uploading');
+  if (uploadingFile) {
+    file.status = {
+      name: 'waiting',
+      text: i18n.global.t('components.uploader.status.waiting'),
+      progress: file.status.progress,
+    };
+  } else {
+    resumeFileUpload(file);
+  }
+};
+
+const resumeFileUpload = (file) => {
+  file.status = {
+    name: 'uploading',
+    text: i18n.global.t('components.uploader.status.uploading'),
+    speed: size2Str(file.currentSpeed),
+    progress: Math.floor(file.progress() * 100),
+  };
+  file.resume();
+  file.interval = setInterval(() => {
+    if (!file.isUploading()) {
+      clearInterval(file.interval);
+      delete file.interval;
+    } else {
+      const speed = size2Str(file.currentSpeed);
+      const progress = Math.floor(file.progress() * 100);
+      file.status = { ...file.status, speed, progress };
     }
   }, 500);
 };
 
-const handlePauseUpload = (file) => {
-  file.pause();
-  file['_status'] = {
-    value: 'paused',
-    text: i18n.global.t('components.uploader.status.paused'),
-  };
-  uploadWaitingFiles();
-};
-
-const handleResumeUpload = (file) => {
-  let uploadingFile = uploaderRef.value.uploader.files.find(
-    (file) => file._status.value == 'uploading',
-  );
-  if (uploadingFile) {
-    file['_status'] = {
-      value: 'waiting',
-      text: i18n.global.t('components.uploader.status.waiting'),
-    };
-  } else {
-    file.resume();
-    file['_status'] = {
-      value: 'uploading',
-      text: i18n.global.t('components.uploader.status.uploading'),
-    };
-  }
-};
-
-const mergingFile = (file) => {
-  file['_status'] = {
-    value: 'merging',
+const handleMergeFile = (file) => {
+  file.status = {
+    name: 'merging',
     text: i18n.global.t('components.uploader.status.merging'),
+    progress: 100,
   };
   uploadWaitingFiles();
-  mergeFile(file).then(({ code, msg, data }) => {
+  mergeFile({
+    name: file.name,
+    extension: file.extension,
+    category: file.category,
+    md5: file.uniqueIdentifier,
+    relativePath: file.relativePath,
+    size: file.size,
+  }).then(({ code, msg, data }) => {
     if (code === 200) {
-      onFileCompleted(file, data);
+      handleAddFile(file, data);
     } else {
-      handleCancelUpload(file, msg);
+      handleRemoveFile(file, msg);
     }
   });
 };
 
-const onFileCompleted = (file, data) => {
+const handleAddFile = (file, data) => {
   data.name = `${props.prefix}${file.name}`;
+  uploadWaitingFiles();
   addUpload(data).then(({ code, msg, data }) => {
     if (code === 200) {
-      handleCancelUpload(file);
-      files.value = [...files.value, ...[data]];
-
+      const index = files.findIndex((file) => file.uniqueIdentifier === data.md5);
+      files[index] = data;
+      updateValue();
       emit('completed', { ...file, data });
     } else {
       toast({
@@ -532,11 +564,7 @@ const onFileCompleted = (file, data) => {
   });
 };
 
-const handleRemoveUpload = (file) => {
-  const _files = files.value.filter((item) => item.id != file.id);
-  files.value = _files.length ? _files : null;
-};
-
+const router = useRouter();
 const handlePreviewFile = (file) => {
   const route = router.resolve({ name: 'preview', params: { uuid: file.uuid } });
   window.open(route.href, '_blank');
@@ -544,7 +572,7 @@ const handlePreviewFile = (file) => {
 
 const handleDownloadFile = (file) => {
   let downloadElement = document.createElement('a');
-  downloadElement.href = `${BASE_URL}cor/file/load/${file.uuid}`;
+  downloadElement.href = `${BASE_URL}cor/file/load/${file.uuid}?raw=1`;
   downloadElement.download = file.name;
   document.body.appendChild(downloadElement);
   downloadElement.click();
@@ -553,11 +581,14 @@ const handleDownloadFile = (file) => {
 
 const fileChangedHandler = ({ type, code, file }) => {
   if (code === qrcode.value) {
-    if (type === 'add') files.value = [...files.value, ...[file]];
-    else if (type === 'del') files.value = files.value.filter((_file) => _file.id != file.id);
+    if (type === 'add') {
+      files.push(file);
+      updateValue();
+    } else if (type === 'del') handleRemoveFile(file);
   }
 };
 
+const qrcode = ref(null);
 const uploadDropdownMenuShowHandler = () => {
   qrcode.value = null;
   if (props.qrable) hendleClickMobileUpload();
@@ -566,25 +597,6 @@ const uploadDropdownMenuHideHandler = () => {
   qrcode.value = null;
 };
 
-onMounted(() => {
-  socket.on('fileChanged', fileChangedHandler);
-  const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
-  if (uploadDropdownMenu) {
-    uploadDropdownMenu.addEventListener('show.bs.dropdown', uploadDropdownMenuShowHandler);
-    uploadDropdownMenu.addEventListener('hide.bs.dropdown', uploadDropdownMenuHideHandler);
-  }
-});
-
-onUnmounted(() => {
-  socket.off('fileChanged', fileChangedHandler);
-  const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
-  if (uploadDropdownMenu) {
-    uploadDropdownMenu.removeEventListener('show.bs.dropdown', uploadDropdownMenuShowHandler);
-    uploadDropdownMenu.removeEventListener('hide.bs.dropdown', uploadDropdownMenuHideHandler);
-  }
-});
-
-const qrcode = ref(null);
 const hendleClickMobileUpload = () => {
   const options = {};
   options.prefix = props.prefix;
@@ -611,18 +623,3 @@ const hendleClickMobileUpload = () => {
   });
 };
 </script>
-
-<style lang="scss" scoped>
-.uploader-file {
-  position: relative;
-  height: unset !important;
-  line-height: unset !important;
-  overflow: auto;
-  border-bottom: unset !important;
-}
-.uploader-drop {
-  padding: 0;
-  border: 0;
-  background-color: unset;
-}
-</style>
