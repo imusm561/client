@@ -4,10 +4,7 @@
     class="mb-0 ctext-content"
     v-html="decryptData(item.message).replace(/\n/g, '<br />')"
   ></div>
-  <div
-    v-else-if="item.type === 'file'"
-    @dblclick="handlePreviewFile(JSON.parse(decryptData(item.message)))"
-  >
+  <div v-else-if="item.type === 'file'">
     <div v-if="JSON.parse(decryptData(item.message)).category === 'image'">
       <img
         v-if="JSON.parse(decryptData(item.message))?.uuid"
@@ -21,7 +18,8 @@
           height: loaded[item.id] ? 'auto' : '200px',
         }"
         @load="loaded[item.id] = true"
-        @click="$emit('view-image')"
+        @click="handleViewImage"
+        @dblclick="handlePreviewFile(JSON.parse(decryptData(item.message)))"
         loading="lazy"
       />
       <img
@@ -31,7 +29,11 @@
         style="width: 200px; height: 200px; padding: 82px"
       />
     </div>
-    <div v-else class="d-flex align-items-center cursor-pointer">
+    <div
+      v-else
+      @dblclick="handlePreviewFile(JSON.parse(decryptData(item.message)))"
+      class="d-flex align-items-center cursor-pointer"
+    >
       <div class="me-2">
         <i
           class="file-icon"
@@ -58,7 +60,7 @@
 </template>
 
 <script setup>
-import { defineProps, reactive } from 'vue';
+import { defineProps, defineEmits, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { decryptData, size2Str } from '@utils';
 
@@ -69,15 +71,25 @@ defineProps({
   },
 });
 
+const emit = defineEmits(['view-image']);
+
 const { FileIcons } = window;
 const { BASE_URL } = process.env;
 const router = useRouter();
 
+const loaded = reactive({});
+
+let timer = null;
+const handleViewImage = () => {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    emit('view-image');
+  }, 200);
+};
+
 const handlePreviewFile = (file) => {
-  if (file.category === 'image') return;
+  clearTimeout(timer);
   const route = router.resolve({ name: 'preview', params: { uuid: file.uuid } });
   window.open(route.href, '_blank');
 };
-
-const loaded = reactive({});
 </script>
