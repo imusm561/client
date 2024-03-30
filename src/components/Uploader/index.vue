@@ -301,8 +301,8 @@ onMounted(() => {
     uploader.assignBrowse(folderUploadRef.value, true, props.multiple, { accept: props.accept });
 
   uploader.on('fileAdded', onFileAdded);
-  uploader.on('fileSuccess', onFileSuccess);
   uploader.on('fileProgress', onFileProgress);
+  uploader.on('fileSuccess', onFileSuccess);
 
   const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
   if (uploadDropdownMenu) {
@@ -315,8 +315,8 @@ onUnmounted(() => {
   socket.off('fileChanged', fileChangedHandler);
 
   uploader.off('fileAdded', onFileAdded);
-  uploader.off('fileSuccess', onFileSuccess);
   uploader.off('fileProgress', onFileProgress);
+  uploader.off('fileSuccess', onFileSuccess);
 
   uploader = null;
 
@@ -327,9 +327,21 @@ onUnmounted(() => {
   }
 });
 
+const scrollToBottom = () => {
+  nextTick(() => {
+    const fileList = document
+      .getElementById('file-list')
+      ?.querySelector('.simplebar-content-wrapper');
+    if (fileList)
+      fileList.scrollTo({
+        top: fileList.scrollHeight,
+        behavior: 'smooth',
+      });
+  });
+};
+
 const onFileAdded = (file) => {
   emit('upload-start');
-  file = shallowReactive(file);
   file.key = nanoid();
   file.status = {
     name: 'computing',
@@ -344,18 +356,10 @@ const onFileAdded = (file) => {
       break;
     }
   }
-  emit('file-added', file);
+  file = shallowReactive(file);
   files.push(file);
-  nextTick(() => {
-    const fileList = document
-      .getElementById('file-list')
-      ?.querySelector('.simplebar-content-wrapper');
-    if (fileList)
-      fileList.scrollTo({
-        top: fileList.scrollHeight,
-        behavior: 'smooth',
-      });
-  });
+  emit('file-added', file);
+  scrollToBottom();
   computeFile(file);
 };
 
@@ -587,6 +591,7 @@ const fileChangedHandler = ({ type, code, file }) => {
       if (index === -1) {
         files.push(file);
         updateValue();
+        scrollToBottom();
       }
     } else if (type === 'del') handleRemoveFile(file);
   }
