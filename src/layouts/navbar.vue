@@ -751,7 +751,9 @@ for (let key of Object.keys(show)) {
   if (key === 'helper') continue;
   const route = router.getRoutes().find((route) => route.name === key);
   const tags = route?.meta?.auth || [];
-  show[key] = tags.every((tag) => store.state.user.data.tags.includes(tag));
+  show[key] =
+    store.state.user.data.tags.includes('ALL') ||
+    tags.every((tag) => store.state.user.data.tags.includes(tag));
   if (show[key]) show.helper = show[key];
 }
 
