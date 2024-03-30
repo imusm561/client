@@ -41,7 +41,7 @@ const updateMonacoValue = (monacoEditor, val) => {
   const { modelValue, oldValue, preComment, language, options } = props;
   const value = preComment ? `${preComment}\n${val || modelValue}` : val || modelValue;
   if (options?.diff) {
-    monacoEditor.setModel({
+    monacoEditor?.setModel({
       original: createModel(oldValue || '', language),
       modified: createModel(value || '', language),
     });
@@ -64,7 +64,7 @@ onMounted(() => {
 
   if (monacoEditor?.onDidChangeModelContent)
     monacoEditor.onDidChangeModelContent(() => {
-      emit('update:modelValue', monacoEditor?.getValue());
+      emit('update:modelValue', monacoEditor.getValue());
     });
 
   if (monacoEditor?.onDidBlurEditorText)
@@ -74,7 +74,7 @@ onMounted(() => {
 
   if (monacoEditor?.onDidUpdateDiff)
     monacoEditor.onDidUpdateDiff(() => {
-      emit('update:modelValue', monacoEditor?.getModel()?.modified?.getValue());
+      emit('update:modelValue', monacoEditor.getModel()?.modified?.getValue());
     });
 });
 

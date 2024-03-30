@@ -202,6 +202,7 @@
                 class="tab-pane"
                 :class="{ active: current_tab === 'basic_info' }"
                 id="basic_info"
+                :key="`basic_info_${current_form.id}`"
               >
                 <div class="row">
                   <div class="col-lg-3">
@@ -345,7 +346,6 @@
                         {{ $t('layout.navbar.helper.form.tab.basicInfo.aclView') }}
                       </label>
                       <UserSelector
-                        :key="`form_acl_view_${current_form}`"
                         v-model="current_form.acl_view"
                         :disabled="isParentOrHasRedirect(current_form)"
                         :placeholder="
@@ -360,7 +360,6 @@
                         {{ $t('layout.navbar.helper.form.tab.basicInfo.aclEdit') }}
                       </label>
                       <UserSelector
-                        :key="`form_acl_edit_${current_form}`"
                         v-model="current_form.acl_edit"
                         :disabled="isParentOrHasRedirect(current_form)"
                         :placeholder="
@@ -386,29 +385,28 @@
                 class="tab-pane"
                 :class="{ active: current_tab === 'presave_script' }"
                 id="presave_script"
+                :key="`presave_script_${current_form.id}`"
               >
                 <div class="col-12">
-                  <MonacoEditor
-                    :key="current_form.id"
-                    v-model="current_form.script"
-                    language="javascript"
-                  />
+                  <MonacoEditor v-model="current_form.script" language="javascript" />
                 </div>
               </div>
               <div
                 class="tab-pane"
                 :class="{ active: current_tab === 'form_style' }"
                 id="form_style"
+                :key="`form_style_${current_form.id}`"
               >
                 <div class="col-12">
-                  <MonacoEditor
-                    :key="current_form.id"
-                    v-model="current_form.style"
-                    language="css"
-                  />
+                  <MonacoEditor v-model="current_form.style" language="css" />
                 </div>
               </div>
-              <div class="tab-pane" :class="{ active: current_tab === 'pub_from' }" id="pub_from">
+              <div
+                class="tab-pane"
+                :class="{ active: current_tab === 'pub_from' }"
+                id="pub_from"
+                :key="`pub_from_${current_form.id}`"
+              >
                 <div data-simplebar style="max-height: 30vh">
                   <ul class="list-group">
                     <li
@@ -470,6 +468,7 @@
                 class="tab-pane"
                 :class="{ active: current_tab === 'approval_flow' }"
                 id="approval_flow"
+                :key="`approval_flow_${current_form.id}`"
               >
                 <ul class="list-group">
                   <Draggable
