@@ -318,7 +318,7 @@
                               {{
                                 item.chat_data[0].type === 'file'
                                   ? JSON.parse(decryptData(item.chat_data[0].message))?.name
-                                  : decryptData(item.chat_data[0].message)
+                                  : parseMessage(decryptData(item.chat_data[0].message))
                               }}
                             </p>
                           </div>
@@ -557,6 +557,7 @@
 import { ref, reactive, computed, onMounted, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import { parseMessage } from '@utils';
 import { setWatermark } from '@utils/watermark';
 import ToastificationContent from '@components/ToastificationContent';
 import {

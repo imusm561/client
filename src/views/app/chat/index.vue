@@ -50,7 +50,9 @@
                           ? JSON.parse(
                               decryptData(chat.chat_data[chat.chat_data.length - 1].message),
                             )?.name
-                          : decryptData(chat.chat_data[chat.chat_data.length - 1].message)
+                          : parseMessage(
+                              decryptData(chat.chat_data[chat.chat_data.length - 1].message),
+                            )
                         : chat.post
                     }}
                   </div>
@@ -403,7 +405,7 @@
                     {{
                       quote.type === 'file'
                         ? JSON.parse(decryptData(quote.message))?.name
-                        : decryptData(quote.message)
+                        : parseMessage(decryptData(quote.message))
                     }}
                   </small>
                 </div>
@@ -518,7 +520,7 @@ import { computed, onMounted, ref, reactive, watch, onUnmounted, nextTick } from
 import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import { getUserInfo, hashData, encryptData, decryptData } from '@utils';
+import { getUserInfo, hashData, encryptData, decryptData, parseMessage } from '@utils';
 import moment from '@utils/moment';
 import { socket } from '@utils/socket';
 import store from '@store';
@@ -892,13 +894,14 @@ const handleFileUploaded = (e) => {
 
 const handleSendMsg = () => {
   if (message.value.trim()) {
+    const msg = message.value.replace(/</g, '&lt;').replace(/>/g, '&gt;').trim();
     const temp_data = reactive({
       id: 0,
       created_at: new Date(),
       sender: store.state.user.data.username,
       receiver: current_chat.value.username,
       type: 'text',
-      message: encryptData(message.value.trim()),
+      message: encryptData(msg),
       quote: quote.value,
     });
     message.value = '';

@@ -200,6 +200,10 @@ export const decryptData = (data, public_key = store.state.sys.public_key) => {
   return cipherChunks.join('');
 };
 
+export const parseMessage = (content) => {
+  return content.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+};
+
 export const copyToClipboard = async (text) => {
   if (!navigator.clipboard) return;
   return await navigator.clipboard.writeText(text);

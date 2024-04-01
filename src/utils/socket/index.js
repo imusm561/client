@@ -5,7 +5,7 @@ import 'element-plus/es/components/loading/style/css';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 
-import { clearUserData, getUserInfo, replaceHtml, decryptData } from '@utils';
+import { clearUserData, getUserInfo, replaceHtml, decryptData, parseMessage } from '@utils';
 import i18n from '@utils/i18n';
 
 import router from '@router';
@@ -100,7 +100,7 @@ export const initSocket = () => {
             text:
               chat.type === 'file'
                 ? JSON.parse(decryptData(chat.message))?.name
-                : decryptData(chat.message),
+                : parseMessage(decryptData(chat.message)),
             to: { name: 'chat', query: { contact: user.username } },
           },
         });
