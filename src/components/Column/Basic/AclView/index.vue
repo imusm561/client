@@ -14,9 +14,10 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue';
+import { computed } from 'vue';
 import { resolveColumnTitle } from '@utils';
 import UserSelector from '@components/UserSelector';
+// eslint-disable-next-line
 const props = defineProps({
   column: {
     type: Object,
@@ -43,13 +44,14 @@ const props = defineProps({
     default: () => null,
   },
 });
-const emit = defineEmits(['update:modelValue']);
+// eslint-disable-next-line
+const emits = defineEmits(['update:modelValue']);
 const value = computed({
   get() {
     return props.modelValue || [];
   },
   set(value) {
-    emit('update:modelValue', value);
+    emits('update:modelValue', value);
   },
 });
 </script>

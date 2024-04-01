@@ -86,8 +86,9 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { icons } from '@utils/icons';
+// eslint-disable-next-line
 const props = defineProps({
   modelValue: {
     type: Object,
@@ -102,7 +103,8 @@ const props = defineProps({
     },
   },
 });
-const emit = defineEmits(['update:modelValue']);
+// eslint-disable-next-line
+const emits = defineEmits(['update:modelValue']);
 
 const iconOptions = ref([]);
 const fetchIconOptions = (search, loading) => {
@@ -119,7 +121,7 @@ const column = computed({
     return props.modelValue;
   },
   set(value) {
-    emit('update:modelValue', value);
+    emits('update:modelValue', value);
   },
 });
 </script>

@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, reactive, onMounted, onUnmounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getUserInfo } from '@utils';
@@ -79,6 +79,7 @@ import Empty from '@components/Empty';
 import Avatar from '@components/Avatar';
 import MonacoEditor from '@components/MonacoEditor';
 import { getLogs } from '@api/com/log';
+// eslint-disable-next-line
 const props = defineProps({
   type: {
     type: String,

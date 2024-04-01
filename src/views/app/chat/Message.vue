@@ -60,10 +60,12 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, reactive } from 'vue';
+import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { decryptData, size2Str } from '@utils';
 
+// eslint-disable-next-line
+// eslint-disable-next-line
 defineProps({
   item: {
     type: Object,
@@ -71,7 +73,8 @@ defineProps({
   },
 });
 
-const emit = defineEmits(['view-image']);
+// eslint-disable-next-line
+const emits = defineEmits(['view-image']);
 
 const { FileIcons } = window;
 const { BASE_URL } = process.env;
@@ -83,7 +86,7 @@ let timer = null;
 const handleViewImage = () => {
   clearTimeout(timer);
   timer = setTimeout(() => {
-    emit('view-image');
+    emits('view-image');
   }, 200);
 };
 

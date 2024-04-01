@@ -3,10 +3,11 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { component as CKEditor } from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from './ckeditor';
 
+// eslint-disable-next-line
 const props = defineProps({
   error: {
     type: Object,
@@ -33,7 +34,8 @@ const props = defineProps({
     },
   },
 });
-const emit = defineEmits(['update:modelValue']);
+// eslint-disable-next-line
+const emits = defineEmits(['update:modelValue']);
 
 const editor = ClassicEditor;
 const config = {
@@ -45,7 +47,7 @@ const data = computed({
     return props.modelValue || ' ';
   },
   set(value) {
-    emit('update:modelValue', value || null);
+    emits('update:modelValue', value || null);
   },
 });
 

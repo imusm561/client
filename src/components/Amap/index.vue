@@ -107,7 +107,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed, ref, onMounted, onUnmounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -115,6 +115,7 @@ import { isLngLat, copyToClipboard, debounce } from '@utils';
 import i18n from '@utils/i18n';
 import store from '@store';
 
+// eslint-disable-next-line
 const props = defineProps({
   id: {
     type: String,
@@ -143,7 +144,8 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['update:modelValue']);
+// eslint-disable-next-line
+const emits = defineEmits(['update:modelValue']);
 
 const toast = useToast();
 let AMap = null;
@@ -195,7 +197,7 @@ const vModel = computed({
     return props.modelValue || '';
   },
   set(value) {
-    emit('update:modelValue', value);
+    emits('update:modelValue', value);
   },
 });
 

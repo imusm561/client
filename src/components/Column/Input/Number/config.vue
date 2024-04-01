@@ -205,9 +205,10 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue';
+import { computed } from 'vue';
 import { pinyin } from 'pinyin-pro';
 import CKEditor from '@components/CKEditor';
+// eslint-disable-next-line
 const props = defineProps({
   modelValue: {
     type: Object,
@@ -228,13 +229,14 @@ const props = defineProps({
     },
   },
 });
-const emit = defineEmits(['update:modelValue']);
+// eslint-disable-next-line
+const emits = defineEmits(['update:modelValue']);
 const column = computed({
   get() {
     return props.modelValue;
   },
   set(value) {
-    emit('update:modelValue', value);
+    emits('update:modelValue', value);
   },
 });
 </script>

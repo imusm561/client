@@ -25,10 +25,10 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
 import moment from '@utils/moment';
 import Avatar from '@components/Avatar';
+// eslint-disable-next-line
 const props = defineProps({
   variant: {
     type: String,
@@ -59,7 +59,8 @@ const props = defineProps({
     default: null,
   },
 });
-const emit = defineEmits(['close-toast']);
+// eslint-disable-next-line
+const emits = defineEmits(['close-toast']);
 
 const router = useRouter();
 const handleClickText = () => {
@@ -68,7 +69,7 @@ const handleClickText = () => {
     to.query = to.query || {};
     to.query.t = new Date().getTime();
     router.replace(to);
-    emit('close-toast');
+    emits('close-toast');
   }
 };
 </script>

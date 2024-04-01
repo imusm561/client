@@ -192,7 +192,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, reactive, watch } from 'vue';
+import { ref, reactive, watch } from 'vue';
 import parser from 'cron-parser';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -202,6 +202,7 @@ import MonacoEditor from '@components/MonacoEditor';
 import FlatPickr from '@components/FlatPickr';
 import { createJob, updateJob } from '@api/job';
 
+// eslint-disable-next-line
 const props = defineProps({
   currentJob: {
     type: Object,
@@ -211,7 +212,8 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['submit']);
+// eslint-disable-next-line
+const emits = defineEmits(['submit']);
 
 const toast = useToast();
 
@@ -273,7 +275,7 @@ const handleSubmitJob = () => {
   if (job.value.id) {
     updateJob(job.value).then(({ code, msg }) => {
       if (code === 200) {
-        emit('submit');
+        emits('submit');
         document.getElementById('hideEditJobModalBtn').click();
       } else {
         toast({
@@ -289,7 +291,7 @@ const handleSubmitJob = () => {
   } else {
     createJob(job.value).then(({ code, msg }) => {
       if (code === 200) {
-        emit('submit');
+        emits('submit');
         document.getElementById('hideEditJobModalBtn').click();
       } else {
         toast({

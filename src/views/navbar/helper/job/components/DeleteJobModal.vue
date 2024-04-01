@@ -50,11 +50,12 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { updateJob } from '@api/job';
 
+// eslint-disable-next-line
 const props = defineProps({
   currentJob: {
     type: Object,
@@ -64,7 +65,8 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['confirm']);
+// eslint-disable-next-line
+const emits = defineEmits(['confirm']);
 
 const toast = useToast();
 
@@ -84,7 +86,7 @@ const handleDelJob = () => {
     data_state: 'deleted',
   }).then(({ code, msg }) => {
     if (code === 200) {
-      emit('confirm');
+      emits('confirm');
       document.getElementById('hideDeleteJobModalBtn').click();
     } else {
       toast({

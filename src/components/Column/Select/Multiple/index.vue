@@ -96,10 +96,11 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { resolveColumnTitle } from '@utils';
 
+// eslint-disable-next-line
 const props = defineProps({
   type: {
     type: String,
@@ -128,7 +129,8 @@ const props = defineProps({
     default: () => null,
   },
 });
-const emit = defineEmits(['update:modelValue', 'selected']);
+// eslint-disable-next-line
+const emits = defineEmits(['update:modelValue', 'selected']);
 
 const unique = (arr) => {
   const res = new Map();
@@ -154,8 +156,8 @@ const value = computed({
     return props.modelValue;
   },
   set(value) {
-    emit('update:modelValue', value);
-    emit(
+    emits('update:modelValue', value);
+    emits(
       'selected',
       options.value.filter((option) => value.includes(option.value)),
     );

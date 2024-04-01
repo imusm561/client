@@ -65,7 +65,7 @@
   </li>
 </template>
 <script setup>
-import { defineProps } from 'vue';
+// eslint-disable-next-line
 defineProps({
   item: {
     type: Object,

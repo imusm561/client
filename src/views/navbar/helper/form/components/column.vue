@@ -223,7 +223,7 @@
 </template>
 
 <script setup>
-import { defineOptions, defineProps, defineEmits, onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { VueDraggableNext as Draggable } from 'vue-draggable-next';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -275,6 +275,7 @@ import LayoutTabConfig from '@components/Column/Layout/Tab/config.vue';
 
 import { getColumns, createColumns, updateColumns } from '@api/column';
 
+// eslint-disable-next-line
 defineOptions({
   components: {
     InputText,
@@ -316,6 +317,7 @@ defineOptions({
   },
 });
 
+// eslint-disable-next-line
 const props = defineProps({
   form: {
     type: Object,
@@ -325,7 +327,8 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['setColumnsChangedFlag']);
+// eslint-disable-next-line
+const emits = defineEmits(['setColumnsChangedFlag']);
 
 const toast = useToast();
 
@@ -391,8 +394,8 @@ watch(
     );
 
     if (changes.value.create.length || changes.value.update.length || changes.value.delete.length)
-      emit('setColumnsChangedFlag', true);
-    else emit('setColumnsChangedFlag', false);
+      emits('setColumnsChangedFlag', true);
+    else emits('setColumnsChangedFlag', false);
   },
   { immediate: true, deep: true },
 );

@@ -14,10 +14,10 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '@store';
 
+// eslint-disable-next-line
 const props = defineProps(['params']);
 const router = useRouter();
 

@@ -48,8 +48,9 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue';
+import { computed } from 'vue';
 import { resolveColumnTitle } from '@utils';
+// eslint-disable-next-line
 const props = defineProps({
   type: {
     type: String,
@@ -78,13 +79,14 @@ const props = defineProps({
     default: () => null,
   },
 });
-const emit = defineEmits(['update:modelValue']);
+// eslint-disable-next-line
+const emits = defineEmits(['update:modelValue']);
 const value = computed({
   get() {
     return props.modelValue;
   },
   set(value) {
-    emit('update:modelValue', value);
+    emits('update:modelValue', value);
   },
 });
 </script>

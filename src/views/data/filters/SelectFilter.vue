@@ -27,9 +27,10 @@
 </template>
 
 <script setup>
-import { defineProps, ref, onBeforeMount } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 import { getDataByFormula } from '@utils';
 
+// eslint-disable-next-line
 const props = defineProps(['params']);
 const column = JSON.parse(JSON.stringify(props.params._column));
 const data = ref(null);

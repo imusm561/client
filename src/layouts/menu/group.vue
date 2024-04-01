@@ -24,10 +24,10 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
 import Header from './Header.vue';
 import Group from './Group.vue';
 import Link from './Link.vue';
+// eslint-disable-next-line
 defineProps({
   item: {
     type: Object,

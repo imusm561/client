@@ -44,9 +44,10 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { resolveColumnTitle } from '@utils';
 import MonacoEditor from '@components/MonacoEditor';
+// eslint-disable-next-line
 const props = defineProps({
   type: {
     type: String,
@@ -75,12 +76,13 @@ const props = defineProps({
     default: () => null,
   },
 });
-const emit = defineEmits(['update:modelValue', 'syntax-error']);
+// eslint-disable-next-line
+const emits = defineEmits(['update:modelValue', 'syntax-error']);
 
 const syntax_error = ref(null);
 const onOccuredSyntaxError = (e) => {
   syntax_error.value = e;
-  emit('syntax-error', e);
+  emits('syntax-error', e);
 };
 
 const value = computed({
@@ -88,7 +90,7 @@ const value = computed({
     return props.modelValue;
   },
   set(value) {
-    emit('update:modelValue', value);
+    emits('update:modelValue', value);
   },
 });
 </script>

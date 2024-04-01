@@ -37,10 +37,11 @@
 </template>
 
 <script setup>
-import { defineProps, onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { getDataByFormula } from '@utils';
 
+// eslint-disable-next-line
 const props = defineProps(['params']);
 
 const column = JSON.parse(JSON.stringify(props.params._column));

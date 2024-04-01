@@ -10,13 +10,14 @@
 </template>
 
 <script setup>
-import { defineOptions, defineProps } from 'vue';
 import Header from './Header.vue';
 import Group from './Group.vue';
 import Link from './Link.vue';
+// eslint-disable-next-line
 defineOptions({
   name: 'Menu',
 });
+// eslint-disable-next-line
 defineProps({
   items: {
     type: Array,

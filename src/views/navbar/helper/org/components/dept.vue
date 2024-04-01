@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { defineEmits, computed, ref, nextTick } from 'vue';
+import { computed, ref, nextTick } from 'vue';
 import { ElTree } from 'element-plus';
 import 'element-plus/es/components/tree/style/css';
 import { useToast } from 'vue-toastification';
@@ -106,7 +106,8 @@ import i18n from '@utils/i18n';
 import store from '@store';
 import { createDept, updateDept, dropDept } from '@api/dept';
 
-const emit = defineEmits(['setDepts']);
+// eslint-disable-next-line
+const emits = defineEmits(['setDepts']);
 
 const toast = useToast();
 
@@ -122,7 +123,7 @@ const handleSelectDept = (node) => {
     const dept = store.state.org.depts.find((dept) => dept.id === node.id);
     if (dept) {
       const depts = [...[dept], ...getChildrenById(store.state.org.depts, node.id)];
-      emit('setDepts', depts);
+      emits('setDepts', depts);
     }
   }, 200);
 };

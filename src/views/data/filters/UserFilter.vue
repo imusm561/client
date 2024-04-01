@@ -12,10 +12,11 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
 import store from '@store';
 import Avatar from '@components/Avatar';
 
+// eslint-disable-next-line
 const props = defineProps(['params']);
 
 const user = ref(null);

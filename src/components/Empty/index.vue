@@ -7,8 +7,8 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
 import i18n from '@utils/i18n';
+// eslint-disable-next-line
 defineProps({
   text: {
     type: String,

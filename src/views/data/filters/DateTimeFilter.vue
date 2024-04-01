@@ -16,10 +16,11 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
 import moment from '@utils/moment';
 import FlatPickr from '@/components/FlatPickr';
 
+// eslint-disable-next-line
 const props = defineProps(['params']);
 
 const onOpen = () => {

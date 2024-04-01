@@ -423,7 +423,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import CKEditor from '@components/CKEditor';
@@ -431,6 +431,7 @@ import MonacoEditor from '@components/MonacoEditor';
 import { createAccount, updateAccount } from '@api/weixin';
 import useWeixin from '../useWeixin';
 
+// eslint-disable-next-line
 const props = defineProps({
   data: {
     type: Object,
@@ -446,7 +447,8 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['submit']);
+// eslint-disable-next-line
+const emits = defineEmits(['submit']);
 
 const toast = useToast();
 const account = ref({});
@@ -474,7 +476,7 @@ const handleSubmitAccount = () => {
   if (account.value.id) {
     updateAccount(account.value).then(({ code, msg }) => {
       if (code === 200) {
-        emit('submit');
+        emits('submit');
         document.getElementById('hideEditAccountModalBtn').click();
       } else {
         toast({
@@ -490,7 +492,7 @@ const handleSubmitAccount = () => {
   } else {
     createAccount(account.value).then(({ code, msg }) => {
       if (code === 200) {
-        emit('submit');
+        emits('submit');
         document.getElementById('hideEditAccountModalBtn').click();
       } else {
         toast({

@@ -821,7 +821,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed, onMounted, onUnmounted, ref, reactive } from 'vue';
+import { computed, onMounted, onUnmounted, ref, reactive } from 'vue';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -835,6 +835,7 @@ import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
 import { getUserList, updateUser, createUser } from '@api/user';
 
+// eslint-disable-next-line
 const props = defineProps({
   depts: {
     type: Array,
@@ -850,7 +851,8 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['clearDepts', 'clearRole']);
+// eslint-disable-next-line
+const emits = defineEmits(['clearDepts', 'clearRole']);
 
 const toast = useToast();
 
@@ -904,7 +906,7 @@ const deptQuery = computed({
       : null;
   },
   set() {
-    emit('clearDepts');
+    emits('clearDepts');
   },
 });
 
@@ -918,7 +920,7 @@ const roleQuery = computed({
       : null;
   },
   set() {
-    emit('clearRole');
+    emits('clearRole');
   },
 });
 

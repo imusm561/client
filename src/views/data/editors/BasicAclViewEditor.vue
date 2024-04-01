@@ -7,8 +7,9 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
 import UserSelector from '@components/UserSelector';
+// eslint-disable-next-line
 const props = defineProps(['params']);
 
 const value = ref(props.params.value);

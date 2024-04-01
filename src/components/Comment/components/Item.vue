@@ -53,21 +53,22 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
 import { getUserInfo } from '@utils';
 import moment from '@utils/moment';
 import Avatar from '@components/Avatar';
+// eslint-disable-next-line
 defineProps({
   comment: {
     type: Object,
     required: true,
   },
 });
-const emit = defineEmits(['reply', 'delete']);
+// eslint-disable-next-line
+const emits = defineEmits(['reply', 'delete']);
 const handleReplyComment = (comment) => {
-  emit('reply', comment);
+  emits('reply', comment);
 };
 const handleDeleteComment = (comment) => {
-  emit('delete', comment);
+  emits('delete', comment);
 };
 </script>

@@ -63,9 +63,10 @@
 </template>
 
 <script setup>
-import { defineProps, computed } from 'vue';
+import { computed } from 'vue';
 import moment from '@utils/moment';
 
+// eslint-disable-next-line
 const props = defineProps(['params']);
 const theme = computed(() => {
   return props.params.api.getTheme();

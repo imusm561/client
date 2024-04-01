@@ -19,7 +19,8 @@
 </template>
 
 <script setup>
-import { defineProps, computed } from 'vue';
+import { computed } from 'vue';
+// eslint-disable-next-line
 const props = defineProps(['params']);
 const theme = computed(() => {
   return props.params.api.getTheme();

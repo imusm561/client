@@ -9,11 +9,12 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, reactive, computed } from 'vue';
+import { reactive, computed } from 'vue';
 import flatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 import { Mandarin } from 'flatpickr/dist/l10n/zh.js';
 import store from '@store';
+// eslint-disable-next-line
 const props = defineProps({
   modelValue: {
     type: [String, Array, Date],
@@ -40,7 +41,8 @@ const props = defineProps({
     },
   },
 });
-const emit = defineEmits(['update:modelValue']);
+// eslint-disable-next-line
+const emits = defineEmits(['update:modelValue']);
 
 const configuration = reactive({
   ...{
@@ -102,7 +104,7 @@ const date = computed({
     return props.modelValue;
   },
   set(value) {
-    emit('update:modelValue', value);
+    emits('update:modelValue', value);
   },
 });
 </script>

@@ -55,10 +55,11 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue';
+import { computed } from 'vue';
 import TreeSelect from 'vue3-treeselect';
 import Avatar from '@components/Avatar';
 import store from '@store';
+// eslint-disable-next-line
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -81,14 +82,15 @@ const props = defineProps({
     default: () => 'Select Users',
   },
 });
-const emit = defineEmits(['update:modelValue']);
+// eslint-disable-next-line
+const emits = defineEmits(['update:modelValue']);
 
 const users = computed({
   get() {
     return props.modelValue;
   },
   set(value) {
-    emit('update:modelValue', value);
+    emits('update:modelValue', value);
   },
 });
 

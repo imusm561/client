@@ -36,9 +36,10 @@
 </template>
 
 <script setup>
-import { defineProps, computed, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { getDataByFormula } from '@utils';
 
+// eslint-disable-next-line
 const props = defineProps(['params']);
 
 const value = ref(props.params.value);

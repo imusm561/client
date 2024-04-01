@@ -580,7 +580,7 @@
 </template>
 
 <script setup>
-import { defineOptions, computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -628,6 +628,7 @@ import LayoutTab from '@components/Column/Layout/Tab/index.vue';
 
 import { getDataView, getDataTitle, updateFlow } from '@api/data';
 
+// eslint-disable-next-line
 defineOptions({
   components: {
     InputText,

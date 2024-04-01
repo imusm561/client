@@ -102,7 +102,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, reactive, onMounted, onUnmounted, watch } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
@@ -114,6 +114,7 @@ import Empty from '@components/Empty';
 import CKEditor from '@components/CKEditor';
 import Item from './components/Item';
 import { getComments, createComment, updateComment } from '@api/com/comment';
+// eslint-disable-next-line
 const props = defineProps({
   source: {
     type: String,
@@ -126,7 +127,8 @@ const props = defineProps({
     requried: false,
   },
 });
-const emit = defineEmits(['fetch']);
+// eslint-disable-next-line
+const emits = defineEmits(['fetch']);
 
 const route = useRoute();
 const toast = useToast();
@@ -159,7 +161,7 @@ const fetchComments = (callback) => {
         }
       });
       comments.value = listToTree(data);
-      emit('fetch', data);
+      emits('fetch', data);
       callback && callback();
     } else {
       toast({

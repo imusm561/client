@@ -57,10 +57,11 @@
 </template>
 
 <script setup>
-import { defineProps, computed, ref } from 'vue';
+import { computed, ref } from 'vue';
 import Avatar from '@components/Avatar';
 import store from '@store';
 
+// eslint-disable-next-line
 const props = defineProps(['params']);
 
 const theme = computed(() => {

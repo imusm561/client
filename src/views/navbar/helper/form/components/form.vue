@@ -1104,7 +1104,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed, onMounted, ref, reactive, watch, nextTick } from 'vue';
+import { computed, onMounted, ref, reactive, watch, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { VueDraggableNext as Draggable } from 'vue-draggable-next';
 import QRCode from 'qrcodejs2';
@@ -1132,6 +1132,7 @@ import { getForms, createForm, updateForm, dropForm, backupForm, truncateForm } 
 import { getPubs, createPub, updatePub } from '@api/pub';
 import { getUserData } from '@api/user';
 
+// eslint-disable-next-line
 const props = defineProps({
   columnsChanged: {
     type: Boolean,
@@ -1139,7 +1140,8 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['setForm']);
+// eslint-disable-next-line
+const emits = defineEmits(['setForm']);
 
 const router = useRouter();
 const toast = useToast();
@@ -1157,7 +1159,7 @@ const changes = ref({});
 watch(
   () => current_form.value,
   (newVal, oldVal) => {
-    emit('setForm', current_form.value);
+    emits('setForm', current_form.value);
     if (newVal?.id && newVal.id !== oldVal?.id) {
       current_tab.value = 'basic_info';
       default_expanded_keys.value = [current_form.value.id, current_form.value.pid];

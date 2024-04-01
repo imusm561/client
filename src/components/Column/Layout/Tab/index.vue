@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
+// eslint-disable-next-line
 defineProps({
   column: {
     type: Object,

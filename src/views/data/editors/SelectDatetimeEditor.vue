@@ -8,9 +8,10 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
 import FlatPickr from '@components/FlatPickr';
 
+// eslint-disable-next-line
 const props = defineProps(['params']);
 
 const value = ref(props.params.value);

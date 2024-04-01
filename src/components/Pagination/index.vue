@@ -54,7 +54,8 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
+// eslint-disable-next-line
 const props = defineProps({
   pageNum: {
     type: Number,
@@ -81,7 +82,8 @@ const props = defineProps({
     },
   },
 });
-const emit = defineEmits(['changed']);
+// eslint-disable-next-line
+const emits = defineEmits(['changed']);
 
 const step = ref(5);
 const jumper = ref(props.pageNum);
@@ -93,7 +95,7 @@ const currentPage = computed({
   set(value) {
     jumper.value = value;
     if (props.pageNum != value) {
-      emit('changed', {
+      emits('changed', {
         pageNum: value,
         pageSize: props.pageSize,
       });
@@ -107,7 +109,7 @@ const currentSize = computed({
   },
   set(value) {
     jumper.value = 1;
-    emit('changed', {
+    emits('changed', {
       pageNum: 1,
       pageSize: value,
     });

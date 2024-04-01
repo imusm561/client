@@ -185,7 +185,7 @@
 </template>
 
 <script setup>
-import { defineOptions, ref, computed, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -223,6 +223,7 @@ import LayoutTab from '@components/Column/Layout/Tab/index.vue';
 import { createData } from '@api/data';
 import { getPubForm } from '@api/pub';
 
+// eslint-disable-next-line
 defineOptions({
   components: {
     InputText,

@@ -294,7 +294,7 @@
 </template>
 
 <script setup>
-import { defineProps, onMounted, onUnmounted, ref, reactive } from 'vue';
+import { onMounted, onUnmounted, ref, reactive } from 'vue';
 import { useRoute } from 'vue-router';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
@@ -307,6 +307,7 @@ import MonacoEditor from '@components/MonacoEditor';
 import store from '@store';
 import { getCustomFilter, createCustomFilter, updateCustomFilter } from '@api/custom';
 
+// eslint-disable-next-line
 const props = defineProps(['params']);
 
 const toast = useToast();

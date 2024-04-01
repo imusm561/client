@@ -48,7 +48,8 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
+// eslint-disable-next-line
 const props = defineProps({
   data: {
     type: [Object, Array],

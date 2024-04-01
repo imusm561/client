@@ -159,16 +159,7 @@
 </template>
 
 <script setup>
-import {
-  defineProps,
-  defineEmits,
-  onMounted,
-  onUnmounted,
-  ref,
-  reactive,
-  shallowReactive,
-  nextTick,
-} from 'vue';
+import { onMounted, onUnmounted, ref, reactive, shallowReactive, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import Uploader from 'simple-uploader.js';
 import SparkMD5 from 'spark-md5';
@@ -182,6 +173,7 @@ import { socket } from '@utils/socket';
 import store from '@store';
 import { mergeFile, addUpload } from '@api/file';
 
+// eslint-disable-next-line
 const props = defineProps({
   id: {
     type: String,
@@ -235,7 +227,8 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits([
+// eslint-disable-next-line
+const emits = defineEmits([
   'update:modelValue',
   'upload-start',
   'upload-end',
@@ -245,7 +238,7 @@ const emit = defineEmits([
 
 const updateValue = () => {
   const value = files.filter((file) => file.md5);
-  emit('update:modelValue', value.length ? value : null);
+  emits('update:modelValue', value.length ? value : null);
 };
 
 const { FileIcons } = window;
@@ -341,7 +334,7 @@ const scrollToBottom = () => {
 };
 
 const onFileAdded = (file) => {
-  emit('upload-start');
+  emits('upload-start');
   file.key = nanoid();
   file.status = {
     name: 'computing',
@@ -358,7 +351,7 @@ const onFileAdded = (file) => {
   }
   file = shallowReactive(file);
   files.push(file);
-  emit('file-added', file);
+  emits('file-added', file);
   scrollToBottom();
   computeFile(file);
 };
@@ -483,7 +476,7 @@ const checkUploadTasks = () => {
     let computingFile = files.find((file) => file.status?.name === 'computing');
     let pausedFile = files.find((file) => file.status?.name === 'paused');
     let mergingFile = files.find((file) => file.status?.name === 'merging');
-    if (!(computingFile || pausedFile || mergingFile)) emit('upload-end');
+    if (!(computingFile || pausedFile || mergingFile)) emits('upload-end');
   });
 };
 
@@ -551,7 +544,7 @@ const handleAddUpload = (file, data) => {
       if (index != -1) {
         files[index] = data;
         updateValue();
-        emit('file-uploaded', { ...file, data });
+        emits('file-uploaded', { ...file, data });
       }
       checkUploadTasks();
     } else {

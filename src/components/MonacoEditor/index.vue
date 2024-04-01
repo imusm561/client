@@ -3,9 +3,10 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import useMonaco from './useMonaco';
 import store from '@store';
+// eslint-disable-next-line
 const props = defineProps({
   modelValue: {
     type: String,
@@ -32,7 +33,8 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['update:modelValue', 'blur', 'error']);
+// eslint-disable-next-line
+const emits = defineEmits(['update:modelValue', 'blur', 'error']);
 
 const editorRef = ref(null);
 const { createEditor, getEditor, updateValue, createModel } = useMonaco(props.language);
@@ -64,17 +66,17 @@ onMounted(() => {
 
   if (monacoEditor?.onDidChangeModelContent)
     monacoEditor.onDidChangeModelContent(() => {
-      emit('update:modelValue', monacoEditor.getValue());
+      emits('update:modelValue', monacoEditor.getValue());
     });
 
   if (monacoEditor?.onDidBlurEditorText)
     monacoEditor.onDidBlurEditorText(() => {
-      emit('blur');
+      emits('blur');
     });
 
   if (monacoEditor?.onDidUpdateDiff)
     monacoEditor.onDidUpdateDiff(() => {
-      emit('update:modelValue', monacoEditor.getModel()?.modified?.getValue());
+      emits('update:modelValue', monacoEditor.getModel()?.modified?.getValue());
     });
 });
 
@@ -88,9 +90,9 @@ watch(
     if (!props.options?.readOnly && props.language === 'json') {
       try {
         if (value) JSON.parse(value);
-        emit('error', null);
+        emits('error', null);
       } catch (error) {
-        emit('error', error.message);
+        emits('error', error.message);
       }
     }
   },

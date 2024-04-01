@@ -228,7 +228,7 @@
 </template>
 
 <script setup>
-import { defineOptions, onMounted, onUnmounted, watch, ref, reactive, nextTick } from 'vue';
+import { onMounted, onUnmounted, watch, ref, reactive, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 // import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
@@ -333,6 +333,7 @@ import {
 if (store.state.sys.cfg?.agGridLicense)
   LicenseManager.setLicenseKey(store.state.sys.cfg.agGridLicense);
 
+// eslint-disable-next-line
 defineOptions({
   components: {
     CustomizationToolPanle,

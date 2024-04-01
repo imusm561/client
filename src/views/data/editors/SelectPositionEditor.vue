@@ -8,7 +8,8 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
+// eslint-disable-next-line
 const props = defineProps(['params']);
 
 const value = ref(props.params.value);
