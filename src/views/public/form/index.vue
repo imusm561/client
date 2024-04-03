@@ -282,7 +282,9 @@ const fetchPubForm = async (uuid) => {
     alias.value = res.alias;
     data.value = res.data;
 
-    await Promise.all([setFormConfiguration(), setFormColumns()]);
+    setFormConfiguration();
+    setFormColumns();
+
     current_tab.value = current_tab.value || 0;
     initialized.value = true;
   } else {
@@ -296,6 +298,53 @@ const fetchPubForm = async (uuid) => {
     });
   }
 };
+
+watch(
+  () => route.params.uuid,
+  (newVal, oldVal) => {
+    if (route.name === 'pubForm' && newVal !== oldVal) {
+      fetchPubForm(newVal);
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => formData.value,
+  (newVal = {}, oldVal = {}) => {
+    if (initialized.value) {
+      const changes = getChanges(newVal, oldVal);
+      for (let field in changes) {
+        columns.value
+          .filter(
+            (column) =>
+              column.visible?.includes(`data.${field}`) ||
+              column.required?.includes(`data.${field}`) ||
+              column.editable?.includes(`data.${field}`) ||
+              column.__default?.includes(`data.${field}`) ||
+              column.cfg?.__source?.includes(`data.${field}`) ||
+              column.cfg?.prefix?.includes(`data.${field}`) ||
+              column.cfg?.href?.includes(`data.${field}`) ||
+              (typeof column.cfg?.min === 'string' && column.cfg?.min?.includes(`data.${field}`)) ||
+              (typeof column.cfg?.max === 'string' && column.cfg?.max?.includes(`data.${field}`)),
+          )
+          .map(async (column) => {
+            if (
+              column.visible?.includes(`data.${field}`) ||
+              column.required?.includes(`data.${field}`) ||
+              column.editable?.includes(`data.${field}`)
+            ) {
+              await setColumnRules(column);
+            }
+            if (column._visible) {
+              await setColumnConfiguration(column);
+            }
+          });
+      }
+    }
+  },
+  { immediate: true, deep: true },
+);
 
 const handleRefetchPubForm = () => {
   fetchPubForm(route.params.uuid);
@@ -314,7 +363,7 @@ const setFormConfiguration = () => {
   }
 };
 
-const setFormColumns = async () => {
+const setFormColumns = () => {
   const BasicColumns = columns.value.filter((column) => column.component.includes('Basic'));
   const FormColumns = columns.value.filter((column) => !column.component.includes('Basic'));
   const HasTabs = FormColumns.find((column) => column.component === 'LayoutTab') ? true : false;
@@ -357,23 +406,13 @@ const setFormColumns = async () => {
       columns: [],
     });
 
-  // for (let tab of tabs.value) {
-  //   for await (let column of tab.children) {
-  //     column.key = hashData(JSON.stringify(column));
-  //     await replaceColumnVariables(column);
-  //     await setColumnConfiguration(column);
-  //     await setColumnRules(column);
-  //   }
-  //   tab.columns = tab.children;
-  // }
-
   tabs.value.forEach((tab) => {
     tab.children.forEach(async (column) => {
       column._visible = true;
       column._required = false;
       column._editable = true;
       column.key = hashData(JSON.stringify(column));
-      await replaceColumnVariables(column);
+      replaceColumnVariables(column);
       await setColumnConfiguration(column);
       await setColumnRules(column);
     });
@@ -478,7 +517,7 @@ const setColumnConfiguration = async (column) => {
 };
 
 const setColumnRules = async (column) => {
-  const { visible, required, editable } = await getRulesByFormula(data.value, column);
+  const { visible, required, editable } = getRulesByFormula(data.value, column);
   if (column._visible != visible || column._required != required || column._editable != editable)
     column.key = hashData(JSON.stringify(column));
 
@@ -549,48 +588,4 @@ const handleSubmitFormData = () => {
     }
   });
 };
-
-watch(
-  () => route.params.uuid,
-  (newVal, oldVal) => {
-    if (route.name === 'pubForm' && newVal !== oldVal) {
-      fetchPubForm(newVal);
-    }
-  },
-  { immediate: true },
-);
-
-watch(
-  () => formData.value,
-  (newVal, oldVal) => {
-    if (initialized.value) {
-      const changes = getChanges(newVal || {}, oldVal || {});
-      for (let field in changes) {
-        columns.value
-          .filter(
-            (column) =>
-              column.visible?.includes(`data.${field}`) ||
-              column.required?.includes(`data.${field}`) ||
-              column.editable?.includes(`data.${field}`) ||
-              column.__default?.includes(`data.${field}`) ||
-              column.cfg?.__source?.includes(`data.${field}`) ||
-              column.cfg?.prefix?.includes(`data.${field}`) ||
-              column.cfg?.href?.includes(`data.${field}`) ||
-              (typeof column.cfg?.min === 'string' && column.cfg?.min?.includes(`data.${field}`)) ||
-              (typeof column.cfg?.max === 'string' && column.cfg?.max?.includes(`data.${field}`)),
-          )
-          .map(async (column) => {
-            if (
-              column.visible?.includes(`data.${field}`) ||
-              column.required?.includes(`data.${field}`) ||
-              column.editable?.includes(`data.${field}`)
-            )
-              await setColumnRules(column);
-            else await setColumnConfiguration(column);
-          });
-      }
-    }
-  },
-  { immediate: true, deep: true },
-);
 </script>

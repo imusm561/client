@@ -786,8 +786,8 @@ const fetchDataEdit = async (tid, rid) => {
     data.value = res.data;
     flow.value = res.flow;
     init_data.value = JSON.parse(JSON.stringify(res.data));
-    await setFormConfiguration();
-    await setFormColumns();
+    setFormConfiguration();
+    setFormColumns();
     fetchDataTitle();
     current_tab.value = current_tab.value || 0;
     initialized.value = true;
@@ -930,7 +930,7 @@ const resolveFlowUsers = computed(() => {
   };
 });
 
-const setFormColumns = async () => {
+const setFormColumns = () => {
   const BasicColumns = columns.value.filter((column) => column.component.includes('Basic'));
   const FormColumns = columns.value.filter((column) => !column.component.includes('Basic'));
   const HasTabs = FormColumns.find((column) => column.component === 'LayoutTab') ? true : false;
@@ -1011,23 +1011,13 @@ const setFormColumns = async () => {
       columns: [],
     });
 
-  // for (let tab of tabs.value) {
-  //   for await (let column of tab.children) {
-  //     column.key = hashData(JSON.stringify(column));
-  //     await replaceColumnVariables(column);
-  //     await setColumnConfiguration(column);
-  //     await setColumnRules(column);
-  //   }
-  //   tab.columns = tab.children;
-  // }
-
   tabs.value.forEach((tab) => {
     tab.children.forEach(async (column) => {
       column._visible = true;
       column._required = false;
       column._editable = true;
       column.key = hashData(JSON.stringify(column));
-      await replaceColumnVariables(column);
+      replaceColumnVariables(column);
       await setColumnConfiguration(column);
       await setColumnRules(column);
     });
@@ -1136,7 +1126,7 @@ const setColumnConfiguration = async (column) => {
 };
 
 const setColumnRules = async (column) => {
-  const { visible, required, editable } = await getRulesByFormula(data.value, column);
+  const { visible, required, editable } = getRulesByFormula(data.value, column);
   if (column._visible != visible || column._required != required || column._editable != editable)
     column.key = hashData(JSON.stringify(column));
 

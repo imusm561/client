@@ -296,7 +296,6 @@ watch(
   (val) => {
     if (val === 'scan_qrcode') generateQRCode();
   },
-  { immediate: true },
 );
 
 const qr = reactive({

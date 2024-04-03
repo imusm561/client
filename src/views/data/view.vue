@@ -694,8 +694,8 @@ const fetchDataView = async (tid, rid) => {
         document.getElementById('showFlowDataOffcanvasBtn')?.click();
       }, 500);
     }
-    await setFormConfiguration();
-    await setFormColumns();
+    setFormConfiguration();
+    setFormColumns();
     fetchDataTitle();
   } else {
     toast({
@@ -793,7 +793,7 @@ const setColumnValue = async (column) => {
 
   if (column.visible) {
     column.visible = replaceVariables(column.visible, alias.value);
-    const { visible } = await getRulesByFormula(data.value, column);
+    const { visible } = getRulesByFormula(data.value, column);
     column._visible = visible;
   } else {
     column._visible = true;

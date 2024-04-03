@@ -495,7 +495,7 @@ const fetchDataForm = async (callback) => {
       pagination.value = _pagination
         ? { ..._pagination, ...{ pageSize: _pagination.data } }
         : { pageSize: 500 };
-      await setFormConfiguration();
+      setFormConfiguration();
       await setFormColumnDefs();
       const filter = {
         data_state: {
@@ -870,7 +870,7 @@ const generateColumnDef = (column) => {
         return;
       }
       const _column = JSON.parse(JSON.stringify(column));
-      const { visible, required, editable } = await getRulesByFormula(params.data, _column);
+      const { visible, required, editable } = getRulesByFormula(params.data, _column);
       _column._visible = visible;
       _column._required = required;
       _column._editable = editable;
@@ -1216,7 +1216,7 @@ const setColumnRules = async (column) => {
     !column.required?.includes('data.') &&
     !column.editable?.includes('data.')
   ) {
-    const { visible, required, editable } = await getRulesByFormula({}, column);
+    const { visible, required, editable } = getRulesByFormula({}, column);
     // column._visible = visible;
     column._required = required;
     column._editable = editable;
