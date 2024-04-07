@@ -32,9 +32,9 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     config.params = config.params || {};
-    // if (store.state.sys.cfg.origin !== '/' && config.method.toLowerCase() === 'get') {
-    //   config.params.t = new Date().getTime();
-    // }
+    if (store.state.sys.cfg.origin !== '/' && config.method.toLowerCase() === 'get') {
+      config.params.t = new Date().getTime();
+    }
     config.headers = config.headers || {};
     config.headers.lang = store.state.sys.lang;
 
