@@ -882,6 +882,7 @@
   "data.column.BasicAclView": "Acl View",
   "data.column.BasicAclEdit": "Acl Edit",
 
+  "data.list.data.quickFilter": "Quick Filter...",
   "data.list.header.batchUpdate": "Batch Update {count} Row | Batch Update {count} Rows",
   "data.list.header.deselect": "Deselect {count} Row | Deselect {count} Rows",
   "data.list.data.create": "Create",

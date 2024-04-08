@@ -6,6 +6,22 @@
         <div class="mt-2 mb-2">
           <div v-if="form.description" class="ck ck-content p-0" v-html="form.description" />
           <div class="d-flex justify-content-end gap-2">
+            <div class="quick-filter">
+              <span
+                class="mdi mdi-filter-outline text-muted cursor-pointer"
+                :class="{ 'mdi-filter-plus ': quickFilter.includeHiddenColumns }"
+                @click="handleChangeQuickFilterMode"
+              ></span>
+              <input
+                type="text"
+                class="form-control form-control-sm w-auto text-truncate"
+                :class="{ 'border-danger': quickFilter.includeHiddenColumns }"
+                :placeholder="$t('data.list.data.quickFilter')"
+                :disabled="!ready.getRows"
+                v-model.trim="quickFilter.quickFilterText"
+                @input="handleInputQuickFilterText"
+              />
+            </div>
             <div
               v-if="
                 $store.state.user.data?.permissions?.[$route.params.tid]?.batch &&
@@ -251,6 +267,7 @@ import {
   getRulesByFormula,
   getDataByFormula,
   generateFlowByCurrentUser,
+  debounce,
 } from '@utils';
 import i18n from '@utils/i18n';
 import moment from '@utils/moment';
@@ -1376,8 +1393,24 @@ const getRowId = ({ data, level, parentKeys = [] }) => {
   else return parentKeys.join('-') + '-' + data[Object.keys(data)[0]];
 };
 
+const quickFilter = reactive({
+  quickFilterText: null,
+  includeHiddenColumns: false,
+});
+
+const handleInputQuickFilterText = debounce(() => {
+  gridApi.refreshServerSide();
+}, 500);
+
+const handleChangeQuickFilterMode = () => {
+  quickFilter.includeHiddenColumns = !quickFilter.includeHiddenColumns;
+  if (quickFilter.quickFilterText) gridApi.refreshServerSide();
+};
+
 const serverSideDatasource = {
   getRows(params) {
+    quickFilter.quickFilterText = quickFilter.quickFilterText || null;
+    params.request.quickFilter = quickFilter;
     if (ready.getRows || Object.keys(params.request.filterModel).length) {
       ready.getRows = true;
       document.getElementById('handleSetCurrentFilter').click();
@@ -1686,6 +1719,8 @@ watch(
   (newVal = {}, oldVal = {}) => {
     if (newVal.tid && newVal.tid !== oldVal.tid) {
       fetchDataForm();
+      quickFilter.quickFilterText = null;
+      quickFilter.includeHiddenColumns = false;
       ready.getRows = false;
       columnDefs.value = [];
       selectedRows.value = [];
@@ -1694,3 +1729,17 @@ watch(
   { immediate: true, deep: true },
 );
 </script>
+
+<style lang="scss" scoped>
+.quick-filter {
+  display: contents;
+  span {
+    position: relative;
+    left: 27px;
+    top: 4px;
+  }
+  input {
+    padding-left: 20px;
+  }
+}
+</style>

@@ -882,6 +882,7 @@
   "data.column.BasicAclView": "查看权限",
   "data.column.BasicAclEdit": "编辑权限",
 
+  "data.list.data.quickFilter": "快速过滤...",
   "data.list.header.batchUpdate": "批量更新 {count} 条数据",
   "data.list.header.deselect": "取消所选的 {count} 条数据",
   "data.list.data.create": "创建",

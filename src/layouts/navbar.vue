@@ -21,13 +21,13 @@
                 :placeholder="$t('layout.navbar.search.placeholder')"
                 autocomplete="off"
                 id="search-options-md"
-                v-model="search.keyword"
+                v-model.trim="search.keyword"
                 @input="handleSearch"
                 @keyup.enter.stop="handleEnter"
               />
               <span class="mdi mdi-magnify search-widget-icon"></span>
               <span
-                class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none"
+                class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none cursor-pointer"
                 id="search-close-options"
               ></span>
             </div>
@@ -38,7 +38,7 @@
                   :result="search.result"
                   @setKeyword="
                     (e) => {
-                      search.keyword = e;
+                      search.keyword = e?.trim();
                       handleSearch();
                     }
                   "
@@ -69,7 +69,7 @@
                       class="form-control"
                       :placeholder="$t('layout.navbar.search.placeholder')"
                       id="search-options-xs"
-                      v-model="search.keyword"
+                      v-model.trim="search.keyword"
                       @input="handleSearch"
                       @keyup.enter.stop="handleEnter"
                     />
@@ -84,7 +84,7 @@
                     :result="search.result"
                     @setKeyword="
                       (e) => {
-                        search.keyword = e;
+                        search.keyword = e?.trim();
                         handleSearch();
                       }
                     "
@@ -601,7 +601,6 @@ const search = reactive({
 
 const handleSearch = debounce(() => {
   if (!search.keyword) return;
-  search.keyword = search.keyword.trim();
 
   getSearchResult({
     keyword: search.keyword,
