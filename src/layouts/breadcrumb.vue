@@ -14,7 +14,7 @@
         <div class="page-title-right">
           <ol class="breadcrumb m-0 justify-content-end">
             <li class="breadcrumb-item text-truncate" style="max-width: 200px">
-              <a class="cursor-pointer" @click="$router.push('/')">
+              <a class="cursor-pointer" @click="handleChangeRoute({ path: '/' })">
                 <i class="mdi mdi-home me-1"></i>
                 <span :title="$t('layout.breadcrumb.home')">
                   {{ $t('layout.breadcrumb.home') }}
@@ -30,7 +30,7 @@
               <a
                 :class="{ active: index === items.length - 1, 'cursor-pointer': item.path }"
                 :title="$t(item.title)"
-                @click="item.path && $router.push(item.path)"
+                @click="item.path && handleChangeRoute(item)"
               >
                 <i v-if="item.icon" :class="`mdi ${item.icon} me-1`"></i>
                 <span>
@@ -202,8 +202,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, computed, toRaw } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getListPath, getParentsById, getUserInfo, generateFlowByCurrentUser } from '@utils';
@@ -213,14 +213,32 @@ import Log from '@components/Log';
 import store from '@store';
 import { getDataForm } from '@api/data';
 
+// eslint-disable-next-line
+const emits = defineEmits(['changeRoute']);
+
 const title = ref('');
 const items = ref([]);
 const route = useRoute();
-const path = getListPath(route.path);
-const page = store.state.user.forms.find((item) => item.route && item.route.path == path);
-if (page) {
-  title.value = page.title;
-  items.value = getParentsById(store.state.user.forms, page.id);
+if (['list', 'view', 'edit'].includes(route.name)) {
+  const path = getListPath(route.path);
+  const page = store.state.user.forms.find((item) => item.route && item.route.path == path);
+  if (page) {
+    title.value = page.title;
+    items.value = getParentsById(store.state.user.forms, page.id).map((item) => toRaw({ ...item }));
+    if (['view', 'edit'].includes(route.name)) {
+      items.value[items.value.length - 1].path = path;
+      items.value.push({
+        title: route.params.rid,
+        icon: `mdi-file-${
+          route.name === 'view' ? 'eye-outline' : route.params.rid == 0 ? 'hidden' : 'edit-outline'
+        }`,
+        path:
+          route.name === 'edit' && route.params.rid != 0
+            ? route.path.replace('edit', 'view')
+            : null,
+      });
+    }
+  }
 } else {
   title.value = route.meta?.title || '';
   items.value = [{ title: route.meta?.title }];
@@ -271,4 +289,11 @@ const resolveDataStateVariant = computed(() => {
 });
 
 if (['list', 'view', 'edit'].includes(route.name)) fetchDataForm();
+
+const router = useRouter();
+const handleChangeRoute = (item) => {
+  if (route.name === 'edit') emits('changeRoute', () => router.push(item.path));
+  else router.push(item.path);
+};
 </script>
+s

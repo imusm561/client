@@ -1,23 +1,17 @@
 <template>
   <div>
-    <Breadcrumb :key="$route" />
+    <Breadcrumb
+      :key="$route"
+      @changeRoute="
+        (callback) =>
+          handleCancelEdit((confirm) => {
+            if (confirm) callback();
+          })
+      "
+    />
     <div class="card">
       <div class="card-header border-0 p-2 pb-0">
         <span class="float-end">
-          <i
-            class="mdi mdi-format-list-text fs-16 cursor-pointer text-muted pe-2"
-            @click="$router.push({ name: 'list', params: { tid: $route.params.tid } })"
-          ></i>
-          <i
-            v-if="$route.params.rid != 0"
-            class="mdi mdi-view-grid-outline fs-16 cursor-pointer text-muted pe-2"
-            @click="
-              $router.push({
-                name: 'view',
-                params: { tid: $route.params.tid, rid: $route.params.rid },
-              })
-            "
-          ></i>
           <i
             v-if="tabs.length > 1"
             class="mdi fs-16 cursor-pointer text-muted pe-2"
@@ -537,7 +531,7 @@
             <div class="mt-2 text-center">
               <div class="fs-15 mx-4 mx-sm-5">
                 <h4>{{ $t('data.edit.confirmCancelEditModal.confirm') }}</h4>
-                <p class="text-muted mx-4 mb-0 mb-2" style="white-space: nowrap">
+                <p class="text-muted mx-4 mb-0 mb-2">
                   {{ $t('data.edit.confirmCancelEditModal.tips') }}
                 </p>
               </div>
@@ -546,11 +540,11 @@
             <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
               <button
                 type="button"
-                class="btn w-sm btn-success"
+                class="btn w-sm btn-danger"
                 data-bs-dismiss="modal"
-                @click="cancel_edit_confirm = false"
+                @click="cancel_edit_confirm = true"
               >
-                {{ $t('data.edit.confirmCancelEditModal.cancel') }}
+                {{ $t('data.edit.confirmCancelEditModal.leave') }}
               </button>
               <button
                 type="button"
@@ -566,11 +560,11 @@
               </button>
               <button
                 type="button"
-                class="btn w-sm btn-danger"
+                class="btn w-sm btn-success"
                 data-bs-dismiss="modal"
-                @click="cancel_edit_confirm = true"
+                @click="cancel_edit_confirm = false"
               >
-                {{ $t('data.edit.confirmCancelEditModal.back') }}
+                {{ $t('data.edit.confirmCancelEditModal.cancel') }}
               </button>
             </div>
           </div>

@@ -31,10 +31,6 @@
       <div class="card-header border-0 p-2 pb-0 print-hidden">
         <span class="float-end">
           <i
-            class="mdi mdi-format-list-text fs-16 cursor-pointer text-muted pe-2"
-            @click="$router.push({ name: 'list', params: { tid: $route.params.tid } })"
-          ></i>
-          <i
             v-if="tabs.length > 1"
             class="mdi fs-16 cursor-pointer text-muted pe-2"
             :class="ribbon_mode ? 'mdi-tab' : 'mdi-ribbon'"

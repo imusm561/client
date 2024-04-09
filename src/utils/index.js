@@ -108,7 +108,7 @@ export const getListPath = (path) => {
   let structure = path.split('/');
   if (structure[1] === 'data' && ['view', 'edit'].includes(structure[2])) {
     structure[2] = 'list';
-    structure.splice(4, 1);
+    structure.splice(4);
     return structure.join('/');
   }
   return path;
