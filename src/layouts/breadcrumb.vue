@@ -228,7 +228,7 @@ if (['list', 'view', 'edit'].includes(route.name)) {
     if (['view', 'edit'].includes(route.name)) {
       items.value[items.value.length - 1].path = path;
       items.value.push({
-        title: route.params.rid,
+        title: `#${route.params.rid}`,
         icon: `mdi-file-${
           route.name === 'view' ? 'eye-outline' : route.params.rid == 0 ? 'hidden' : 'edit-outline'
         }`,
@@ -295,5 +295,11 @@ const handleChangeRoute = (item) => {
   if (route.name === 'edit') emits('changeRoute', () => router.push(item.path));
   else router.push(item.path);
 };
+
+const setItemTitle = (title) => {
+  items.value[items.value.length - 1].title = title;
+};
+
+// eslint-disable-next-line
+defineExpose({ setItemTitle });
 </script>
-s

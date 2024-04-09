@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Breadcrumb :key="$route" />
+    <Breadcrumb ref="breadcrumbRef" :key="$route" />
     <div class="card ribbon-box">
       <span
         v-if="flow"
@@ -728,6 +728,8 @@ const handleRefetchDataView = () => {
   fetchDataView(form.value.id, data.value.id);
 };
 
+const breadcrumbRef = ref(null);
+
 const fetchDataTitle = (search = '', loading) => {
   if (loading) loading(true);
   const params = {
@@ -737,6 +739,11 @@ const fetchDataTitle = (search = '', loading) => {
   if (search.length) params.search = search;
   getDataTitle(params).then(({ code, data, msg }) => {
     if (code === 200) {
+      const current_title = data.find((item) => item.id === params.rid);
+      if (current_title) {
+        breadcrumbRef.value?.setItemTitle(current_title.title);
+        document.title = current_title.title + ' - ' + store.state.sys.name;
+      }
       titles.value = [
         ...(store.state.user.data.permissions?.[form.value.id]?.create
           ? [{ id: 0, title: i18n.global.t('data.view.create') }]
