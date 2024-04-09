@@ -27,7 +27,11 @@
               v-for="(item, index) in items"
               :key="index"
             >
-              <a :class="{ active: index === items.length - 1 }" :title="$t(item.title)">
+              <a
+                :class="{ active: index === items.length - 1, 'cursor-pointer': item.path }"
+                :title="$t(item.title)"
+                @click="item.path && $router.push(item.path)"
+              >
                 <i v-if="item.icon" :class="`mdi ${item.icon} me-1`"></i>
                 <span>
                   {{ $t(item.title) }}
@@ -219,7 +223,8 @@ if (page) {
   items.value = getParentsById(store.state.user.forms, page.id);
 } else {
   title.value = route.meta?.title || '';
-  items.value = route.meta?.items || [];
+  items.value = [{ title: route.meta?.title }];
+  if (route.meta?.parent) items.value = [...route.meta.parent, ...items.value];
 }
 
 const toast = useToast();

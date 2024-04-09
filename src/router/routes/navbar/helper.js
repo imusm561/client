@@ -21,7 +21,11 @@ export default [
   {
     path: '/helper/job/:id',
     name: 'jobDetail',
-    meta: { title: 'layout.navbar.helper.job.detail', auth: ['DBA', 'OE'] },
+    meta: {
+      title: 'layout.navbar.helper.job.detail',
+      auth: ['DBA', 'OE'],
+      parent: [{ title: 'layout.navbar.helper.job', path: '/helper/job' }],
+    },
     component: () => import('@/views/navbar/helper/job/detail'),
   },
   {
@@ -51,7 +55,11 @@ export default [
   {
     path: '/helper/weixin/:id',
     name: 'weixinDetail',
-    meta: { title: 'layout.navbar.helper.weixin.detail', auth: ['OE'] },
+    meta: {
+      title: 'layout.navbar.helper.weixin.detail',
+      auth: ['OE'],
+      parent: [{ title: 'layout.navbar.helper.weixin', path: '/helper/weixin' }],
+    },
     component: () => import('@/views/navbar/helper/weixin/detail'),
   },
   {
