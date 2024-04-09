@@ -159,7 +159,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref, reactive, shallowReactive, nextTick } from 'vue';
+import { onMounted, onUnmounted, ref, reactive, shallowReactive, nextTick, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Uploader from 'simple-uploader.js';
 import SparkMD5 from 'spark-md5';
@@ -275,7 +275,12 @@ const options = {
 };
 let uploader = new Uploader(options);
 
-const files = reactive(JSON.parse(JSON.stringify(props.modelValue)) || []);
+const files = reactive([...props.modelValue]);
+
+watch(
+  () => props.modelValue,
+  (value) => files.splice(0, files.length, ...(value || [])),
+);
 
 const dropRef = ref(null);
 const uploadRef = ref(null);
