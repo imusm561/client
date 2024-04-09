@@ -742,7 +742,7 @@ const fetchDataTitle = (search = '', loading) => {
       const current_title = data.find((item) => item.id === params.rid);
       if (current_title) {
         breadcrumbRef.value?.setItemTitle(current_title.title);
-        document.title = current_title.title + ' - ' + store.state.sys.name;
+        document.title = current_title.title + ' - ' + document.title;
       }
       titles.value = [
         ...(store.state.user.data.permissions?.[form.value.id]?.create

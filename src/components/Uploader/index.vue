@@ -275,7 +275,7 @@ const options = {
 };
 let uploader = new Uploader(options);
 
-const files = reactive([...props.modelValue]);
+const files = reactive([...(props.modelValue || [])]);
 
 watch(
   () => props.modelValue,

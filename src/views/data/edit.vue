@@ -884,10 +884,15 @@ const fetchDataTitle = (search = '', loading) => {
   if (search.length) params.search = search;
   getDataTitle(params).then(({ code, data, msg }) => {
     if (code === 200) {
-      const current_title = data.find((item) => item.id === params.rid);
-      if (current_title) {
-        breadcrumbRef.value?.setItemTitle(current_title.title);
-        document.title = current_title.title + ' - ' + store.state.sys.name;
+      if (params.rid === 0) {
+        breadcrumbRef.value?.setItemTitle(i18n.global.t('data.edit.create'));
+        document.title = i18n.global.t('data.edit.create') + ' - ' + document.title;
+      } else {
+        const current_title = data.find((item) => item.id === params.rid);
+        if (current_title) {
+          breadcrumbRef.value?.setItemTitle(current_title.title);
+          document.title = current_title.title + ' - ' + document.title;
+        }
       }
       titles.value = [
         ...(store.state.user.data.permissions?.[form.value.id]?.create
