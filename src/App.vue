@@ -33,7 +33,8 @@ console.info(
 \\ \\ \\  \\ \\ \\-./\\ \\  \\ \\ \\_\\ \\  \\ \\___  \\  \\ \\ \\-./\\ \\
  \\ \\_\\  \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\/\\_____\\  \\ \\_\\ \\ \\_\\
   \\/_/   \\/_/  \\/_/   \\/_____/   \\/_____/   \\/_/  \\/_/
-          %cRelease %cv${pkg.version}%c. Crafted with %c❤ %cby %cYuGuanpei`,
+
+           %cRelease %cv${pkg.version}%c. Crafted with %c❤ %cby %cYuGuanpei`,
   'color:#c33b33;',
   'color:#878a99;',
   'color:#a5a7fe;',
