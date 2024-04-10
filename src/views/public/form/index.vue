@@ -283,7 +283,7 @@ const fetchPubForm = async (uuid) => {
     data.value = res.data;
 
     setFormConfiguration();
-    setFormColumns();
+    await setFormColumns();
 
     current_tab.value = current_tab.value || 0;
     initialized.value = true;
@@ -363,7 +363,7 @@ const setFormConfiguration = () => {
   }
 };
 
-const setFormColumns = () => {
+const setFormColumns = async () => {
   const BasicColumns = columns.value.filter((column) => column.component.includes('Basic'));
   const FormColumns = columns.value.filter((column) => !column.component.includes('Basic'));
   const HasTabs = FormColumns.find((column) => column.component === 'LayoutTab') ? true : false;

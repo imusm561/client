@@ -782,7 +782,7 @@ const fetchDataEdit = async (tid, rid) => {
     flow.value = res.flow;
     init_data.value = JSON.parse(JSON.stringify(res.data));
     setFormConfiguration();
-    setFormColumns();
+    await setFormColumns();
     fetchDataTitle();
     current_tab.value = current_tab.value || 0;
     initialized.value = true;
@@ -937,7 +937,7 @@ const resolveFlowUsers = computed(() => {
   };
 });
 
-const setFormColumns = () => {
+const setFormColumns = async () => {
   const BasicColumns = columns.value.filter((column) => column.component.includes('Basic'));
   const FormColumns = columns.value.filter((column) => !column.component.includes('Basic'));
   const HasTabs = FormColumns.find((column) => column.component === 'LayoutTab') ? true : false;
