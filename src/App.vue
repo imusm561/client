@@ -12,7 +12,6 @@
 </template>
 
 <script setup>
-import pkg from '../package.json';
 import { computed, onMounted, onUnmounted, ref, nextTick, provide, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import jwt from 'jsonwebtoken';
@@ -32,16 +31,8 @@ console.info(
 /\\ \\   /\\ "-./  \\   /\\ \\/\\ \\   /\\  ___\\   /\\ "-./  \\
 \\ \\ \\  \\ \\ \\-./\\ \\  \\ \\ \\_\\ \\  \\ \\___  \\  \\ \\ \\-./\\ \\
  \\ \\_\\  \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\/\\_____\\  \\ \\_\\ \\ \\_\\
-  \\/_/   \\/_/  \\/_/   \\/_____/   \\/_____/   \\/_/  \\/_/
-
-           %cRelease %cv${pkg.version}%c. Crafted with %c❤ %cby %cYuGuanpei`,
+  \\/_/   \\/_/  \\/_/   \\/_____/   \\/_____/   \\/_/  \\/_/`,
   'color:#c33b33;',
-  'color:#878a99;',
-  'color:#a5a7fe;',
-  'color:#878a99;',
-  'color:#ff0000;',
-  'color:#878a99;',
-  'color:#f7bc60;',
 );
 
 const isRouterAlive = ref(true);
