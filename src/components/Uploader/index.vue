@@ -236,11 +236,6 @@ const emits = defineEmits([
   'file-uploaded', // @chat
 ]);
 
-const updateValue = () => {
-  const value = files.filter((file) => file.md5);
-  emits('update:modelValue', value.length ? value : null);
-};
-
 const { FileIcons } = window;
 const { BASE_URL } = process.env;
 
@@ -277,9 +272,19 @@ let uploader = new Uploader(options);
 
 const files = reactive([...(props.modelValue || [])]);
 
+let updateFlag = false;
+const updateValue = () => {
+  updateFlag = true;
+  const value = files.filter((file) => file.md5);
+  emits('update:modelValue', value.length ? value : null);
+};
+
 watch(
   () => props.modelValue,
-  (value) => files.splice(0, files.length, ...(value || [])),
+  (value) => {
+    if (!updateFlag) files.splice(0, files.length, ...(value || []));
+    updateFlag = false;
+  },
 );
 
 const dropRef = ref(null);

@@ -852,12 +852,9 @@ watch(
               column.visible?.includes(`data.${field}`) ||
               column.required?.includes(`data.${field}`) ||
               column.editable?.includes(`data.${field}`)
-            ) {
+            )
               await setColumnRules(column);
-            }
-            if (column._visible) {
-              await setColumnConfiguration(column);
-            }
+            else await setColumnConfiguration(column);
           });
       }
     }
