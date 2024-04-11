@@ -1151,19 +1151,10 @@ const setColumnRules = async (column) => {
 };
 
 const handleSelectDataTitle = (e) => {
-  // data.value.id = init_data.value.id;
-  // const changes = getChanges(data.value, init_data.value);
-  // if (Object.keys(changes).length) {
-  //   toast({
-  //     component: ToastificationContent,
-  //     props: {
-  //       variant: 'danger',
-  //       icon: 'mdi-alert',
-  //       text: `Column${Object.keys(changes).length > 1 ? 's' : ''} ${Object.keys(changes).join(', ')} ${Object.keys(changes).length > 1 ? 'have' : 'has'} been changed.`,
-  //     },
-  //   });
-  // } else
-  router.push({ name: 'edit', params: { tid: form.value.id, rid: e.id } });
+  data.value.id = Number(route.params.rid);
+  handleCancelEdit((confirm) => {
+    if (confirm) router.push({ name: 'edit', params: { tid: form.value.id, rid: e.id } });
+  });
 };
 
 const handleSelecterSearch = async ({ search, loading, column }) => {
