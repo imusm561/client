@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Breadcrumb :key="$route" />
+    <Breadcrumb :key="$route" :formInfo="formInfo" />
     <div class="card">
       <div v-if="form.id" class="card-body d-flex flex-column pt-0" style="height: fit-content">
         <div class="mt-2 mb-2">
@@ -482,9 +482,11 @@ onUnmounted(() => {
   socket.off('refetchDataList', refetchDataListHandler);
 });
 
+const formInfo = ref({});
 const fetchDataForm = async (callback) => {
   const { code, data, msg } = await getDataForm({ tid: Number(route.params.tid) });
   if (code === 200) {
+    formInfo.value = data;
     form.value = data.form;
     alias.value = data.alias;
     columns.value = data.columns.filter((column) => !column.tags.includes('hideInDataList'));

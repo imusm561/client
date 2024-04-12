@@ -202,7 +202,7 @@
 </template>
 
 <script setup>
-import { ref, computed, toRaw } from 'vue';
+import { ref, computed, toRaw, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -214,7 +214,48 @@ import store from '@store';
 import { getDataForm } from '@api/data';
 
 // eslint-disable-next-line
+const props = defineProps({
+  formInfo: {
+    type: Object,
+    default: () => {},
+    requried: false,
+  },
+});
+
+// eslint-disable-next-line
 const emits = defineEmits(['changeRoute']);
+
+const form = ref({});
+const columns = ref([]);
+const records = ref({});
+
+const setFormInfo = (data) => {
+  form.value = data.form;
+  columns.value = data.columns;
+  records.value = data.records;
+  form.value.flow = form.value.flow.length ? generateFlowByCurrentUser(form.value.flow) : null;
+};
+
+watch(
+  () => props.formInfo,
+  (data) => setFormInfo(data),
+);
+
+const toast = useToast();
+
+const fetchDataForm = async () => {
+  const { code, data, msg } = await getDataForm({ tid: Number(route.params.tid) });
+  if (code === 200) setFormInfo(data);
+  else
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: msg,
+      },
+    });
+};
 
 const title = ref('');
 const items = ref([]);
@@ -239,35 +280,12 @@ if (['list', 'view', 'edit'].includes(route.name)) {
       });
     }
   }
+  if (['view', 'edit'].includes(route.name)) fetchDataForm();
 } else {
   title.value = route.meta?.title || '';
   items.value = [{ title: route.meta?.title }];
   if (route.meta?.parent) items.value = [...route.meta.parent, ...items.value];
 }
-
-const toast = useToast();
-const form = ref({});
-const columns = ref([]);
-const records = ref({});
-
-const fetchDataForm = async () => {
-  const { code, data, msg } = await getDataForm({ tid: Number(route.params.tid) });
-  if (code === 200) {
-    form.value = data.form;
-    form.value.flow = form.value.flow.length ? generateFlowByCurrentUser(form.value.flow) : null;
-    columns.value = data.columns;
-    records.value = data.records;
-  } else {
-    toast({
-      component: ToastificationContent,
-      props: {
-        variant: 'danger',
-        icon: 'mdi-alert',
-        text: msg,
-      },
-    });
-  }
-};
 
 const resolveDataStateVariant = computed(() => {
   return (state) => {
@@ -287,8 +305,6 @@ const resolveDataStateVariant = computed(() => {
     }
   };
 });
-
-if (['list', 'view', 'edit'].includes(route.name)) fetchDataForm();
 
 const router = useRouter();
 const handleChangeRoute = (item) => {
