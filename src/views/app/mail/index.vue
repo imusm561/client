@@ -499,7 +499,11 @@
                     <UserSelector
                       :key="`mail_${JSON.stringify([...new_mail.cc, ...new_mail.bcc])}`"
                       v-model="new_mail.to"
-                      :disable-list="[...new_mail.cc, ...new_mail.bcc]"
+                      :disable-list="[
+                        $store.state.user.data.username,
+                        ...new_mail.cc,
+                        ...new_mail.bcc,
+                      ]"
                       :placeholder="$t('app.mail.composeModal.form.to')"
                       :class="errors.to && 'is-invalid'"
                     />
@@ -512,7 +516,11 @@
                       <UserSelector
                         :key="`mail_${JSON.stringify([...new_mail.to, ...new_mail.bcc])}`"
                         v-model="new_mail.cc"
-                        :disable-list="[...new_mail.to, ...new_mail.bcc]"
+                        :disable-list="[
+                          $store.state.user.data.username,
+                          ...new_mail.to,
+                          ...new_mail.bcc,
+                        ]"
                         :placeholder="$t('app.mail.composeModal.form.cc')"
                       />
                     </div>
@@ -523,7 +531,11 @@
                       <UserSelector
                         :key="`mail_${JSON.stringify([...new_mail.to, ...new_mail.cc])}`"
                         v-model="new_mail.bcc"
-                        :disable-list="[...new_mail.to, ...new_mail.cc]"
+                        :disable-list="[
+                          $store.state.user.data.username,
+                          ...new_mail.to,
+                          ...new_mail.cc,
+                        ]"
                         :placeholder="$t('app.mail.composeModal.form.bcc')"
                       />
                     </div>
