@@ -374,7 +374,21 @@ export const getDataByFormula = async (
             });
           } else return options.value;
         }
-      } else return options.value;
+      } else {
+        const res = await getDataSource(params);
+        if (res.code === 200) {
+          if (typeof res.data === 'object' && Array.isArray(res.data)) {
+            const data = res.data
+              .map((item) =>
+                typeof item === 'object' && 'text' in item && 'value' in item
+                  ? item
+                  : { text: item, value: item },
+              )
+              .find((item) => item.value === options.value);
+            return data ? ('tid' in data && 'rid' in data ? data : data.text) : options.value;
+          } else return options.value;
+        } else return options.value;
+      }
     }
   } else {
     if (expr.substring(0, 3) == '===') {
@@ -441,7 +455,11 @@ export const getDataByFormula = async (
         if (res.code === 200) {
           if (typeof res.data === 'object' && Array.isArray(res.data))
             return [
-              ...res.data,
+              ...res.data.map((item) =>
+                typeof item === 'object' && 'text' in item && 'value' in item
+                  ? item
+                  : { text: item, value: item },
+              ),
               ...existed_options.filter(
                 (item) =>
                   !res.data

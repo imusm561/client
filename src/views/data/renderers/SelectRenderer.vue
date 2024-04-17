@@ -25,7 +25,7 @@
       <span
         class="cursor-pointer text-decoration-underline text-secondary"
         v-if="data.text && data.tid && data.rid"
-        @dblclick="handleClickValue(value)"
+        @dblclick="handleClickValue(data)"
         :title="`${data.tid}/${data.rid}`"
       >
         {{ data.text }}
