@@ -923,7 +923,7 @@ const setFormConfiguration = () => {
 
 const resolveFlowUsers = computed(() => {
   return (users) => {
-    return users.map((username) => {
+    return users.map(({ username }) => {
       return (
         store.state.org.users.find((user) => user.username === username) || {
           username: username,
