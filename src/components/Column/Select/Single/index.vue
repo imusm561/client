@@ -77,10 +77,10 @@
   </div>
   <div v-else>
     <div
-      v-if="value && value.text && value.tid && value.rid"
+      v-if="value.text && value.raw"
       class="cursor-pointer text-decoration-underline text-secondary"
       @click="handleClickValue(value)"
-      :title="`${value.tid}/${value.rid}`"
+      :title="`${value.raw.tid}/${value.raw.rid}`"
     >
       {{ value.text }}
     </div>
@@ -139,7 +139,7 @@ const options = computed(() => {
 
 const router = useRouter();
 const handleClickValue = (item) => {
-  const route = router.resolve({ name: 'view', params: { tid: item.tid, rid: item.rid } });
+  const route = router.resolve({ name: 'view', params: item.raw });
   window.open(route.href, '_blank');
 };
 

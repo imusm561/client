@@ -83,10 +83,10 @@
     <div v-for="(item, index) in value" :key="index">
       {{ index + 1 }}.
       <span
-        v-if="item.tid && item.rid"
+        v-if="item.text && item.raw"
         class="cursor-pointer text-decoration-underline text-secondary"
         @click="handleClickValue(item)"
-        :title="`${item.tid}/${item.rid}`"
+        :title="`${item.raw.tid}/${item.raw.rid}`"
       >
         {{ item.text }}
       </span>
@@ -147,7 +147,7 @@ const options = computed(() => {
 
 const router = useRouter();
 const handleClickValue = (item) => {
-  const route = router.resolve({ name: 'view', params: { tid: item.tid, rid: item.rid } });
+  const route = router.resolve({ name: 'view', params: item.raw });
   window.open(route.href, '_blank');
 };
 

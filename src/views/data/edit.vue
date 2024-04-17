@@ -75,7 +75,7 @@
                       :error="errors[column.field]"
                       @search="handleSelecterSearch"
                       @selected="($event) => (column.cfg.selected = $event)"
-                      @refresh="setColumnConfiguration($event)"
+                      @refresh="setColumnConfiguration($event, true)"
                       @syntaxError="
                         ($event) => {
                           column.cfg.syntax_error = $event;
@@ -283,7 +283,7 @@
                         :error="errors[column.field]"
                         @search="handleSelecterSearch"
                         @selected="($event) => (column.cfg.selected = $event)"
-                        @refresh="setColumnConfiguration($event)"
+                        @refresh="setColumnConfiguration($event, true)"
                         @syntaxError="
                           ($event) => {
                             column.cfg.syntax_error = $event;
@@ -1043,7 +1043,7 @@ const replaceColumnVariables = (column) => {
     column.cfg.max = replaceVariables(column.cfg.max, alias.value);
 };
 
-const setColumnConfiguration = async (column) => {
+const setColumnConfiguration = async (column, refresh = false) => {
   if (Number(data.value.id) === 0 || initialized.value) {
     if (column.default) {
       const val = await getDataByFormula(data.value, column.__default);
@@ -1071,9 +1071,10 @@ const setColumnConfiguration = async (column) => {
         typeof res === 'string' &&
         (res.includes('Error: ') ||
           (column.component === 'SelectDatetime' && res === 'Invalid date'))
-      )
+      ) {
         column.cfg.placeholder = res;
-      else data.value[column.field] = res;
+        if (refresh) data.value[column.field] = null;
+      } else data.value[column.field] = res;
     }
 
     if (column.alias && route.query[column.alias])

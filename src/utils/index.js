@@ -385,7 +385,7 @@ export const getDataByFormula = async (
                   : { text: item, value: item },
               )
               .find((item) => item.value === options.value);
-            return data ? ('tid' in data && 'rid' in data ? data : data.text) : options.value;
+            return data ? (data.raw ? data : data.text) : options.value;
           } else return options.value;
         } else return options.value;
       }

@@ -4,9 +4,9 @@
       <span v-for="(item, index) in data" :key="index">
         <span
           class="cursor-pointer text-decoration-underline text-secondary"
-          v-if="item.tid && item.rid"
+          v-if="item.text && item.raw"
           @dblclick="handleClickValue(item)"
-          :title="`${item.tid}/${item.rid}`"
+          :title="`${item.raw.tid}/${item.raw.rid}`"
         >
           {{ item.text }}
         </span>
@@ -24,9 +24,9 @@
     <span v-else>
       <span
         class="cursor-pointer text-decoration-underline text-secondary"
-        v-if="data.text && data.tid && data.rid"
+        v-if="data.text && data.raw"
         @dblclick="handleClickValue(data)"
-        :title="`${data.tid}/${data.rid}`"
+        :title="`${data.raw.tid}/${data.raw.rid}`"
       >
         {{ data.text }}
       </span>
@@ -60,7 +60,7 @@ onBeforeMount(async () => {
 
 const router = useRouter();
 const handleClickValue = (item) => {
-  const { href } = router.resolve({ name: 'view', params: { tid: item.tid, rid: item.rid } });
+  const { href } = router.resolve({ name: 'view', params: item.raw });
   window.open(href, '_blank');
 };
 </script>
