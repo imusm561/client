@@ -61,7 +61,11 @@
                     </span>
                   </span>
                   <span
-                    v-if="!isEditing && dirs.some((dir) => node.data.path.includes(dir))"
+                    v-if="
+                      !isEditing &&
+                      dirs.some((dir) => node.data.path.includes(dir)) &&
+                      !node.data.path.startsWith('logs/pm2')
+                    "
                     class="tree-node-actions ms-3"
                   >
                     <!-- <i
