@@ -8,6 +8,7 @@
             type="text"
             class="form-control"
             :placeholder="$t('app.task.search')"
+            @input="handleSearchTask"
           />
           <i class="mdi mdi-magnify fs-16 search-icon"></i>
         </div>
@@ -60,6 +61,7 @@
               type="text"
               class="form-control"
               :placeholder="$t('app.task.search')"
+              @input="handleSearchTask"
             />
             <i class="mdi mdi-magnify fs-16 search-icon"></i>
           </div>
@@ -558,24 +560,29 @@ onUnmounted(() => {
   });
 });
 
+const fetchAllTasks = () => {
+  statuses.forEach((status) => {
+    const list = document
+      .getElementById(`task-${status.value}`)
+      ?.querySelector('.simplebar-content-wrapper');
+    if (list) list.scrollTop = 0;
+    status.pageNum = 1;
+    status.tasks = [];
+    status.loading = true;
+    fetchTasks(status);
+  });
+};
+
 watch(
-  () => [search_users.value, search_keyword.value],
-  (newVal, oldVal) => {
-    if (newVal && oldVal) {
-      statuses.forEach((status) => {
-        const list = document
-          .getElementById(`task-${status.value}`)
-          ?.querySelector('.simplebar-content-wrapper');
-        if (list) list.scrollTop = 0;
-        status.pageNum = 1;
-        status.tasks = [];
-        status.loading = true;
-        fetchTasks(status);
-      });
-    }
-  },
-  { immediate: true },
+  () => search_users.value,
+  () => fetchAllTasks(),
 );
+
+const handleSearchTask = debounce(() => {
+  if (search_keyword.value != '#') {
+    fetchAllTasks();
+  }
+}, 500);
 
 const current_task = ref({});
 
