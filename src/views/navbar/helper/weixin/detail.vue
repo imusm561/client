@@ -1378,8 +1378,9 @@ const handleAuthorize = () => {
   const api = `${location.origin}${BASE_URL}cor/weixin/auth/url`;
   const appid = account.value.app_id;
   const redirect = `${location.origin}${BASE_URL}cor/weixin/auth/${appid}`;
+  const timestamp = new Date().getTime();
   const a = document.createElement('a');
-  a.href = `${api}?appid=${appid}&redirect=${encodeURIComponent(redirect)}`;
+  a.href = `${api}?appid=${appid}&redirect=${encodeURIComponent(redirect)}&timestamp=${timestamp}`;
   a.target = '_blank';
   document.body.appendChild(a);
   a.click();
