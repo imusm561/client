@@ -241,6 +241,7 @@
       :text="$t('layout.navbar.search.empty', { keyword })"
       v-if="
         !(
+          result.recent?.length ||
           result.user?.length ||
           result.form?.length ||
           result.data?.length ||

@@ -78,7 +78,11 @@
                     </button>
                   </div>
                 </div>
-                <div v-if="search.keyword" data-simplebar style="max-height: 50vh">
+                <div
+                  v-if="search.keyword || search.result.recent.length"
+                  data-simplebar
+                  style="max-height: 50vh"
+                >
                   <SearchResultPanel
                     :keyword="search.keyword"
                     :result="search.result"
@@ -599,8 +603,33 @@ const search = reactive({
   },
 });
 
-const handleSearch = debounce(() => {
-  if (!search.keyword) return;
+const handleSearch = debounce((e) => {
+  if (!search.keyword) {
+    search.result.user = [];
+    search.result.form = [];
+    search.result.data = [];
+    search.result.file = [];
+    search.result.icon = [];
+    if (e?.target?.value === ' ') {
+      getSearchResult({
+        keyword: search.keyword,
+      }).then(({ code, data, msg }) => {
+        if (code === 200) {
+          search.result.recent = data.recent;
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    }
+    return;
+  }
 
   getSearchResult({
     keyword: search.keyword,
