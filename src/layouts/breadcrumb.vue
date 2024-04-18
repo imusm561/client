@@ -126,9 +126,11 @@
                     >
                       <thead class="table-light">
                         <tr>
-                          <th class="text-capitalize">id</th>
                           <th class="text-capitalize">
                             {{ $t('layout.breadcrumb.formInfoModal.tab.columns.component') }}
+                          </th>
+                          <th class="text-capitalize">
+                            {{ $t('layout.breadcrumb.formInfoModal.tab.columns.field') }}
                           </th>
                           <th class="text-capitalize">
                             {{ $t('layout.breadcrumb.formInfoModal.tab.columns.name') }}
@@ -160,7 +162,6 @@
                           )"
                           :key="column.id"
                         >
-                          <td class="fw-medium text-primary">#{{ column.id }}</td>
                           <td class="fw-medium">
                             {{
                               $t(
@@ -168,6 +169,7 @@
                               )
                             }}
                           </td>
+                          <td class="fw-medium text-primary">cc_{{ column.id }}</td>
                           <td style="max-width: 200px" class="text-truncate" :title="column.name">
                             {{ column.name }}
                           </td>

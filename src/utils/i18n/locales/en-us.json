@@ -65,6 +65,7 @@
   "layout.breadcrumb.formInfoModal.approval": "Approval",
   "layout.breadcrumb.formInfoModal.totalRecords": "Total Records",
   "layout.breadcrumb.formInfoModal.tab.columns": "Columns",
+  "layout.breadcrumb.formInfoModal.tab.columns.field": "Field",
   "layout.breadcrumb.formInfoModal.tab.columns.component": "Component",
   "layout.breadcrumb.formInfoModal.tab.columns.component.InputText": "InputText",
   "layout.breadcrumb.formInfoModal.tab.columns.component.InputNumber": "InputNumber",

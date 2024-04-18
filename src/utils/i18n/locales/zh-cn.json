@@ -65,6 +65,7 @@
   "layout.breadcrumb.formInfoModal.approval": "流转审批",
   "layout.breadcrumb.formInfoModal.totalRecords": "数据统计",
   "layout.breadcrumb.formInfoModal.tab.columns": "字段",
+  "layout.breadcrumb.formInfoModal.tab.columns.field": "字段",
   "layout.breadcrumb.formInfoModal.tab.columns.component": "组件",
   "layout.breadcrumb.formInfoModal.tab.columns.component.InputText": "单行文本",
   "layout.breadcrumb.formInfoModal.tab.columns.component.InputNumber": "数字",
