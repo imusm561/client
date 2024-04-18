@@ -273,7 +273,7 @@ import LayoutSeparatorConfig from '@components/Column/Layout/Separator/config.vu
 import LayoutTab from '@components/Column/Layout/Tab/index.vue';
 import LayoutTabConfig from '@components/Column/Layout/Tab/config.vue';
 
-import { getColumns, createColumns, updateColumns } from '@api/column';
+import { getColumns, syncColumns } from '@api/column';
 
 // eslint-disable-next-line
 defineOptions({
@@ -385,13 +385,19 @@ watch(
     existe_columns.forEach((cloumn) => {
       let server_item = server_columns.find((item) => item.id === cloumn.id);
       let existe_item = existe_columns.find((item) => item.id === cloumn.id);
-      if (Object.keys(getChanges(existe_item, server_item)).length)
-        changes.value.update.push(cloumn);
+      const column_changes = getChanges(existe_item, server_item);
+      if (Object.keys(column_changes).length)
+        changes.value.update.push({ ...column_changes, id: cloumn.id });
     });
 
-    changes.value.delete = server_columns.filter((server_item) =>
-      existe_columns.every((old_item) => old_item.id != server_item.id),
-    );
+    changes.value.delete = server_columns
+      .filter((server_item) => existe_columns.every((old_item) => old_item.id != server_item.id))
+      .map((column) => {
+        return {
+          data_state: 'deleted',
+          id: column.id,
+        };
+      });
 
     if (changes.value.create.length || changes.value.update.length || changes.value.delete.length)
       emits('setColumnsChangedFlag', true);
@@ -542,7 +548,7 @@ const handlePasteColumns = () => {
 };
 
 const saving = ref(false);
-const handleSaveFormColumns = async () => {
+const handleSaveFormColumns = () => {
   if (columns.value.some((column) => column.component === 'LayoutTab')) {
     if (columns.value[0].component !== 'LayoutTab') {
       toast({
@@ -588,74 +594,35 @@ const handleSaveFormColumns = async () => {
     }
   }
 
-  saving.value = true;
-  const completed = {
-    create: true,
-    update: true,
-  };
-
-  if (changes.value.create.length) {
-    completed.create = false;
-    const { code: create_code, msg: create_msg } = await createColumns({
+  if (changes.value.create.length || changes.value.update.length || changes.value.delete.length) {
+    saving.value = true;
+    syncColumns({
       tid: props.form.id,
-      columns: changes.value.create,
-    });
-    if (create_code === 200) {
-      completed.create = true;
-    } else {
-      toast({
-        component: ToastificationContent,
-        props: {
-          variant: 'danger',
-          icon: 'mdi-alert',
-          text: create_msg,
-        },
-      });
-    }
-  }
-
-  if (changes.value.update.length || changes.value.delete.length) {
-    completed.update = false;
-    const { code: update_code, msg: update_msg } = await updateColumns({
-      tid: props.form.id,
-      columns: [
-        ...changes.value.update,
-        ...changes.value.delete.map((column) => {
-          column.data_state = 'deleted';
-          return column;
-        }),
-      ],
-    });
-    if (update_code === 200) {
-      completed.update = true;
-    } else {
-      toast({
-        component: ToastificationContent,
-        props: {
-          variant: 'danger',
-          icon: 'mdi-alert',
-          text: update_msg,
-        },
-      });
-    }
-  }
-
-  let interval;
-  interval = setInterval(() => {
-    if (completed.create && completed.update) {
-      clearInterval(interval);
-      fetchColumns(props.form.id);
+      columns: [...changes.value.create, ...changes.value.update, ...changes.value.delete],
+    }).then(({ code, msg }) => {
       saving.value = false;
-      toast({
-        component: ToastificationContent,
-        props: {
-          variant: 'success',
-          icon: 'mdi-check-circle',
-          text: i18n.global.t('layout.navbar.helper.form.column.save.success'),
-        },
-      });
-    }
-  }, 100);
+      if (code === 200) {
+        fetchColumns(props.form.id);
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'success',
+            icon: 'mdi-check-circle',
+            text: i18n.global.t('layout.navbar.helper.form.column.save.success'),
+          },
+        });
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
 };
 
 const handleRestoreFormColumns = () => {
