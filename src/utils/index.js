@@ -379,11 +379,14 @@ export const getDataByFormula = async (
         if (res.code === 200) {
           if (typeof res.data === 'object' && Array.isArray(res.data)) {
             const data = res.data
-              .map((item) =>
-                typeof item === 'object' && 'text' in item && 'value' in item
-                  ? item
-                  : { text: item, value: item },
-              )
+              .map((item) => {
+                if (typeof item === 'object' && 'text' in item) {
+                  item.value = item.value || item.text;
+                  return item;
+                } else {
+                  return { text: item, value: item };
+                }
+              })
               .find((item) => item.value === options.value);
             return data ? (data.raw ? data : data.text) : options.value;
           } else return options.value;
@@ -455,11 +458,14 @@ export const getDataByFormula = async (
         if (res.code === 200) {
           if (typeof res.data === 'object' && Array.isArray(res.data))
             return [
-              ...res.data.map((item) =>
-                typeof item === 'object' && 'text' in item && 'value' in item
-                  ? item
-                  : { text: item, value: item },
-              ),
+              ...res.data.map((item) => {
+                if (typeof item === 'object' && 'text' in item) {
+                  item.value = item.value || item.text;
+                  return item;
+                } else {
+                  return { text: item, value: item };
+                }
+              }),
               ...existed_options.filter(
                 (item) =>
                   !res.data
