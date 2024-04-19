@@ -44,12 +44,7 @@
                       @keyup.enter="$event.target.blur()"
                       @blur="handleSaveFileName(node)"
                     />
-                    <span
-                      v-else
-                      @dblclick="
-                        dirs.some((dir) => node.data.path.includes(dir)) && handleEditFileName(node)
-                      "
-                    >
+                    <span v-else @dblclick="handleEditFileName(node)">
                       <i
                         v-if="node.data.type === 'file'"
                         style="margin-left: -3px"
@@ -63,8 +58,8 @@
                   <span
                     v-if="
                       !isEditing &&
-                      dirs.some((dir) => node.data.path.includes(dir)) &&
-                      !node.data.path.startsWith('logs/pm2')
+                      node.data.path.includes('/') &&
+                      !node.data.path.startsWith('logs')
                     "
                     class="tree-node-actions ms-3"
                   >
@@ -489,17 +484,19 @@ const tree = computed(() => {
     return root;
   };
 
-  const sortTree = (tree) => {
-    tree
-      .sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      })
-      .sort((a, b) => {
-        return a.type.localeCompare(b.type);
-      });
+  const sortTree = (tree, sort = false) => {
+    if (sort) {
+      tree
+        .sort((a, b) => {
+          return a.name.localeCompare(b.name);
+        })
+        .sort((a, b) => {
+          return a.type.localeCompare(b.type);
+        });
+    }
     tree.forEach((item) => {
       if (item.children) {
-        item.children = sortTree(item.children);
+        item.children = sortTree(item.children, true);
       }
     });
     return tree;
@@ -532,15 +529,14 @@ const allowDrop = (draggingNode, dropNode, type) => {
   return (
     type === 'inner' &&
     dropNode.data.type === 'directory' &&
-    dropNode.data.path != 'public' &&
+    dirs.value.some((item) => dropNode.data.path.startsWith(item)) &&
+    !dropNode.data.path.startsWith('logs') &&
     !dropNode.data.children.some((item) => item.name === draggingNode.data.name)
   );
 };
 
 const allowDrag = (draggingNode) => {
-  return !['logs', 'public', 'public/client', 'scripts', 'scripts'].includes(
-    draggingNode.data.path,
-  );
+  return !dirs.value.includes(draggingNode.data.path) && !draggingNode.data.path.startsWith('logs');
 };
 
 const handleDropCode = (draggingNode, dropNode) => {
@@ -598,7 +594,7 @@ const handleClickPath = (e) => {
 
 const handleEditFileName = (node) => {
   if (isModified({ toast: true })) return;
-  if (node.data.path.startsWith('logs/pm2')) return;
+  if (!(node.data.path.includes('/') && !node.data.path.startsWith('logs'))) return;
   clearTimeout(timer);
   node.data._name = node.data.name;
   node.data.edit = true;
@@ -610,7 +606,11 @@ const handleSaveFileName = (node) => {
   node.data.name = node.data.name.trim();
   node.data._path = node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name;
 
-  if (!node.data.name || node.data.name === node.data._name) {
+  if (
+    !node.data.name ||
+    node.data.name === node.data._name ||
+    (dirs.value.includes(node.data.path) && !node.data.name.startsWith(`${node.data._name}/`))
+  ) {
     node.data.name = node.data._name;
     delete node.data._name;
     delete node.data.edit;
