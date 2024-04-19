@@ -1039,11 +1039,8 @@
   "components.vs.generateMaska": "Start typing to generate a maska.",
   "components.vs.generateSkill": "Start typing to generate a skill.",
 
-  "socket.disconnect.loading": "Trying to reconnect to the server...",
   "socket.disconnect.toast.title": "Connection to the server has been lost...",
-  "socket.disconnect.toast.text": "Please do not take any action. If the connection is not restored within one minute, please contact the administrator!",
-  "socket.connected.toast.title": "Connection to the server has been restored!",
-  "socket.connected.toast.text": "You can proceed with your operations",
+  "socket.disconnect.toast.text": "If the connection is not restored within one minute, please contact the administrator!",
 
   "vee.validate.required": "This field is required",
   "vee.validate.between": "Enter number between {min} and {max}",

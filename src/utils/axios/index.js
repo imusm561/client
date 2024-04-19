@@ -1,5 +1,9 @@
 import axios from 'axios';
+import { useToast } from 'vue-toastification';
+import ToastificationContent from '@components/ToastificationContent';
 import { clearUserData } from '@utils';
+import { socket } from '@utils/socket';
+import i18n from '@utils/i18n';
 import router from '@router';
 import store from '@store';
 
@@ -19,6 +23,9 @@ const { BASE_URL } = process.env;
 //   504: '504 Gateway Timeout',
 // };
 
+const CancelToken = axios.CancelToken;
+const toast = useToast();
+
 const instance = axios.create({
   baseURL: BASE_URL,
   timeout: 3 * 60 * 1000,
@@ -32,6 +39,24 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     config.params = config.params || {};
+
+    if (socket._disconnected) {
+      toast.clear();
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-lan-disconnect',
+          title: i18n.global.t('socket.disconnect.toast.title'),
+          text: i18n.global.t('socket.disconnect.toast.text'),
+        },
+      });
+      // throw new Error(i18n.global.t('socket.disconnect.toast.title'));
+      const source = CancelToken.source();
+      source.cancel(i18n.global.t('socket.disconnect.toast.title'));
+      config.cancelToken = source.token;
+    }
+
     if (store.state.sys.cfg.origin !== '/' && config.method.toLowerCase() === 'get') {
       config.params.t = new Date().getTime();
     }

@@ -353,28 +353,6 @@ input:-webkit-autofill {
   }
 }
 
-.el-loading {
-  .el-loading-spinner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .circular {
-      width: 18px !important;
-      height: 18px !important;
-    }
-
-    .path {
-      stroke: $white;
-    }
-    .el-loading-text {
-      margin-left: 5px;
-      font-size: 18px;
-      color: $white;
-    }
-  }
-}
-
 .modal-content {
   box-shadow: 0 5px 10px rgba(30, 32, 37, 0.12);
 }

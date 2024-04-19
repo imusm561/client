@@ -1,12 +1,9 @@
 import io from 'socket.io-client';
 import { watch } from 'vue';
-import { ElLoading } from 'element-plus';
-import 'element-plus/es/components/loading/style/css';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 
 import { clearUserData, getUserInfo, replaceHtml, decryptData, parseMessage } from '@utils';
-import i18n from '@utils/i18n';
 
 import router from '@router';
 import store from '@store';
@@ -18,7 +15,6 @@ const { BASE_URL } = process.env;
 
 export let socket = {};
 
-const loading = { instance: null, count: 0, interval: null };
 const toast = useToast();
 
 export const initSocket = () => {
@@ -28,8 +24,8 @@ export const initSocket = () => {
     secure: true,
   });
 
-  // let connection = -1;
   socket.on('connect', () => {
+    delete socket._disconnected;
     watch(
       () => store.state.user.data.username,
       (newVal, oldVal) => {
@@ -40,25 +36,6 @@ export const initSocket = () => {
       },
       { immediate: true },
     );
-    if (loading.instance) {
-      loading.instance.close();
-      loading.instance = null;
-      clearInterval(loading.interval);
-      loading.interval = null;
-      loading.count = 0;
-    }
-    // if (connection === 0) {
-    //   toast({
-    //     component: ToastificationContent,
-    //     props: {
-    //       variant: 'success',
-    //       icon: 'mdi-lan-connect',
-    //       title: i18n.global.t('socket.connected.toast.title'),
-    //       text: i18n.global.t('socket.connected.toast.text'),
-    //     },
-    //   });
-    // }
-    // connection = 1;
   });
 
   socket.on('forcedLogout', async () => {
@@ -227,27 +204,6 @@ export const initSocket = () => {
   });
 
   socket.on('disconnect', () => {
-    // connection = 0;
-    loading.instance = ElLoading.service({
-      lock: true,
-      customClass: 'el-loading',
-      text: i18n.global.t('socket.disconnect.loading'),
-      background: 'rgba(0, 0, 0, 0.7)',
-    });
-    document.body.classList.remove('el-loading-parent--relative');
-    loading.count = 0;
-    loading.interval = setInterval(() => {
-      loading.count += 1;
-      loading.instance.text.value = `${i18n.global.t('socket.disconnect.loading')}${loading.count}`;
-    }, 1000);
-    // toast({
-    //   component: ToastificationContent,
-    //   props: {
-    //     variant: 'danger',
-    //     icon: 'mdi-lan-disconnect',
-    //     title: i18n.global.t('socket.disconnect.toast.title'),
-    //     text: i18n.global.t('socket.disconnect.toast.text'),
-    //   },
-    // });
+    socket._disconnected = true;
   });
 };
