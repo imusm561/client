@@ -15,7 +15,7 @@
               ? user[keyUsername]
               : typeof user[keyUsername] === 'string'
               ? user[keyFullname].charAt(user[keyFullname].length - 1).toUpperCase()
-              : user[keyFullname].toString().charAt(0).toUpperCase()
+              : user[keyFullname]?.toString()?.charAt(0)?.toUpperCase()
           }}
         </div>
       </div>
@@ -38,7 +38,7 @@
         {{
           typeof user[keyUsername] === 'string'
             ? user[keyFullname].charAt(user[keyFullname].length - 1).toUpperCase()
-            : user[keyFullname].toString().charAt(0).toUpperCase()
+            : user[keyFullname]?.toString()?.charAt(0)?.toUpperCase()
         }}
       </div>
     </div>
