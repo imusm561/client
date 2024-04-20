@@ -691,7 +691,7 @@ import {
   hashData,
 } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 
 import store from '@store';
 
@@ -1051,10 +1051,10 @@ const setColumnConfiguration = async (column, refresh = false) => {
         column.component === 'SelectTags'
           ? val.split(',')
           : column.component === 'SelectDatetime'
-          ? moment(
+          ? dayjs(
               column.cfg.dateFormat.includes('Y-m-d')
                 ? val
-                : `${moment().format('YYYY-MM-DD')} ${val}`,
+                : `${dayjs().format('YYYY-MM-DD')} ${val}`,
             ).format(
               column.cfg.dateFormat
                 .replace('Y', 'YYYY')

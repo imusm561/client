@@ -18,9 +18,9 @@
                   />
                 </span>
                 <span class="d-block fs-12 text-muted">
-                  {{ moment(log.created_at).format('llll') }}
+                  {{ dayjs(log.created_at).format('llll') }}
                   <span class="badge bg-soft-info text-info align-middle ms-2">
-                    {{ moment(log.created_at).fromNow() }}
+                    {{ dayjs(log.created_at).fromNow() }}
                   </span>
                 </span>
               </span>
@@ -74,7 +74,7 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getUserInfo } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import Empty from '@components/Empty';
 import Avatar from '@components/Avatar';
 import MonacoEditor from '@components/MonacoEditor';

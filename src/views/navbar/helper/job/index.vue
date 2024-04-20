@@ -88,13 +88,13 @@
                   <div class="flex-grow-1">
                     <h6 class="text-muted mb-0">
                       <span class="text-secondary" :title="job.start">
-                        {{ moment(job.start).fromNow() }}
+                        {{ dayjs(job.start).fromNow() }}
                       </span>
                     </h6>
                   </div>
                   <div class="flex-shrink-0">
                     <span class="text-secondary" :title="job.end">
-                      {{ moment(job.end).fromNow() }}
+                      {{ dayjs(job.end).fromNow() }}
                     </span>
                   </div>
                 </div>
@@ -103,8 +103,8 @@
                     class="progress-bar bg-secondary"
                     :style="{
                       width: `${
-                        ((moment().valueOf() - moment(job.start).valueOf()) /
-                          (moment(job.end).valueOf() - moment(job.start).valueOf())) *
+                        ((dayjs().valueOf() - dayjs(job.start).valueOf()) /
+                          (dayjs(job.end).valueOf() - dayjs(job.start).valueOf())) *
                         100
                       }%`,
                     }"
@@ -153,7 +153,7 @@ import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { replaceHtml } from '@utils';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 
 import useJob from './useJob';
@@ -212,16 +212,16 @@ const handleCreateJob = () => {
     status: 1,
     rule: '0 0 * * * *',
     description: '',
-    start: moment().format('YYYY-MM-DD HH:mm:ss'),
-    end: moment().add(7, 'd').format('YYYY-MM-DD HH:mm:ss'),
+    start: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    end: dayjs().add(7, 'd').format('YYYY-MM-DD HH:mm:ss'),
     tags: [],
     config:
       '{\n  "executor": "axios",\n  "config": {\n    "url": "...",\n    "method": "GET"\n  }\n}',
   };
   current_job.value = job;
   current_job.value.duration = [
-    moment(job.start).format('YYYY-MM-DD HH:mm:ss'),
-    moment(job.end).format('YYYY-MM-DD HH:mm:ss'),
+    dayjs(job.start).format('YYYY-MM-DD HH:mm:ss'),
+    dayjs(job.end).format('YYYY-MM-DD HH:mm:ss'),
   ];
   nextTick(() => document.getElementById('showEditJobModalBtn').click());
 };
@@ -229,8 +229,8 @@ const handleCreateJob = () => {
 const handleEditJob = (job) => {
   current_job.value = JSON.parse(JSON.stringify(job));
   current_job.value.duration = [
-    moment(job.start).format('YYYY-MM-DD HH:mm:ss'),
-    moment(job.end).format('YYYY-MM-DD HH:mm:ss'),
+    dayjs(job.start).format('YYYY-MM-DD HH:mm:ss'),
+    dayjs(job.end).format('YYYY-MM-DD HH:mm:ss'),
   ];
   current_job.value.key = nanoid();
   nextTick(() => document.getElementById('showEditJobModalBtn').click());

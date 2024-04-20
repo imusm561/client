@@ -197,7 +197,7 @@ import {
   getChanges,
   hashData,
 } from '@utils';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 
 import InputText from '@components/Column/Input/Text/index.vue';
@@ -442,10 +442,10 @@ const setColumnConfiguration = async (column) => {
         column.component === 'SelectTags'
           ? val.split(',')
           : column.component === 'SelectDatetime'
-          ? moment(
+          ? dayjs(
               column.cfg.dateFormat.includes('Y-m-d')
                 ? val
-                : `${moment().format('YYYY-MM-DD')} ${val}`,
+                : `${dayjs().format('YYYY-MM-DD')} ${val}`,
             ).format(
               column.cfg.dateFormat
                 .replace('Y', 'YYYY')

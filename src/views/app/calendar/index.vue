@@ -41,7 +41,7 @@
                   <div :class="`flex-grow-1 text-${resolveEventVariant(event)}`">
                     <i class="mdi mdi-circle me-2"></i>
                     <span class="fw-medium">
-                      {{ moment(event.start).format(event.all_day ? 'll' : 'llll') }}
+                      {{ dayjs(event.start).format(event.all_day ? 'll' : 'llll') }}
                     </span>
                   </div>
                   <div class="flex-shrink-0">
@@ -208,8 +208,8 @@
                         type="checkbox"
                         class="form-check-input"
                         :disabled="
-                          moment(current_event.start).format('YYYY-MM-DD') !=
-                          moment(current_event.end).format('YYYY-MM-DD')
+                          dayjs(current_event.start).format('YYYY-MM-DD') !=
+                          dayjs(current_event.end).format('YYYY-MM-DD')
                         "
                         v-model="current_event.all_day"
                       />
@@ -276,16 +276,16 @@
                     <div class="flex-grow-1">
                       <h6
                         v-if="
-                          moment(current_event.start).format('YYYY-MM-DD') ==
-                          moment(current_event.end).format('YYYY-MM-DD')
+                          dayjs(current_event.start).format('YYYY-MM-DD') ==
+                          dayjs(current_event.end).format('YYYY-MM-DD')
                         "
                         class="d-block fw-semibold mb-0"
                       >
-                        {{ moment(current_event.start).format('YYYY-MM-DD') }}
+                        {{ dayjs(current_event.start).format('YYYY-MM-DD') }}
                       </h6>
                       <h6 v-else class="d-block fw-semibold mb-0">
-                        {{ moment(current_event.start).format('YYYY-MM-DD') }} ~
-                        {{ moment(current_event.end).format('YYYY-MM-DD') }}
+                        {{ dayjs(current_event.start).format('YYYY-MM-DD') }} ~
+                        {{ dayjs(current_event.end).format('YYYY-MM-DD') }}
                       </h6>
                     </div>
                   </div>
@@ -296,9 +296,9 @@
                   </div>
                   <div class="flex-grow-1">
                     <h6 class="d-block fw-semibold mb-0">
-                      <span>{{ moment(current_event.start).format('HH:mm:ss') }}</span>
+                      <span>{{ dayjs(current_event.start).format('HH:mm:ss') }}</span>
                       ~
-                      <span>{{ moment(current_event.end).format('HH:mm:ss') }}</span>
+                      <span>{{ dayjs(current_event.end).format('HH:mm:ss') }}</span>
                     </h6>
                   </div>
                 </div>
@@ -442,7 +442,7 @@ import usUs from '@fullcalendar/core/locales/es-us';
 import zhCn from '@fullcalendar/core/locales/zh-cn';
 import { getUserInfo, isLngLat } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 import FlatPickr from '@components/FlatPickr';
 import Amap from '@components/Amap';
@@ -512,8 +512,8 @@ const getInitialView = () => {
 
 const fetchUpcomingEvents = () => {
   getEvents({
-    start: moment().format('YYYY-MM-DD'),
-    end: moment().add(1, 'M').format('YYYY-MM-DD'),
+    start: dayjs().format('YYYY-MM-DD'),
+    end: dayjs().add(1, 'M').format('YYYY-MM-DD'),
   }).then(({ code, data, msg }) => {
     if (code === 200) {
       upcoming_events.value = data
@@ -524,7 +524,7 @@ const fetchUpcomingEvents = () => {
           event.users = event.users.filter((username) => getUserInfo(username));
           return event;
         })
-        .sort((a, b) => moment(a.start).valueOf() - moment(b.start).valueOf());
+        .sort((a, b) => dayjs(a.start).valueOf() - dayjs(b.start).valueOf());
     } else {
       toast({
         component: ToastificationContent,
@@ -540,8 +540,8 @@ const fetchUpcomingEvents = () => {
 
 const fetchEvents = (info, successCallback) => {
   getEvents({
-    start: moment(info.start).format('YYYY-MM-DD'),
-    end: moment(info.end).format('YYYY-MM-DD'),
+    start: dayjs(info.start).format('YYYY-MM-DD'),
+    end: dayjs(info.end).format('YYYY-MM-DD'),
   }).then(({ code, data, msg }) => {
     if (code === 200) {
       events.value = data.map((event) => {
@@ -572,10 +572,10 @@ const handleDateClick = (e) => {
     title: '',
     description: '',
 
-    date: [moment(e.date).format('YYYY-MM-DD'), moment(e.date).format('YYYY-MM-DD')],
+    date: [dayjs(e.date).format('YYYY-MM-DD'), dayjs(e.date).format('YYYY-MM-DD')],
 
-    start: `${moment(e.date).format('YYYY-MM-DD')} 00:00:00`,
-    end: `${moment(e.date).format('YYYY-MM-DD')} 00:00:00`,
+    start: `${dayjs(e.date).format('YYYY-MM-DD')} 00:00:00`,
+    end: `${dayjs(e.date).format('YYYY-MM-DD')} 00:00:00`,
     all_day: true,
 
     start_time: '09:00:00',
@@ -598,21 +598,21 @@ const handleEventClick = ({ event }) => {
     description: event.extendedProps ? event.extendedProps.description : event.description,
 
     date: [
-      moment(event.start).format('YYYY-MM-DD'),
+      dayjs(event.start).format('YYYY-MM-DD'),
       event.allDay && event.end && event.endStr != event.startStr
-        ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD')
-        : moment(event.end || event.start).format('YYYY-MM-DD'),
+        ? dayjs(event.end).add(-1, 'd').format('YYYY-MM-DD')
+        : dayjs(event.end || event.start).format('YYYY-MM-DD'),
     ],
 
     start: event.start,
     end:
       event.allDay && event.end && event.endStr != event.startStr
-        ? moment(event.end).add(-1, 'd').format('YYYY-MM-DD')
+        ? dayjs(event.end).add(-1, 'd').format('YYYY-MM-DD')
         : event.end || event.start,
     all_day: event.allDay,
 
-    start_time: moment(event.start).format('HH:mm:ss'),
-    end_time: moment(event.end).format('HH:mm:ss'),
+    start_time: dayjs(event.start).format('HH:mm:ss'),
+    end_time: dayjs(event.end).format('HH:mm:ss'),
 
     location: event.extendedProps ? event.extendedProps.location : event.location,
     category: event.extendedProps ? event.extendedProps.category : event.category,
@@ -624,8 +624,8 @@ const handleEventClick = ({ event }) => {
 const handleEventDrop = ({ event }) => {
   const data = {
     id: event.id,
-    start: moment(event.start).format('YYYY-MM-DD HH:mm:ss'),
-    end: moment(event.end || event.start).format('YYYY-MM-DD HH:mm:ss'),
+    start: dayjs(event.start).format('YYYY-MM-DD HH:mm:ss'),
+    end: dayjs(event.end || event.start).format('YYYY-MM-DD HH:mm:ss'),
   };
   updateEvent(data).then(({ code, msg }) => {
     if (code !== 200) {
@@ -646,8 +646,8 @@ const handleEventReceive = ({ event, revert }) => {
   const data = {
     title: event.title,
     description: event.extendedProps.description,
-    start: moment(event.start).format('YYYY-MM-DD 00:00:00'),
-    end: moment(event.start).format('YYYY-MM-DD 00:00:00'),
+    start: dayjs(event.start).format('YYYY-MM-DD 00:00:00'),
+    end: dayjs(event.start).format('YYYY-MM-DD 00:00:00'),
     all_day: true,
     category: event.extendedProps.category,
     users: event.extendedProps.users,
@@ -746,10 +746,10 @@ const handleCreateEvent = () => {
     title: '',
     description: '',
 
-    date: [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+    date: [dayjs().format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
 
-    start: `${moment().format('YYYY-MM-DD')} 00:00:00`,
-    end: `${moment().format('YYYY-MM-DD')} 00:00:00`,
+    start: `${dayjs().format('YYYY-MM-DD')} 00:00:00`,
+    end: `${dayjs().format('YYYY-MM-DD')} 00:00:00`,
     all_day: true,
 
     start_time: '09:00:00',
@@ -800,8 +800,8 @@ const handleSubmitEvent = () => {
   const data = {
     title: current_event.value.title,
     description: current_event.value.description,
-    start: moment(current_event.value.start).format('YYYY-MM-DD'),
-    end: moment(current_event.value.end).format('YYYY-MM-DD'),
+    start: dayjs(current_event.value.start).format('YYYY-MM-DD'),
+    end: dayjs(current_event.value.end).format('YYYY-MM-DD'),
     all_day: current_event.value.all_day,
     location: current_event.value.location,
     category: current_event.value.category,
@@ -811,9 +811,9 @@ const handleSubmitEvent = () => {
   if (current_event.value.all_day) {
     data.end =
       data.end === data.start
-        ? moment(data.end).format('YYYY-MM-DD 00:00:00')
-        : moment(data.end).add(1, 'd').format('YYYY-MM-DD 00:00:00');
-    data.start = moment(data.start).format('YYYY-MM-DD 00:00:00');
+        ? dayjs(data.end).format('YYYY-MM-DD 00:00:00')
+        : dayjs(data.end).add(1, 'd').format('YYYY-MM-DD 00:00:00');
+    data.start = dayjs(data.start).format('YYYY-MM-DD 00:00:00');
   } else {
     if (current_event.value.start_time.split(':').length !== 3) {
       current_event.value.start_time = '';

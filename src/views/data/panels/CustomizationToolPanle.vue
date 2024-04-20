@@ -301,7 +301,7 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getChanges, getUserInfo } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 import MonacoEditor from '@components/MonacoEditor';
 import store from '@store';
@@ -361,8 +361,8 @@ const system = [
       created_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
-        dateTo: moment().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
+        dateFrom: dayjs().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: dayjs().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
       },
     },
   },
@@ -380,8 +380,8 @@ const system = [
       created_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
-        dateTo: moment().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
+        dateFrom: dayjs().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: dayjs().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
       },
     },
   },
@@ -397,8 +397,8 @@ const system = [
       created_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().format('YYYY-MM-DD 00:00:00'),
-        dateTo: moment().format('YYYY-MM-DD 23:59:59'),
+        dateFrom: dayjs().format('YYYY-MM-DD 00:00:00'),
+        dateTo: dayjs().format('YYYY-MM-DD 23:59:59'),
       },
     },
   },
@@ -414,8 +414,8 @@ const system = [
       created_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
-        dateTo: moment().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
+        dateFrom: dayjs().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: dayjs().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
       },
     },
   },
@@ -431,8 +431,8 @@ const system = [
       created_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().startOf('week').format('YYYY-MM-DD 00:00:00'),
-        dateTo: moment().endOf('week').format('YYYY-MM-DD 23:59:59'),
+        dateFrom: dayjs().startOf('week').format('YYYY-MM-DD 00:00:00'),
+        dateTo: dayjs().endOf('week').format('YYYY-MM-DD 23:59:59'),
       },
     },
   },
@@ -450,8 +450,8 @@ const system = [
       created_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
-        dateTo: moment(moment().format('YYYY-MM-01 00:00:00'))
+        dateFrom: dayjs().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
+        dateTo: dayjs(dayjs().format('YYYY-MM-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
       },
@@ -471,8 +471,8 @@ const system = [
       created_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().format('YYYY-MM-01 00:00:00'),
-        dateTo: moment(moment().add(1, 'M').format('YYYY-MM-01 00:00:00'))
+        dateFrom: dayjs().format('YYYY-MM-01 00:00:00'),
+        dateTo: dayjs(dayjs().add(1, 'M').format('YYYY-MM-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
       },
@@ -490,8 +490,8 @@ const system = [
       created_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
-        dateTo: moment(moment().format('YYYY-01-01 00:00:00'))
+        dateFrom: dayjs().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
+        dateTo: dayjs(dayjs().format('YYYY-01-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
       },
@@ -509,8 +509,8 @@ const system = [
       created_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().format('YYYY-01-01 00:00:00'),
-        dateTo: moment(moment().add(1, 'Y').format('YYYY-01-01 00:00:00'))
+        dateFrom: dayjs().format('YYYY-01-01 00:00:00'),
+        dateTo: dayjs(dayjs().add(1, 'Y').format('YYYY-01-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
       },
@@ -530,8 +530,8 @@ const system = [
       updated_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
-        dateTo: moment().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
+        dateFrom: dayjs().add(-2, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: dayjs().add(-2, 'd').format('YYYY-MM-DD 23:59:59'),
       },
     },
   },
@@ -549,8 +549,8 @@ const system = [
       updated_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
-        dateTo: moment().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
+        dateFrom: dayjs().add(-1, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: dayjs().add(-1, 'd').format('YYYY-MM-DD 23:59:59'),
       },
     },
   },
@@ -566,8 +566,8 @@ const system = [
       updated_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().format('YYYY-MM-DD 00:00:00'),
-        dateTo: moment().format('YYYY-MM-DD 23:59:59'),
+        dateFrom: dayjs().format('YYYY-MM-DD 00:00:00'),
+        dateTo: dayjs().format('YYYY-MM-DD 23:59:59'),
       },
     },
   },
@@ -583,8 +583,8 @@ const system = [
       updated_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
-        dateTo: moment().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
+        dateFrom: dayjs().startOf('week').add(-7, 'd').format('YYYY-MM-DD 00:00:00'),
+        dateTo: dayjs().endOf('week').add(-7, 'd').format('YYYY-MM-DD 23:59:59'),
       },
     },
   },
@@ -600,8 +600,8 @@ const system = [
       updated_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().startOf('week').format('YYYY-MM-DD 00:00:00'),
-        dateTo: moment().endOf('week').format('YYYY-MM-DD 23:59:59'),
+        dateFrom: dayjs().startOf('week').format('YYYY-MM-DD 00:00:00'),
+        dateTo: dayjs().endOf('week').format('YYYY-MM-DD 23:59:59'),
       },
     },
   },
@@ -619,8 +619,8 @@ const system = [
       updated_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
-        dateTo: moment(moment().format('YYYY-MM-01 00:00:00'))
+        dateFrom: dayjs().add(-1, 'M').format('YYYY-MM-01 00:00:00'),
+        dateTo: dayjs(dayjs().format('YYYY-MM-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
       },
@@ -640,8 +640,8 @@ const system = [
       updated_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().format('YYYY-MM-01 00:00:00'),
-        dateTo: moment(moment().add(1, 'M').format('YYYY-MM-01 00:00:00'))
+        dateFrom: dayjs().format('YYYY-MM-01 00:00:00'),
+        dateTo: dayjs(dayjs().add(1, 'M').format('YYYY-MM-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
       },
@@ -659,8 +659,8 @@ const system = [
       updated_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
-        dateTo: moment(moment().format('YYYY-01-01 00:00:00'))
+        dateFrom: dayjs().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
+        dateTo: dayjs(dayjs().format('YYYY-01-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
       },
@@ -678,8 +678,8 @@ const system = [
       updated_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: moment().format('YYYY-01-01 00:00:00'),
-        dateTo: moment(moment().add(1, 'Y').format('YYYY-01-01 00:00:00'))
+        dateFrom: dayjs().format('YYYY-01-01 00:00:00'),
+        dateTo: dayjs(dayjs().add(1, 'Y').format('YYYY-01-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
       },

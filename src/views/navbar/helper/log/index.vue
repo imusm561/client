@@ -126,9 +126,9 @@
                   <div class="d-flex align-items-center">
                     <i class="fs-32 mb-n2 mt-n2 mdi mdi-calendar-clock text-primary" />
                     <span class="d-flex flex-column ms-1">
-                      <span class="fs-14">{{ moment(log.created_at).format('ll') }}</span>
+                      <span class="fs-14">{{ dayjs(log.created_at).format('ll') }}</span>
                       <span class="fs-10">
-                        {{ moment(log.created_at).format('LTS') }}
+                        {{ dayjs(log.created_at).format('LTS') }}
                       </span>
                     </span>
                   </div>
@@ -263,7 +263,7 @@ import uaParser from 'ua-parser-js';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getUserInfo } from '@utils';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 
 import Breadcrumb from '@layouts/breadcrumb';

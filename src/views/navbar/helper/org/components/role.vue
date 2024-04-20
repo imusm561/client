@@ -92,7 +92,7 @@
                     <li class="list-inline-item">
                       <span class="text-muted">
                         <i class="mdi mdi-clock-outline align-bottom"></i>
-                        {{ moment(role.updated_at || role.created_at).fromNow() }}
+                        {{ dayjs(role.updated_at || role.created_at).fromNow() }}
                       </span>
                     </li>
                   </ul>
@@ -453,7 +453,7 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { listToTree, getChanges, copyToClipboard, pasteFromClipboard } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import store from '@store';
 import Avatar from '@components/Avatar';
 import { createRole, updateRole } from '@api/role';
@@ -541,7 +541,7 @@ const handleNodeChecked = (_, state) => {
 
 const handleCopyPermissions = () => {
   const text = {
-    keyword: `copy_role_permissions_at_${moment().format('YYYY-MM-DD')}_by_${
+    keyword: `copy_role_permissions_at_${dayjs().format('YYYY-MM-DD')}_by_${
       store.state.user.data.username
     }`,
     permissions: current_role.value.permissions,
@@ -576,7 +576,7 @@ const handlePastePermissions = () => {
     .then((text) => {
       if (
         text.includes(
-          `copy_role_permissions_at_${moment().format('YYYY-MM-DD')}_by_${
+          `copy_role_permissions_at_${dayjs().format('YYYY-MM-DD')}_by_${
             store.state.user.data.username
           }`,
         )

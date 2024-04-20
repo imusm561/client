@@ -112,7 +112,7 @@
                               {{ $t('layout.navbar.user.dropdown.profil.overview.info.birthday') }}:
                             </th>
                             <td class="text-muted">
-                              {{ moment($store.state.user.data.birthday).format('ll') }}
+                              {{ dayjs($store.state.user.data.birthday).format('ll') }}
                             </td>
                           </tr>
                         </tbody>
@@ -304,7 +304,7 @@
                                           <span class="text-secondary">
                                             {{ item.method }}::{{ item.ip }}
                                           </span>
-                                          @ {{ moment(item.created_at).format('llll') }}
+                                          @ {{ dayjs(item.created_at).format('llll') }}
                                         </small>
                                       </div>
                                     </div>
@@ -404,7 +404,7 @@
                       <td class="text-capitalize">{{ file.category }}</td>
                       <td>{{ size2Str(file.size) }}</td>
                       <td style="white-space: nowrap">
-                        {{ moment(file.created_at).format('llll') }}
+                        {{ dayjs(file.created_at).format('llll') }}
                       </td>
                       <td>
                         <div class="dropdown">
@@ -486,7 +486,7 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 
 import { size2Str, getUserInfo } from '@utils';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 
 import MonacoEditor from '@components/MonacoEditor';
 import Empty from '@components/Empty';

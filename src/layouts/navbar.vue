@@ -329,7 +329,7 @@
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                             <span>
                               <i class="mdi mdi-clock-outline"></i>
-                              {{ moment(item.chat_data[0].created_at).fromNow() }}
+                              {{ dayjs(item.chat_data[0].created_at).fromNow() }}
                             </span>
                           </p>
                         </div>
@@ -374,7 +374,7 @@
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                             <span>
                               <i class="mdi mdi-clock-outline"></i>
-                              {{ moment(mail.created_at).fromNow() }}
+                              {{ dayjs(mail.created_at).fromNow() }}
                             </span>
                           </p>
                         </div>
@@ -410,7 +410,7 @@
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                             <span>
                               <i class="mdi mdi-clock-outline"></i>
-                              {{ moment(comment.created_at).fromNow() }}
+                              {{ dayjs(comment.created_at).fromNow() }}
                             </span>
                           </p>
                         </div>
@@ -448,7 +448,7 @@
                           <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                             <span>
                               <i class="mdi mdi-clock-outline"></i>
-                              {{ moment(flow.updated_at || flow.created_at).fromNow() }}
+                              {{ dayjs(flow.updated_at || flow.created_at).fromNow() }}
                             </span>
                           </p>
                         </div>
@@ -574,7 +574,7 @@ import {
 } from '@utils';
 import { icons } from '@utils/icons';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
@@ -960,7 +960,7 @@ const lang = computed({
     if (store.state.sys.cfg.waterMark && store.state.user.data.id) {
       setWatermark(
         `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
-        moment().format('ll'),
+        dayjs().format('ll'),
       );
     }
     reload();

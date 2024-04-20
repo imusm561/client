@@ -253,7 +253,7 @@
                       -
                       <span class="teaser">{{ replaceHtml(mail.content) }}</span>
                     </a>
-                    <div class="date text-truncate">{{ moment(mail.created_at).fromNow() }}</div>
+                    <div class="date text-truncate">{{ dayjs(mail.created_at).fromNow() }}</div>
                   </div>
                 </div>
               </li>
@@ -430,7 +430,7 @@
               </div>
             </div>
             <div class="flex-shrink-0 align-self-start">
-              <div class="text-muted fs-12">{{ moment(current_mail.created_at).fromNow() }}</div>
+              <div class="text-muted fs-12">{{ dayjs(current_mail.created_at).fromNow() }}</div>
               <a
                 role="button"
                 class="w-100 text-primary float-end text-end collapsed"
@@ -792,7 +792,7 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { replaceHtml, getUserInfo, hashData, encryptData, decryptData } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 import store from '@store';
 import CKEditor from '@components/CKEditor';
@@ -1315,7 +1315,7 @@ const handleReply = (mail) => {
     cc: [],
     bcc: [],
     subject: `Re: ${mail.subject}`,
-    content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(
+    content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${dayjs(
       mail.created_at,
     ).format('llll')}<br/><b>To:</b> ${resolveUsers
       .value(mail.to)
@@ -1354,7 +1354,7 @@ const handleReply2All = (mail, confirmed) => {
     cc: mail.cc.filter((username) => username != store.state.user.data.username),
     bcc: [],
     subject: `Re: ${mail.subject}`,
-    content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${moment(
+    content: `<br/><hr/><b>Sender:</b> ${mail.sender.fullname}<br/><b>Date:</b> ${dayjs(
       mail.created_at,
     ).format('llll')}<br/><b>To:</b> ${resolveUsers
       .value(mail.to)

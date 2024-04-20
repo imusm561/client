@@ -10,7 +10,7 @@
       <span :class="`fw-semibold me-auto text-truncate text-${variant}`">
         {{ title ? title : user ? user.fullname : $store.state.sys.name }}
       </span>
-      <small v-if="time" style="white-space: nowrap">{{ moment(time).fromNow() }}</small>
+      <small v-if="time" style="white-space: nowrap">{{ dayjs(time).fromNow() }}</small>
       <button type="button" class="btn-close" @click="$emit('close-toast')"></button>
     </div>
     <div
@@ -26,7 +26,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import Avatar from '@components/Avatar';
 // eslint-disable-next-line
 const props = defineProps({

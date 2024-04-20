@@ -537,9 +537,9 @@
                       {{ uaParser(item.agent).device.type || 'desktop' }}
                     </div>
                     <p class="text-muted mb-0">
-                      {{ item.ip }} - {{ moment(item.created_at).format('llll') }}
+                      {{ item.ip }} - {{ dayjs(item.created_at).format('llll') }}
                       <span class="badge bg-soft-info text-dark ms-1">
-                        {{ moment(item.created_at).fromNow() }}
+                        {{ dayjs(item.created_at).fromNow() }}
                       </span>
                     </p>
                   </div>
@@ -1189,7 +1189,7 @@ import ToastificationContent from '@components/ToastificationContent';
 
 import { clearUserData, getChanges, hashData, base64ToFile } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 
 import FlatPickr from '@components/FlatPickr';
 import Avatar from '@components/Avatar';

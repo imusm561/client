@@ -134,7 +134,7 @@
               <td>{{ user.website }}</td>
               <td>{{ user.about }}</td>
               <td>{{ user.login_count }}</td>
-              <td>{{ user.last_login_at && moment(user.last_login_at).fromNow() }}</td>
+              <td>{{ user.last_login_at && dayjs(user.last_login_at).fromNow() }}</td>
             </tr>
           </tbody>
         </table>
@@ -827,7 +827,7 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getChanges, getUserInfo } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import store from '@store';
 import FlatPickr from '@components/FlatPickr';
 import Pagination from '@components/Pagination';

@@ -77,7 +77,7 @@
                   {{
                     $t('layout.navbar.helper.form.create', {
                       user: getUserInfo(current_form.created_by).fullname,
-                      time: moment(current_form.created_at).format('llll'),
+                      time: dayjs(current_form.created_at).format('llll'),
                     })
                   }}
                 </div>
@@ -86,7 +86,7 @@
                   {{
                     $t('layout.navbar.helper.form.update', {
                       user: getUserInfo(current_form.updated_by).fullname,
-                      time: moment(current_form.updated_at).format('llll'),
+                      time: dayjs(current_form.updated_at).format('llll'),
                     })
                   }}
                 </div>
@@ -422,22 +422,22 @@
                               #{{ item.id }} {{ item.title }}
                             </h6>
                             <small class="text-muted" v-if="item.start == item.end">
-                              {{ moment(item.start).format('ll') }}
+                              {{ dayjs(item.start).format('ll') }}
                             </small>
                             <small class="text-muted" v-else>
-                              {{ moment(item.start).format('ll') }} -
-                              {{ moment(item.end).format('ll') }}
+                              {{ dayjs(item.start).format('ll') }} -
+                              {{ dayjs(item.end).format('ll') }}
                             </small>
                           </div>
                         </div>
                         <div class="flex-shrink-0">
                           <span class="text-success" @click="handleShowPubFormQr">
                             {{
-                              moment().valueOf() > moment(item.end).add(1, 'd').valueOf()
+                              dayjs().valueOf() > dayjs(item.end).add(1, 'd').valueOf()
                                 ? $t('layout.navbar.helper.form.tab.pubForm.state.expired')
                                 : item.status === 0
                                 ? $t('layout.navbar.helper.form.tab.pubForm.state.disabled')
-                                : moment(item.start).valueOf() > moment().valueOf()
+                                : dayjs(item.start).valueOf() > dayjs().valueOf()
                                 ? $t('layout.navbar.helper.form.tab.pubForm.state.notStart')
                                 : $t('layout.navbar.helper.form.tab.pubForm.state.inEffect')
                             }}
@@ -1117,7 +1117,7 @@ import ToastificationContent from '@components/ToastificationContent';
 
 import { listToTree, getChanges, getUserInfo } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 
 import store from '@store';
 
@@ -1731,8 +1731,8 @@ const { BASE_URL } = process.env;
 const handleEditPubForm = (item) => {
   current_pub.value = JSON.parse(JSON.stringify(item));
   current_pub.value.duration = [
-    moment(item.start).format('YYYY-MM-DD'),
-    moment(item.end).format('YYYY-MM-DD'),
+    dayjs(item.start).format('YYYY-MM-DD'),
+    dayjs(item.end).format('YYYY-MM-DD'),
   ];
   document.getElementById('showViewAndEditPubModalBtn').click();
   qrCodeKey.value = nanoid();

@@ -196,7 +196,7 @@ import { ref, reactive, watch } from 'vue';
 import parser from 'cron-parser';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import CKEditor from '@components/CKEditor';
 import MonacoEditor from '@components/MonacoEditor';
 import FlatPickr from '@components/FlatPickr';
@@ -240,15 +240,15 @@ watch(
       try {
         let interval = parser.parseExpression(val.rule, {
           currentDate:
-            moment(val.start).valueOf() > moment.valueOf()
-              ? moment(val.start).toDate()
-              : moment().toDate(),
-          endDate: moment(val.end).toDate(),
+            dayjs(val.start).valueOf() > dayjs.valueOf()
+              ? dayjs(val.start).toDate()
+              : dayjs().toDate(),
+          endDate: dayjs(val.end).toDate(),
           tz: 'Asia/Shanghai',
         });
         for (let i = 0; i < 10; i++) {
           expression.interval.push(
-            moment(new Date(interval.next().toString())).format('YYYY-MM-DD HH:mm:ss'),
+            dayjs(new Date(interval.next().toString())).format('YYYY-MM-DD HH:mm:ss'),
           );
         }
         expression.error = null;

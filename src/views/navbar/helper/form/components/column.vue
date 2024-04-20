@@ -173,7 +173,7 @@
                 {{
                   $t('layout.navbar.helper.form.column.config.create', {
                     user: getUserInfo(current_column.created_by).fullname,
-                    time: moment(current_column.created_at).format('llll'),
+                    time: dayjs(current_column.created_at).format('llll'),
                   })
                 }}
               </div>
@@ -182,7 +182,7 @@
                 {{
                   $t('layout.navbar.helper.form.column.config.update', {
                     user: getUserInfo(current_column.updated_by).fullname,
-                    time: moment(current_column.updated_at).format('llll'),
+                    time: dayjs(current_column.updated_at).format('llll'),
                   })
                 }}
               </div>
@@ -229,7 +229,7 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getChanges, copyToClipboard, pasteFromClipboard, getUserInfo } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 
 import store from '@store';
 
@@ -454,7 +454,7 @@ const handleSortColumn = () => {
 
 const handleCopyColumns = () => {
   const text = {
-    keyword: `copy_form_columns_at_${moment().format('YYYY-MM-DD')}_by_${
+    keyword: `copy_form_columns_at_${dayjs().format('YYYY-MM-DD')}_by_${
       store.state.user.data.username
     }`,
     columns: columns.value.map((column) => {
@@ -505,7 +505,7 @@ const handlePasteColumns = () => {
     .then((text) => {
       if (
         text.includes(
-          `copy_form_columns_at_${moment().format('YYYY-MM-DD')}_by_${
+          `copy_form_columns_at_${dayjs().format('YYYY-MM-DD')}_by_${
             store.state.user.data.username
           }`,
         )

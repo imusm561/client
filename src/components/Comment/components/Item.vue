@@ -11,9 +11,9 @@
         />
       </div>
       <small class="text-muted">
-        {{ moment(comment.created_at).format('llll') }}
+        {{ dayjs(comment.created_at).format('llll') }}
         <span class="badge bg-soft-info text-info align-middle ms-2">
-          {{ moment(comment.created_at).fromNow() }}
+          {{ dayjs(comment.created_at).fromNow() }}
         </span>
       </small>
       <div class="ck ck-content mt-2 mb-2" v-html="comment.content"></div>
@@ -54,7 +54,7 @@
 
 <script setup>
 import { getUserInfo } from '@utils';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import Avatar from '@components/Avatar';
 // eslint-disable-next-line
 defineProps({

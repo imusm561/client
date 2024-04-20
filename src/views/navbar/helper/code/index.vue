@@ -102,11 +102,11 @@
                         created_by: current.created_by
                           ? getUserInfo(current.created_by).fullname
                           : $t('layout.navbar.helper.code.file.info.system'),
-                        created_at: moment(current.created_at || current.birthtime).format('llll'),
+                        created_at: dayjs(current.created_at || current.birthtime).format('llll'),
                         updated_by: current.updated_by
                           ? getUserInfo(current.updated_by).fullname
                           : $t('layout.navbar.helper.code.file.info.system'),
-                        updated_at: moment(current.updated_at || current.mtime).format('llll'),
+                        updated_at: dayjs(current.updated_at || current.mtime).format('llll'),
                       })
                     "
                   >
@@ -299,7 +299,7 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getFileExt, getUserInfo } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import Breadcrumb from '@layouts/breadcrumb';
 import MonacoEditor from '@components/MonacoEditor';
 import {

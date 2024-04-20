@@ -17,7 +17,7 @@ import { useRoute, useRouter } from 'vue-router';
 import jwt from 'jsonwebtoken';
 import { clearUserData } from '@utils';
 import { setWatermark } from '@utils/watermark';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { initSocket } from '@utils/socket';
 import store from '@store';
 import Vertical from '@layouts/vertical';
@@ -109,7 +109,7 @@ const windowResizeHandler = () => {
   if (store.state.sys.cfg.waterMark && store.state.user.data.id)
     setWatermark(
       `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
-      moment().format('ll'),
+      dayjs().format('ll'),
     );
 };
 

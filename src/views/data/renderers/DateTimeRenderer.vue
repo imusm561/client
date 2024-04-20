@@ -7,16 +7,16 @@
           class="fs-14"
           :class="
             ['BasicCreatedAt', 'BasicUpdatedAt'].includes(params._column.component) &&
-            moment().isSame(params.value, 'day')
+            dayjs().isSame(params.value, 'day')
               ? 'text-info text-decoration-underline'
               : ''
           "
         >
           {{
-            moment(
+            dayjs(
               params._column.cfg.dateFormat.includes('Y-m-d')
                 ? params.value
-                : `${moment().format('YYYY-MM-DD')} ${params.value}`,
+                : `${dayjs().format('YYYY-MM-DD')} ${params.value}`,
             ).format(
               params._column.cfg.dateFormat
                 .replace('Y', 'YYYY')
@@ -36,16 +36,16 @@
         class="ms-1"
         :class="
           ['BasicCreatedAt', 'BasicUpdatedAt'].includes(params._column.component) &&
-          moment().isSame(params.value, 'day')
+          dayjs().isSame(params.value, 'day')
             ? 'text-info text-decoration-underline'
             : ''
         "
       >
         {{
-          moment(
+          dayjs(
             params._column.cfg.dateFormat.includes('Y-m-d')
               ? params.value
-              : `${moment().format('YYYY-MM-DD')} ${params.value}`,
+              : `${dayjs().format('YYYY-MM-DD')} ${params.value}`,
           ).format(
             params._column.cfg.dateFormat
               .replace('Y', 'YYYY')
@@ -64,7 +64,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 
 // eslint-disable-next-line
 const props = defineProps(['params']);

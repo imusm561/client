@@ -172,7 +172,7 @@
                         {{ getUserInfo(log.created_by).fullname }}
                       </td>
                       <td style="white-space: nowrap">
-                        {{ moment(log.created_at).format('llll') }}
+                        {{ dayjs(log.created_at).format('llll') }}
                       </td>
                       <td style="white-space: nowrap">{{ log.cost }}</td>
                       <td style="white-space: nowrap">
@@ -249,7 +249,7 @@ import ToastificationContent from '@components/ToastificationContent';
 
 import { getChartColorsArray, getUserInfo } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 
 import useJob from './useJob';
@@ -475,8 +475,8 @@ const temp_job = ref({});
 const handleEditJob = () => {
   temp_job.value = JSON.parse(JSON.stringify(job.value));
   temp_job.value.duration = [
-    moment(job.value.start).format('YYYY-MM-DD HH:mm:ss'),
-    moment(job.value.end).format('YYYY-MM-DD HH:mm:ss'),
+    dayjs(job.value.start).format('YYYY-MM-DD HH:mm:ss'),
+    dayjs(job.value.end).format('YYYY-MM-DD HH:mm:ss'),
   ];
   temp_job.value.key = nanoid();
   nextTick(() => document.getElementById('showEditJobModalBtn').click());

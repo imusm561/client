@@ -1,5 +1,4 @@
 const path = require('path');
-const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-esm-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
@@ -110,10 +109,6 @@ module.exports = {
               pure_funcs: ['console.log', 'console.error', 'console.warn'],
             },
           },
-        }),
-
-        new MomentLocalesPlugin({
-          localesToKeep: ['zh-cn'],
         }),
 
         new CompressionWebpackPlugin({

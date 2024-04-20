@@ -270,7 +270,7 @@ import {
   debounce,
 } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 
 import Breadcrumb from '@layouts/breadcrumb';
@@ -571,8 +571,8 @@ const fetchDataForm = async (callback) => {
             filter[column.field] = {
               filterType: 'date',
               type: route.query[key].includes(' to ') ? 'inRange' : 'equals',
-              dateFrom: moment().format('YYYY-MM-DD') + ' ' + route.query[key].split(' to ')[0],
-              dateTo: moment().format('YYYY-MM-DD') + ' ' + route.query[key].split(' to ')[1],
+              dateFrom: dayjs().format('YYYY-MM-DD') + ' ' + route.query[key].split(' to ')[0],
+              dateTo: dayjs().format('YYYY-MM-DD') + ' ' + route.query[key].split(' to ')[1],
             };
           } else {
             filter[column.field] = {

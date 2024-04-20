@@ -141,7 +141,7 @@
                       </div>
                       <div class="flex-shrink-0">
                         <span class="text-muted" :title="task.due_date">
-                          {{ moment(task.due_date).add(1, 'd').fromNow() }}
+                          {{ dayjs(task.due_date).add(1, 'd').fromNow() }}
                         </span>
                       </div>
                     </div>
@@ -178,7 +178,7 @@
                         <li class="list-inline-item">
                           <span class="text-muted" :title="task.created_at">
                             <i class="mdi mdi-clock-outline align-bottom"></i>
-                            {{ moment(task.created_at).fromNow() }}
+                            {{ dayjs(task.created_at).fromNow() }}
                           </span>
                         </li>
                       </ul>
@@ -428,7 +428,7 @@ import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { replaceHtml, getUserInfo, debounce } from '@utils';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 import store from '@store';
 import CKEditor from '@components/CKEditor';
@@ -593,7 +593,7 @@ const handleCreateTask = () => {
     description: '',
     tags: [],
     users: [store.state.user.data.username],
-    due_date: moment().add(7, 'd').format('YYYY-MM-DD'),
+    due_date: dayjs().add(7, 'd').format('YYYY-MM-DD'),
     progress: 0,
     status: statuses[0].value,
     sort: 0,

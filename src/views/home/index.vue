@@ -30,7 +30,7 @@
             >
               <i class="mdi mdi-clock-outline label-icon"></i>
               <div class="flex-grow-1 text-truncate">
-                {{ moment().format('LLLL') }}
+                {{ dayjs().format('LLLL') }}
               </div>
             </div>
             <div class="row p-3 gap-3">
@@ -56,7 +56,7 @@
               <div class="col">
                 <calendar-heatmap
                   :values="activities"
-                  :end-date="moment().format('YYYY-MM-DD')"
+                  :end-date="dayjs().format('YYYY-MM-DD')"
                   :max="100"
                   :tooltip-unit="$t('home.heatmap.tooltipUnit')"
                   :no-data-text="false"
@@ -214,7 +214,7 @@
                           </div>
                         </div>
                       </td>
-                      <td class="text-muted text-end">{{ moment(task.due_date).format('ll') }}</td>
+                      <td class="text-muted text-end">{{ dayjs(task.due_date).format('ll') }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -247,8 +247,8 @@
                       <div class="col-auto">
                         <div class="avatar-sm p-1 py-1 h-auto bg-light rounded-3 shadow">
                           <div class="text-center mt-1">
-                            <h5 class="mb-0">{{ moment(event.start).format('DD') }}</h5>
-                            <div class="text-muted">{{ moment(event.start).format('ddd') }}</div>
+                            <h5 class="mb-0">{{ dayjs(event.start).format('DD') }}</h5>
+                            <div class="text-muted">{{ dayjs(event.start).format('ddd') }}</div>
                           </div>
                         </div>
                       </div>
@@ -292,7 +292,7 @@ import { CalendarHeatmap } from 'vue3-calendar-heatmap';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import store from '@store';
 import Breadcrumb from '@layouts/breadcrumb';
 import Avatar from '@components/Avatar';

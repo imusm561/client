@@ -200,7 +200,7 @@
                   <dd class="col-sm-9 mb-3">
                     {{
                       account.access_token_time
-                        ? moment(account.access_token_time).format('llll')
+                        ? dayjs(account.access_token_time).format('llll')
                         : '-'
                     }}
                   </dd>
@@ -218,7 +218,7 @@
                   <dd class="col-sm-9 mb-3">
                     {{
                       account.refresh_token_time
-                        ? moment(account.refresh_token_time).format('llll')
+                        ? dayjs(account.refresh_token_time).format('llll')
                         : '-'
                     }}
                   </dd>
@@ -240,7 +240,7 @@
                   <dd class="col-sm-9 mb-3">
                     {{
                       account.jsapi_ticket_time
-                        ? moment(account.jsapi_ticket_time).format('llll')
+                        ? dayjs(account.jsapi_ticket_time).format('llll')
                         : '-'
                     }}
                   </dd>
@@ -375,7 +375,7 @@
                         {{ getUserInfo(strategy.created_by).fullname }}
                       </td>
                       <td>
-                        {{ moment(strategy.created_at).format('llll') }}
+                        {{ dayjs(strategy.created_at).format('llll') }}
                       </td>
                       <td>
                         {{
@@ -451,7 +451,7 @@
                     <tr v-for="bind in binds" :key="bind.id">
                       <td>{{ bind.title }}</td>
                       <td>
-                        {{ moment(bind.created_at).format('llll') }}
+                        {{ dayjs(bind.created_at).format('llll') }}
                       </td>
                       <td
                         class="openid cursor-pointer"
@@ -1089,7 +1089,7 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 
 import { getUserInfo, replaceHtml } from '@utils';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 
 import Breadcrumb from '@layouts/breadcrumb';
 import MonacoEditor from '@components/MonacoEditor';

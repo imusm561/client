@@ -143,7 +143,7 @@
                   <span class="text-muted">{{ $t('data.column.BasicCreateInfo') }}:&nbsp;</span>
                   <span>
                     {{ getUserInfo(data.created_by).fullname }}@{{
-                      moment(data.created_at).format('llll')
+                      dayjs(data.created_at).format('llll')
                     }}
                   </span>
                 </h6>
@@ -151,7 +151,7 @@
                   <span class="text-muted">{{ $t('data.column.BasicUpdateInfo') }}:&nbsp;</span>
                   <span>
                     {{ getUserInfo(data.updated_by).fullname }}@{{
-                      moment(data.updated_at).format('llll')
+                      dayjs(data.updated_at).format('llll')
                     }}
                   </span>
                 </h6>
@@ -390,9 +390,9 @@
                     />
                   </div>
                   <small class="text-muted">
-                    {{ moment(flow.created_at).format('llll') }}
+                    {{ dayjs(flow.created_at).format('llll') }}
                     <span class="badge bg-soft-info text-info align-middle ms-2">
-                      {{ moment(flow.created_at).fromNow() }}
+                      {{ dayjs(flow.created_at).fromNow() }}
                     </span>
                   </small>
                 </span>
@@ -592,7 +592,7 @@ import {
   hashData,
 } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 
 import store from '@store';

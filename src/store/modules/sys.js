@@ -1,6 +1,6 @@
 import { decryptData } from '@utils';
 import i18n from '@utils/i18n';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 const { BASE_URL } = process.env;
 
 export default {
@@ -37,7 +37,7 @@ export default {
       const lang = ['en-us', 'zh-cn'].includes(value) ? value : 'en-us';
       commit('TOGGLE_LANG', lang);
       i18n.global.locale = lang;
-      moment.locale(lang);
+      dayjs.locale(lang);
       localStorage.setItem(`${BASE_URL.replace(/\//g, '_')}locale`, lang);
     },
     toggleTheme({ commit }, value) {

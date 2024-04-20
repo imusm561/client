@@ -1,5 +1,5 @@
 import { listToTree, getUserInfo } from '@utils';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { setWatermark, removeWatermark } from '@utils/watermark';
 import store from '@store';
 import app from '../menu/app';
@@ -61,7 +61,7 @@ export default {
     setUser({ commit }, value) {
       commit('SET_USER', value);
       if (store.state.sys.cfg.waterMark && value.id)
-        setWatermark(`${value.username} - ${value.fullname}`, moment().format('ll'));
+        setWatermark(`${value.username} - ${value.fullname}`, dayjs().format('ll'));
       else removeWatermark();
     },
     addNotice({ commit, state }, value) {

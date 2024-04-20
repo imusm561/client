@@ -213,17 +213,17 @@
                       v-if="
                         index === 0 ||
                         (index > 0 &&
-                          moment(current_chat.chat_data[index].created_at).format('YYYYMMDD') !=
-                            moment(current_chat.chat_data[index - 1].created_at).format(
+                          dayjs(current_chat.chat_data[index].created_at).format('YYYYMMDD') !=
+                            dayjs(current_chat.chat_data[index - 1].created_at).format(
                               'YYYYMMDD',
                             )) ||
                         (index === current_chat.chat_data.length - 1 &&
-                          moment(current_chat.chat_data[index].created_at).format('YYYYMMDD') !=
-                            moment().format('YYYYMMDD'))
+                          dayjs(current_chat.chat_data[index].created_at).format('YYYYMMDD') !=
+                            dayjs().format('YYYYMMDD'))
                       "
                     >
-                      {{ moment(data.created_at).format('ll') }}
-                      {{ moment(data.created_at).format('dddd') }}
+                      {{ dayjs(data.created_at).format('ll') }}
+                      {{ dayjs(data.created_at).format('dddd') }}
                     </small>
                     <li
                       :class="{
@@ -251,9 +251,9 @@
                                   <small class="text-muted time">
                                     <span>
                                       {{
-                                        moment(data.quote.created_at).format(
-                                          moment(data.quote.created_at).format('YYYYMMDD') !=
-                                            moment().format('YYYYMMDD')
+                                        dayjs(data.quote.created_at).format(
+                                          dayjs(data.quote.created_at).format('YYYYMMDD') !=
+                                            dayjs().format('YYYYMMDD')
                                             ? 'llll'
                                             : 'HH:mm',
                                         )
@@ -320,7 +320,7 @@
                             </div>
                             <div class="conversation-name">
                               <small class="text-muted time">
-                                <span>{{ moment(data.created_at).format('HH:mm') }}</span>
+                                <span>{{ dayjs(data.created_at).format('HH:mm') }}</span>
                               </small>
                               <span class="text-success check-message-icon">
                                 <i
@@ -336,7 +336,7 @@
                               <span
                                 v-if="
                                   data.id &&
-                                  (moment().valueOf() - moment(data.created_at).valueOf()) / 1000 <
+                                  (dayjs().valueOf() - dayjs(data.created_at).valueOf()) / 1000 <
                                     120 &&
                                   data.sender === $store.state.user.data.username &&
                                   !data.receiver_read
@@ -506,7 +506,7 @@
               {{ $t('app.chat.personalDetails.lastLoginAt') }}
             </p>
             <h6>
-              {{ current_chat.last_login_at ? moment(current_chat.last_login_at).fromNow() : '-' }}
+              {{ current_chat.last_login_at ? dayjs(current_chat.last_login_at).fromNow() : '-' }}
             </h6>
           </div>
         </div>
@@ -521,7 +521,7 @@ import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getUserInfo, hashData, encryptData, decryptData, parseMessage } from '@utils';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 import store from '@store';
 import Avatar from '@components/Avatar';

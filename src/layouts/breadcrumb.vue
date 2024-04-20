@@ -56,7 +56,7 @@
               <span class="fw-medium">{{ $t('layout.breadcrumb.formInfoModal.creation') }}</span>
               <span class="badge bg-primary">
                 {{ getUserInfo(form.created_by).fullname }} @
-                {{ moment(form.created_at).format('llll') }}
+                {{ dayjs(form.created_at).format('llll') }}
               </span>
             </li>
             <li
@@ -66,7 +66,7 @@
               <span class="fw-medium">{{ $t('layout.breadcrumb.formInfoModal.lastUpdate') }}</span>
               <span class="badge bg-secondary">
                 {{ getUserInfo(form.updated_by).fullname }} @
-                {{ moment(form.updated_at).format('llll') }}
+                {{ dayjs(form.updated_at).format('llll') }}
               </span>
             </li>
             <li
@@ -209,7 +209,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getListPath, getParentsById, getUserInfo, generateFlowByCurrentUser } from '@utils';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import Empty from '@components/Empty';
 import Log from '@components/Log';
 import store from '@store';

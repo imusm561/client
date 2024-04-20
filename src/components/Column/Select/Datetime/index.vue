@@ -44,10 +44,10 @@
     <span v-if="value">
       <i class="mdi mdi-clock-outline" />
       {{
-        moment(
+        dayjs(
           column.cfg.dateFormat.includes('Y-m-d')
             ? value
-            : `${moment().format('YYYY-MM-DD')} ${value}`,
+            : `${dayjs().format('YYYY-MM-DD')} ${value}`,
         ).format(
           column.cfg.dateFormat
             .replace('Y', 'YYYY')
@@ -65,7 +65,7 @@
 <script setup>
 import { computed } from 'vue';
 import { resolveColumnTitle } from '@utils';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import FlatPickr from '@components/FlatPickr';
 // eslint-disable-next-line
 const props = defineProps({

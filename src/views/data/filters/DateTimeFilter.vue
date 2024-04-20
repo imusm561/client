@@ -17,7 +17,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import moment from '@utils/moment';
+import dayjs from '@utils/dayjs';
 import FlatPickr from '@/components/FlatPickr';
 
 // eslint-disable-next-line
@@ -42,10 +42,10 @@ const date = ref(null);
 /* eslint-disable-next-line no-unused-vars */
 const getDate = () => {
   return date.value
-    ? moment(
+    ? dayjs(
         props.params.filterParams._column.cfg.dateFormat.includes('Y-m-d')
           ? date.value
-          : `${moment().format('YYYY-MM-DD')} ${date.value}`,
+          : `${dayjs().format('YYYY-MM-DD')} ${date.value}`,
       ).toDate()
     : null;
 };
