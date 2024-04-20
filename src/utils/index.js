@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import { transform, isEqual } from 'lodash'; // isObject, isArray
 import store from '@store';
 import { getDataDefault, getDataSource, getDataValue } from '@api/data';
 const { BASE_URL } = process.env;
@@ -129,17 +128,26 @@ export const randomVariant = () => {
 };
 
 export const getChanges = (newObj, oldObj) => {
+  // Helper function to check if a value is an object
+  const isObject = (obj) => obj && typeof obj === 'object';
+  // Recursive function to find changes
   const changes = (obj1, obj2) => {
-    return transform(obj1, (result, value, key) => {
-      const val1 = value;
+    const result = {};
+    Object.keys(obj1).forEach((key) => {
+      const val1 = obj1[key];
       const val2 = obj2[key];
-      if (!isEqual(val1, val2)) {
+      // If the values are objects, do a deep comparison
+      if (isObject(val1) && isObject(val2)) {
+        const valueChanges = changes(val1, val2);
+        if (Object.keys(valueChanges).length > 0) {
+          result[key] = valueChanges;
+        }
+      } else if (!Object.is(val1, val2)) {
+        // Using Object.is for comparison
         result[key] = val1;
-        // if (isArray(val1)) result[key] = val1.filter((val) => !val2.includes(val));
-        // else if (isObject(val1) && isObject(val2)) result[key] = changes(val1, val2);
-        // else result[key] = val1;
       }
     });
+    return result;
   };
   return changes(newObj, oldObj);
 };
