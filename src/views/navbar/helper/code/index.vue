@@ -19,13 +19,11 @@
               data-simplebar
               class="scroll"
               v-model="tree"
-              :treeLine="false"
               :defaultOpen="false"
               nodeKey="path"
               :statHandler="statHandler"
               :rootDroppable="false"
               :keepPlaceholder="true"
-              :dragOpen="true"
               :dragOpenDelay="1000"
               :eachDraggable="eachDraggable"
               :eachDroppable="eachDroppable"
@@ -548,7 +546,7 @@ const handleClickPath = (node, stat) => {
             props: {
               variant: 'danger',
               icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.code.modified'),
+              text: i18n.global.t('layout.navbar.helper.code.editing'),
             },
           });
         } else {
@@ -582,7 +580,7 @@ const handleEditFileName = (node) => {
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.global.t('layout.navbar.helper.code.modified'),
+        text: i18n.global.t('layout.navbar.helper.code.editing'),
       },
     });
     return;
@@ -824,7 +822,7 @@ const handleSaveCode = () => {
         props: {
           variant: 'success',
           icon: 'mdi-check-circle',
-          text: i18n.global.t('layout.navbar.helper.code.modify.success'),
+          text: i18n.global.t('layout.navbar.helper.code.edit.success'),
         },
       });
     } else {

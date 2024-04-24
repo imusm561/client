@@ -403,11 +403,10 @@
 
   "layout.navbar.helper.code": "Code",
   "layout.navbar.helper.code.files": "Directory",
-  "layout.navbar.helper.code.files.empty": "Empty",
   "layout.navbar.helper.code.file.info": "Created by {created_by} At {created_at}\r\nUpdated by {updated_by} At {updated_at}",
   "layout.navbar.helper.code.file.info.system": "System",
-  "layout.navbar.helper.code.modified": "Please save the file first!",
-  "layout.navbar.helper.code.modify.success": "Save successfully!",
+  "layout.navbar.helper.code.editing": "Please save the file first!",
+  "layout.navbar.helper.code.edit.success": "Save successfully!",
   "layout.navbar.helper.code.uploading": "Uploading...",
   "layout.navbar.helper.code.upload.success": "Upload successfully!",
   "layout.navbar.helper.code.package.installing": "Installing...",
@@ -432,7 +431,6 @@
 
   "layout.navbar.helper.redis": "Redis",
   "layout.navbar.helper.redis.keys": "Keys",
-  "layout.navbar.helper.redis.keys.empty": "Empty",
   "layout.navbar.helper.redis.confirmDeleteKeyModal.title": "Delete Key Confirm | Delete Keys Confirm",
   "layout.navbar.helper.redis.confirmDeleteKeyModal.confirm": "Are you sure to delete this key ? | Are you sure to delete these keys ?",
   "layout.navbar.helper.redis.confirmDeleteKeyModal.cancel": "Cancel",

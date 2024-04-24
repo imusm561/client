@@ -403,11 +403,10 @@
 
   "layout.navbar.helper.code": "代码管理",
   "layout.navbar.helper.code.files": "代码文件",
-  "layout.navbar.helper.code.files.empty": "暂无文件",
   "layout.navbar.helper.code.file.info": "由{created_by}创建于{created_at}\r\n由{updated_by}更新于{updated_at}",
   "layout.navbar.helper.code.file.info.system": "系统",
-  "layout.navbar.helper.code.modified": "请先保存当前文件！",
-  "layout.navbar.helper.code.modify.success": "保存成功！",
+  "layout.navbar.helper.code.editing": "请先保存当前文件！",
+  "layout.navbar.helper.code.edit.success": "保存成功！",
   "layout.navbar.helper.code.uploading": "上传中...",
   "layout.navbar.helper.code.upload.success": "上传成功！",
   "layout.navbar.helper.code.package.installing": "安装中...",
@@ -432,7 +431,6 @@
 
   "layout.navbar.helper.redis": "Redis缓存",
   "layout.navbar.helper.redis.keys": "键名",
-  "layout.navbar.helper.redis.keys.empty": "暂无缓存",
   "layout.navbar.helper.redis.confirmDeleteKeyModal.title": "删除缓存确认",
   "layout.navbar.helper.redis.confirmDeleteKeyModal.confirm": "确定要删除这条缓存？ | 确定要删除这些缓存？",
   "layout.navbar.helper.redis.confirmDeleteKeyModal.cancel": "取消",

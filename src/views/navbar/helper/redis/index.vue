@@ -9,39 +9,42 @@
               <h4 class="flex-grow-1">{{ $t('layout.navbar.helper.redis.keys') }}</h4>
               <i
                 class="mdi mdi-refresh text-primary float-end fs-16 cursor-pointer"
-                @click.stop="handleGetKeys"
+                @click="handleGetKeys"
               ></i>
             </div>
-            <el-tree
+            <BaseTree
+              ref="treeRef"
               data-simplebar
               class="scroll"
-              :data="tree"
-              :empty-text="$t('layout.navbar.helper.redis.keys.empty')"
-              :default-expanded-keys="defaultExpandKeys"
-              @node-expand="(data) => handleNodeToggle(data, true)"
-              @node-collapse="(data) => handleNodeToggle(data, false)"
-              node-key="key"
-              :draggable="false"
-              @node-click="handleClickKey"
+              v-model="tree"
+              :defaultOpen="false"
+              nodeKey="key"
+              :statHandler="statHandler"
             >
-              <template #default="{ node }">
+              <template #default="{ node, stat }">
                 <span
-                  class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2 text-truncate"
-                  :title="node.data.key"
+                  class="tree-node-info align-items-center d-flex text-truncate w-100"
+                  @click="handleClickKey(node, stat)"
+                  :title="node.key"
                 >
-                  <span class="tree-node-label text-truncate">
-                    {{ node.data.name }}
-                  </span>
-                  <span class="tree-node-actions ms-3">
-                    <i
-                      class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline"
-                      data-bs-toggle="modal"
-                      data-bs-target="#confirmDeleteKeyModal"
-                    ></i>
+                  <i
+                    v-if="node.children"
+                    class="me-1 mdi"
+                    :class="stat.open ? 'mdi-folder-open-outline' : 'mdi-folder-outline'"
+                  />
+                  <i v-else class="me-1 mdi mdi-key-outline" />
+                  <span class="w-100 text-truncate">
+                    {{ node.name }}
                   </span>
                 </span>
+                <span class="tree-node-actions">
+                  <i
+                    class="fs-16 text-danger mdi mdi-delete-outline ms-1"
+                    @click="handleDeleteConfirm(node)"
+                  ></i>
+                </span>
               </template>
-            </el-tree>
+            </BaseTree>
           </div>
 
           <div class="col-md-9 d-none d-md-block">
@@ -90,6 +93,12 @@
       </div>
     </div>
 
+    <button
+      id="showConfirmDeleteKeyModalBtn"
+      class="d-none"
+      data-bs-toggle="modal"
+      data-bs-target="#confirmDeleteKeyModal"
+    ></button>
     <div
       class="modal fade"
       id="confirmDeleteKeyModal"
@@ -106,7 +115,7 @@
                   {{
                     $tc(
                       'layout.navbar.helper.redis.confirmDeleteKeyModal.title',
-                      current.children?.length || 1,
+                      confirm.children?.length || 1,
                     )
                   }}
                 </h4>
@@ -114,11 +123,11 @@
                   {{
                     $tc(
                       'layout.navbar.helper.redis.confirmDeleteKeyModal.confirm',
-                      current.children?.length || 1,
+                      confirm.children?.length || 1,
                     )
                   }}
                 </p>
-                <code>{{ current.key }}</code>
+                <code>{{ confirm.key }}</code>
               </div>
             </div>
 
@@ -143,9 +152,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { ElTree } from 'element-plus';
-import 'element-plus/es/components/tree/style/css';
+import { ref, reactive, onMounted, computed } from 'vue';
+import { BaseTree } from '@he-tree/vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import Breadcrumb from '@layouts/breadcrumb';
@@ -153,13 +161,8 @@ import MonacoEditor from '@components/MonacoEditor';
 import { getKeys, getKey, delKey } from '@api/com/redis';
 
 const toast = useToast();
+
 const keys = ref([]);
-const current = ref({});
-
-onMounted(() => {
-  handleGetKeys();
-});
-
 const handleGetKeys = () => {
   getKeys().then(({ code, data, msg }) => {
     if (code === 200) {
@@ -181,6 +184,13 @@ const handleGetKeys = () => {
     }
   });
 };
+
+onMounted(() => {
+  handleGetKeys();
+});
+
+const treeRef = ref(null);
+const expandKeys = reactive([]);
 
 const tree = computed(() => {
   const keyToTree = (keys) => {
@@ -221,58 +231,61 @@ const tree = computed(() => {
   return keyToTree(keys.value);
 });
 
-const defaultExpandKeys = ref([]);
-const removeChildrenKeys = (data) => {
-  if (data.children) {
-    data.children.forEach((item) => {
-      const index = defaultExpandKeys.value.indexOf(item.key);
-      if (index != -1) defaultExpandKeys.value.splice(index, 1);
-      removeChildrenKeys(item);
-    });
-  }
-};
-const handleNodeToggle = (data, expanded) => {
-  if (expanded) {
-    if (!defaultExpandKeys.value.includes(data.key)) defaultExpandKeys.value.push(data.key);
-  } else {
-    const index = defaultExpandKeys.value.indexOf(data.key);
-    if (index != -1) defaultExpandKeys.value.splice(index, 1);
-  }
-  removeChildrenKeys(data);
+const statHandler = (stat) => {
+  stat.open = expandKeys.includes(stat.data.key);
+  return stat;
 };
 
-const handleClickKey = (e) => {
-  current.value = JSON.parse(JSON.stringify(e));
-  if (current.value.children) {
-    current.value.detail = JSON.stringify(
-      current.value.children.map((child) => {
-        return child.key;
-      }),
-      null,
-      2,
-    );
+const current = ref({});
+const handleClickKey = (node, stat) => {
+  console.log(node);
+  if (node.children) {
+    stat.open = !stat.open;
+    if (stat.open) {
+      expandKeys.push(node.key);
+      current.value = node;
+      current.value.detail = JSON.stringify(
+        current.value.children.map((child) => {
+          return child.key;
+        }),
+        null,
+        2,
+      );
+    } else {
+      const index = expandKeys.indexOf(node.key);
+      if (index > -1) expandKeys.splice(index, 1);
+    }
   } else {
-    getKey({ key: current.value.key }).then(({ code, data, msg }) => {
-      if (code === 200) {
-        current.value.detail = JSON.stringify(data, null, 2);
-        document.getElementById('showKeyDataOffcanvasBtn').click();
-      } else {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: msg,
-          },
-        });
-      }
-    });
+    if (current.value.key != node.key) {
+      getKey({ key: node.key }).then(({ code, data, msg }) => {
+        if (code === 200) {
+          current.value = node;
+          current.value.detail = JSON.stringify(data, null, 2);
+          document.getElementById('showKeyDataOffcanvasBtn').click();
+        } else {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: msg,
+            },
+          });
+        }
+      });
+    }
   }
+};
+
+const confirm = ref({});
+const handleDeleteConfirm = (node) => {
+  confirm.value = node;
+  document.getElementById('showConfirmDeleteKeyModalBtn').click();
 };
 
 const handleDelKey = () => {
   delKey({
-    key: current.value.key,
+    key: confirm.value.key,
   }).then(({ code, msg }) => {
     if (code === 200) {
       handleGetKeys();
