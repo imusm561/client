@@ -659,7 +659,7 @@
   "layout.navbar.user.dropdown.setting.appNotification.chat": "Show chat notifications",
   "layout.navbar.user.dropdown.setting.appNotification.chat.desc": "After setting up, you can get chat message in real-time even after you leave the chat app. To avoid duplicate notifications in the chat app, this feature will be disabled on the chat app page.",
   "layout.navbar.user.dropdown.setting.appNotification.mail": "Show mail notifications",
-  "layout.navbar.user.dropdown.setting.appNotification.mail.desc": "Under Settings, you will be notified at the first moment after receiving an email.", 
+  "layout.navbar.user.dropdown.setting.appNotification.mail.desc": "Under Settings, you will be notified at the first moment after receiving an email.",
   "layout.navbar.user.dropdown.setting.appNotification.comment": "Show comment notifications",
   "layout.navbar.user.dropdown.setting.appNotification.comment.desc": "Under Settings, you will be notified at the first moment after receiving a comment reply.",
   "layout.navbar.user.dropdown.setting.sysConfiguration": "System Configuration",

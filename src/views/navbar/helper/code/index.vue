@@ -11,85 +11,85 @@
               </h4>
               <i
                 class="mdi mdi-refresh text-secondary float-end fs-16 cursor-pointer ms-1"
-                @click.stop="handleGetCodeDirs()"
+                @click="handleGetCodeDirs()"
               ></i>
             </div>
-            <el-tree
-              ref="reftree"
+            <Draggable
+              ref="treeRef"
               data-simplebar
               class="scroll"
-              :data="tree"
-              :empty-text="$t('layout.navbar.helper.code.files.empty')"
-              :default-expanded-keys="defaultExpandKeys"
-              @node-expand="(data) => handleNodeToggle(data, true)"
-              @node-collapse="(data) => handleNodeToggle(data, false)"
-              node-key="path"
-              draggable
-              :allow-drop="allowDrop"
-              :allow-drag="allowDrag"
-              @node-drop="handleDropCode"
-              @node-click="handleClickPath"
+              v-model="tree"
+              :treeLine="false"
+              :defaultOpen="false"
+              nodeKey="path"
+              :statHandler="statHandler"
+              :rootDroppable="false"
+              :keepPlaceholder="true"
+              :dragOpen="true"
+              :dragOpenDelay="1000"
+              :eachDraggable="eachDraggable"
+              :eachDroppable="eachDroppable"
+              @before-drag-start="handleBeforeDragStart"
+              @after-drop="handleAfterDrop"
             >
-              <template #default="{ node }">
+              <template #default="{ node, stat }">
                 <span
-                  class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2 text-truncate"
+                  class="tree-node-info align-items-center d-flex text-truncate w-100"
+                  @click="handleClickPath(node, stat)"
+                  :title="node.path"
                 >
-                  <span class="tree-node-label text-truncate" :title="node.data.path">
-                    <input
-                      id="node_edit"
-                      v-if="node.data.edit"
-                      type="text"
-                      class="form-control form-control-sm"
-                      v-model="node.data.name"
-                      @keyup.enter="$event.target.blur()"
-                      @blur="handleSaveFileName(node)"
-                    />
-                    <span v-else @dblclick="handleEditFileName(node)">
-                      <i
-                        v-if="node.data.type === 'file'"
-                        style="margin-left: -3px"
-                        class="file-icon file-icon-sm"
-                        :class="FileIcons.getClassWithColor(node.data.name)"
-                      />
-                      <i v-else class="mdi mdi-folder-outline" />
-                      {{ node.data.name }}
-                    </span>
-                  </span>
-                  <span
-                    v-if="
-                      !isEditing &&
-                      node.data.path.includes('/') &&
-                      !node.data.path.startsWith('logs')
-                    "
-                    class="tree-node-actions ms-3"
-                  >
-                    <!-- <i
-                      v-if="node.data.type === 'directory'"
-                      class="cursor-pointer fs-16 text-primary mdi mdi-plus-box-outline ms-1"
-                      @click.stop="handleCreate(node)"
-                    ></i> -->
-                    <i
-                      v-if="node.data.type === 'directory'"
-                      class="cursor-pointer fs-16 text-primary mdi mdi-cloud-upload-outline ms-1"
-                      @click.stop="handleUpload(node)"
-                    ></i>
-                    <i
-                      v-if="node.data.type === 'file' && node.data.name === 'package.json'"
-                      class="cursor-pointer fs-16 text-info mdi ms-1"
-                      :class="
-                        installing === node.key ? 'mdi-loading mdi-spin' : 'mdi-package-down '
-                      "
-                      @click.stop="handleInstallPackage(node)"
-                    ></i>
-                    <i
-                      v-if="!dirs.includes(node.data.path)"
-                      class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline ms-1"
-                      @click.stop="handleDeleteConfirm(node)"
-                    ></i>
+                  <i
+                    v-if="node.type === 'file'"
+                    :style="{
+                      minWidth: '20px',
+                      marginLeft: '-3px',
+                      marginRight: node.edit ? '-2.2px' : '2px',
+                    }"
+                    class="file-icon file-icon-sm"
+                    :class="FileIcons.getClassWithColor(node.name)"
+                  />
+                  <i
+                    v-else
+                    :style="{ marginRight: node.edit ? '0.8px' : '5px' }"
+                    class="mdi"
+                    :class="stat.open ? 'mdi-folder-open-outline' : 'mdi-folder-outline'"
+                  />
+                  <input
+                    v-if="node.edit"
+                    id="node_edit"
+                    type="text"
+                    class="form-control w-100 me-2"
+                    v-model="node.name"
+                    @keyup.enter="$event.target.blur()"
+                    @blur="handleSaveFileName(node, stat)"
+                  />
+                  <span v-else class="w-100 text-truncate" @dblclick="handleEditFileName(node)">
+                    {{ node.name }}
                   </span>
                 </span>
+                <span
+                  class="tree-node-actions"
+                  v-if="!node.edit && node.path.includes('/') && !node.path.startsWith('logs')"
+                >
+                  <i
+                    v-if="node.type === 'directory'"
+                    class="fs-16 text-primary mdi mdi-cloud-upload-outline ms-1"
+                    @click="handleUpload(node)"
+                  ></i>
+                  <i
+                    v-if="node.type === 'file' && node.name === 'package.json'"
+                    class="fs-16 text-info mdi ms-1"
+                    :class="installing === node.key ? 'mdi-loading mdi-spin' : 'mdi-package-down '"
+                    @click="handleInstallPackage(node, stat)"
+                  ></i>
+                  <i
+                    v-if="!dirs.includes(node.path)"
+                    class="fs-16 text-danger mdi mdi-delete-outline ms-1"
+                    @click="handleDeleteConfirm(node)"
+                  ></i>
+                </span>
               </template>
-            </el-tree>
+            </Draggable>
           </div>
           <div class="col-md-9 d-none d-md-block">
             <div class="d-flex flex-column" style="height: 100%">
@@ -114,7 +114,7 @@
                   </h5>
                   <div
                     class="d-none d-md-inline"
-                    v-if="editable(current) && current.data != current.file"
+                    v-if="current.editable && current.data != current.file"
                   >
                     <button
                       class="btn btn-sm btn-primary btn-icon waves-effect waves-light"
@@ -131,7 +131,7 @@
                 v-model="current.data"
                 :language="current.language"
                 :options="{
-                  readOnly: !editable(current),
+                  readOnly: !current.editable,
                 }"
                 height="100%"
               />
@@ -292,9 +292,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import { ElTree } from 'element-plus';
-import 'element-plus/es/components/tree/style/css';
+import { ref, reactive, onMounted, onUnmounted, computed, nextTick } from 'vue';
+import { Draggable, dragContext } from '@he-tree/vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getFileExt, getUserInfo } from '@utils';
@@ -315,75 +314,15 @@ import {
 } from '@api/code';
 
 const { FileIcons } = window;
-
-const reftree = ref(null);
 const toast = useToast();
+
 const dirs = ref([]);
 const list = ref([]);
-const current = ref({});
-const confirm = ref({});
-
-const editable = computed(() => {
-  return (item) => {
-    return (
-      item.type === 'file' &&
-      ['txt', 'md', 'json', 'html', 'css', 'js'].includes(getFileExt(item.name))
-    );
-  };
-});
-
-const isEditing = ref(false);
-const isModified = (option) => {
-  if (editable.value(current.value) && current.value.data != current.value.file) {
-    if (option.toast)
-      toast({
-        component: ToastificationContent,
-        props: {
-          variant: 'danger',
-          icon: 'mdi-alert',
-          text: i18n.global.t('layout.navbar.helper.code.modified'),
-        },
-      });
-    return true;
-  }
-  return false;
-};
-
-const keydownHandler = (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-    if (isModified({ toast: false })) handleSaveCode();
-    e.preventDefault();
-  }
-};
-
-onMounted(() => {
-  handleGetCodeDirs();
-  document.addEventListener('keydown', keydownHandler);
-});
-
-onUnmounted(() => {
-  document.removeEventListener('keydown', keydownHandler);
-});
-
 const handleGetCodeDirs = (callback) => {
-  if (isModified({ toast: true })) return;
   getCodeDirs().then(({ code, data, msg }) => {
     if (code === 200) {
       dirs.value = data.dirs;
       list.value = data.list;
-      if (!current.value.path) {
-        current.value.name = '';
-        current.value.path = '/';
-        current.value.type = 'directory';
-        current.value.children = tree.value;
-        current.value.data = JSON.stringify(
-          tree.value.map((i) => {
-            return `${i.type}:${i.path}`;
-          }),
-          null,
-          2,
-        );
-      }
       nextTick(() => {
         callback && callback();
       });
@@ -399,6 +338,25 @@ const handleGetCodeDirs = (callback) => {
     }
   });
 };
+
+const keydownHandler = (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    if (current.value?.data != current.value?.file) handleSaveCode();
+    e.preventDefault();
+  }
+};
+
+onMounted(() => {
+  handleGetCodeDirs();
+  document.addEventListener('keydown', keydownHandler);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', keydownHandler);
+});
+
+const treeRef = ref(null);
+const expandKeys = reactive([]);
 
 const tree = computed(() => {
   const pathToTree = (arr) => {
@@ -431,7 +389,8 @@ const tree = computed(() => {
           newNode.type = arr.find((item) => item.path === newNode.path)?.type || 'directory';
 
           if (newNode.type === 'file') {
-            switch (getFileExt(newNode.name)) {
+            let extension = getFileExt(newNode.name);
+            switch (extension) {
               case 'log':
                 newNode.language = 'log';
                 break;
@@ -475,6 +434,7 @@ const tree = computed(() => {
                 newNode.language = /.log(.\d{1,2})?$/.test(newNode.name) ? 'log' : 'plaintext';
                 break;
             }
+            newNode.editable = ['txt', 'md', 'json', 'html', 'css', 'js'].includes(extension);
           }
           currentNode.push(newNode);
           currentNode = newNode.children;
@@ -505,44 +465,45 @@ const tree = computed(() => {
   return sortTree(pathToTree(list.value));
 });
 
-const defaultExpandKeys = ref([]);
-const removeChildrenKeys = (data) => {
-  if (data.children) {
-    data.children.forEach((item) => {
-      const index = defaultExpandKeys.value.indexOf(item.path);
-      if (index != -1) defaultExpandKeys.value.splice(index, 1);
-      removeChildrenKeys(item);
-    });
-  }
-};
-const handleNodeToggle = (data, expanded) => {
-  if (expanded) {
-    if (!defaultExpandKeys.value.includes(data.path)) defaultExpandKeys.value.push(data.path);
-  } else {
-    const index = defaultExpandKeys.value.indexOf(data.path);
-    if (index != -1) defaultExpandKeys.value.splice(index, 1);
-  }
-  removeChildrenKeys(data);
+const statHandler = (stat) => {
+  stat.open = expandKeys.includes(stat.data.path);
+  return stat;
 };
 
-const allowDrop = (draggingNode, dropNode, type) => {
+const eachDraggable = (targetStat) => {
+  if (
+    current.value?.path?.startsWith(targetStat.data.path) &&
+    current.value?.data != current.value?.file
+  ) {
+    return false;
+  }
+  return targetStat.level > 2 && !targetStat.data.path.startsWith('logs');
+};
+
+const eachDroppable = (targetStat) => {
   return (
-    type === 'inner' &&
-    dropNode.data.type === 'directory' &&
-    dirs.value.some((item) => dropNode.data.path.startsWith(item)) &&
-    !dropNode.data.path.startsWith('logs') &&
-    !dropNode.data.children.some((item) => item.name === draggingNode.data.name)
+    targetStat.level >= 2 &&
+    !targetStat.data.path.startsWith('logs') &&
+    targetStat.data.type === 'directory' &&
+    !targetStat.data.children.some((item) => item.name === dragContext.dragNode.data.name)
   );
 };
 
-const allowDrag = (draggingNode) => {
-  return !dirs.value.includes(draggingNode.data.path) && !draggingNode.data.path.startsWith('logs');
+const handleBeforeDragStart = () => {
+  clearTimeout(timer);
 };
 
-const handleDropCode = (draggingNode, dropNode) => {
-  dropCode({ source: draggingNode.data, destination: dropNode.data.path }).then(({ code, msg }) => {
+const handleAfterDrop = () => {
+  let data = {
+    source: dragContext.dragNode.data,
+    destination: dragContext.dragNode.parent.data.path,
+  };
+  dropCode(data).then(({ code, msg }) => {
     if (code === 200) {
-      handleGetCodeDirs();
+      handleGetCodeDirs(() => {
+        let stat = treeRef.value.statsFlat.find((item) => item.data.path === data.destination);
+        treeRef.value.openNodeAndParents(stat);
+      });
     } else {
       toast({
         component: ToastificationContent,
@@ -557,75 +518,101 @@ const handleDropCode = (draggingNode, dropNode) => {
 };
 
 let timer = null;
-const handleClickPath = (e) => {
-  if (current.value.path != e.path && !e?.edit) {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      if (isModified({ toast: true })) return;
-      if (e.type === 'directory') {
-        current.value = JSON.parse(JSON.stringify(e));
-        current.value.data = JSON.stringify(
-          current.value.children?.map((child) => {
-            return `${child.type}:${child.path}`;
-          }) || [],
-          null,
-          2,
-        );
+const current = ref({});
+
+const handleClickPath = (node, stat) => {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    if (node.edit) return;
+    if (node.type === 'directory') {
+      // if (node.children?.length) stat.open = !stat.open;
+      stat.open = !stat.open;
+      if (stat.open) {
+        expandKeys.push(node.path);
       } else {
-        getCodeData({ path: e.path }).then(({ code, data, msg }) => {
-          if (code === 200) {
-            current.value = { ...data, ...JSON.parse(JSON.stringify(e)) };
-            document.getElementById('showCodeDataOffcanvasBtn').click();
-          } else {
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: msg,
-              },
-            });
-          }
-        });
+        const index = expandKeys.indexOf(node.path);
+        if (index > -1) expandKeys.splice(index, 1);
+        // treeRef.value.statsFlat
+        //   .filter((item) => item.data.path.startsWith(node.path))
+        //   .forEach((item) => {
+        //     item.open = false;
+        //     const index = expandKeys.indexOf(item.data.path);
+        //     if (index > -1) expandKeys.splice(index, 1);
+        //   });
       }
-    }, 200);
-  }
+    } else {
+      if (current.value.path != node.path) {
+        if (current.value?.path && current.value?.data != current.value?.file) {
+          toast({
+            component: ToastificationContent,
+            props: {
+              variant: 'danger',
+              icon: 'mdi-alert',
+              text: i18n.global.t('layout.navbar.helper.code.modified'),
+            },
+          });
+        } else {
+          getCodeData({ path: node.path }).then(({ code, data, msg }) => {
+            if (code === 200) {
+              current.value = { ...data, ...node };
+              document.getElementById('showCodeDataOffcanvasBtn').click();
+            } else {
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: msg,
+                },
+              });
+            }
+          });
+        }
+      }
+    }
+  }, 200);
 };
 
 const handleEditFileName = (node) => {
-  if (isModified({ toast: true })) return;
-  if (!(node.data.path.includes('/') && !node.data.path.startsWith('logs'))) return;
   clearTimeout(timer);
-  node.data._name = node.data.name;
-  node.data.edit = true;
-  isEditing.value = true;
+  if (!(node.path.includes('/') && !node.path.startsWith('logs'))) return;
+  if (current.value?.path?.startsWith(node.path) && current.value?.data != current.value?.file) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.code.modified'),
+      },
+    });
+    return;
+  }
+  node._name = node.name;
+  node.edit = true;
   nextTick(() => document.getElementById('node_edit').focus());
 };
 
-const handleSaveFileName = (node) => {
-  node.data.name = node.data.name.trim();
-  node.data._path = node.parent.key ? `${node.parent.key}/${node.data.name}` : node.data.name;
+const handleSaveFileName = (node, stat) => {
+  node.name = node.name.trim();
+  node._path = stat?.parent?.data?.path ? `${stat.parent.data.path}/${node.name}` : node.name;
 
   if (
-    !node.data.name ||
-    node.data.name === node.data._name ||
-    (dirs.value.includes(node.data.path) && !node.data.name.startsWith(`${node.data._name}/`))
+    !node.name ||
+    node.name === node._name ||
+    (dirs.value.includes(node.path) && !node.name.startsWith(`${node._name}/`))
   ) {
-    node.data.name = node.data._name;
-    delete node.data._name;
-    delete node.data.edit;
-    isEditing.value = false;
+    node.name = node._name;
+    delete node._name;
+    delete node.edit;
     return;
   }
 
   if (
-    node.data._path.includes('/node_modules/') ||
-    node.data._path.endsWith('/node_modules') ||
-    (node.data.type === 'file' && node.data.name.includes('/')) ||
-    (((node.data.type === 'directory' && node.data.name.includes('/')) ||
-      dirs.value.includes(node.data.path)) &&
-      (node.data.name === `${node.data._name}/` ||
-        !node.data.name.startsWith(`${node.data._name}/`)))
+    node._path.includes('/node_modules/') ||
+    node._path.endsWith('/node_modules') ||
+    (node.type === 'file' && node.name.includes('/')) ||
+    (((node.type === 'directory' && node.name.includes('/')) || dirs.value.includes(node.path)) &&
+      (node.name === `${node._name}/` || !node.name.startsWith(`${node._name}/`)))
   ) {
     toast({
       component: ToastificationContent,
@@ -635,14 +622,13 @@ const handleSaveFileName = (node) => {
         text: i18n.global.t('layout.navbar.helper.code.name.illegal'),
       },
     });
-    isEditing.value = true;
     nextTick(() => document.getElementById('node_edit').focus());
     return;
   }
 
   if (
-    list.value.find((item) => item.path === node.data._path) ||
-    list.value.find((item) => item.type === 'file' && node.data._path.includes(`${item.path}/`))
+    list.value.find((item) => item.path === node._path) ||
+    list.value.find((item) => item.type === 'file' && node._path.includes(`${item.path}/`))
   ) {
     toast({
       component: ToastificationContent,
@@ -652,32 +638,31 @@ const handleSaveFileName = (node) => {
         text: i18n.global.t('layout.navbar.helper.code.name.duplicate'),
       },
     });
-    isEditing.value = true;
     nextTick(() => document.getElementById('node_edit').focus());
     return;
   }
 
-  if (node.data.name.includes('/')) {
+  if (node.name.includes('/')) {
     const data = {
-      type: node.data.name.endsWith('/') ? 'directory' : 'file',
-      name: (node.data.name.endsWith('/') ? node.data.name.slice(0, -1) : node.data.name).replace(
-        `${node.data._name}/`,
+      type: node.name.endsWith('/') ? 'directory' : 'file',
+      name: (node.name.endsWith('/') ? node.name.slice(0, -1) : node.name).replace(
+        `${node._name}/`,
         '',
       ),
-      path: node.data.path,
+      path: node.path,
     };
     createCode(data).then((res) => {
       if (res.code === 200) {
-        delete node.data._name;
-        delete node.data.edit;
-        isEditing.value = false;
+        delete node._name;
+        delete node.edit;
+        if (!stat.open) {
+          stat.open = true;
+          expandKeys.push(node.path);
+        }
         handleGetCodeDirs(() => {
-          nextTick(() => {
-            const NODE = reftree.value.getNode(res.data.path);
-            handleClickPath(NODE.data);
-            reftree.value.setCurrentKey(NODE.data.path);
-            reftree.value.store.nodesMap[NODE.data.path].expanded = true;
-          });
+          let stat = treeRef.value.statsFlat.find((item) => item.data.path === res.data.path);
+          treeRef.value.openNodeAndParents(stat);
+          handleClickPath(stat.data, stat);
         });
       } else {
         toast({
@@ -692,22 +677,14 @@ const handleSaveFileName = (node) => {
     });
   } else {
     const data = {
-      old: node.data.path,
-      new: node.data._path,
+      old: node.path,
+      new: node._path,
     };
     renameCode(data).then((res) => {
       if (res.code === 200) {
-        delete node.data._name;
-        delete node.data.edit;
-        isEditing.value = false;
-        handleGetCodeDirs(() => {
-          nextTick(() => {
-            const NODE = reftree.value.getNode(data.new);
-            handleClickPath(NODE.data);
-            reftree.value.setCurrentKey(NODE.data.path);
-            reftree.value.store.nodesMap[NODE.data.path].expanded = true;
-          });
-        });
+        delete node._name;
+        delete node.edit;
+        handleGetCodeDirs();
       } else {
         toast({
           component: ToastificationContent,
@@ -723,10 +700,12 @@ const handleSaveFileName = (node) => {
 };
 
 const folder = ref(null);
+
 const handleUpload = (node) => {
-  folder.value = node.data.path;
+  folder.value = node.path;
   document.getElementById('code-file-input').click();
 };
+
 const handleFileInput = (e) => {
   toast({
     component: ToastificationContent,
@@ -745,7 +724,10 @@ const handleFileInput = (e) => {
     toast.clear();
     if (code === 200) {
       e.target.value = null;
-      handleGetCodeDirs();
+      handleGetCodeDirs(() => {
+        let stat = treeRef.value.statsFlat.find((item) => item.data.path === folder.value);
+        treeRef.value.openNodeAndParents(stat);
+      });
       toast({
         component: ToastificationContent,
         props: {
@@ -768,7 +750,8 @@ const handleFileInput = (e) => {
 };
 
 const installing = ref(null);
-const handleInstallPackage = (node) => {
+
+const handleInstallPackage = (node, stat) => {
   if (installing.value) return;
   toast({
     component: ToastificationContent,
@@ -779,7 +762,7 @@ const handleInstallPackage = (node) => {
     },
   });
   installing.value = node.key;
-  installPackage({ path: node.parent.data.path }).then(async ({ code, msg }) => {
+  installPackage({ path: stat.parent.data.path }).then(async ({ code, msg }) => {
     installing.value = null;
     handleGetCodeDirs();
     toast.clear();
@@ -805,9 +788,10 @@ const handleInstallPackage = (node) => {
   });
 };
 
+const confirm = ref({});
+
 const handleDeleteConfirm = (node) => {
-  if (isModified({ toast: true })) return;
-  confirm.value = node.data;
+  confirm.value = node;
   document.getElementById('showConfirmDeleteFileOrDirectoryModalBtn').click();
 };
 
@@ -829,8 +813,10 @@ const handleDelete = () => {
 };
 
 const handleSaveCode = () => {
-  saveCode({ path: current.value.path, data: current.value.data }).then(({ code, msg }) => {
+  saveCode({ path: current.value.path, data: current.value.data }).then(({ code, data, msg }) => {
     if (code === 200) {
+      if (data.refresh) handleGetCodeDirs();
+      console.log(current.value);
       document.getElementById('hideCodeDiffModalBtn').click();
       current.value.file = current.value.data;
       toast({

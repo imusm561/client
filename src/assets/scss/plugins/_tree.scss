@@ -2,6 +2,42 @@
 // tree.scss
 //
 
+.tree-node {
+  background-color: $card-bg !important;
+  .tree-node-inner {
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 14px;
+    padding-right: 10px;
+
+    // .tree-node-info {
+    // }
+
+    .tree-node-actions {
+      display: none;
+    }
+
+    &:hover {
+      .tree-node-actions {
+        display: flex;
+      }
+    }
+
+    input {
+      height: 23px !important;
+      padding: 0.2rem;
+      font-size: 14px;
+    }
+  }
+}
+
+.tree-node:hover {
+  background-color: $dropdown-link-hover-bg !important;
+}
+
 .el-tree {
   background-color: $card-bg !important;
   --el-tree-node-hover-bg-color: $dropdown-link-hover-bg !important;

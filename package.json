@@ -39,6 +39,7 @@
     "@fullcalendar/list": "^5.10.1",
     "@fullcalendar/timegrid": "^5.10.1",
     "@fullcalendar/vue3": "^5.10.1",
+    "@he-tree/vue": "^2.8.2",
     "ag-grid-community": "^31.1.1",
     "ag-grid-enterprise": "^31.1.1",
     "ag-grid-vue3": "^31.1.1",

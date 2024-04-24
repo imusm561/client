@@ -921,6 +921,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@^7.7.7":
+  version "7.24.4"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.24.4.tgz#de795accd698007a66ba44add6cc86542aff1edd"
+  integrity sha512-dkxf7+hn8mFBwKjs9bvBlArzLVxVbS8usaPUDd5p2a9JCL9tB8OaOVN1isD4+Xyk4ns89/xeOmbQvgdK7IIVdA==
+  dependencies:
+    regenerator-runtime "^0.14.0"
+
 "@babel/template@^7.0.0", "@babel/template@^7.18.6":
   version "7.18.6"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.18.6.tgz#1283f4993e00b929d6e2d3c72fdc9168a2977a31"
@@ -1403,6 +1410,35 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
+"@he-tree/dnd-utils@latest":
+  version "0.1.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@he-tree/dnd-utils/-/dnd-utils-0.1.0-alpha.4.tgz#7438684dba7b69abc5f8b1aa386a910d9091cf7a"
+  integrity sha512-DuxkFOQ8eztoHrX1/VelqOnQphQbRszemfMKSKlAEEhVjqR/IkaOE2QSRlAdj6OC6AfMvHDPvIZOiEPFwP6/ZQ==
+  dependencies:
+    "@babel/runtime" "^7.7.7"
+    drag-event-service "^2.0.0"
+    helper-js "^3.1.2"
+
+"@he-tree/tree-utils@^0.1.0-alpha.4":
+  version "0.1.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@he-tree/tree-utils/-/tree-utils-0.1.0-alpha.4.tgz#20e6ada715da2de83aef4b008ff156a13f98d92f"
+  integrity sha512-Ak1PcxgNUFc58RXlg3UDYe1cij+n2HjdGeALnAhIkP8rIzvL8q545nWMtUFRv/XbqTCeShvk7nkD97hRnB8fMg==
+  dependencies:
+    "@babel/runtime" "^7.7.7"
+    drag-event-service "^2.0.0"
+    helper-js "^3.1.2"
+
+"@he-tree/vue@^2.8.2":
+  version "2.8.2"
+  resolved "https://registry.yarnpkg.com/@he-tree/vue/-/vue-2.8.2.tgz#a9aebeba1844642783f1a5ce2431210c39028482"
+  integrity sha512-689yynjftoqnXERlfigRT3kTn1MTwuVygOSRtKq9BRFQykoRFrz0xiozbVVX1so5pOwim5XfsB5aZo9fHlKmUA==
+  dependencies:
+    "@he-tree/dnd-utils" latest
+    "@he-tree/tree-utils" "^0.1.0-alpha.4"
+    "@virtual-list/vue" "^1.2.0"
+    helper-js "^3.1.2"
+    vue-demi latest
+
 "@intervolga/optimize-cssnano-plugin@^1.0.5":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@intervolga/optimize-cssnano-plugin/-/optimize-cssnano-plugin-1.0.6.tgz#be7c7846128b88f6a9b1d1261a0ad06eb5c0fdf8"
@@ -1775,6 +1811,14 @@
     "@types/webpack-sources" "*"
     anymatch "^3.0.0"
     source-map "^0.6.0"
+
+"@virtual-list/vue@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@virtual-list/vue/-/vue-1.2.0.tgz#f0e1f6a5b97034e047b5812afb7d3c40838a894f"
+  integrity sha512-sTWCJAIU6NoRWU+6Nzw6TDJcwxnFgK3NmwGu4iDgV6Nhh/iaCEZDDhmChTV+CoXbShLfsgasQRhaVyC7SmkDDg==
+  dependencies:
+    helper-js "^3.1.0"
+    vue-demi latest
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.2.1":
   version "1.2.1"
@@ -4377,6 +4421,14 @@ dotenv@^8.2.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.6.0.tgz#061af664d19f7f4d8fc6e4ff9b584ce237adcb8b"
   integrity sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==
 
+drag-event-service@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/drag-event-service/-/drag-event-service-2.0.0.tgz#7e9fd5beacdf9c3e7c502c717164a4fc284a696f"
+  integrity sha512-JVEnOEbbNDS3RrWd+tVVIDu2SHQZ9luhEFGSQ1hXMjl+ABw0PxhHmnkGjzPVE836Tsg+k7rkm5GM9Ln/UgbYpA==
+  dependencies:
+    "@babel/runtime" "^7.7.7"
+    helper-js "^3.0.0"
+
 duplexer@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.2.tgz#3abe43aef3835f8ae077d136ddce0f276b0400e6"
@@ -5636,6 +5688,13 @@ he@1.2.x:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
+
+helper-js@^3.0.0, helper-js@^3.1.0, helper-js@^3.1.2:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/helper-js/-/helper-js-3.1.5.tgz#ab81bbe99bd9807d00a9293060354c150707c2f2"
+  integrity sha512-CQ56onWqmWwJRUK55/aJ6EeJUV/eqoRiayG6bk2i0Bhs79U94M+aRdA2QLOUGXp/Hy5yAos+YQK1LQHRWiSOHw==
+  dependencies:
+    "@babel/runtime" "^7.7.7"
 
 hex-color-regex@^1.1.0:
   version "1.1.0"
@@ -8685,6 +8744,11 @@ regenerator-runtime@^0.13.4:
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.9.tgz#8925742a98ffd90814988d7566ad30ca3b263b52"
   integrity sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==
 
+regenerator-runtime@^0.14.0:
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.14.1.tgz#356ade10263f685dda125100cd862c1db895327f"
+  integrity sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==
+
 regenerator-transform@^0.15.0:
   version "0.15.0"
   resolved "https://registry.yarnpkg.com/regenerator-transform/-/regenerator-transform-0.15.0.tgz#cbd9ead5d77fae1a48d957cf889ad0586adb6537"
@@ -10388,6 +10452,11 @@ vue-demi@*:
   version "0.13.4"
   resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.13.4.tgz#fcb320892d78d3a7ec227024776f77d9a5c4831d"
   integrity sha512-KP4lq9uSz0KZbaqCllRhnxMV3mYRsRWJfdsAhZyt5bV5O1RTpoeDptBRV9NOa/JgOpfaA9ane88VF7OjWNK/DA==
+
+vue-demi@latest:
+  version "0.14.7"
+  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.7.tgz#8317536b3ef74c5b09f268f7782e70194567d8f2"
+  integrity sha512-EOG8KXDQNwkJILkx/gPcoL/7vH+hORoBaKgGe+6W7VFMvCYJfmF2dGbvgDroVnI8LU7/kTu8mbjRZGBU1z9NTA==
 
 vue-draggable-next@^2.1.1:
   version "2.1.1"
