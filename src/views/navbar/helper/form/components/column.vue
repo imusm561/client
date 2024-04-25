@@ -13,7 +13,7 @@
                   <i :class="`mdi ${item.icon}`" />
                   {{ $t(item.title) }}
                 </h5>
-                <Draggable
+                <VueDraggableNext
                   class="row"
                   :list="item.list"
                   :group="{ name: 'component', pull: 'clone', put: false }"
@@ -25,7 +25,7 @@
                       {{ $t(component.name) }}
                     </div>
                   </div>
-                </Draggable>
+                </VueDraggableNext>
               </div>
             </div>
           </div>
@@ -76,7 +76,7 @@
               </div>
             </div>
           </div>
-          <Draggable
+          <VueDraggableNext
             class="row mt-2"
             :style="{ height: columns.length === 0 ? '100px' : 'auto' }"
             :list="columns"
@@ -147,7 +147,7 @@
                 <component :is="column.component" :column="column" type="DESIGN"></component>
               </div>
             </div>
-          </Draggable>
+          </VueDraggableNext>
           <Empty
             v-if="columns.length === 0"
             :text="$t('layout.navbar.helper.form.column.components.empty')"
@@ -224,7 +224,7 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { VueDraggableNext as Draggable } from 'vue-draggable-next';
+import { VueDraggableNext } from 'vue-draggable-next';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getChanges, copyToClipboard, pasteFromClipboard, getUserInfo } from '@utils';

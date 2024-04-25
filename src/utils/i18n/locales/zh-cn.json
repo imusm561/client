@@ -214,7 +214,6 @@
 
   "layout.navbar.helper.form": "表单设计",
   "layout.navbar.helper.forms": "表单",
-  "layout.navbar.helper.forms.empty": "暂无表单",
   "layout.navbar.helper.form.create": "由{user}创建于{time}",
   "layout.navbar.helper.form.update": "由{user}更新于{time}",
   "layout.navbar.helper.form.copy": "复制",

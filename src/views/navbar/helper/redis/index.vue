@@ -40,7 +40,9 @@
                 <span class="tree-node-actions">
                   <i
                     class="fs-16 text-danger mdi mdi-delete-outline ms-1"
-                    @click="handleDeleteConfirm(node)"
+                    @click="confirm = node"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmDeleteKeyModal"
                   ></i>
                 </span>
               </template>
@@ -93,12 +95,6 @@
       </div>
     </div>
 
-    <button
-      id="showConfirmDeleteKeyModalBtn"
-      class="d-none"
-      data-bs-toggle="modal"
-      data-bs-target="#confirmDeleteKeyModal"
-    ></button>
     <div
       class="modal fade"
       id="confirmDeleteKeyModal"
@@ -278,11 +274,6 @@ const handleClickKey = (node, stat) => {
 };
 
 const confirm = ref({});
-const handleDeleteConfirm = (node) => {
-  confirm.value = node;
-  document.getElementById('showConfirmDeleteKeyModalBtn').click();
-};
-
 const handleDelKey = () => {
   delKey({
     key: confirm.value.key,

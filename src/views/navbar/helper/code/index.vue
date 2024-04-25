@@ -83,7 +83,9 @@
                   <i
                     v-if="!dirs.includes(node.path)"
                     class="fs-16 text-danger mdi mdi-delete-outline ms-1"
-                    @click="handleDeleteConfirm(node)"
+                    @click="confirm = node"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmDeleteFileOrDirectoryModal"
                   ></i>
                 </span>
               </template>
@@ -223,12 +225,6 @@
       </div>
     </div>
 
-    <button
-      id="showConfirmDeleteFileOrDirectoryModalBtn"
-      class="d-none"
-      data-bs-toggle="modal"
-      data-bs-target="#confirmDeleteFileOrDirectoryModal"
-    ></button>
     <div
       class="modal fade"
       id="confirmDeleteFileOrDirectoryModal"
@@ -787,12 +783,6 @@ const handleInstallPackage = (node, stat) => {
 };
 
 const confirm = ref({});
-
-const handleDeleteConfirm = (node) => {
-  confirm.value = node;
-  document.getElementById('showConfirmDeleteFileOrDirectoryModalBtn').click();
-};
-
 const handleDelete = () => {
   deleteCode({ type: confirm.value.type, path: confirm.value.path }).then(({ code, msg }) => {
     if (code === 200) {

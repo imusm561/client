@@ -11,56 +11,70 @@
                 @click.stop="handleAddForm()"
               ></i>
             </div>
-            <el-tree
-              :data="tree"
-              node-key="id"
-              :empty-text="$t('layout.navbar.helper.forms.empty')"
-              :default-expanded-keys="default_expanded_keys"
-              :draggable="!isModified(['form', 'columns'])"
-              :expand-on-click-node="false"
-              @node-click="handleSelectForm"
-              @node-drop="handleDropForm"
+            <Draggable
+              ref="treeRef"
+              v-model="tree"
+              :defaultOpen="false"
+              nodeKey="id"
+              :statHandler="statHandler"
+              :disableDrag="formChanged || columnChanged"
+              :keepPlaceholder="true"
+              :dragOpenDelay="1000"
+              @before-drag-start="handleBeforeDragStart"
+              @after-drop="handleAfterDrop"
             >
-              <template #default="{ node }">
+              <template #default="{ node, stat }">
                 <span
-                  class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2 text-truncate"
+                  class="tree-node-info align-items-center d-flex text-truncate w-100"
+                  @click="handleClickForm(node, stat)"
+                  :title="node.path"
                 >
-                  <span class="tree-node-label text-truncate">
-                    <input
-                      id="node_edit"
-                      v-if="node.data.edit"
-                      type="text"
-                      class="form-control form-control-sm"
-                      v-model="node.data.title"
-                      @keyup.enter="$event.target.blur()"
-                      @blur="handleSaveFormTitle(node)"
-                    />
-                    <span v-else @dblclick="handleEditFormTitle(node)">
-                      <i :class="['mdi me-1', node.data.icon || 'mdi-circle-medium']"></i>
-                      {{ node.data.title }}
-                    </span>
-                  </span>
-                  <span v-if="!node.data.edit" class="tree-node-actions ms-3">
-                    <i
-                      class="cursor-pointer fs-16 text-primary mdi mdi-plus-box-outline"
-                      @click.stop="handleAddForm(node)"
-                    ></i>
-                    <i
-                      v-if="!node.data.children"
-                      class="cursor-pointer fs-16 text-success mdi mdi-mdi mdi-content-copy"
-                      @click.stop="handleCopyForm(node)"
-                    ></i>
-                    <i
-                      v-if="!node.data.children"
-                      class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline"
-                      @click.stop="handleConfirmDelForm(node)"
-                      data-bs-toggle="modal"
-                      data-bs-target="#confirmDeleteFormDataModal"
-                    ></i>
+                  <i
+                    :style="{ marginRight: node.edit ? '0.8px' : '5px' }"
+                    class="mdi"
+                    :class="{
+                      'mdi-folder-open-outline': stat.open,
+                      'mdi-folder-outline': !stat.open,
+                      'opacity-0': !node.children,
+                    }"
+                  />
+                  <i
+                    :style="node.edit && 'margin-left: 4px; margin-right: 0px!important'"
+                    :class="['mdi me-1', node.icon || 'mdi-circle-medium']"
+                  ></i>
+                  <input
+                    v-if="node.edit"
+                    id="node_edit"
+                    type="text"
+                    class="form-control w-100 me-2"
+                    v-model="node.title"
+                    @keyup.enter="$event.target.blur()"
+                    @blur="handleSaveFormTitle(node, stat)"
+                  />
+                  <span v-else class="w-100 text-truncate" @dblclick="handleEditFormTitle(node)">
+                    {{ node.title }}
                   </span>
                 </span>
+                <span class="tree-node-actions" v-if="!node.edit">
+                  <i
+                    class="fs-16 text-primary mdi mdi-plus-box-outline"
+                    @click="handleAddForm(stat)"
+                  ></i>
+                  <i
+                    v-if="!node.children"
+                    class="fs-16 text-success mdi mdi-mdi mdi-content-copy"
+                    @click="handleCopyForm(node)"
+                  ></i>
+                  <i
+                    v-if="!node.children"
+                    class="fs-16 text-danger mdi mdi-delete-outline"
+                    @click="delete_form = node"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmDeleteFormDataModal"
+                  ></i>
+                </span>
               </template>
-            </el-tree>
+            </Draggable>
           </div>
         </div>
 
@@ -94,7 +108,7 @@
             </div>
             <div class="flex-shrink-0">
               <button
-                v-if="isModified(['form'])"
+                v-if="formChanged"
                 type="button"
                 class="btn btn-sm btn-soft-secondary btn-icon waves-effect waves-light ms-1"
                 @click="handleSaveFormInfo"
@@ -102,7 +116,7 @@
                 <i class="fs-20 mdi mdi-content-save"></i>
               </button>
               <button
-                v-if="isModified(['form'])"
+                v-if="formChanged"
                 type="button"
                 class="btn btn-sm btn-soft-success btn-icon waves-effect waves-light ms-1"
                 @click="handleRestoreFormInfo"
@@ -111,7 +125,7 @@
               </button>
               <button
                 type="button"
-                v-if="!isParentOrHasRedirect(current_form)"
+                v-if="!(current_form.redirect || current_form.children)"
                 class="btn btn-sm btn-soft-primary btn-icon waves-effect waves-light ms-1"
                 data-bs-toggle="modal"
                 data-bs-target="#confirmBackupFormDataModal"
@@ -120,7 +134,7 @@
               </button>
               <button
                 type="button"
-                v-if="!isParentOrHasRedirect(current_form)"
+                v-if="!(current_form.redirect || current_form.children)"
                 class="btn btn-sm btn-soft-danger btn-icon waves-effect waves-light ms-1"
                 data-bs-toggle="modal"
                 data-bs-target="#confirmTruncateFormDataModal"
@@ -133,7 +147,7 @@
           <div class="mt-2">
             <ul
               class="nav nav-tabs nav-tabs-custom nav-secondary nav-justified mb-3"
-              v-if="!isParentOrHasRedirect(current_form)"
+              v-if="!(current_form.redirect || current_form.children)"
             >
               <li class="nav-item">
                 <a
@@ -286,7 +300,7 @@
                       <input
                         type="text"
                         class="form-control"
-                        :disabled="!!current_form.is_parent"
+                        :disabled="current_form.children"
                         :placeholder="$t('layout.navbar.helper.form.tab.basicInfo.redirect')"
                         v-model="current_form.redirect"
                       />
@@ -300,7 +314,7 @@
                       <input
                         type="text"
                         class="form-control"
-                        :disabled="!!current_form.is_parent"
+                        :disabled="current_form.children"
                         :placeholder="$t('layout.navbar.helper.form.tab.basicInfo.alias')"
                         v-model="current_form.alias"
                         @dblclick="
@@ -347,7 +361,7 @@
                       </label>
                       <UserSelector
                         v-model="current_form.acl_view"
-                        :disabled="isParentOrHasRedirect(current_form)"
+                        :disabled="current_form.redirect || current_form.children"
                         :placeholder="
                           $t('layout.navbar.helper.form.tab.basicInfo.aclView.placeholder')
                         "
@@ -361,7 +375,7 @@
                       </label>
                       <UserSelector
                         v-model="current_form.acl_edit"
-                        :disabled="isParentOrHasRedirect(current_form)"
+                        :disabled="current_form.redirect || current_form.children"
                         :placeholder="
                           $t('layout.navbar.helper.form.tab.basicInfo.aclEdit.placeholder')
                         "
@@ -375,7 +389,7 @@
                       </label>
                       <CKEditor
                         v-model="current_form.description"
-                        :disabled="isParentOrHasRedirect(current_form)"
+                        :disabled="current_form.redirect || current_form.children"
                       />
                     </div>
                   </div>
@@ -471,7 +485,7 @@
                 :key="`approval_flow_${current_form.id}`"
               >
                 <ul class="list-group">
-                  <Draggable
+                  <VueDraggableNext
                     class="accordion accordion-flush"
                     id="accordionFlushFlow"
                     :list="current_form.flow"
@@ -681,7 +695,7 @@
                         </div>
                       </div>
                     </li>
-                  </Draggable>
+                  </VueDraggableNext>
                 </ul>
               </div>
             </div>
@@ -1106,11 +1120,10 @@
 <script setup>
 import { computed, onMounted, ref, reactive, watch, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
-import { VueDraggableNext as Draggable } from 'vue-draggable-next';
+import { VueDraggableNext } from 'vue-draggable-next';
 import QRCode from 'qrcodejs2';
 import { pinyin } from 'pinyin-pro';
-import { ElTree } from 'element-plus';
-import 'element-plus/es/components/tree/style/css';
+import { Draggable, dragContext } from '@he-tree/vue';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -1134,10 +1147,18 @@ import { getUserData } from '@api/user';
 
 // eslint-disable-next-line
 const props = defineProps({
-  columnsChanged: {
+  columnChanged: {
     type: Boolean,
     default: () => false,
   },
+});
+
+const formChanged = computed(() => {
+  return Object.keys(changes.value).length;
+});
+
+const columnChanged = computed(() => {
+  return props.columnChanged;
 });
 
 // eslint-disable-next-line
@@ -1147,44 +1168,15 @@ const router = useRouter();
 const toast = useToast();
 
 const forms = ref([]);
-const current_form = ref({});
-const current_tab = ref('basic_info');
-const delete_form = ref({});
-const default_expanded_keys = ref([]);
-const pubs = ref([]);
-const current_pub = ref({});
-
-const changes = ref({});
-
-watch(
-  () => current_form.value,
-  (newVal, oldVal) => {
-    emits('setForm', current_form.value);
-    if (newVal?.id && newVal.id !== oldVal?.id) {
-      current_tab.value = 'basic_info';
-      default_expanded_keys.value = [current_form.value.id, current_form.value.pid];
-      if (!isParentOrHasRedirect(current_form.value)) fetchPubs(newVal.id);
-    }
-    const server_form = forms.value.find((form) => form.id === newVal.id);
-    changes.value = getChanges(newVal, server_form);
-    delete changes.value.is_parent;
-  },
-  { immediate: true, deep: true },
-);
-
 const fetchForms = (id) => {
   getForms().then(({ code, data, msg }) => {
     if (code === 200) {
       forms.value = data;
       if (id || current_form.value.id) {
         current_form.value = {
-          ...JSON.parse(
-            JSON.stringify(forms.value.find((form) => form.id === (id || current_form.value.id))),
-          ),
-          ...{
-            is_parent:
-              forms.value.filter((form) => form.pid === (id || current_form.value.id)).length != 0,
-          },
+          ...(treeRef.value.statsFlat.find((stat) => stat.data.id === (id || current_form.value.id))
+            ?.data || {}),
+          ...forms.value.find((form) => form.id === (id || current_form.value.id)),
         };
         randerVsUsers();
       }
@@ -1201,6 +1193,7 @@ const fetchForms = (id) => {
   });
 };
 
+const pubs = ref([]);
 const fetchPubs = (tid) => {
   getPubs({ tid }).then(({ code, data, msg }) => {
     if (code === 200) {
@@ -1222,164 +1215,38 @@ onMounted(() => {
   fetchForms();
 });
 
+const treeRef = ref(null);
+const expandKeys = reactive([]);
 const tree = computed(() => {
   return listToTree(JSON.parse(JSON.stringify(forms.value)));
 });
 
-let timer = null;
-
-const isModified = (items, notify = false) => {
-  if (Object.keys(changes.value).length && items.includes('form')) {
-    if (notify)
-      toast({
-        component: ToastificationContent,
-        props: {
-          variant: 'danger',
-          icon: 'mdi-alert',
-          text: i18n.global.t('layout.navbar.helper.form.modified'),
-        },
-      });
-    return true;
-  }
-  if (props.columnsChanged && items.includes('columns')) {
-    if (notify)
-      toast({
-        component: ToastificationContent,
-        props: {
-          variant: 'danger',
-          icon: 'mdi-alert',
-          text: i18n.global.t('layout.navbar.helper.form.column.modified'),
-        },
-      });
-    return true;
-  }
-  return false;
+const statHandler = (stat) => {
+  stat.open = expandKeys.includes(stat.data.id);
+  return stat;
 };
 
-const isParentOrHasRedirect = (form) => {
-  return !!form.redirect || !!form.is_parent;
-};
-
-const handleSelectForm = (node) => {
+const handleBeforeDragStart = () => {
   clearTimeout(timer);
-  timer = setTimeout(() => {
-    if (current_form.value.id !== node.id) {
-      if (isModified(['form', 'columns'], true)) return;
-      current_form.value = {
-        ...JSON.parse(JSON.stringify(forms.value.find((form) => form.id === node.id))),
-        ...{ is_parent: forms.value.filter((form) => form.pid === node.id).length != 0 },
-      };
-      randerVsUsers();
-    }
-  }, 200);
 };
 
-const handleAddForm = (node) => {
-  if (isModified(['form', 'columns'], true)) return;
-  if (node) {
-    const child = { pid: node.data.id, title: '', title_old: '', edit: true };
-    if (!node.data.children) node.data.children = [];
-    node.data.children.push(child);
-    node.expanded = true;
-    nextTick(() => document.getElementById('node_edit').focus());
-  } else {
-    createForm({ pid: 0 }).then(({ code, data, msg }) => {
-      if (code === 200) {
-        fetchForms(data.id);
-        getUserData();
-      } else {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: msg,
-          },
-        });
-      }
-    });
-  }
-};
-
-const handleEditFormTitle = (node) => {
-  clearTimeout(timer);
-  if (isModified(['form'], true)) return;
-  node.data.title_old = node.data.title;
-  node.data.edit = true;
-  nextTick(() => document.getElementById('node_edit').focus());
-};
-
-const handleSaveFormTitle = (node) => {
-  node.data.title = node.data.title.trim();
-  if (!node.data.title) node.data.title = node.data.title_old;
-  if (node.data.id) {
-    if (node.data.title != node.data.title_old) {
-      updateForm({
-        id: node.data.id,
-        title: node.data.title,
-      }).then(({ code, msg }) => {
-        if (code === 200) {
-          fetchForms(node.data.id);
-          getUserData();
-          node.data.edit = false;
-        } else {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: msg,
-            },
-          });
-        }
-      });
-    } else {
-      node.data.edit = false;
-    }
-  } else {
-    node.data.edit = false;
-    createForm(node.data).then(({ code, data, msg }) => {
-      if (code === 200) {
-        fetchForms(data.id);
-        getUserData();
-      } else {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: msg,
-          },
-        });
-      }
-    });
-  }
-};
-
-const handleDropForm = (draggingNode, dropNode, type) => {
+const handleAfterDrop = () => {
   const updates = [];
-  if (type == 'inner') {
-    dropNode.childNodes.forEach((node, index) => {
-      const update = { id: node.data.id, pid: dropNode.data.id, sort: index + 1 };
-      const origin = forms.value.find((form) => form.id === update.id);
-      if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
-    });
-  } else if (dropNode.parent.level === 0) {
-    dropNode.parent.childNodes.forEach((node, index) => {
-      const update = { id: node.data.id, pid: 0, sort: index + 1 };
-      const origin = forms.value.find((form) => form.id === update.id);
-      if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
-    });
-  } else {
-    dropNode.parent.childNodes.forEach((node, index) => {
-      const update = { id: node.data.id, pid: dropNode.parent.data.id, sort: index + 1 };
-      const origin = forms.value.find((form) => form.id === update.id);
-      if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
-    });
-  }
+  const parent = dragContext.dragNode.parent?.data || { id: 0, children: treeRef.value.getData() };
+
+  parent.children.forEach((child, index) => {
+    const update = {
+      id: child.id,
+      pid: parent.id,
+      sort: index + 1,
+    };
+    const origin = forms.value.find((form) => form.id === update.id);
+    if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
+  });
+
   dropForm({ forms: updates }).then(({ code, msg }) => {
     if (code === 200) {
-      fetchForms(draggingNode.data.id);
+      fetchForms();
       getUserData();
     } else {
       toast({
@@ -1394,8 +1261,190 @@ const handleDropForm = (draggingNode, dropNode, type) => {
   });
 };
 
+let timer = null;
+const current_form = ref({});
+const current_tab = ref('basic_info');
+const changes = ref({});
+watch(
+  () => current_form.value,
+  (newVal, oldVal) => {
+    if (newVal.id) {
+      if (newVal.id !== oldVal.id) {
+        emits('setForm', current_form.value);
+        current_tab.value = 'basic_info';
+        if (!(current_form.value.redirect || current_form.value.children)) {
+          fetchPubs(current_form.value.id);
+        }
+      }
+      const server_form = forms.value.find((form) => form.id === current_form.value.id) || {};
+      changes.value = getChanges(
+        { ...current_form.value, ...{ children: undefined } },
+        server_form,
+      );
+    } else {
+      changes.value = {};
+    }
+  },
+  { deep: true },
+);
+
+const handleClickForm = (node, stat) => {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    if (node.edit) return;
+    let setCurrentForm = true;
+    if (node.children) {
+      stat.open = !stat.open;
+      if (stat.open) {
+        expandKeys.push(node.id);
+      } else {
+        setCurrentForm = false;
+        const index = expandKeys.indexOf(node.id);
+        if (index > -1) expandKeys.splice(index, 1);
+      }
+    }
+    if (setCurrentForm && current_form.value.id !== node.id) {
+      if (formChanged.value) {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: i18n.global.t('layout.navbar.helper.form.modified'),
+          },
+        });
+        return;
+      }
+      if (columnChanged.value) {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: i18n.global.t('layout.navbar.helper.form.column.modified'),
+          },
+        });
+        return;
+      }
+
+      current_form.value = {
+        ...treeRef.value.statsFlat.find((stat) => stat.data.id === node.id).data,
+      };
+      randerVsUsers();
+    }
+  }, 200);
+};
+
+const handleEditFormTitle = (node) => {
+  clearTimeout(timer);
+  if (formChanged.value) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.form.modified'),
+      },
+    });
+    return;
+  }
+  node._title = node.title;
+  node.edit = true;
+  nextTick(() => document.getElementById('node_edit').focus());
+};
+
+const handleSaveFormTitle = (node) => {
+  node.title = node.title.trim();
+
+  if (node.id && (!node.title || node.title === node._title)) {
+    node.title = node._title;
+    delete node._title;
+    delete node.edit;
+    return;
+  }
+
+  if (node.id) {
+    updateForm({
+      id: node.id,
+      title: node.title,
+    }).then(({ code, msg }) => {
+      if (code === 200) {
+        delete node._title;
+        delete node.edit;
+        fetchForms(node.id);
+        getUserData();
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  } else {
+    createForm(node).then(({ code, data, msg }) => {
+      if (code === 200) {
+        delete node._title;
+        delete node.edit;
+        fetchForms(data.id);
+        getUserData();
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
+};
+
+const handleAddForm = (stat) => {
+  if (formChanged.value) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.form.modified'),
+      },
+    });
+    return;
+  }
+  if (columnChanged.value) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.form.column.modified'),
+      },
+    });
+    return;
+  }
+
+  treeRef.value.add(
+    { pid: stat ? stat.data.id : 0, title: '', _title: '', edit: true },
+    stat || null,
+    stat ? stat.children.length : treeRef.value.rootChildren.length,
+  );
+
+  if (stat && !stat.open) {
+    stat.open = true;
+    expandKeys.push(stat.data.id);
+  }
+
+  nextTick(() => document.getElementById('node_edit').focus());
+};
+
 const handleCopyForm = (node) => {
-  const data = JSON.parse(JSON.stringify(node.data));
+  const data = JSON.parse(JSON.stringify(node));
   data.tid = data.id;
   delete data.id;
   delete data.uuid;
@@ -1408,7 +1457,7 @@ const handleCopyForm = (node) => {
   delete data.alias;
   data.data_state = 'published';
   data.title = `${data.title}-${i18n.global.t('layout.navbar.helper.form.copy')}`;
-  data.sort = data.sort - 1;
+  // data.sort = data.sort - 1;
 
   createForm(data).then(({ code, data, msg }) => {
     if (code === 200) {
@@ -1427,11 +1476,7 @@ const handleCopyForm = (node) => {
   });
 };
 
-const handleConfirmDelForm = (node) => {
-  delete_form.value = node.data;
-  default_expanded_keys.value = [delete_form.value.id, delete_form.value.pid];
-};
-
+const delete_form = ref({});
 const handleDelForm = () => {
   updateForm({
     id: delete_form.value.id,
@@ -1442,7 +1487,6 @@ const handleDelForm = () => {
       getUserData();
       if (current_form.value.id === delete_form.value.id) current_form.value = {};
       delete_form.value = {};
-      document.getElementById('hideDeleteFormModalBtn').click();
     } else {
       toast({
         component: ToastificationContent,
@@ -1602,10 +1646,7 @@ const handleSaveFormInfo = () => {
 
 const handleRestoreFormInfo = () => {
   current_form.value = {
-    ...JSON.parse(JSON.stringify(forms.value.find((form) => form.id === current_form.value.id))),
-    ...{
-      is_parent: forms.value.filter((form) => form.pid === current_form.value.id).length != 0,
-    },
+    ...treeRef.value.statsFlat.find((stat) => stat.data.id === current_form.value.id).data,
   };
 };
 
@@ -1658,6 +1699,7 @@ const handleTruncateFormData = () => {
   });
 };
 
+const current_pub = ref({});
 const qrCodeKey = ref(null);
 const handleCreatePubForm = () => {
   current_pub.value = {

@@ -94,7 +94,7 @@
         </div>
         <div data-simplebar class="tasks-wrapper mb-1 px-3 mx-n3">
           <div class="tasks" :id="status.value">
-            <Draggable
+            <VueDraggableNext
               :list="status.tasks"
               :id="status.value"
               class="dragArea"
@@ -186,7 +186,7 @@
                   </div>
                 </div>
               </div>
-            </Draggable>
+            </VueDraggableNext>
             <button
               v-if="status.loading && !status.refetch"
               type="button"
@@ -423,7 +423,7 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref, reactive, watch, computed, nextTick } from 'vue';
-import { VueDraggableNext as Draggable } from 'vue-draggable-next';
+import { VueDraggableNext } from 'vue-draggable-next';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';

@@ -2,19 +2,20 @@
   <div>
     <Breadcrumb :key="$route" />
     <Form
-      :columns-changed="columnsChanged"
+      :columnChanged="columnChanged"
       @setForm="
         ($event) => {
           form = $event;
+          columnChanged = false;
         }
       "
     />
     <Column
-      v-if="form.id && !form.redirect && !form.is_parent"
+      v-if="form.id && !(form.redirect || form.children)"
       :form="form"
       @setColumnsChangedFlag="
         ($event) => {
-          columnsChanged = $event;
+          columnChanged = $event;
         }
       "
     />
@@ -22,21 +23,11 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import Breadcrumb from '@layouts/breadcrumb';
 import Form from './components/form.vue';
 import Column from './components/column.vue';
 
 const form = ref({});
-const columnsChanged = ref(false);
-
-watch(
-  () => form.value.id,
-  (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-      columnsChanged.value = false;
-    }
-  },
-  { immediate: true },
-);
+const columnChanged = ref(false);
 </script>

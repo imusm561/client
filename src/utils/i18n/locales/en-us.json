@@ -214,7 +214,6 @@
 
   "layout.navbar.helper.form": "Form",
   "layout.navbar.helper.forms": "Forms",
-  "layout.navbar.helper.forms.empty": "Empty",
   "layout.navbar.helper.form.create": "Created by {user} At {time}",
   "layout.navbar.helper.form.update": "Updated by {user} At {time}",
   "layout.navbar.helper.form.copy": "Copy",
