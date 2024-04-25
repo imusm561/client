@@ -6,46 +6,56 @@
       </h4>
     </div>
     <div class="card-body">
-      <el-tree
-        :data="tree"
-        node-key="id"
-        :empty-text="$t('layout.navbar.helper.org.dept.departments.empty')"
-        default-expand-all
-        :expand-on-click-node="false"
-        @node-click="handleSelectDept"
-        draggable
-        :allow-drop="allowDrop"
-        :allow-drag="allowDrag"
-        @node-drop="handleDropDept"
+      <Draggable
+        ref="treeRef"
+        v-model="tree"
+        nodeKey="id"
+        :statHandler="statHandler"
+        :rootDroppable="false"
+        :keepPlaceholder="true"
+        :dragOpenDelay="1000"
+        :eachDraggable="eachDraggable"
+        @before-drag-start="handleBeforeDragStart"
+        @after-drop="handleAfterDrop"
       >
-        <template #default="{ node }">
-          <span class="d-flex flex-1 align-items-center justify-content-between fs-14 pe-2">
-            <span class="tree-node-label">
-              <input
-                id="node_edit"
-                v-if="node.data.edit"
-                type="text"
-                class="form-control form-control-sm"
-                v-model="node.data.name"
-                @keyup.enter="$event.target.blur()"
-                @blur="handleSaveDeptName(node)"
-              />
-              <span v-else @dblclick="handleEditDept(node)">{{ node.data.name }}</span>
-            </span>
-            <span v-if="!node.data.edit" class="tree-node-actions ms-3">
-              <i
-                class="cursor-pointer fs-16 text-primary mdi mdi-plus-box-outline"
-                @click.stop="handleAddDept(node)"
-              ></i>
-              <i
-                v-if="!node.data.children && node.data.pid !== 0"
-                class="cursor-pointer fs-16 text-danger mdi mdi-delete-outline"
-                @click.stop="handlePreDelDept(node)"
-              ></i>
+        <template #default="{ node, stat }">
+          <span
+            class="tree-node-info align-items-center d-flex text-truncate w-100"
+            @click="handleClickDept(node, stat)"
+            :title="node.name"
+          >
+            <i
+              :style="{ marginRight: node.edit ? '0.8px' : '5px' }"
+              class="mdi"
+              :class="{
+                'mdi-folder-open-outline': stat.open,
+                'mdi-folder-outline': !stat.open,
+                'opacity-0': !node.children,
+              }"
+            />
+            <input
+              v-if="node.edit"
+              id="node_edit"
+              type="text"
+              class="form-control w-100 me-2"
+              v-model="node.name"
+              @keyup.enter="$event.target.blur()"
+              @blur="handleSaveDeptName(node)"
+            />
+            <span v-else class="w-100 text-truncate" @dblclick="handleEditDeptName(node)">
+              {{ node.name }}
             </span>
           </span>
+          <span class="tree-node-actions" v-if="!node.edit">
+            <i class="fs-16 text-primary mdi mdi-plus-box-outline" @click="handleAddDept(stat)"></i>
+            <i
+              v-if="!node.children && node.pid !== 0"
+              class="fs-16 text-danger mdi mdi-delete-outline"
+              @click="handleDelDeptComfirm(node)"
+            ></i>
+          </span>
         </template>
-      </el-tree>
+      </Draggable>
     </div>
 
     <button
@@ -96,9 +106,8 @@
 </template>
 
 <script setup>
-import { computed, ref, nextTick } from 'vue';
-import { ElTree } from 'element-plus';
-import 'element-plus/es/components/tree/style/css';
+import { computed, ref, reactive, nextTick } from 'vue';
+import { Draggable, dragContext } from '@he-tree/vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { listToTree, getChildrenById } from '@utils';
@@ -111,50 +120,40 @@ const emits = defineEmits(['setDepts']);
 
 const toast = useToast();
 
+const treeRef = ref(null);
+const expandKeys = reactive(store.state.org.depts.map((dept) => dept.id));
+
 const tree = computed(() => {
   return listToTree(JSON.parse(JSON.stringify(store.state.org.depts)));
 });
 
-let timer = null;
+const statHandler = (stat) => {
+  stat.open = expandKeys.includes(stat.data.id);
+  return stat;
+};
 
-const handleSelectDept = (node) => {
+const eachDraggable = (targetStat) => {
+  return targetStat.data.id != 1;
+};
+
+const handleBeforeDragStart = () => {
   clearTimeout(timer);
-  timer = setTimeout(() => {
-    const dept = store.state.org.depts.find((dept) => dept.id === node.id);
-    if (dept) {
-      const depts = [...[dept], ...getChildrenById(store.state.org.depts, node.id)];
-      emits('setDepts', depts);
-    }
-  }, 200);
 };
 
-const allowDrop = (draggingNode, dropNode, type) => {
-  if (dropNode.data.id === 1) {
-    return type === 'inner';
-  } else {
-    return true;
-  }
-};
-
-const allowDrag = (draggingNode) => {
-  return draggingNode.data.id != 1;
-};
-
-const handleDropDept = (draggingNode, dropNode, type) => {
+const handleAfterDrop = () => {
   const updates = [];
-  if (type == 'inner') {
-    dropNode.childNodes.forEach((node, index) => {
-      const update = { id: node.data.id, pid: dropNode.data.id, sort: index + 1 };
-      const origin = store.state.org.depts.find((dept) => dept.id === update.id);
-      if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
-    });
-  } else {
-    dropNode.parent.childNodes.forEach((node, index) => {
-      const update = { id: node.data.id, pid: dropNode.parent.data.id, sort: index + 1 };
-      const origin = store.state.org.depts.find((dept) => dept.id === update.id);
-      if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
-    });
-  }
+  const parent = dragContext.dragNode.parent?.data || { id: 0, children: treeRef.value.getData() };
+
+  parent.children.forEach((child, index) => {
+    const update = {
+      id: child.id,
+      pid: parent.id,
+      sort: index + 1,
+    };
+    const origin = store.state.org.depts.find((dept) => dept.id === update.id);
+    if (update.pid != origin.pid || update.sort != origin.sort) updates.push(update);
+  });
+
   dropDept({ depts: updates }).then(({ code, msg }) => {
     if (code != 200) {
       toast({
@@ -169,77 +168,113 @@ const handleDropDept = (draggingNode, dropNode, type) => {
   });
 };
 
-const handleEditDept = (node) => {
+let timer = null;
+
+const handleClickDept = (node, stat) => {
   clearTimeout(timer);
-  node.data.name_old = node.data.name;
-  node.data.edit = true;
-  nextTick(() => document.getElementById('node_edit').focus());
+  timer = setTimeout(() => {
+    if (node.edit) return;
+    let setDept = true;
+    if (node.children) {
+      stat.open = !stat.open;
+      if (stat.open) {
+        expandKeys.push(node.id);
+      } else {
+        setDept = false;
+        const index = expandKeys.indexOf(node.id);
+        if (index > -1) expandKeys.splice(index, 1);
+      }
+    }
+    if (setDept) {
+      const dept = store.state.org.depts.find((dept) => dept.id === node.id);
+      if (dept) {
+        const depts = [...[dept], ...getChildrenById(store.state.org.depts, node.id)];
+        emits('setDepts', depts);
+      }
+    }
+  }, 200);
 };
 
-const handleAddDept = (node) => {
-  const child = { pid: node.data.id, name: '', name_old: 'new', edit: true };
-  if (!node.data.children) node.data.children = [];
-  node.data.children.push(child);
+const handleEditDeptName = (node) => {
+  clearTimeout(timer);
+  node._name = node.name;
+  node.edit = true;
   nextTick(() => document.getElementById('node_edit').focus());
 };
 
 const handleSaveDeptName = (node) => {
-  node.data.name = node.data.name.trim();
-  if (!node.data.name) node.data.name = node.data.name_old;
-  if (node.data.id) {
-    if (node.data.name != node.data.name_old) {
-      if (store.state.org.depts.filter((dept) => dept.name == node.data.name).length > 0) {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.org.dept.create.error', {
-              name: node.data.name,
-            }),
-          },
-        });
-      } else {
-        node.data.edit = false;
-        updateDept(node.data);
-      }
-    } else {
-      node.data.edit = false;
-    }
-  } else {
-    if (store.state.org.depts.filter((dept) => dept.name == node.data.name).length !== 0) {
-      toast({
-        component: ToastificationContent,
-        props: {
-          variant: 'danger',
-          icon: 'mdi-alert',
-          text: i18n.globa.t('layout.navbar.helper.org.dept.create.error', {
-            name: node.data.name,
-          }),
-        },
-      });
-    } else {
-      node.data.edit = false;
-      createDept(node.data);
-    }
-  }
-};
+  node.name = node.name.trim();
 
-const current_dept = ref({});
-const handlePreDelDept = (node) => {
-  if (store.state.org.users.filter((user) => user.dept === node.data.id).length !== 0) {
+  if (!node.name || node.name === node._name) {
+    if (node.id) {
+      node.name = node._name;
+      delete node._name;
+      delete node.edit;
+    } else {
+      let stat = treeRef.value.statsFlat.find((e) => e.data === node);
+      treeRef.value.remove(stat);
+      if (stat.parent.children.length === 0) delete stat.parent.data.children;
+    }
+    return;
+  }
+
+  if (store.state.org.depts.filter((dept) => dept.name == node.name).length > 0) {
     toast({
       component: ToastificationContent,
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.globa.t('layout.navbar.helper.org.dept.delete.error', {
-          name: node.data.name,
+        text: i18n.global.t('layout.navbar.helper.org.dept.create.error', {
+          name: node.name,
+        }),
+      },
+    });
+    return;
+  }
+
+  if (node.id) {
+    updateDept(node).then(() => {
+      delete node._name;
+      delete node.edit;
+    });
+  } else {
+    createDept(node).then(() => {
+      delete node._name;
+      delete node.edit;
+    });
+  }
+};
+
+const handleAddDept = (stat) => {
+  treeRef.value.add(
+    { pid: stat ? stat.data.id : 0, name: '', _name: '', edit: true },
+    stat || null,
+    stat ? stat.children.length : treeRef.value.rootChildren.length,
+  );
+
+  if (stat && !stat.open) {
+    stat.open = true;
+    expandKeys.push(stat.data.id);
+  }
+
+  nextTick(() => document.getElementById('node_edit').focus());
+};
+
+const current_dept = ref({});
+const handleDelDeptComfirm = (node) => {
+  if (store.state.org.users.filter((user) => user.dept === node.id).length !== 0) {
+    toast({
+      component: ToastificationContent,
+      props: {
+        variant: 'danger',
+        icon: 'mdi-alert',
+        text: i18n.global.t('layout.navbar.helper.org.dept.delete.error', {
+          name: node.name,
         }),
       },
     });
   } else {
-    current_dept.value = node.data;
+    current_dept.value = node;
     document.getElementById('showDeleteDeptModalBtn').click();
   }
 };

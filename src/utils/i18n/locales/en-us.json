@@ -109,7 +109,6 @@
   "layout.navbar.helper.org": "Organization",
 
   "layout.navbar.helper.org.dept.departments": "Departments",
-  "layout.navbar.helper.org.dept.departments.empty": "Empty",
   "layout.navbar.helper.org.dept.create.error": "Department [{name}] is exists!",
   "layout.navbar.helper.org.dept.delete.error": "Department [{name}] is in use!",
   "layout.navbar.helper.org.dept.deleteDeptModal.title": "Delete Department [{name}]",

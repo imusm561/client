@@ -49,7 +49,7 @@
                     class="form-control w-100 me-2"
                     v-model="node.title"
                     @keyup.enter="$event.target.blur()"
-                    @blur="handleSaveFormTitle(node, stat)"
+                    @blur="handleSaveFormTitle(node)"
                   />
                   <span v-else class="w-100 text-truncate" @dblclick="handleEditFormTitle(node)">
                     {{ node.title }}

@@ -109,7 +109,6 @@
   "layout.navbar.helper.org": "组织架构",
 
   "layout.navbar.helper.org.dept.departments": "部门",
-  "layout.navbar.helper.org.dept.departments.empty": "暂无部门",
   "layout.navbar.helper.org.dept.create.error": "部门【{name}】已存在！",
   "layout.navbar.helper.org.dept.delete.error": "部门【{name}】正在使用！",
   "layout.navbar.helper.org.dept.deleteDeptModal.title": "删除【{name}】部门",
