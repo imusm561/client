@@ -18,8 +18,6 @@ import 'vue-toastification/dist/index.css';
 
 import Maska from 'maska';
 
-import uploader from 'vue-simple-uploader';
-import 'vue-simple-uploader/dist/style.css';
 import VueViewer from 'v-viewer';
 import 'viewerjs/dist/viewer.css';
 
@@ -50,7 +48,6 @@ app
     shareAppContext: true,
   })
   .use(Maska)
-  .use(uploader)
   .use(VueViewer)
   .use(VueApexCharts)
   .component('Form', Form)
