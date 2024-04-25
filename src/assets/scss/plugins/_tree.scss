@@ -26,7 +26,7 @@
       }
     }
 
-    input {
+    input [type='text'] {
       height: 23px !important;
       padding: 0.2rem;
       font-size: 14px;
@@ -36,52 +36,4 @@
 
 .tree-node:hover {
   background-color: $dropdown-link-hover-bg !important;
-}
-
-.el-tree {
-  background-color: $card-bg !important;
-  --el-tree-node-hover-bg-color: $dropdown-link-hover-bg !important;
-
-  &.permissions {
-    .el-tree-node__content {
-      height: 36px;
-    }
-
-    .el-checkbox {
-      margin: 0 5px;
-    }
-  }
-
-  .el-tree-node {
-    &:focus {
-      background-color: $dropdown-link-hover-bg !important;
-    }
-
-    .el-tree-node__content {
-      &:hover {
-        background-color: $dropdown-link-hover-bg !important;
-      }
-
-      .tree-node-actions {
-        display: none;
-      }
-
-      &:hover {
-        .tree-node-actions {
-          display: block;
-        }
-      }
-    }
-
-    .tree-node-label {
-      color: $dropdown-link-color;
-
-      input {
-        min-height: calc(1.5em + 2px) !important;
-        height: calc(1.5em + 2px) !important;
-        font-size: 14px;
-        padding: 6px 5px 5px 5px;
-      }
-    }
-  }
 }

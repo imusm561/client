@@ -122,7 +122,6 @@
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.tags": "标签",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.description": "描述",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions": "权限",
-  "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.empty": "暂无表单",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.copy": "复制",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.copy.success": "复制成功",
   "layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.paste": "粘贴",

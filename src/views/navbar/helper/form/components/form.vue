@@ -27,7 +27,7 @@
                 <span
                   class="tree-node-info align-items-center d-flex text-truncate w-100"
                   @click="handleClickForm(node, stat)"
-                  :title="node.path"
+                  :title="node.title"
                 >
                   <i
                     :style="{ marginRight: node.edit ? '0.8px' : '5px' }"

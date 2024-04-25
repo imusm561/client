@@ -122,7 +122,6 @@ const toast = useToast();
 
 const treeRef = ref(null);
 const expandKeys = reactive(store.state.org.depts.map((dept) => dept.id));
-
 const tree = computed(() => {
   return listToTree(JSON.parse(JSON.stringify(store.state.org.depts)));
 });

@@ -558,7 +558,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, inject } from 'vue';
+import { ref, reactive, computed, onMounted, inject, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { parseMessage } from '@utils';
@@ -764,7 +764,7 @@ const handleEnter = () => {
   }
 };
 
-const show = {
+const show = reactive({
   helper: false,
   org: false,
   form: false,
@@ -774,18 +774,23 @@ const show = {
   log: false,
   sql: false,
   redis: false,
-};
+});
 
-for (let key of Object.keys(show)) {
-  if (key === 'helper') continue;
-  const route = router.getRoutes().find((route) => route.name === key);
-  const tags = route?.meta?.auth || [];
-  show[key] =
-    store.state.user.data.tags.includes('ALL') ||
-    tags.every((tag) => store.state.user.data.tags.includes(tag));
-  if (show[key]) show.helper = show[key];
-}
-
+watch(
+  () => store.state.user.data.tags,
+  (value) => {
+    if (value) {
+      for (let key of Object.keys(show)) {
+        if (key === 'helper') continue;
+        const route = router.getRoutes().find((route) => route.name === key);
+        const tags = route?.meta?.auth || [];
+        show[key] = value.includes('ALL') || tags.every((tag) => value.includes(tag));
+        if (show[key]) show.helper = show[key];
+      }
+    }
+  },
+  { immediate: true, deep: true },
+);
 onMounted(() => {
   document.addEventListener('scroll', scrollHandler);
   document.addEventListener('webkitfullscreenchange', fullScreenHandler);
