@@ -31,7 +31,7 @@
                     :title="node.key"
                   >
                     <i
-                      v-if="node.children"
+                      v-if="!node.children?.length"
                       class="me-1 mdi"
                       :class="stat.open ? 'mdi-folder-open-outline' : 'mdi-folder-outline'"
                     />
@@ -238,8 +238,7 @@ const statHandler = (stat) => {
 
 const current = ref({});
 const handleClickKey = (node, stat) => {
-  console.log(node);
-  if (node.children) {
+  if (!node.children?.length) {
     stat.open = !stat.open;
     if (stat.open) {
       expandKeys.push(node.key);

@@ -5,6 +5,7 @@
 .tree-node {
   background-color: $card-bg !important;
   margin-right: 2px;
+
   .tree-node-items {
     height: 27px;
 
@@ -30,4 +31,11 @@
 
 .tree-node:hover {
   background-color: $dropdown-link-hover-bg !important;
+}
+
+.he-tree-drag-placeholder {
+  background: $toast-color;
+  border: 1px dashed $toast-border-color;
+  height: 27px;
+  width: 100%;
 }

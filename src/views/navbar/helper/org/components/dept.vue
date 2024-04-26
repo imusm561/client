@@ -13,7 +13,7 @@
         :statHandler="statHandler"
         :rootDroppable="false"
         :keepPlaceholder="true"
-        :dragOpenDelay="1000"
+        :dragOpenDelay="500"
         :eachDraggable="eachDraggable"
         @before-drag-start="handleBeforeDragStart"
         @after-drop="handleAfterDrop"
@@ -33,7 +33,7 @@
                 :class="{
                   'mdi-folder-open-outline': stat.open,
                   'mdi-folder-outline': !stat.open,
-                  'opacity-0': !node.children,
+                  'opacity-0': !node.children?.length,
                 }"
               />
               <input
@@ -54,7 +54,7 @@
                 @click="handleAddDept(stat)"
               ></i>
               <i
-                v-if="!node.children && node.pid !== 0"
+                v-if="!node.children?.length && node.pid !== 0"
                 class="fs-16 text-danger mdi mdi-delete-outline"
                 @click="handleDelDeptComfirm(node)"
               ></i>
@@ -180,7 +180,7 @@ const handleClickDept = (node, stat) => {
   timer = setTimeout(() => {
     if (node.edit) return;
     let setDept = true;
-    if (node.children) {
+    if (!node.children?.length) {
       stat.open = !stat.open;
       if (stat.open) {
         expandKeys.push(node.id);
@@ -218,7 +218,6 @@ const handleSaveDeptName = (node) => {
     } else {
       let stat = treeRef.value.statsFlat.find((e) => e.data === node);
       treeRef.value.remove(stat);
-      if (stat.parent.children.length === 0) delete stat.parent.data.children;
     }
     return;
   }

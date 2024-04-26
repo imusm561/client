@@ -241,7 +241,7 @@
                               :class="{
                                 'mdi-folder-open-outline': stat.open,
                                 'mdi-folder-outline': !stat.open,
-                                'opacity-0': !node.children,
+                                'opacity-0': !node.children?.length,
                               }"
                             />
                             <div class="form-check ms-1">
@@ -278,7 +278,9 @@
                           </span>
                           <span
                             class="text-nowrap"
-                            v-if="!node.children && current_role.permissions[node.id].checked"
+                            v-if="
+                              !node.children?.length && current_role.permissions[node.id].checked
+                            "
                           >
                             <div v-if="node.redirect">
                               <div class="form-check form-check-danger ms-3">

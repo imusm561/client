@@ -24,7 +24,7 @@
               :statHandler="statHandler"
               :rootDroppable="false"
               :keepPlaceholder="true"
-              :dragOpenDelay="1000"
+              :dragOpenDelay="500"
               :eachDraggable="eachDraggable"
               :eachDroppable="eachDroppable"
               @before-drag-start="handleBeforeDragStart"

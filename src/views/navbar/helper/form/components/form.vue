@@ -19,7 +19,7 @@
               :statHandler="statHandler"
               :disableDrag="formChanged || columnChanged"
               :keepPlaceholder="true"
-              :dragOpenDelay="1000"
+              :dragOpenDelay="500"
               @before-drag-start="handleBeforeDragStart"
               @after-drop="handleAfterDrop"
             >
@@ -38,7 +38,7 @@
                       :class="{
                         'mdi-folder-open-outline': stat.open,
                         'mdi-folder-outline': !stat.open,
-                        'opacity-0': !node.children,
+                        'opacity-0': !node.children?.length,
                       }"
                     />
                     <i
@@ -63,12 +63,12 @@
                       @click="handleAddForm(stat)"
                     ></i>
                     <i
-                      v-if="!node.children"
+                      v-if="!node.children?.length"
                       class="fs-16 text-success mdi mdi-mdi mdi-content-copy"
                       @click="handleCopyForm(node)"
                     ></i>
                     <i
-                      v-if="!node.children"
+                      v-if="!node.children?.length"
                       class="fs-16 text-danger mdi mdi-delete-outline"
                       @click="delete_form = node"
                       data-bs-toggle="modal"
@@ -1296,7 +1296,7 @@ const handleClickForm = (node, stat) => {
   timer = setTimeout(() => {
     if (node.edit) return;
     let setCurrentForm = true;
-    if (node.children) {
+    if (node.children?.length) {
       stat.open = !stat.open;
       if (stat.open) {
         expandKeys.push(node.id);
