@@ -6,7 +6,7 @@
         <div class="mt-2 mb-2">
           <div v-if="form.description" class="ck ck-content p-0" v-html="form.description" />
           <div class="d-flex justify-content-end gap-2">
-            <div class="quick-filter">
+            <div v-if="!form.html" class="quick-filter">
               <span
                 class="mdi mdi-filter-outline text-muted cursor-pointer"
                 :class="{ 'mdi-filter-plus ': quickFilter.includeHiddenColumns }"
