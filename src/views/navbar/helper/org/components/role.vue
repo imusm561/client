@@ -226,154 +226,159 @@
                     </div>
                     <BaseTree v-model="tree" nodeKey="id">
                       <template #default="{ node, stat }">
-                        <span
-                          class="tree-node-info d-flex align-items-center w-100"
-                          :title="node.title"
-                          @click="stat.open = !stat.open"
+                        <div
+                          class="tree-node-items d-flex justify-content-between align-items-center"
+                          style="height: 36px"
                         >
-                          <i
-                            style="margin-right: 5px"
-                            class="mdi"
-                            :class="{
-                              'mdi-folder-open-outline': stat.open,
-                              'mdi-folder-outline': !stat.open,
-                              'opacity-0': !node.children,
-                            }"
-                          />
-                          <div class="form-check ms-1">
-                            <input
-                              class="form-check-input"
-                              type="checkbox"
-                              v-model="current_role.permissions[node.id].checked"
-                              :indeterminate="current_role.permissions[node.id].half_checked"
-                              @change="handleSetCheckStatus(stat)"
-                              @click.stop="() => {}"
+                          <span
+                            class="tree-node-info d-flex align-items-center w-100"
+                            :title="node.title"
+                            @click="stat.open = !stat.open"
+                          >
+                            <i
+                              style="margin-right: 5px"
+                              class="fs-15 mdi"
+                              :class="{
+                                'mdi-folder-open-outline': stat.open,
+                                'mdi-folder-outline': !stat.open,
+                                'opacity-0': !node.children,
+                              }"
                             />
-                            <label class="form-check-label">
-                              <span class="w-100 text-truncate">
-                                <i :class="['mdi me-1', node.icon || 'mdi-circle-medium']"></i>
-                                {{ node.title }}
-                                <span
-                                  :class="`ms-2 badge badge-soft-${
-                                    node.status === 1 ? 'primary' : 'danger'
-                                  }`"
-                                >
-                                  {{
-                                    node.status === 1
-                                      ? $t(
-                                          'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.status.enable',
-                                        )
-                                      : $t(
-                                          'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.status.disabled',
-                                        )
-                                  }}
+                            <div class="form-check ms-1">
+                              <input
+                                class="form-check-input"
+                                type="checkbox"
+                                v-model="current_role.permissions[node.id].checked"
+                                :indeterminate="current_role.permissions[node.id].half_checked"
+                                @change="handleSetCheckStatus(stat)"
+                                @click.stop="() => {}"
+                              />
+                              <label class="form-check-label">
+                                <span class="w-100 text-truncate">
+                                  <i :class="['mdi me-1', node.icon || 'mdi-circle-medium']"></i>
+                                  {{ node.title }}
+                                  <span
+                                    :class="`ms-2 badge badge-soft-${
+                                      node.status === 1 ? 'primary' : 'danger'
+                                    }`"
+                                  >
+                                    {{
+                                      node.status === 1
+                                        ? $t(
+                                            'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.status.enable',
+                                          )
+                                        : $t(
+                                            'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.status.disabled',
+                                          )
+                                    }}
+                                  </span>
                                 </span>
-                              </span>
-                            </label>
-                          </div>
-                        </span>
-                        <span
-                          class="text-nowrap"
-                          v-if="!node.children && current_role.permissions[node.id].checked"
-                        >
-                          <div v-if="node.redirect">
-                            <div class="form-check form-check-danger ms-3">
-                              <input class="form-check-input" type="checkbox" disabled checked />
-                              <label class="form-check-label">{{ node.redirect }}</label>
-                            </div>
-                          </div>
-                          <div v-else class="d-flex">
-                            <div class="form-check form-check-danger ms-3">
-                              <input
-                                class="form-check-input"
-                                type="checkbox"
-                                :disabled="current_role.permissions[node.id]?.all"
-                                v-model="current_role.permissions[node.id].create"
-                              />
-                              <label class="form-check-label">
-                                {{
-                                  $t(
-                                    'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.create',
-                                  )
-                                }}
                               </label>
                             </div>
-                            <div class="form-check form-check-success ms-3">
-                              <input
-                                class="form-check-input"
-                                type="checkbox"
-                                :disabled="current_role.permissions[node.id]?.all"
-                                v-model="current_role.permissions[node.id].edit"
-                              />
-                              <label class="form-check-label">
-                                {{
-                                  $t(
-                                    'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.edit',
-                                  )
-                                }}
-                              </label>
+                          </span>
+                          <span
+                            class="text-nowrap"
+                            v-if="!node.children && current_role.permissions[node.id].checked"
+                          >
+                            <div v-if="node.redirect">
+                              <div class="form-check form-check-danger ms-3">
+                                <input class="form-check-input" type="checkbox" disabled checked />
+                                <label class="form-check-label">{{ node.redirect }}</label>
+                              </div>
                             </div>
-                            <div class="form-check form-check-warning ms-3">
-                              <input
-                                class="form-check-input"
-                                type="checkbox"
-                                :disabled="current_role.permissions[node.id]?.all"
-                                v-model="current_role.permissions[node.id].batch"
-                              />
-                              <label class="form-check-label">
-                                {{
-                                  $t(
-                                    'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.batch',
-                                  )
-                                }}
-                              </label>
+                            <div v-else class="d-flex">
+                              <div class="form-check form-check-danger ms-3">
+                                <input
+                                  class="form-check-input"
+                                  type="checkbox"
+                                  :disabled="current_role.permissions[node.id]?.all"
+                                  v-model="current_role.permissions[node.id].create"
+                                />
+                                <label class="form-check-label">
+                                  {{
+                                    $t(
+                                      'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.create',
+                                    )
+                                  }}
+                                </label>
+                              </div>
+                              <div class="form-check form-check-success ms-3">
+                                <input
+                                  class="form-check-input"
+                                  type="checkbox"
+                                  :disabled="current_role.permissions[node.id]?.all"
+                                  v-model="current_role.permissions[node.id].edit"
+                                />
+                                <label class="form-check-label">
+                                  {{
+                                    $t(
+                                      'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.edit',
+                                    )
+                                  }}
+                                </label>
+                              </div>
+                              <div class="form-check form-check-warning ms-3">
+                                <input
+                                  class="form-check-input"
+                                  type="checkbox"
+                                  :disabled="current_role.permissions[node.id]?.all"
+                                  v-model="current_role.permissions[node.id].batch"
+                                />
+                                <label class="form-check-label">
+                                  {{
+                                    $t(
+                                      'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.batch',
+                                    )
+                                  }}
+                                </label>
+                              </div>
+                              <div class="form-check form-check-info ms-3">
+                                <input
+                                  class="form-check-input"
+                                  type="checkbox"
+                                  :disabled="current_role.permissions[node.id]?.all"
+                                  v-model="current_role.permissions[node.id].export"
+                                />
+                                <label class="form-check-label">
+                                  {{
+                                    $t(
+                                      'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.export',
+                                    )
+                                  }}
+                                </label>
+                              </div>
+                              <div class="form-check form-check-secondary ms-3">
+                                <input
+                                  class="form-check-input"
+                                  type="checkbox"
+                                  :disabled="current_role.permissions[node.id]?.all"
+                                  v-model="current_role.permissions[node.id].import"
+                                />
+                                <label class="form-check-label">
+                                  {{
+                                    $t(
+                                      'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.import',
+                                    )
+                                  }}
+                                </label>
+                              </div>
+                              <div class="form-check ms-3">
+                                <input
+                                  class="form-check-input"
+                                  type="checkbox"
+                                  v-model="current_role.permissions[node.id].all"
+                                />
+                                <label class="form-check-label">
+                                  {{
+                                    $t(
+                                      'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.all',
+                                    )
+                                  }}
+                                </label>
+                              </div>
                             </div>
-                            <div class="form-check form-check-info ms-3">
-                              <input
-                                class="form-check-input"
-                                type="checkbox"
-                                :disabled="current_role.permissions[node.id]?.all"
-                                v-model="current_role.permissions[node.id].export"
-                              />
-                              <label class="form-check-label">
-                                {{
-                                  $t(
-                                    'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.export',
-                                  )
-                                }}
-                              </label>
-                            </div>
-                            <div class="form-check form-check-secondary ms-3">
-                              <input
-                                class="form-check-input"
-                                type="checkbox"
-                                :disabled="current_role.permissions[node.id]?.all"
-                                v-model="current_role.permissions[node.id].import"
-                              />
-                              <label class="form-check-label">
-                                {{
-                                  $t(
-                                    'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.import',
-                                  )
-                                }}
-                              </label>
-                            </div>
-                            <div class="form-check ms-3">
-                              <input
-                                class="form-check-input"
-                                type="checkbox"
-                                v-model="current_role.permissions[node.id].all"
-                              />
-                              <label class="form-check-label">
-                                {{
-                                  $t(
-                                    'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.form.permission.all',
-                                  )
-                                }}
-                              </label>
-                            </div>
-                          </div>
-                        </span>
+                          </span>
+                        </div>
                       </template>
                     </BaseTree>
                   </div>

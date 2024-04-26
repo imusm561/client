@@ -24,55 +24,58 @@
               @after-drop="handleAfterDrop"
             >
               <template #default="{ node, stat }">
-                <span
-                  class="tree-node-info align-items-center d-flex text-truncate w-100"
-                  @click="handleClickForm(node, stat)"
-                  :title="node.title"
+                <div
+                  class="tree-node-items d-flex justify-content-between align-items-center cursor-pointer fs-14"
                 >
-                  <i
-                    :style="{ marginRight: node.edit ? '0.8px' : '5px' }"
-                    class="mdi"
-                    :class="{
-                      'mdi-folder-open-outline': stat.open,
-                      'mdi-folder-outline': !stat.open,
-                      'opacity-0': !node.children,
-                    }"
-                  />
-                  <i
-                    :style="node.edit && 'margin-left: 4px; margin-right: 0px!important'"
-                    :class="['mdi me-1', node.icon || 'mdi-circle-medium']"
-                  ></i>
-                  <input
-                    v-if="node.edit"
-                    id="node_edit"
-                    type="text"
-                    class="form-control w-100 me-2"
-                    v-model="node.title"
-                    @keyup.enter="$event.target.blur()"
-                    @blur="handleSaveFormTitle(node)"
-                  />
-                  <span v-else class="w-100 text-truncate" @dblclick="handleEditFormTitle(node)">
-                    {{ node.title }}
+                  <span
+                    class="tree-node-info align-items-center d-flex text-truncate w-100"
+                    @click="handleClickForm(node, stat)"
+                    :title="node.title"
+                  >
+                    <i
+                      :style="{ marginRight: node.edit ? '0.8px' : '5px' }"
+                      class="mdi"
+                      :class="{
+                        'mdi-folder-open-outline': stat.open,
+                        'mdi-folder-outline': !stat.open,
+                        'opacity-0': !node.children,
+                      }"
+                    />
+                    <i
+                      :style="node.edit && 'margin-left: 4px; margin-right: 0px!important'"
+                      :class="['mdi me-1', node.icon || 'mdi-circle-medium']"
+                    ></i>
+                    <input
+                      v-if="node.edit"
+                      type="text"
+                      class="tree_node_input form-control w-100 me-2"
+                      v-model="node.title"
+                      @keyup.enter="$event.target.blur()"
+                      @blur="handleSaveFormTitle(node)"
+                    />
+                    <span v-else class="w-100 text-truncate" @dblclick="handleEditFormTitle(node)">
+                      {{ node.title }}
+                    </span>
                   </span>
-                </span>
-                <span class="tree-node-actions" v-if="!node.edit">
-                  <i
-                    class="fs-16 text-primary mdi mdi-plus-box-outline"
-                    @click="handleAddForm(stat)"
-                  ></i>
-                  <i
-                    v-if="!node.children"
-                    class="fs-16 text-success mdi mdi-mdi mdi-content-copy"
-                    @click="handleCopyForm(node)"
-                  ></i>
-                  <i
-                    v-if="!node.children"
-                    class="fs-16 text-danger mdi mdi-delete-outline"
-                    @click="delete_form = node"
-                    data-bs-toggle="modal"
-                    data-bs-target="#confirmDeleteFormDataModal"
-                  ></i>
-                </span>
+                  <span class="tree-node-actions me-2" v-if="!node.edit">
+                    <i
+                      class="fs-16 text-primary mdi mdi-plus-box-outline"
+                      @click="handleAddForm(stat)"
+                    ></i>
+                    <i
+                      v-if="!node.children"
+                      class="fs-16 text-success mdi mdi-mdi mdi-content-copy"
+                      @click="handleCopyForm(node)"
+                    ></i>
+                    <i
+                      v-if="!node.children"
+                      class="fs-16 text-danger mdi mdi-delete-outline"
+                      @click="delete_form = node"
+                      data-bs-toggle="modal"
+                      data-bs-target="#confirmDeleteFormDataModal"
+                    ></i>
+                  </span>
+                </div>
               </template>
             </Draggable>
           </div>
@@ -1350,7 +1353,7 @@ const handleEditFormTitle = (node) => {
   }
   node._title = node.title;
   node.edit = true;
-  nextTick(() => document.getElementById('node_edit').focus());
+  nextTick(() => document.querySelector('.tree_node_input')?.focus());
 };
 
 const handleSaveFormTitle = (node) => {
@@ -1440,7 +1443,7 @@ const handleAddForm = (stat) => {
     expandKeys.push(stat.data.id);
   }
 
-  nextTick(() => document.getElementById('node_edit').focus());
+  nextTick(() => document.querySelector('.tree_node_input')?.focus());
 };
 
 const handleCopyForm = (node) => {

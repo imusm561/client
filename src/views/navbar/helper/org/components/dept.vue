@@ -19,41 +19,47 @@
         @after-drop="handleAfterDrop"
       >
         <template #default="{ node, stat }">
-          <span
-            class="tree-node-info align-items-center d-flex text-truncate w-100"
-            @click="handleClickDept(node, stat)"
-            :title="node.name"
+          <div
+            class="tree-node-items d-flex justify-content-between align-items-center cursor-pointer fs-14"
           >
-            <i
-              :style="{ marginRight: node.edit ? '0.8px' : '5px' }"
-              class="mdi"
-              :class="{
-                'mdi-folder-open-outline': stat.open,
-                'mdi-folder-outline': !stat.open,
-                'opacity-0': !node.children,
-              }"
-            />
-            <input
-              v-if="node.edit"
-              id="node_edit"
-              type="text"
-              class="form-control w-100 me-2"
-              v-model="node.name"
-              @keyup.enter="$event.target.blur()"
-              @blur="handleSaveDeptName(node)"
-            />
-            <span v-else class="w-100 text-truncate" @dblclick="handleEditDeptName(node)">
-              {{ node.name }}
+            <span
+              class="tree-node-info align-items-center d-flex text-truncate w-100"
+              @click="handleClickDept(node, stat)"
+              :title="node.name"
+            >
+              <i
+                :style="{ marginRight: node.edit ? '0.8px' : '5px' }"
+                class="mdi"
+                :class="{
+                  'mdi-folder-open-outline': stat.open,
+                  'mdi-folder-outline': !stat.open,
+                  'opacity-0': !node.children,
+                }"
+              />
+              <input
+                v-if="node.edit"
+                type="text"
+                class="tree_node_input form-control w-100 me-2"
+                v-model="node.name"
+                @keyup.enter="$event.target.blur()"
+                @blur="handleSaveDeptName(node)"
+              />
+              <span v-else class="w-100 text-truncate" @dblclick="handleEditDeptName(node)">
+                {{ node.name }}
+              </span>
             </span>
-          </span>
-          <span class="tree-node-actions" v-if="!node.edit">
-            <i class="fs-16 text-primary mdi mdi-plus-box-outline" @click="handleAddDept(stat)"></i>
-            <i
-              v-if="!node.children && node.pid !== 0"
-              class="fs-16 text-danger mdi mdi-delete-outline"
-              @click="handleDelDeptComfirm(node)"
-            ></i>
-          </span>
+            <span class="tree-node-actions me-2" v-if="!node.edit">
+              <i
+                class="fs-16 text-primary mdi mdi-plus-box-outline"
+                @click="handleAddDept(stat)"
+              ></i>
+              <i
+                v-if="!node.children && node.pid !== 0"
+                class="fs-16 text-danger mdi mdi-delete-outline"
+                @click="handleDelDeptComfirm(node)"
+              ></i>
+            </span>
+          </div>
         </template>
       </Draggable>
     </div>
@@ -198,7 +204,7 @@ const handleEditDeptName = (node) => {
   clearTimeout(timer);
   node._name = node.name;
   node.edit = true;
-  nextTick(() => document.getElementById('node_edit').focus());
+  nextTick(() => document.querySelector('.tree_node_input')?.focus());
 };
 
 const handleSaveDeptName = (node) => {
@@ -255,8 +261,7 @@ const handleAddDept = (stat) => {
     stat.open = true;
     expandKeys.push(stat.data.id);
   }
-
-  nextTick(() => document.getElementById('node_edit').focus());
+  nextTick(() => document.querySelector('.tree_node_input')?.focus());
 };
 
 const current_dept = ref({});

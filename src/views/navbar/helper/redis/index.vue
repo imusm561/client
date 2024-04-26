@@ -22,29 +22,33 @@
               :statHandler="statHandler"
             >
               <template #default="{ node, stat }">
-                <span
-                  class="tree-node-info align-items-center d-flex text-truncate w-100"
-                  @click="handleClickKey(node, stat)"
-                  :title="node.key"
+                <div
+                  class="tree-node-items d-flex justify-content-between align-items-center cursor-pointer fs-14"
                 >
-                  <i
-                    v-if="node.children"
-                    class="me-1 mdi"
-                    :class="stat.open ? 'mdi-folder-open-outline' : 'mdi-folder-outline'"
-                  />
-                  <i v-else class="me-1 mdi mdi-key-outline" />
-                  <span class="w-100 text-truncate">
-                    {{ node.name }}
+                  <span
+                    class="tree-node-info align-items-center d-flex text-truncate w-100"
+                    @click="handleClickKey(node, stat)"
+                    :title="node.key"
+                  >
+                    <i
+                      v-if="node.children"
+                      class="me-1 mdi"
+                      :class="stat.open ? 'mdi-folder-open-outline' : 'mdi-folder-outline'"
+                    />
+                    <i v-else class="me-1 mdi mdi-key-outline" />
+                    <span class="w-100 text-truncate">
+                      {{ node.name }}
+                    </span>
                   </span>
-                </span>
-                <span class="tree-node-actions">
-                  <i
-                    class="fs-16 text-danger mdi mdi-delete-outline ms-1"
-                    @click="confirm = node"
-                    data-bs-toggle="modal"
-                    data-bs-target="#confirmDeleteKeyModal"
-                  ></i>
-                </span>
+                  <span class="tree-node-actions me-2">
+                    <i
+                      class="fs-16 text-danger mdi mdi-delete-outline ms-1"
+                      @click="confirm = node"
+                      data-bs-toggle="modal"
+                      data-bs-target="#confirmDeleteKeyModal"
+                    ></i>
+                  </span>
+                </div>
               </template>
             </BaseTree>
           </div>

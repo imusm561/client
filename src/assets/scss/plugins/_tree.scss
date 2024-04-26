@@ -4,17 +4,17 @@
 
 .tree-node {
   background-color: $card-bg !important;
-  .tree-node-inner {
+  margin-right: 2px;
+  .tree-node-items {
     height: 27px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    font-size: 14px;
-    padding-right: 10px;
 
-    // .tree-node-info {
-    // }
+    .tree-node-info {
+      .tree_node_input {
+        height: 23px !important;
+        padding: 0.2rem;
+        font-size: 14px;
+      }
+    }
 
     .tree-node-actions {
       display: none;
@@ -24,12 +24,6 @@
       .tree-node-actions {
         display: flex;
       }
-    }
-
-    input [type='text'] {
-      height: 23px !important;
-      padding: 0.2rem;
-      font-size: 14px;
     }
   }
 }

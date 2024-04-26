@@ -31,63 +31,68 @@
               @after-drop="handleAfterDrop"
             >
               <template #default="{ node, stat }">
-                <span
-                  class="tree-node-info align-items-center d-flex text-truncate w-100"
-                  @click="handleClickPath(node, stat)"
-                  :title="node.path"
+                <div
+                  class="tree-node-items d-flex justify-content-between align-items-center cursor-pointer fs-14"
                 >
-                  <i
-                    v-if="node.type === 'file'"
-                    :style="{
-                      minWidth: '20px',
-                      marginLeft: '-3px',
-                      marginRight: node.edit ? '-2.2px' : '2px',
-                    }"
-                    class="file-icon file-icon-sm"
-                    :class="FileIcons.getClassWithColor(node.name)"
-                  />
-                  <i
-                    v-else
-                    :style="{ marginRight: node.edit ? '0.8px' : '5px' }"
-                    class="mdi"
-                    :class="stat.open ? 'mdi-folder-open-outline' : 'mdi-folder-outline'"
-                  />
-                  <input
-                    v-if="node.edit"
-                    id="node_edit"
-                    type="text"
-                    class="form-control w-100 me-2"
-                    v-model="node.name"
-                    @keyup.enter="$event.target.blur()"
-                    @blur="handleSaveFileName(node, stat)"
-                  />
-                  <span v-else class="w-100 text-truncate" @dblclick="handleEditFileName(node)">
-                    {{ node.name }}
+                  <span
+                    class="tree-node-info align-items-center d-flex text-truncate w-100"
+                    @click="handleClickPath(node, stat)"
+                    :title="node.path"
+                  >
+                    <i
+                      v-if="node.type === 'file'"
+                      :style="{
+                        minWidth: '20px',
+                        marginLeft: '-3px',
+                        marginRight: node.edit ? '-2.2px' : '2px',
+                      }"
+                      class="file-icon file-icon-sm"
+                      :class="FileIcons.getClassWithColor(node.name)"
+                    />
+                    <i
+                      v-else
+                      :style="{ marginRight: node.edit ? '0.8px' : '5px' }"
+                      class="mdi"
+                      :class="stat.open ? 'mdi-folder-open-outline' : 'mdi-folder-outline'"
+                    />
+                    <input
+                      v-if="node.edit"
+                      type="text"
+                      class="tree_node_input form-control w-100 me-2"
+                      v-model="node.name"
+                      @keyup.enter="$event.target.blur()"
+                      @blur="handleSaveFileName(node, stat)"
+                    />
+                    <span v-else class="w-100 text-truncate" @dblclick="handleEditFileName(node)">
+                      {{ node.name }}
+                    </span>
                   </span>
-                </span>
-                <span
-                  class="tree-node-actions"
-                  v-if="!node.edit && node.path.includes('/') && !node.path.startsWith('logs')"
-                >
-                  <i
-                    v-if="node.type === 'directory'"
-                    class="fs-16 text-primary mdi mdi-cloud-upload-outline ms-1"
-                    @click="handleUpload(node)"
-                  ></i>
-                  <i
-                    v-if="node.type === 'file' && node.name === 'package.json'"
-                    class="fs-16 text-info mdi ms-1"
-                    :class="installing === node.key ? 'mdi-loading mdi-spin' : 'mdi-package-down '"
-                    @click="handleInstallPackage(node, stat)"
-                  ></i>
-                  <i
-                    v-if="!dirs.includes(node.path)"
-                    class="fs-16 text-danger mdi mdi-delete-outline ms-1"
-                    @click="confirm = node"
-                    data-bs-toggle="modal"
-                    data-bs-target="#confirmDeleteFileOrDirectoryModal"
-                  ></i>
-                </span>
+                  <span
+                    class="tree-node-actions me-2"
+                    v-if="!node.edit && node.path.includes('/') && !node.path.startsWith('logs')"
+                  >
+                    <i
+                      v-if="node.type === 'directory'"
+                      class="fs-16 text-primary mdi mdi-cloud-upload-outline ms-1"
+                      @click="handleUpload(node)"
+                    ></i>
+                    <i
+                      v-if="node.type === 'file' && node.name === 'package.json'"
+                      class="fs-16 text-info mdi ms-1"
+                      :class="
+                        installing === node.key ? 'mdi-loading mdi-spin' : 'mdi-package-down '
+                      "
+                      @click="handleInstallPackage(node, stat)"
+                    ></i>
+                    <i
+                      v-if="!dirs.includes(node.path)"
+                      class="fs-16 text-danger mdi mdi-delete-outline ms-1"
+                      @click="confirm = node"
+                      data-bs-toggle="modal"
+                      data-bs-target="#confirmDeleteFileOrDirectoryModal"
+                    ></i>
+                  </span>
+                </div>
               </template>
             </Draggable>
           </div>
@@ -583,7 +588,7 @@ const handleEditFileName = (node) => {
   }
   node._name = node.name;
   node.edit = true;
-  nextTick(() => document.getElementById('node_edit').focus());
+  nextTick(() => document.querySelector('.tree_node_input')?.focus());
 };
 
 const handleSaveFileName = (node, stat) => {
@@ -616,7 +621,7 @@ const handleSaveFileName = (node, stat) => {
         text: i18n.global.t('layout.navbar.helper.code.name.illegal'),
       },
     });
-    nextTick(() => document.getElementById('node_edit').focus());
+    nextTick(() => document.querySelector('.tree_node_input')?.focus());
     return;
   }
 
@@ -632,7 +637,7 @@ const handleSaveFileName = (node, stat) => {
         text: i18n.global.t('layout.navbar.helper.code.name.duplicate'),
       },
     });
-    nextTick(() => document.getElementById('node_edit').focus());
+    nextTick(() => document.querySelector('.tree_node_input')?.focus());
     return;
   }
 
