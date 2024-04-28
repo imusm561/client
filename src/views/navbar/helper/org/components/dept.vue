@@ -180,7 +180,7 @@ const handleClickDept = (node, stat) => {
   timer = setTimeout(() => {
     if (node.edit) return;
     let setDept = true;
-    if (!node.children?.length) {
+    if (node.children?.length) {
       stat.open = !stat.open;
       if (stat.open) {
         expandKeys.push(node.id);

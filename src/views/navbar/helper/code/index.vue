@@ -809,7 +809,6 @@ const handleSaveCode = () => {
   saveCode({ path: current.value.path, data: current.value.data }).then(({ code, data, msg }) => {
     if (code === 200) {
       if (data.refresh) handleGetCodeDirs();
-      console.log(current.value);
       document.getElementById('hideCodeDiffModalBtn').click();
       current.value.file = current.value.data;
       toast({

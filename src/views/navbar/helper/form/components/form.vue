@@ -1359,10 +1359,15 @@ const handleEditFormTitle = (node) => {
 const handleSaveFormTitle = (node) => {
   node.title = node.title.trim();
 
-  if (node.id && (!node.title || node.title === node._title)) {
-    node.title = node._title;
-    delete node._title;
-    delete node.edit;
+  if (!node.title || node.title === node._title) {
+    if (node.id) {
+      node.title = node._title;
+      delete node._title;
+      delete node.edit;
+    } else {
+      let stat = treeRef.value.statsFlat.find((e) => e.data === node);
+      treeRef.value.remove(stat);
+    }
     return;
   }
 
