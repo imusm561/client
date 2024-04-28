@@ -490,7 +490,7 @@ const system = [
       created_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: dayjs().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
+        dateFrom: dayjs().add(-1, 'y').format('YYYY-01-01 00:00:00'),
         dateTo: dayjs(dayjs().format('YYYY-01-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
@@ -510,7 +510,7 @@ const system = [
         filterType: 'date',
         type: 'inRange',
         dateFrom: dayjs().format('YYYY-01-01 00:00:00'),
-        dateTo: dayjs(dayjs().add(1, 'Y').format('YYYY-01-01 00:00:00'))
+        dateTo: dayjs(dayjs().add(1, 'y').format('YYYY-01-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
       },
@@ -659,7 +659,7 @@ const system = [
       updated_at: {
         filterType: 'date',
         type: 'inRange',
-        dateFrom: dayjs().add(-1, 'Y').format('YYYY-01-01 00:00:00'),
+        dateFrom: dayjs().add(-1, 'y').format('YYYY-01-01 00:00:00'),
         dateTo: dayjs(dayjs().format('YYYY-01-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
@@ -679,7 +679,7 @@ const system = [
         filterType: 'date',
         type: 'inRange',
         dateFrom: dayjs().format('YYYY-01-01 00:00:00'),
-        dateTo: dayjs(dayjs().add(1, 'Y').format('YYYY-01-01 00:00:00'))
+        dateTo: dayjs(dayjs().add(1, 'y').format('YYYY-01-01 00:00:00'))
           .add(-1, 's')
           .format('YYYY-MM-DD HH:mm:ss'),
       },
