@@ -69,6 +69,8 @@
       .fc-daygrid-day-number {
         background-color: $primary;
         color: $white;
+        border-radius: 3px;
+        width: auto;
       }
     }
   }
@@ -259,6 +261,7 @@
 .fc-toolbar-chunk {
   .btn-group {
     box-shadow: $element-shadow;
+
     .btn {
       color: $secondary;
       background-color: rgba($secondary, 0.15);
@@ -384,6 +387,7 @@
 
 .fc-direction-ltr {
   direction: ltr;
+
   .fc-toolbar > * > :not(:first-child) {
     margin-left: 0.75em;
   }
