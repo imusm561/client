@@ -1176,11 +1176,9 @@ const fetchForms = (id) => {
     if (code === 200) {
       forms.value = data;
       if (id || current_form.value.id) {
-        current_form.value = {
-          ...(treeRef.value.statsFlat.find((stat) => stat.data.id === (id || current_form.value.id))
-            ?.data || {}),
-          ...forms.value.find((form) => form.id === (id || current_form.value.id)),
-        };
+        current_form.value = JSON.parse(
+          JSON.stringify(forms.value.find((form) => form.id === (id || current_form.value.id))),
+        );
         randerVsUsers();
       }
     } else {
@@ -1280,11 +1278,9 @@ watch(
         }
       }
       const server_form = forms.value.find((form) => form.id === current_form.value.id) || {};
-      changes.value = getChanges(
-        { ...current_form.value, ...{ children: undefined } },
-        server_form,
-      );
+      changes.value = getChanges(current_form.value, server_form);
     } else {
+      emits('setForm', current_form.value);
       changes.value = {};
     }
   },
@@ -1330,9 +1326,9 @@ const handleClickForm = (node, stat) => {
         return;
       }
 
-      current_form.value = {
-        ...treeRef.value.statsFlat.find((stat) => stat.data.id === node.id).data,
-      };
+      current_form.value = JSON.parse(
+        JSON.stringify(forms.value.find((form) => form.id === node.id)),
+      );
       randerVsUsers();
     }
   }, 200);
@@ -1493,7 +1489,10 @@ const handleDelForm = () => {
     if (code === 200) {
       fetchForms();
       getUserData();
-      if (current_form.value.id === delete_form.value.id) current_form.value = {};
+      if (current_form.value.id === delete_form.value.id) {
+        current_form.value = {};
+        randerVsUsers();
+      }
       delete_form.value = {};
     } else {
       toast({
@@ -1653,9 +1652,10 @@ const handleSaveFormInfo = () => {
 };
 
 const handleRestoreFormInfo = () => {
-  current_form.value = {
-    ...treeRef.value.statsFlat.find((stat) => stat.data.id === current_form.value.id).data,
-  };
+  current_form.value = JSON.parse(
+    JSON.stringify(forms.value.find((form) => form.id === current_form.value.id)),
+  );
+  randerVsUsers();
 };
 
 const confirm = ref(null);
