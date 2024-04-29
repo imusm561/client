@@ -29,7 +29,7 @@ const handleViewData = () => {
       name: 'view',
       params: { tid: props.params._form.id, rid: props.params.value },
     });
-  }, 200);
+  }, 100);
 };
 
 const handleEditData = () => {

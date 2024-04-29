@@ -70,7 +70,7 @@ const handleClickImage = (callback) => {
   clearTimeout(timer);
   timer = setTimeout(() => {
     callback && callback();
-  }, 200);
+  }, 100);
 };
 const handleDbclickFile = (file) => {
   clearTimeout(timer);

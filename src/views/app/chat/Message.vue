@@ -87,7 +87,7 @@ const handleViewImage = () => {
   clearTimeout(timer);
   timer = setTimeout(() => {
     emits('view-image');
-  }, 200);
+  }, 100);
 };
 
 const handlePreviewFile = (file) => {

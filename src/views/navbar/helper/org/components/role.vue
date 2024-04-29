@@ -228,12 +228,12 @@
                       <template #default="{ node, stat }">
                         <div
                           class="tree-node-items d-flex justify-content-between align-items-center"
+                          @click="stat.open = !stat.open"
                           style="height: 36px"
                         >
                           <span
                             class="tree-node-info d-flex align-items-center w-100"
                             :title="node.title"
-                            @click="stat.open = !stat.open"
                           >
                             <i
                               style="margin-right: 5px"

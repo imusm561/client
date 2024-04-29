@@ -21,10 +21,10 @@
         <template #default="{ node, stat }">
           <div
             class="tree-node-items d-flex justify-content-between align-items-center cursor-pointer fs-14"
+            @click="handleClickDept(node, stat)"
           >
             <span
               class="tree-node-info align-items-center d-flex text-truncate w-100"
-              @click="handleClickDept(node, stat)"
               :title="node.name"
             >
               <i
@@ -197,7 +197,7 @@ const handleClickDept = (node, stat) => {
         emits('setDepts', depts);
       }
     }
-  }, 200);
+  }, 100);
 };
 
 const handleEditDeptName = (node) => {
