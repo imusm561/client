@@ -26,8 +26,7 @@
               v-if="
                 $store.state.user.data?.permissions?.[$route.params.tid]?.batch &&
                 selectedRows.length &&
-                (!form.flow || form.flow?.length === 0) &&
-                selectedRows.every((row) => !['archived', 'approving'].includes(row.data_state))
+                (!form.flow || form.flow?.length === 0)
               "
             >
               <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="dropdown">
@@ -1627,7 +1626,16 @@ const getContextMenuItems = (params) => {
 
 const selectedRows = ref([]);
 const isRowSelectable = (node) => {
-  return node.group ? false : true;
+  if (node.group) return false;
+  return (
+    !['archived', 'approving'].includes(node.data?.data_state) &&
+    (node.data?.created_by === store.state.user.data.username ||
+      node.data?.updated_by === store.state.user.data.username ||
+      node.data?.acl_edit?.includes(store.state.user.data.username) ||
+      (node.data?.acl_edit?.length === 0 &&
+        node.data?.acl_view?.includes(store.state.user.data.username)) ||
+      (node.data?.acl_view?.length === 0 && node.data?.acl_edit?.length === 0))
+  );
 };
 const onSelectionChanged = () => {
   selectedRows.value = gridApi.getSelectedRows();
