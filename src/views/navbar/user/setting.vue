@@ -1135,25 +1135,25 @@
               ></VueCropper>
               <span
                 class="mt-2 btn btn-icon btn-topbar rounded-circle btn-ghost-primary"
-                @click="$refs.cropper.rotateLeft()"
+                @click="cropper.rotateLeft()"
               >
                 <i class="mdi mdi-rotate-left fs-22 text-dark"></i>
               </span>
               <span
                 class="mt-2 btn btn-icon btn-topbar rounded-circle btn-ghost-primary"
-                @click="$refs.cropper.rotateRight()"
+                @click="cropper.rotateRight()"
               >
                 <i class="mdi mdi-rotate-right fs-22 text-dark"></i>
               </span>
               <span
                 class="mt-2 btn btn-icon btn-topbar rounded-circle btn-ghost-primary"
-                @click="$refs.cropper.changeScale(1)"
+                @click="cropper.changeScale(1)"
               >
                 <i class="mdi mdi-image-size-select-large fs-22 text-dark"></i>
               </span>
               <span
                 class="mt-2 btn btn-icon btn-topbar rounded-circle btn-ghost-primary"
-                @click="$refs.cropper.changeScale(-1)"
+                @click="cropper.changeScale(-1)"
               >
                 <i class="mdi mdi-image-size-select-small fs-22 text-dark"></i>
               </span>

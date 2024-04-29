@@ -97,7 +97,7 @@
           <Form v-slot="{ errors }" @submit="handleSubmitEvent" :key="viewAndEditEventModalKey">
             <div class="modal-body p-0">
               <div
-                v-if="is_editing"
+                v-if="editing"
                 data-simplebar
                 class="p-3"
                 style="max-height: 80vh; overflow-x: hidden"
@@ -334,20 +334,20 @@
               <span
                 v-if="current_event.id"
                 class="btn btn-sm btn-primary"
-                @click="is_editing = !is_editing"
+                @click="editing = !editing"
               >
                 <i
                   class="mdi"
-                  :class="is_editing ? 'mdi-content-save-off-outline' : 'mdi-square-edit-outline '"
+                  :class="editing ? 'mdi-content-save-off-outline' : 'mdi-square-edit-outline '"
                 ></i>
                 {{
-                  is_editing
+                  editing
                     ? $t('app.calendar.viewAndEditEventModal.form.footer.cancel')
                     : $t('app.calendar.viewAndEditEventModal.form.footer.edit')
                 }}
               </span>
               <span
-                v-if="!is_editing && current_event.id"
+                v-if="!editing && current_event.id"
                 class="btn btn-sm btn-danger"
                 data-bs-toggle="modal"
                 href="#deleteEventModal"
@@ -355,11 +355,11 @@
                 <i class="mdi mdi-delete-outline"></i>
                 {{ $t('app.calendar.viewAndEditEventModal.form.footer.delete') }}
               </span>
-              <button type="submit" class="d-none" ref="submitEventBtn"></button>
+              <button type="submit" class="d-none" ref="submitEventBtnRef"></button>
               <span
-                v-if="is_editing"
+                v-if="editing"
                 class="btn btn-sm btn-success"
-                @click="Object.keys(errors).length === 0 && $refs.submitEventBtn.click()"
+                @click="Object.keys(errors).length === 0 && submitEventBtnRef.click()"
               >
                 <i class="mdi mdi-content-save-outline"></i>
                 {{
@@ -498,7 +498,8 @@ const resolveEventVariant = computed(() => {
 const events = ref([]);
 const upcoming_events = ref(null);
 const current_event = ref({});
-const is_editing = ref(false);
+const editing = ref(false);
+const submitEventBtnRef = ref(null);
 
 const getInitialView = () => {
   if (window.innerWidth >= 768 && window.innerWidth < 1200) {
@@ -585,7 +586,7 @@ const handleDateClick = (e) => {
     category: 'other',
     users: [store.state.user.data.username],
   };
-  is_editing.value = true;
+  editing.value = true;
   viewAndEditEventModalKey.value = nanoid();
   document.getElementById('showViewAndEditEventModalBtn').click();
 };
@@ -702,7 +703,7 @@ const refetchEventsHandler = () => {
 };
 
 const viewAndEditEventModalHiddenHandler = () => {
-  is_editing.value = false;
+  editing.value = false;
 };
 
 onMounted(() => {
@@ -759,7 +760,7 @@ const handleCreateEvent = () => {
     category: 'other',
     users: [store.state.user.data.username],
   };
-  is_editing.value = true;
+  editing.value = true;
   viewAndEditEventModalKey.value = nanoid();
   document.getElementById('showViewAndEditEventModalBtn').click();
 };

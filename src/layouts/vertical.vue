@@ -77,12 +77,6 @@ const activeMenu = (path) => {
 const onRoutechange = (route) => {
   activeMenu(route.path);
   document.getElementById('menu-overlay').click();
-  if (document.getElementsByClassName('active').length > 0) {
-    const currentPosition = document.getElementsByClassName('active')[0].offsetTop;
-    if (currentPosition > 500)
-      if (this.$refs.isSimplebar)
-        this.$refs.isSimplebar.value.getScrollElement().scrollTop = currentPosition + 300;
-  }
 };
 
 const route = useRoute();
