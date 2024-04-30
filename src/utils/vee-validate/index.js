@@ -1,6 +1,5 @@
 import { configure, defineRule } from 'vee-validate';
 import store from '@store';
-import i18n from '@utils/i18n';
 
 configure({
   validateOnBlur: true,
@@ -12,11 +11,10 @@ configure({
 import { isEmpty } from '@utils/index';
 
 defineRule('required', (value) => {
-  if (isEmpty(value)) return i18n.global.t('vee.validate.required');
-  else if (Array.isArray(value))
-    return value.length !== 0 || i18n.global.t('vee.validate.required');
-  else if (typeof value === 'boolean') return value || i18n.global.t('vee.validate.required');
-  else return value.toString().length ? true : i18n.global.t('vee.validate.required');
+  if (isEmpty(value)) return 'vee.validate.required';
+  else if (Array.isArray(value)) return value.length !== 0 || 'vee.validate.required';
+  else if (typeof value === 'boolean') return value || 'vee.validate.required';
+  else return value.toString().length ? true : 'vee.validate.required';
 });
 
 defineRule('between', (value, [min, max]) => {
@@ -25,7 +23,7 @@ defineRule('between', (value, [min, max]) => {
   }
   return (
     (Number(min) <= Number(value) && Number(max) >= Number(value)) ||
-    i18n.global.t('vee.validate.between', { max, min })
+    `vee.validate.between|${JSON.stringify({ min, max })}`
   );
 });
 
@@ -33,14 +31,14 @@ defineRule('confirmed', (value, [target]) => {
   if (isEmpty(value)) {
     return true;
   }
-  return value === target || i18n.global.t('vee.validate.confirmed');
+  return value === target || 'vee.validate.confirmed';
 });
 
 defineRule('gt', (value, [target]) => {
   if (isEmpty(value)) {
     return true;
   }
-  return value > target || i18n.global.t('vee.validate.gt', { target });
+  return value > target || `vee.validate.gt|${JSON.stringify({ target })}`;
 });
 
 defineRule('integer', (value) => {
@@ -48,14 +46,14 @@ defineRule('integer', (value) => {
     return true;
   }
   const regExp = /^[0-9]*$/;
-  return regExp.test(String(value)) || i18n.global.t('vee.validate.integer');
+  return regExp.test(String(value)) || 'vee.validate.integer';
 });
 
 defineRule('length', (value, length) => {
   if (isEmpty(value)) {
     return true;
   }
-  return value.length === length || i18n.global.t('vee.validate.length', { length });
+  return value.length === length || `vee.validate.length|${JSON.stringify({ length })}`;
 });
 
 defineRule('users', (value, [target]) => {
@@ -65,14 +63,14 @@ defineRule('users', (value, [target]) => {
   const users = target.split(';');
   return (
     users.every((user) => value.includes(user)) ||
-    i18n.global.t('vee.validate.include', {
+    `vee.validate.include|${JSON.stringify({
       target: store.state.org.users
         .filter((user) => users.includes(user.username))
         .map((user) => {
           return user.fullname;
         })
         .join(', '),
-    })
+    })}`
   );
 });
 
@@ -80,14 +78,14 @@ defineRule('include', (value, [target]) => {
   if (isEmpty(value)) {
     return true;
   }
-  return value.includes(target.trim()) || i18n.global.t('vee.validate.include', { target });
+  return value.includes(target.trim()) || `vee.validate.include|${JSON.stringify({ target })}`;
 });
 
 defineRule('exclude', (value, [target]) => {
   if (isEmpty(value)) {
     return true;
   }
-  return !value.includes(target.trim()) || i18n.global.t('vee.validate.exclude', { target });
+  return !value.includes(target.trim()) || `vee.validate.exclude|${JSON.stringify({ target })}`;
 });
 
 defineRule('in', (value, [target]) => {
@@ -95,7 +93,7 @@ defineRule('in', (value, [target]) => {
   if (isEmpty(value)) {
     return true;
   }
-  return target.split(',').includes(value) || i18n.global.t('vee.validate.in', { target });
+  return target.split(',').includes(value) || `vee.validate.in|${JSON.stringify({ target })}`;
 });
 
 defineRule('notin', (value, [target]) => {
@@ -103,7 +101,7 @@ defineRule('notin', (value, [target]) => {
   if (isEmpty(value)) {
     return true;
   }
-  return !target.split(',').includes(value) || i18n.global.t('vee.validate.notin', { target });
+  return !target.split(',').includes(value) || `vee.validate.notin|${JSON.stringify({ target })}`;
 });
 
 defineRule('username', (value) => {
@@ -111,7 +109,7 @@ defineRule('username', (value) => {
     return true;
   }
   const regExp = /^[a-z0-9_-]{4,20}$/;
-  return regExp.test(String(value)) || i18n.global.t('vee.validate.username');
+  return regExp.test(String(value)) || 'vee.validate.username';
 });
 
 defineRule('fullname', (value) => {
@@ -119,7 +117,7 @@ defineRule('fullname', (value) => {
     return true;
   }
   const regExp = /^[ A-Za-z\u4e00-\u9fa5]{2,20}$/;
-  return regExp.test(String(value)) || i18n.global.t('vee.validate.fullname');
+  return regExp.test(String(value)) || 'vee.validate.fullname';
 });
 
 defineRule('email', (value) => {
@@ -127,7 +125,7 @@ defineRule('email', (value) => {
     return true;
   }
   const regExp = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-  return regExp.test(String(value)) || i18n.global.t('vee.validate.email');
+  return regExp.test(String(value)) || 'vee.validate.email';
 });
 
 defineRule('phone', (value) => {
@@ -135,7 +133,7 @@ defineRule('phone', (value) => {
     return true;
   }
   const regExp = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
-  return regExp.test(String(value)) || i18n.global.t('vee.validate.phone');
+  return regExp.test(String(value)) || 'vee.validate.phone';
 });
 
 defineRule('password', (value) => {
@@ -143,5 +141,5 @@ defineRule('password', (value) => {
     return true;
   }
   const regExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()?,.]).{8,}$/;
-  return regExp.test(String(value)) || i18n.global.t('vee.validate.password');
+  return regExp.test(String(value)) || 'vee.validate.password';
 });

@@ -200,7 +200,7 @@
                       :class="['form-control', errors.name && 'is-invalid']"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.name }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.name) }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">

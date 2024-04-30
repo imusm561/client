@@ -29,7 +29,7 @@
       :class="{ 'is-invalid': error || syntax_error }"
       :rules="`${required ? 'required' : ''}`"
     />
-    <span class="invalid-feedback">{{ error || syntax_error }}</span>
+    <span class="invalid-feedback">{{ $te(error) || syntax_error }}</span>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
   <div v-else>

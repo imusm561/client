@@ -37,7 +37,7 @@
           .join('|')
       "
     />
-    <span class="invalid-feedback">{{ error }}</span>
+    <span class="invalid-feedback">{{ $te(error) }}</span>
     <div v-if="column.footer" class="ck ck-content pt-1" v-html="column.footer"></div>
   </div>
   <div v-else>

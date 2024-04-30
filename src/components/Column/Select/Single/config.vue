@@ -15,7 +15,7 @@
         :class="{ 'is-invalid': errors.name }"
         rules="required|exclude: @"
       />
-      <span class="invalid-feedback">{{ errors.name }}</span>
+      <span class="invalid-feedback">{{ $te(errors.name) }}</span>
     </div>
 
     <div class="col-md-3 col-sm-6">
@@ -61,7 +61,7 @@
         :class="{ 'is-invalid': errors.alias }"
         :rules="`notin:${alias}`"
       />
-      <span class="invalid-feedback">{{ errors.alias }}</span>
+      <span class="invalid-feedback">{{ $te(errors.alias) }}</span>
     </div>
 
     <div class="col-md-6">
@@ -91,7 +91,7 @@
         :class="{ 'is-invalid': errors.default }"
         rules="exclude:*=="
       />
-      <span class="invalid-feedback">{{ errors.default }}</span>
+      <span class="invalid-feedback">{{ $te(errors.default) }}</span>
     </div>
 
     <div class="col-md-6">
@@ -128,7 +128,7 @@
         :class="{ 'is-invalid': errors.source }"
         rules="exclude: @=="
       />
-      <span class="invalid-feedback">{{ errors.source }}</span>
+      <span class="invalid-feedback">{{ $te(errors.source) }}</span>
     </div>
 
     <div class="col-md-12">

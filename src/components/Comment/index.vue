@@ -39,7 +39,7 @@
         </span>
         <i class="mdi mdi-close-circle text-danger cursor-pointer" @click="comment.reply = null" />
       </span>
-      <span class="invalid-feedback">{{ errors.comment }}</span>
+      <span class="invalid-feedback">{{ $te(errors.comment) }}</span>
       <div class="mt-2 mb-2 float-end">
         <button type="submit" :disabled="Object.keys(errors).length" class="btn btn-primary">
           {{ comment.reply ? $t('component.comment.reply') : $t('component.comment.submit') }}

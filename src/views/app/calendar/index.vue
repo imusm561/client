@@ -115,7 +115,7 @@
                       :class="['form-control', errors.title && 'is-invalid']"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.title }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.title) }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">
@@ -145,7 +145,7 @@
                       rules="required"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.category }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.category) }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">
@@ -163,7 +163,7 @@
                       :rules="`required|users:${$store.state.user.data.username}`"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.users }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.users) }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">
@@ -178,7 +178,7 @@
                       :class="['form-control', errors.description && 'is-invalid']"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.description }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.description) }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">
@@ -197,7 +197,7 @@
                       rules="required"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.date }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.date) }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">
@@ -233,7 +233,7 @@
                           rules="required"
                           class="d-none"
                         />
-                        <span class="invalid-feedback">{{ errors.start_time }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.start_time) }}</span>
                       </div>
                       <div class="col-6">
                         <label class="form-label">
@@ -251,7 +251,7 @@
                           rules="required|gt:@start_time"
                           class="d-none"
                         />
-                        <span class="invalid-feedback">{{ errors.end_time }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.end_time) }}</span>
                       </div>
                     </div>
                   </div>

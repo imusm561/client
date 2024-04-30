@@ -53,10 +53,19 @@ const dateTimeFormats = {
   },
 };
 
-export default createI18n({
+const i18n = createI18n({
   // legacy: false,
   locale: 'en-us',
   fallbackLocale: 'en-us',
   messages: loadLocaleMessages(),
   dateTimeFormats,
 });
+
+i18n.global.te = (key) => {
+  if (key) {
+    const [err, opt] = key.split('|');
+    return i18n.global.t(err, opt && JSON.parse(opt));
+  }
+};
+
+export default i18n;

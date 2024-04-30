@@ -151,7 +151,7 @@
                       :class="['form-control', errors.name && 'is-invalid']"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.name }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.name) }}</span>
                   </div>
 
                   <div class="col-lg-12">
@@ -197,7 +197,7 @@
                       class="d-none"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.description }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.description) }}</span>
                   </div>
                   <div class="col-lg-12 d-none d-lg-block" v-if="current_role.permissions">
                     <label class="form-label">

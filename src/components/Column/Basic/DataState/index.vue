@@ -32,7 +32,7 @@
       :class="{ 'is-invalid': error }"
       rules="required"
     />
-    <span class="invalid-feedback">{{ error }}</span>
+    <span class="invalid-feedback">{{ $te(error) }}</span>
   </div>
 </template>
 <script setup>

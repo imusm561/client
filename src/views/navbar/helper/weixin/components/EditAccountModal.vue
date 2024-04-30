@@ -71,7 +71,7 @@
                         :class="['form-control', errors.title && 'is-invalid']"
                         rules="required"
                       />
-                      <span class="invalid-feedback">{{ errors.title }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.title) }}</span>
                     </div>
                   </template>
                   <template v-else>
@@ -111,7 +111,7 @@
                         :class="['form-control', errors.title && 'is-invalid']"
                         rules="required"
                       />
-                      <span class="invalid-feedback">{{ errors.title }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.title) }}</span>
                     </div>
 
                     <div class="col-md-4">
@@ -158,7 +158,7 @@
                         :disabled="account.service_type === '3rdPartyPlatform'"
                         :rules="account.service_type === '3rdPartyPlatform' ? '' : 'required'"
                       />
-                      <span class="invalid-feedback">{{ errors.soid }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.soid) }}</span>
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">
@@ -172,7 +172,7 @@
                         :class="['form-control', errors.app_id && 'is-invalid']"
                         rules="required"
                       />
-                      <span class="invalid-feedback">{{ errors.app_id }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.app_id) }}</span>
                     </div>
                     <div class="col-md-6" v-if="['serviceAccount'].includes(account.service_type)">
                       <label class="form-label">
@@ -186,7 +186,7 @@
                         :class="['form-control', errors.mch_id && 'is-invalid']"
                         rules=""
                       />
-                      <span class="invalid-feedback">{{ errors.mch_id }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.mch_id) }}</span>
                     </div>
                     <div class="col-md-6" v-if="['serviceAccount'].includes(account.service_type)">
                       <label class="form-label">
@@ -202,7 +202,7 @@
                         :class="['form-control', errors.api_key && 'is-invalid']"
                         rules=""
                       />
-                      <span class="invalid-feedback">{{ errors.api_key }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.api_key) }}</span>
                     </div>
                   </template>
 
@@ -220,7 +220,7 @@
                         :disabled="account.service_type === '3rdPartyPlatform'"
                         :rules="account.service_type === '3rdPartyPlatform' ? '' : 'required'"
                       />
-                      <span class="invalid-feedback">{{ errors.soid }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.soid) }}</span>
                     </div>
                     <div class="col-md-7">
                       <label class="form-label">
@@ -234,7 +234,7 @@
                         :class="['form-control', errors.email && 'is-invalid']"
                         rules="required|email"
                       />
-                      <span class="invalid-feedback">{{ errors.email }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.email) }}</span>
                     </div>
                     <div
                       class="col-md-5"
@@ -255,7 +255,7 @@
                         :class="['form-control', errors.token && 'is-invalid']"
                         rules="required"
                       />
-                      <span class="invalid-feedback">{{ errors.token }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.token) }}</span>
                     </div>
                     <div
                       class="col-md-7"
@@ -278,7 +278,7 @@
                         :class="['form-control', errors.encoding_aes_key && 'is-invalid']"
                         :rules="account.service_type === '3rdPartyPlatform' ? 'required' : ''"
                       />
-                      <span class="invalid-feedback">{{ errors.encoding_aes_key }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.encoding_aes_key) }}</span>
                     </div>
                     <div class="col-md-5">
                       <label class="form-label">
@@ -292,7 +292,7 @@
                         :class="['form-control', errors.app_id && 'is-invalid']"
                         rules="required"
                       />
-                      <span class="invalid-feedback">{{ errors.app_id }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.app_id) }}</span>
                     </div>
                     <div class="col-md-7">
                       <label class="form-label">
@@ -308,7 +308,7 @@
                         :class="['form-control', errors.app_secret && 'is-invalid']"
                         rules="required"
                       />
-                      <span class="invalid-feedback">{{ errors.app_secret }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.app_secret) }}</span>
                     </div>
                     <div class="col-md-5" v-if="['serviceAccount'].includes(account.service_type)">
                       <label class="form-label">
@@ -322,7 +322,7 @@
                         :class="['form-control', errors.mch_id && 'is-invalid']"
                         rules=""
                       />
-                      <span class="invalid-feedback">{{ errors.mch_id }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.mch_id) }}</span>
                     </div>
                     <div class="col-md-7" v-if="['serviceAccount'].includes(account.service_type)">
                       <label class="form-label">
@@ -338,7 +338,7 @@
                         :class="['form-control', errors.api_key && 'is-invalid']"
                         rules=""
                       />
-                      <span class="invalid-feedback">{{ errors.api_key }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.api_key) }}</span>
                     </div>
                   </template>
                   <div class="col-12">
@@ -378,7 +378,7 @@
                       class="d-none"
                       :class="{ 'is-invalid': errors.config || syntax_error }"
                     />
-                    <span class="invalid-feedback">{{ errors.config || syntax_error }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.config || syntax_error) }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">
@@ -396,7 +396,7 @@
                       rules=""
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.description }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.description) }}</span>
                   </div>
                 </div>
               </div>

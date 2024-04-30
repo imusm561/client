@@ -508,7 +508,7 @@
                       :class="errors.to && 'is-invalid'"
                     />
                     <Field name="to" v-model="new_mail.to" rules="required" class="d-none" />
-                    <span class="invalid-feedback">{{ errors.to }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.to) }}</span>
                   </div>
                   <div class="collapse" id="CcRecipientsCollapse">
                     <div class="col-12">
@@ -550,7 +550,7 @@
                       :class="['form-control', errors.subject && 'is-invalid']"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.subject }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.subject) }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">{{ $t('app.mail.composeModal.form.label') }}</label>
@@ -572,7 +572,7 @@
                       </template>
                     </VueSelect>
                     <Field name="label" v-model="new_mail.label" rules="required" class="d-none" />
-                    <span class="invalid-feedback">{{ errors.label }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.label) }}</span>
                   </div>
                   <div class="col-12">
                     <label>{{ $t('app.mail.composeModal.form.content') }}:</label>
@@ -588,7 +588,7 @@
                       rules="required"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.content }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.content) }}</span>
                   </div>
                   <div class="col-12">
                     <Uploader

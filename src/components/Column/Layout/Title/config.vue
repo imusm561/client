@@ -9,7 +9,7 @@
         :class="errors.content && 'is-invalid'"
       />
       <Field name="content" v-model="column.cfg.content" rules="required" class="d-none" />
-      <span class="invalid-feedback">{{ errors.content }}</span>
+      <span class="invalid-feedback">{{ $te(errors.content) }}</span>
     </div>
   </div>
 </template>

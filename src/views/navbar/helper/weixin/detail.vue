@@ -35,7 +35,7 @@
                           :class="['form-control', errors.scene && 'is-invalid']"
                           rules="required"
                         />
-                        <span class="invalid-feedback">{{ errors.scene }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.scene) }}</span>
                       </div>
                       <div class="col-12">
                         <label class="form-label">
@@ -51,7 +51,7 @@
                           :class="['form-control', errors.expire && 'is-invalid']"
                           rules="required"
                         />
-                        <span class="invalid-feedback">{{ errors.expire }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.expire) }}</span>
                       </div>
                       <div class="col-12">
                         <label class="form-label">
@@ -65,7 +65,7 @@
                           :class="['form-control', errors.count && 'is-invalid']"
                           rules="required"
                         />
-                        <span class="invalid-feedback">{{ errors.count }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.count) }}</span>
                       </div>
                     </div>
                     <button
@@ -611,7 +611,7 @@
                       :class="['form-control', errors.soid && 'is-invalid']"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.soid }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.soid) }}</span>
                   </div>
 
                   <div class="col-md-6">
@@ -652,7 +652,7 @@
                       rules="required"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.msg_type }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.msg_type) }}</span>
                   </div>
                   <div
                     :class="
@@ -685,7 +685,7 @@
                           : 'required'
                       "
                     />
-                    <span class="invalid-feedback">{{ errors.msg_keyword }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.msg_keyword) }}</span>
                   </div>
                   <div
                     class="col-md-6"
@@ -713,7 +713,7 @@
                       :class="['form-control', errors.instr_exp && 'is-invalid']"
                       rules="required|between:60,300"
                     />
-                    <span class="invalid-feedback">{{ errors.instr_exp }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.instr_exp) }}</span>
                   </div>
 
                   <div class="col-md-6">
@@ -736,7 +736,7 @@
                       :class="['form-control', errors.weight && 'is-invalid']"
                       rules="required|between:0,1000"
                     />
-                    <span class="invalid-feedback">{{ errors.weight }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.weight) }}</span>
                   </div>
 
                   <div class="col-md-6">
@@ -780,7 +780,7 @@
                       rules="required"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.reply_type }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.reply_type) }}</span>
                   </div>
 
                   <div class="col-md-12">
@@ -824,7 +824,7 @@
                       rules=""
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.reply_scope }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.reply_scope) }}</span>
                   </div>
 
                   <div class="col-12">
@@ -849,7 +849,7 @@
                       :class="['form-control', errors.reply_content && 'is-invalid']"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.reply_content }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.reply_content) }}</span>
                   </div>
 
                   <div class="col-12">
@@ -872,7 +872,7 @@
                       rules=""
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.description }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.description) }}</span>
                   </div>
                 </div>
               </div>

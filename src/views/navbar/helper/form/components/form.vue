@@ -757,7 +757,7 @@
                       :class="['form-control', errors.title && 'is-invalid']"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.title }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.title) }}</span>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">
@@ -821,7 +821,7 @@
                       rules="required"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.duration }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.duration) }}</span>
                   </div>
 
                   <div class="col-12">

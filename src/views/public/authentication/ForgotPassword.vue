@@ -58,7 +58,7 @@
                             :class="['form-control', (errors.phone || res.phone) && 'is-invalid']"
                             rules="required|phone"
                           />
-                          <span class="invalid-feedback">{{ errors.phone || res.phone }}</span>
+                          <span class="invalid-feedback">{{ $te(errors.phone) || res.phone }}</span>
                           <button
                             v-if="phone && !errors.phone"
                             type="button"
@@ -88,7 +88,7 @@
                           rules="required"
                           autocomplete="off"
                         />
-                        <span class="invalid-feedback">{{ errors.code || res.code }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.code) || res.code }}</span>
                       </div>
 
                       <div class="mt-4">
@@ -121,7 +121,7 @@
                             rules="required|password"
                             autocomplete="off"
                           />
-                          <span class="invalid-feedback">{{ errors.newpassword }}</span>
+                          <span class="invalid-feedback">{{ $te(errors.newpassword) }}</span>
                           <button
                             type="button"
                             class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
@@ -153,7 +153,7 @@
                             rules="required|confirmed:@newpassword"
                             autocomplete="off"
                           />
-                          <span class="invalid-feedback">{{ errors.confirmpassword }}</span>
+                          <span class="invalid-feedback">{{ $te(errors.confirmpassword) }}</span>
                           <button
                             type="button"
                             class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"

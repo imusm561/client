@@ -181,7 +181,7 @@
                           :class="['form-control', errors.username && 'is-invalid']"
                           rules="required"
                         />
-                        <span class="invalid-feedback">{{ errors.username }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.username) }}</span>
                       </div>
                     </div>
                     <div class="col-lg-6">
@@ -198,7 +198,7 @@
                           :class="['form-control', errors.fullname && 'is-invalid']"
                           rules="required|fullname"
                         />
-                        <span class="invalid-feedback">{{ errors.fullname }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.fullname) }}</span>
                       </div>
                     </div>
                     <div class="col-lg-6">
@@ -215,7 +215,7 @@
                           :class="['form-control', errors.phone && 'is-invalid']"
                           rules="required|phone"
                         />
-                        <span class="invalid-feedback">{{ errors.phone }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.phone) }}</span>
                       </div>
                     </div>
                     <div class="col-lg-6">
@@ -232,7 +232,7 @@
                           :class="['form-control', errors.email && 'is-invalid']"
                           rules="required|email"
                         />
-                        <span class="invalid-feedback">{{ errors.email }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.email) }}</span>
                       </div>
                     </div>
                     <div class="col-lg-6">
@@ -401,7 +401,7 @@
                             rules="required"
                             autocomplete="off"
                           />
-                          <span class="invalid-feedback">{{ errors.currentpassword }}</span>
+                          <span class="invalid-feedback">{{ $te(errors.currentpassword) }}</span>
                           <button
                             type="button"
                             class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
@@ -434,7 +434,7 @@
                             rules="required|password"
                             autocomplete="off"
                           />
-                          <span class="invalid-feedback">{{ errors.newpassword }}</span>
+                          <span class="invalid-feedback">{{ $te(errors.newpassword) }}</span>
                           <button
                             type="button"
                             class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
@@ -471,7 +471,7 @@
                             rules="required|confirmed:@newpassword"
                             autocomplete="off"
                           />
-                          <span class="invalid-feedback">{{ errors.confirmpassword }}</span>
+                          <span class="invalid-feedback">{{ $te(errors.confirmpassword) }}</span>
                           <button
                             type="button"
                             class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
@@ -648,7 +648,7 @@
                           :class="['form-control', errors.name && 'is-invalid']"
                           rules="required"
                         />
-                        <span class="invalid-feedback">{{ errors.name }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.name) }}</span>
                       </div>
                     </div>
                     <div class="col-lg-4">
@@ -665,7 +665,7 @@
                           :class="['form-control', errors.company && 'is-invalid']"
                           rules="required"
                         />
-                        <span class="invalid-feedback">{{ errors.company }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.company) }}</span>
                       </div>
                     </div>
                     <div class="col-lg-4">
@@ -682,7 +682,7 @@
                           :class="['form-control', errors.beian && 'is-invalid']"
                           rules="required"
                         />
-                        <span class="invalid-feedback">{{ errors.beian }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.beian) }}</span>
                       </div>
                     </div>
 
@@ -810,7 +810,7 @@
                           "
                           :class="['form-control', errors.aliyunAccessKeyId && 'is-invalid']"
                         />
-                        <span class="invalid-feedback">{{ errors.aliyunAccessKeyId }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.aliyunAccessKeyId) }}</span>
                       </div>
                     </div>
                     <div class="col-lg-6">
@@ -832,7 +832,9 @@
                           "
                           :class="['form-control', errors.aliyunAccessKeySecret && 'is-invalid']"
                         />
-                        <span class="invalid-feedback">{{ errors.aliyunAccessKeySecret }}</span>
+                        <span class="invalid-feedback">
+                          {{ $te(errors.aliyunAccessKeySecret) }}
+                        </span>
                       </div>
                     </div>
                     <div class="col-12">
@@ -868,7 +870,7 @@
                           }"
                         />
                         <span class="invalid-feedback">
-                          {{ errors.aliyunSmsTemplates || syntax_error.aliyunSmsTemplates }}
+                          {{ $te(errors.aliyunSmsTemplates) || syntax_error.aliyunSmsTemplates }}
                         </span>
                       </div>
                     </div>
@@ -885,7 +887,7 @@
                           "
                           :class="['form-control', errors.amapJsApi && 'is-invalid']"
                         />
-                        <span class="invalid-feedback">{{ errors.amapJsApi }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.amapJsApi) }}</span>
                       </div>
                     </div>
                     <div class="col-lg-4">
@@ -903,7 +905,7 @@
                           "
                           :class="['form-control', errors.amapJsCode && 'is-invalid']"
                         />
-                        <span class="invalid-feedback">{{ errors.amapJsCode }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.amapJsCode) }}</span>
                       </div>
                     </div>
                     <div class="col-lg-4">
@@ -925,7 +927,7 @@
                           "
                           :class="['form-control', errors.amapWebService && 'is-invalid']"
                         />
-                        <span class="invalid-feedback">{{ errors.amapWebService }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.amapWebService) }}</span>
                       </div>
                     </div>
 
@@ -945,7 +947,7 @@
                           :class="['form-control', errors.officeViewer && 'is-invalid']"
                           rules="required"
                         />
-                        <span class="invalid-feedback">{{ errors.officeViewer }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.officeViewer) }}</span>
                       </div>
                     </div>
 
@@ -1011,7 +1013,7 @@
                           rules="required"
                         />
                         <span class="invalid-feedback">
-                          {{ errors.mail || syntax_error.mail }}
+                          {{ $te(errors.mail) || syntax_error.mail }}
                         </span>
                       </div>
                     </div>
@@ -1038,7 +1040,7 @@
                           rules="required"
                         />
                         <span class="invalid-feedback">
-                          {{ errors.task || syntax_error.task }}
+                          {{ $te(errors.task) || syntax_error.task }}
                         </span>
                       </div>
                     </div>
@@ -1064,7 +1066,7 @@
                           :class="{ 'is-invalid': errors.vars || syntax_error.vars }"
                         />
                         <span class="invalid-feedback">
-                          {{ errors.vars || syntax_error.vars }}
+                          {{ $te(errors.vars) || syntax_error.vars }}
                         </span>
                       </div>
                     </div>

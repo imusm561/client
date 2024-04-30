@@ -46,7 +46,7 @@
                       :class="['form-control', errors.title && 'is-invalid']"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.title }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.title) }}</span>
                   </div>
                   <div class="col-md-4">
                     <label class="form-label">
@@ -91,7 +91,7 @@
                       v-model="job.rule"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.rule || expression.error }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.rule) || expression.error }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">
@@ -109,7 +109,7 @@
                       rules="required"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.description }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.description) }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">
@@ -123,7 +123,7 @@
                       :config="{ mode: 'range', dateFormat: 'Y-m-d H:i:S' }"
                     ></FlatPickr>
                     <Field name="duration" v-model="job.duration" rules="required" class="d-none" />
-                    <span class="invalid-feedback">{{ errors.duration }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.duration) }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">
@@ -146,7 +146,7 @@
                       </template>
                     </VueSelect>
                     <Field name="tags" v-model="job.tags" class="d-none" />
-                    <span class="invalid-feedback">{{ errors.tags }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.tags) }}</span>
                   </div>
                   <div class="col-12">
                     <label class="form-label">
@@ -165,7 +165,7 @@
                       class="d-none"
                       :class="{ 'is-invalid': errors.config || syntax_error }"
                     />
-                    <span class="invalid-feedback">{{ errors.config || syntax_error }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.config) || syntax_error }}</span>
                   </div>
                 </div>
               </div>

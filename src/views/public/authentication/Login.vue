@@ -45,7 +45,9 @@
                           ]"
                           rules="required"
                         />
-                        <span class="invalid-feedback">{{ errors.username || res.username }}</span>
+                        <span class="invalid-feedback">
+                          {{ $te(errors.username) || res.username }}
+                        </span>
                       </div>
 
                       <div class="mb-3">
@@ -76,7 +78,7 @@
                             autocomplete="off"
                           />
                           <span class="invalid-feedback">
-                            {{ errors.password || res.password }}
+                            {{ $te(errors.password) || res.password }}
                           </span>
                           <button
                             type="button"
@@ -140,7 +142,7 @@
                             :class="['form-control', (errors.phone || res.phone) && 'is-invalid']"
                             rules="required|phone"
                           />
-                          <span class="invalid-feedback">{{ errors.phone || res.phone }}</span>
+                          <span class="invalid-feedback">{{ $te(errors.phone) || res.phone }}</span>
                           <button
                             v-if="phone && !errors.phone"
                             type="button"
@@ -169,7 +171,7 @@
                           :class="['form-control', (errors.code || res.code) && 'is-invalid']"
                           rules="required"
                         />
-                        <span class="invalid-feedback">{{ errors.code || res.code }}</span>
+                        <span class="invalid-feedback">{{ $te(errors.code) || res.code }}</span>
                       </div>
 
                       <div class="form-check">

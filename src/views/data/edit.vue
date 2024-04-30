@@ -151,7 +151,7 @@
                   "
                   class="d-none"
                 />
-                <span class="invalid-feedback">{{ errors.acl_view }}</span>
+                <span class="invalid-feedback">{{ $te(errors.acl_view) }}</span>
               </h5>
               <h5 key="acl_edit" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                 <label class="form-label">{{ $t('data.column.BasicAclEdit') }}</label>
@@ -361,7 +361,7 @@
                         "
                         class="d-none"
                       />
-                      <span class="invalid-feedback">{{ errors.acl_view }}</span>
+                      <span class="invalid-feedback">{{ $te(errors.acl_view) }}</span>
                     </h5>
                     <h5 key="acl_edit" class="fs-14 mb-0 col-sm-6 mb-2 mt-2">
                       <label class="form-label">{{ $t('data.column.BasicAclEdit') }}</label>

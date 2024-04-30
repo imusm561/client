@@ -239,7 +239,7 @@
                       :class="['form-control', errors.title && 'is-invalid']"
                       rules="required"
                     />
-                    <span class="invalid-feedback">{{ errors.title }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.title) }}</span>
                   </div>
 
                   <div class="col-md-4">
@@ -257,7 +257,7 @@
                       rules="required"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.due_date }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.due_date) }}</span>
                   </div>
                   <div class="col-md-4">
                     <label class="form-label">{{ $t('app.task.editTaskModal.form.status') }}</label>
@@ -285,7 +285,7 @@
                       rules="required"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.status }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.status) }}</span>
                   </div>
                   <div class="col-md-4">
                     <label class="form-label">
@@ -300,7 +300,7 @@
                       rules="required|between:0,100"
                       @input="handleChangeTaskProgress"
                     />
-                    <span class="invalid-feedback">{{ errors.progress }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.progress) }}</span>
                   </div>
 
                   <div class="col-12">
@@ -317,7 +317,7 @@
                       :rules="`required|users:${$store.state.user.data.username}`"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.users }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.users) }}</span>
                   </div>
 
                   <div class="col-12">
@@ -339,7 +339,7 @@
                       </template>
                     </VueSelect>
                     <Field name="tags" v-model="current_task.tags" class="d-none" />
-                    <span class="invalid-feedback">{{ errors.tags }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.tags) }}</span>
                   </div>
 
                   <div class="col-12">
@@ -358,7 +358,7 @@
                       rules="required"
                       class="d-none"
                     />
-                    <span class="invalid-feedback">{{ errors.description }}</span>
+                    <span class="invalid-feedback">{{ $te(errors.description) }}</span>
                   </div>
                 </div>
               </div>
