@@ -46,7 +46,6 @@ import Todolist from '@ckeditor/ckeditor5-list/src/todolist';
 
 import Code from '@ckeditor/ckeditor5-basic-styles/src/code';
 
-import store from '@store';
 const { BASE_URL } = process.env;
 
 export default class ClassicEditor extends ClassicEditorBase {}
@@ -99,7 +98,6 @@ ClassicEditor.builtinPlugins = [
 ];
 
 ClassicEditor.defaultConfig = {
-  language: store.state.sys.lang,
   toolbar: {
     items: [
       'sourceEditing',
