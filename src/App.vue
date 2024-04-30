@@ -1,6 +1,6 @@
 <template>
   <component :is="resolveLayoutVariant">
-    <router-view v-slot="{ Component }" v-if="isRouterAlive">
+    <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">
         <component :is="Component" />
       </transition>
@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref, nextTick, provide, watch } from 'vue';
+import { computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import jwt from 'jsonwebtoken';
 import { clearUserData } from '@utils';
@@ -34,16 +34,6 @@ console.info(
   \\/_/   \\/_/  \\/_/   \\/_____/   \\/_____/   \\/_/  \\/_/`,
   'color:#c33b33;',
 );
-
-const isRouterAlive = ref(true);
-const reload = () => {
-  isRouterAlive.value = false;
-  nextTick(() => {
-    isRouterAlive.value = true;
-  });
-};
-
-provide('reload', reload);
 
 const { BASE_URL } = process.env;
 

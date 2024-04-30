@@ -558,7 +558,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, inject, watch } from 'vue';
+import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { parseMessage } from '@utils';
@@ -583,7 +583,6 @@ import store from '@store';
 import { userLogout } from '@api/user';
 import { getSearchResult } from '@api/com/search';
 
-const reload = inject('reload');
 const router = useRouter();
 const toast = useToast();
 
@@ -968,7 +967,6 @@ const lang = computed({
         dayjs().format('ll'),
       );
     }
-    reload();
   },
 });
 
