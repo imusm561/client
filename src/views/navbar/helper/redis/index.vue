@@ -43,7 +43,7 @@
                   <span class="tree-node-actions me-2">
                     <i
                       class="fs-16 text-danger mdi mdi-delete-outline ms-1"
-                      @click="confirm = node"
+                      @click.stop="confirm = node"
                       data-bs-toggle="modal"
                       data-bs-target="#confirmDeleteKeyModal"
                     ></i>

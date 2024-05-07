@@ -37,7 +37,6 @@
                 >
                   <span
                     class="tree-node-info align-items-center d-flex text-truncate w-100"
-                    @click="handleClickPath(node, stat)"
                     :title="node.path"
                   >
                     <i
@@ -75,7 +74,7 @@
                     <i
                       v-if="node.type === 'directory'"
                       class="fs-16 text-primary mdi mdi-cloud-upload-outline ms-1"
-                      @click="handleUpload(node)"
+                      @click.stop="handleUpload(node)"
                     ></i>
                     <i
                       v-if="node.type === 'file' && node.name === 'package.json'"
@@ -83,12 +82,12 @@
                       :class="
                         installing === node.key ? 'mdi-loading mdi-spin' : 'mdi-package-down '
                       "
-                      @click="handleInstallPackage(node, stat)"
+                      @click.stop="handleInstallPackage(node, stat)"
                     ></i>
                     <i
                       v-if="!dirs.includes(node.path)"
                       class="fs-16 text-danger mdi mdi-delete-outline ms-1"
-                      @click="confirm = node"
+                      @click.stop="confirm = node"
                       data-bs-toggle="modal"
                       data-bs-target="#confirmDeleteFileOrDirectoryModal"
                     ></i>
@@ -434,7 +433,7 @@ const tree = computed(() => {
                 newNode.language = /.log(.\d{1,2})?$/.test(newNode.name) ? 'log' : 'plaintext';
                 break;
             }
-            newNode.editable = ['txt', 'md', 'json', 'html', 'css', 'js'].includes(extension);
+            newNode.editable = !newNode.path.startsWith('logs');
           }
           currentNode.push(newNode);
           currentNode = newNode.children;

@@ -51,12 +51,12 @@
             <span class="tree-node-actions me-2" v-if="!node.edit">
               <i
                 class="fs-16 text-primary mdi mdi-plus-box-outline"
-                @click="handleAddDept(stat)"
+                @click.stop="handleAddDept(stat)"
               ></i>
               <i
                 v-if="!node.children?.length && node.pid !== 0"
                 class="fs-16 text-danger mdi mdi-delete-outline"
-                @click="handleDelDeptComfirm(node)"
+                @click.stop="handleDelDeptComfirm(node)"
               ></i>
             </span>
           </div>

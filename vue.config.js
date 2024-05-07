@@ -1,5 +1,4 @@
 const path = require('path');
-const MonacoWebpackPlugin = require('monaco-editor-esm-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const { styles } = require('@ckeditor/ckeditor5-dev-utils');
@@ -53,20 +52,6 @@ module.exports = {
   },
   transpileDependencies: [/ckeditor5-[^/\\]+[/\\]src[/\\].+\.js$/],
   configureWebpack: (config) => {
-    config.module.rules.push({
-      test: /\.js/,
-      enforce: 'pre',
-      /* eslint-disable-next-line no-useless-escape */
-      include: /node_modules[\\\/]monaco-editor[\\\/]esm/,
-      use: MonacoWebpackPlugin.loader,
-    });
-
-    config.plugins.push(
-      new MonacoWebpackPlugin({
-        filename: `static/js/[name].worker.js`,
-      }),
-    );
-
     if (process.env.NODE_ENV === 'production') {
       // config.module.rules.push({
       //   test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,

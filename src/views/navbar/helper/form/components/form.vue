@@ -60,17 +60,17 @@
                   <span class="tree-node-actions me-2" v-if="!node.edit">
                     <i
                       class="fs-16 text-primary mdi mdi-plus-box-outline"
-                      @click="handleAddForm(stat)"
+                      @click.stop="handleAddForm(stat)"
                     ></i>
                     <i
                       v-if="!node.children?.length"
                       class="fs-16 text-success mdi mdi-mdi mdi-content-copy"
-                      @click="handleCopyForm(node)"
+                      @click.stop="handleCopyForm(node)"
                     ></i>
                     <i
                       v-if="!node.children?.length"
                       class="fs-16 text-danger mdi mdi-delete-outline"
-                      @click="delete_form = node"
+                      @click.stop="delete_form = node"
                       data-bs-toggle="modal"
                       data-bs-target="#confirmDeleteFormDataModal"
                     ></i>

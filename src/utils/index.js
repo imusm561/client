@@ -173,6 +173,7 @@ export const size2Str = (size) => {
 
 export const getFileExt = (str) => {
   if (!str) return '';
+  else if (str.lastIndexOf('.') === -1) return '';
   else
     return str
       .substring(str.lastIndexOf('.') + 1)
