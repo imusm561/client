@@ -1151,16 +1151,16 @@ const setColumnRules = async (column) => {
   column._required = required;
   column._editable = editable;
 
-  if (column._visible != visible) {
-    column._visible = visible;
-    if (column._visible) await setColumnConfiguration(column);
-    else
-      data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
-        column.component,
-      )
-        ? []
-        : null;
-  }
+  // if (column._visible != visible) {
+  column._visible = visible;
+  if (column._visible) await setColumnConfiguration(column);
+  else
+    data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
+      column.component,
+    )
+      ? []
+      : null;
+  // }
 };
 
 const handleSelectDataTitle = (e) => {
