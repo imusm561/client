@@ -106,7 +106,7 @@
               <div class="card-body">
                 <div class="d-flex justify-content-between">
                   <div>
-                    <p class="fw-medium text-muted mb-0 text-capitalize">{{ item.title }}</p>
+                    <p class="fw-medium text-muted mb-0 text-capitalize">{{ $t(item.title) }}</p>
                     <h2 class="mt-4 ff-secondary fw-semibold">
                       {{ analytics[item.type].count || 0 }}
                     </h2>
@@ -291,7 +291,6 @@ import { onMounted, computed, ref } from 'vue';
 import { CalendarHeatmap } from 'vue3-calendar-heatmap';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import i18n from '@utils/i18n';
 import dayjs from '@utils/dayjs';
 import store from '@store';
 import Breadcrumb from '@layouts/breadcrumb';
@@ -304,25 +303,25 @@ import useTask from '../app/task/useTask';
 const toast = useToast();
 const types = [
   {
-    title: i18n.global.t('home.analytics.create'),
+    title: 'home.analytics.create',
     type: 'create',
     icon: 'mdi-creation',
     variant: 'primary',
   },
   {
-    title: i18n.global.t('home.analytics.delete'),
+    title: 'home.analytics.delete',
     type: 'delete',
     icon: 'mdi-delete-variant',
     variant: 'danger',
   },
   {
-    title: i18n.global.t('home.analytics.update'),
+    title: 'home.analytics.update',
     type: 'update',
     icon: 'mdi-square-edit-outline',
     variant: 'warning',
   },
   {
-    title: i18n.global.t('home.analytics.view'),
+    title: 'home.analytics.view',
     type: 'view',
     icon: 'mdi-eye-outline',
     variant: 'success',

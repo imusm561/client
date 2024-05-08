@@ -49,6 +49,12 @@
                         :options="serviceTypeOptions"
                         :clearable="false"
                       >
+                        <template v-slot:selected-option="{ text }">
+                          <span>{{ $t(text?.toString()) }}</span>
+                        </template>
+                        <template v-slot:option="{ text }">
+                          <span>{{ $t(text) }}</span>
+                        </template>
                         <template v-slot:no-options="{ search, searching }">
                           <template v-if="searching">
                             <span v-html="$t('components.vs.search', { search })"></span>
@@ -89,6 +95,12 @@
                         :options="serviceTypeOptions"
                         :clearable="false"
                       >
+                        <template v-slot:selected-option="{ text }">
+                          <span>{{ $t(text?.toString()) }}</span>
+                        </template>
+                        <template v-slot:option="{ text }">
+                          <span>{{ $t(text) }}</span>
+                        </template>
                         <template v-slot:no-options="{ search, searching }">
                           <template v-if="searching">
                             <span v-html="$t('components.vs.search', { search })"></span>

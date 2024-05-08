@@ -20,7 +20,7 @@
             :data-category="category.value"
           >
             <i class="mdi mdi-checkbox-blank-circle font-size-11 me-2"></i>
-            {{ category.title }}
+            {{ $t(category.title) }}
           </div>
         </div>
 
@@ -457,32 +457,32 @@ let calendarApi = null;
 
 const categories = [
   {
-    title: i18n.global.t('app.calendar.category.personal'),
+    title: 'app.calendar.category.personal',
     value: 'personal',
     variant: 'primary',
   },
   {
-    title: i18n.global.t('app.calendar.category.meeting'),
+    title: 'app.calendar.category.meeting',
     value: 'meeting',
     variant: 'secondary',
   },
   {
-    title: i18n.global.t('app.calendar.category.family'),
+    title: 'app.calendar.category.family',
     value: 'family',
     variant: 'warning',
   },
   {
-    title: i18n.global.t('app.calendar.category.work'),
+    title: 'app.calendar.category.work',
     value: 'work',
     variant: 'danger',
   },
   {
-    title: i18n.global.t('app.calendar.category.holiday'),
+    title: 'app.calendar.category.holiday',
     value: 'holiday',
     variant: 'success',
   },
   {
-    title: i18n.global.t('app.calendar.category.other'),
+    title: 'app.calendar.category.other',
     value: 'other',
     variant: 'info',
   },

@@ -226,7 +226,7 @@ const handleShowAmap = () => {
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.global.t('components.amap.missingKey'),
+        text: 'components.amap.missingKey',
       },
     });
     return;
@@ -238,7 +238,7 @@ const handleShowAmap = () => {
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.global.t('components.amap.initialization.failed'),
+        text: 'components.amap.initialization.failed',
       },
     });
     return;

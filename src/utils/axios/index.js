@@ -47,8 +47,8 @@ instance.interceptors.request.use(
         props: {
           variant: 'danger',
           icon: 'mdi-lan-disconnect',
-          title: i18n.global.t('socket.disconnect.toast.title'),
-          text: i18n.global.t('socket.disconnect.toast.text'),
+          title: 'socket.disconnect.toast.title',
+          text: 'socket.disconnect.toast.text',
         },
       });
       // throw new Error(i18n.global.t('socket.disconnect.toast.title'));

@@ -559,7 +559,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { parseMessage } from '@utils';
 import { setWatermark } from '@utils/watermark';
@@ -702,7 +702,7 @@ const handleEnter = () => {
           props: {
             variant: 'success',
             icon: 'mdi-check-circle',
-            text: i18n.global.t('layout.navbar.search.icon.copy.success'),
+            text: 'layout.navbar.search.icon.copy.success',
           },
         });
       })
@@ -957,10 +957,14 @@ const languages = [
   },
 ];
 
+const route = useRoute();
 const lang = computed({
   get: () => store.state.sys.lang,
   set: (value) => {
     store.dispatch('sys/toggleLang', value);
+    if (route?.meta?.title) {
+      document.title = i18n.global.t(route.meta.title) + ' - ' + store.state.sys.name;
+    }
     if (store.state.sys.cfg.waterMark && store.state.user.data.id) {
       setWatermark(
         `${store.state.user.data.username} - ${store.state.user.data.fullname}`,

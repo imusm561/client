@@ -124,7 +124,7 @@ router.afterEach((to) => {
     if (store.state.sys.name) {
       clearInterval(interval);
       if (page) {
-        document.title = i18n.global.t(page.title) + ' - ' + store.state.sys.name;
+        document.title = page.title + ' - ' + store.state.sys.name;
       } else {
         document.title = to?.meta?.title
           ? i18n.global.t(to.meta.title) + ' - ' + store.state.sys.name

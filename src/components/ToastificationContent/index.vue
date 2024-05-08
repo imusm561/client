@@ -8,7 +8,7 @@
         <i :class="`mdi ${icon} text-${variant} fs-16 align-middle me-2`"></i>
       </div>
       <span :class="`fw-semibold me-auto text-truncate text-${variant}`">
-        {{ title ? title : user ? user.fullname : $store.state.sys.name }}
+        {{ title ? $t(title) : user ? user.fullname : $store.state.sys.name }}
       </span>
       <small v-if="time" style="white-space: nowrap">{{ dayjs(time).fromNow() }}</small>
       <button type="button" class="btn-close" @click="$emit('close-toast')"></button>
@@ -19,7 +19,7 @@
       :title="text"
       @click="handleClickText"
     >
-      <span class="text-muted text-truncate-five-lines">{{ text }}</span>
+      <span class="text-muted text-truncate-five-lines">{{ $t(text) }}</span>
     </div>
   </div>
 </template>
@@ -62,12 +62,12 @@ const props = defineProps({
 // eslint-disable-next-line
 const emits = defineEmits(['close-toast']);
 
-const router = useRouter();
 const handleClickText = () => {
   if (props.to) {
     const to = JSON.parse(JSON.stringify(props.to));
     to.query = to.query || {};
     to.query.t = new Date().getTime();
+    const router = useRouter();
     router.replace(to);
     emits('close-toast');
   }

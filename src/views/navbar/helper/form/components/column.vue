@@ -484,7 +484,7 @@ const handleCopyColumns = () => {
         props: {
           variant: 'success',
           icon: 'mdi-check-circle',
-          text: i18n.global.t('layout.navbar.helper.form.column.components.copy.success'),
+          text: 'layout.navbar.helper.form.column.components.copy.success',
         },
       });
     })
@@ -519,7 +519,7 @@ const handlePasteColumns = () => {
               props: {
                 variant: 'success',
                 icon: 'mdi-check-circle',
-                text: i18n.global.t('layout.navbar.helper.form.column.components.paste.success'),
+                text: 'layout.navbar.helper.form.column.components.paste.success',
               },
             });
           }
@@ -556,7 +556,7 @@ const handleSaveFormColumns = () => {
         props: {
           variant: 'danger',
           icon: 'mdi-alert',
-          text: i18n.global.t('layout.navbar.helper.form.column.components.layout.tab.top'),
+          text: 'layout.navbar.helper.form.column.components.layout.tab.top',
         },
       });
       return;
@@ -568,7 +568,7 @@ const handleSaveFormColumns = () => {
         props: {
           variant: 'danger',
           icon: 'mdi-alert',
-          text: i18n.global.t('layout.navbar.helper.form.column.components.layout.tab.bottom'),
+          text: 'layout.navbar.helper.form.column.components.layout.tab.bottom',
         },
       });
       return;
@@ -587,7 +587,7 @@ const handleSaveFormColumns = () => {
         props: {
           variant: 'danger',
           icon: 'mdi-alert',
-          text: i18n.global.t('layout.navbar.helper.form.column.components.layout.tab.between'),
+          text: 'layout.navbar.helper.form.column.components.layout.tab.between',
         },
       });
       return;
@@ -608,7 +608,7 @@ const handleSaveFormColumns = () => {
           props: {
             variant: 'success',
             icon: 'mdi-check-circle',
-            text: i18n.global.t('layout.navbar.helper.form.column.save.success'),
+            text: 'layout.navbar.helper.form.column.save.success',
           },
         });
       } else {

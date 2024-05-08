@@ -53,7 +53,7 @@
                     </dt>
                     <dd class="col-sm-8 mb-3">
                       <span class="badge text-uppercase badge-soft-primary">
-                        {{ resolveJobStatus(job).text }}
+                        {{ $t(resolveJobStatus(job).text) }}
                       </span>
                     </dd>
                   </dl>
@@ -248,7 +248,6 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 
 import { getChartColorsArray, getUserInfo } from '@utils';
-import i18n from '@utils/i18n';
 import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 
@@ -297,7 +296,7 @@ const handleExecuteJob = () => {
         props: {
           variant: 'success',
           icon: 'mdi-check-circle',
-          text: i18n.global.t('layout.navbar.helper.job.execute'),
+          text: 'layout.navbar.helper.job.execute',
         },
       });
     } else {

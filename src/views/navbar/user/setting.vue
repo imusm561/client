@@ -1190,7 +1190,6 @@ import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 
 import { clearUserData, getChanges, hashData, base64ToFile } from '@utils';
-import i18n from '@utils/i18n';
 import dayjs from '@utils/dayjs';
 
 import FlatPickr from '@components/FlatPickr';
@@ -1412,7 +1411,7 @@ const handleSaveUserInfo = () => {
         props: {
           variant: 'success',
           icon: 'mdi-check-circle',
-          text: i18n.global.t('layout.navbar.user.dropdown.setting.save.success'),
+          text: 'layout.navbar.user.dropdown.setting.save.success',
         },
       });
     });

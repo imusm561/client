@@ -131,7 +131,7 @@
                     )}`"
                     @click="handleSetFilterModel(filter)"
                   >
-                    {{ filter.name }}
+                    {{ $t(filter.name) }}
                   </span>
                   <span
                     v-if="current_filter.id === filter.id"
@@ -320,7 +320,7 @@ const system = [
   {
     id: 'created_by_me',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdByMe'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.createdByMe',
     data: {
       data_state: {
         filterType: 'set',
@@ -335,7 +335,7 @@ const system = [
   {
     id: 'updated_by_me',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedByMe'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.updatedByMe',
     data: {
       data_state: {
         filterType: 'set',
@@ -350,9 +350,7 @@ const system = [
   {
     id: 'created_before_yesterday',
     created_by: '@system',
-    name: i18n.global.t(
-      'data.list.sideBar.toolPanels.customization.filter.system.createdBeforeYesterday',
-    ),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.createdBeforeYesterday',
     data: {
       data_state: {
         filterType: 'set',
@@ -369,9 +367,7 @@ const system = [
   {
     id: 'created_yesterday',
     created_by: '@system',
-    name: i18n.global.t(
-      'data.list.sideBar.toolPanels.customization.filter.system.createdYesterday',
-    ),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.createdYesterday',
     data: {
       data_state: {
         filterType: 'set',
@@ -388,7 +384,7 @@ const system = [
   {
     id: 'created_today',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdToday'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.createdToday',
     data: {
       data_state: {
         filterType: 'set',
@@ -405,7 +401,7 @@ const system = [
   {
     id: 'created_last_week',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdLastWeek'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.createdLastWeek',
     data: {
       data_state: {
         filterType: 'set',
@@ -422,7 +418,7 @@ const system = [
   {
     id: 'created_this_week',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdThisWeek'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.createdThisWeek',
     data: {
       data_state: {
         filterType: 'set',
@@ -439,9 +435,7 @@ const system = [
   {
     id: 'created_last_month',
     created_by: '@system',
-    name: i18n.global.t(
-      'data.list.sideBar.toolPanels.customization.filter.system.createdLastMonth',
-    ),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.createdLastMonth',
     data: {
       data_state: {
         filterType: 'set',
@@ -460,9 +454,7 @@ const system = [
   {
     id: 'created_this_month',
     created_by: '@system',
-    name: i18n.global.t(
-      'data.list.sideBar.toolPanels.customization.filter.system.createdThisMonth',
-    ),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.createdThisMonth',
     data: {
       data_state: {
         filterType: 'set',
@@ -481,7 +473,7 @@ const system = [
   {
     id: 'created_last_year',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdLastYear'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.createdLastYear',
     data: {
       data_state: {
         filterType: 'set',
@@ -500,7 +492,7 @@ const system = [
   {
     id: 'created_this_year',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.createdThisYear'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.createdThisYear',
     data: {
       data_state: {
         filterType: 'set',
@@ -519,9 +511,7 @@ const system = [
   {
     id: 'updated_before_yesterday',
     created_by: '@system',
-    name: i18n.global.t(
-      'data.list.sideBar.toolPanels.customization.filter.system.updatedBeforeYesterday',
-    ),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.updatedBeforeYesterday',
     data: {
       data_state: {
         filterType: 'set',
@@ -538,9 +528,7 @@ const system = [
   {
     id: 'updated_yesterday',
     created_by: '@system',
-    name: i18n.global.t(
-      'data.list.sideBar.toolPanels.customization.filter.system.updatedYesterday',
-    ),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.updatedYesterday',
     data: {
       data_state: {
         filterType: 'set',
@@ -557,7 +545,7 @@ const system = [
   {
     id: 'updated_today',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedToday'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.updatedToday',
     data: {
       data_state: {
         filterType: 'set',
@@ -574,7 +562,7 @@ const system = [
   {
     id: 'updated_last_week',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedLastWeek'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.updatedLastWeek',
     data: {
       data_state: {
         filterType: 'set',
@@ -591,7 +579,7 @@ const system = [
   {
     id: 'updated_this_week',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedThisWeek'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.updatedThisWeek',
     data: {
       data_state: {
         filterType: 'set',
@@ -608,9 +596,7 @@ const system = [
   {
     id: 'updated_last_month',
     created_by: '@system',
-    name: i18n.global.t(
-      'data.list.sideBar.toolPanels.customization.filter.system.updatedLastMonth',
-    ),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.updatedLastMonth',
     data: {
       data_state: {
         filterType: 'set',
@@ -629,9 +615,7 @@ const system = [
   {
     id: 'updated_this_month',
     created_by: '@system',
-    name: i18n.global.t(
-      'data.list.sideBar.toolPanels.customization.filter.system.updatedThisMonth',
-    ),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.updatedThisMonth',
     data: {
       data_state: {
         filterType: 'set',
@@ -650,7 +634,7 @@ const system = [
   {
     id: 'updated_last_year',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedLastYear'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.updatedLastYear',
     data: {
       data_state: {
         filterType: 'set',
@@ -669,7 +653,7 @@ const system = [
   {
     id: 'updated_this_year',
     created_by: '@system',
-    name: i18n.global.t('data.list.sideBar.toolPanels.customization.filter.system.updatedThisYear'),
+    name: 'data.list.sideBar.toolPanels.customization.filter.system.updatedThisYear',
     data: {
       data_state: {
         filterType: 'set',

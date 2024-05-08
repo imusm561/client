@@ -565,9 +565,7 @@ const handleCopyPermissions = () => {
         props: {
           variant: 'success',
           icon: 'mdi-check-circle',
-          text: i18n.global.t(
-            'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.copy.success',
-          ),
+          text: 'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.copy.success',
         },
       });
     })
@@ -602,9 +600,7 @@ const handlePastePermissions = () => {
               props: {
                 variant: 'success',
                 icon: 'mdi-check-circle',
-                text: i18n.global.t(
-                  'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.paste.success',
-                ),
+                text: 'layout.navbar.helper.org.role.editOrCreateRoleModal.form.permissions.paste.success',
               },
             });
           }

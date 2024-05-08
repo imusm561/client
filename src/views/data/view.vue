@@ -69,6 +69,12 @@
               })
           "
         >
+          <template v-slot:selected-option="{ title }">
+            <span>{{ $t(title?.toString()) }}</span>
+          </template>
+          <template v-slot:option="{ title }">
+            <span>{{ $t(title) }}</span>
+          </template>
           <template v-slot:no-options="{ search, searching }">
             <template v-if="searching">
               <span v-html="$t('components.vs.search', { search })"></span>
@@ -591,7 +597,6 @@ import {
   isEmpty,
   hashData,
 } from '@utils';
-import i18n from '@utils/i18n';
 import dayjs from '@utils/dayjs';
 import { socket } from '@utils/socket';
 
@@ -742,11 +747,12 @@ const fetchDataTitle = (search = '', loading) => {
       const current_title = data.find((item) => item.id === params.rid);
       if (current_title) {
         breadcrumbRef.value?.setItemTitle(current_title.title);
-        document.title = current_title.title + ' - ' + document.title;
+        document.title =
+          current_title.title + ' - ' + form.value.title + ' - ' + store.state.sys.name;
       }
       titles.value = [
         ...(store.state.user.data.permissions?.[form.value.id]?.create
-          ? [{ id: 0, title: i18n.global.t('data.view.create') }]
+          ? [{ id: 0, title: 'data.view.create' }]
           : []),
         ...data,
       ];

@@ -993,7 +993,7 @@ const handleDelUser = (confirm) => {
         props: {
           variant: 'danger',
           icon: 'mdi-alert',
-          text: i18n.global.t('layout.navbar.helper.org.user.delete.error'),
+          text: 'layout.navbar.helper.org.user.delete.error',
         },
       });
       return;

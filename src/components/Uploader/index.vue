@@ -49,10 +49,10 @@
                 <small class="text-muted text-capitalize ms-2">
                   {{
                     file.status.name == 'computing'
-                      ? `${file.status.text} [${file.status.progress}%]`
+                      ? `${$t(file.status.text)} [${file.status.progress}%]`
                       : file.status.name == 'uploading'
-                      ? `${file.status.text} [${file.status.speed}/S]`
-                      : `${file.status.text}`
+                      ? `${$t(file.status.text)} [${file.status.speed}/S]`
+                      : `${$t(file.status.text)}`
                   }}
                 </small>
               </div>
@@ -348,7 +348,7 @@ const onFileAdded = (file) => {
   file.key = nanoid();
   file.status = {
     name: 'computing',
-    text: i18n.global.t('components.uploader.status.computing'),
+    text: 'components.uploader.status.computing',
     progress: 0,
   };
   file.extension = getFileExt(file.name);
@@ -410,7 +410,7 @@ const computeFile = (file) => {
       } else {
         file.status = {
           name: 'waiting',
-          text: i18n.global.t('components.uploader.status.waiting'),
+          text: 'components.uploader.status.waiting',
           progress: 0,
         };
       }
@@ -425,7 +425,7 @@ const onFileProgress = (_, file) => {
   if (file.status.name === 'uploading') {
     file.status = {
       name: 'uploading',
-      text: i18n.global.t('components.uploader.status.uploading'),
+      text: 'components.uploader.status.uploading',
       speed: size2Str(file.currentSpeed),
       progress: Math.floor(file.progress() * 100),
     };
@@ -495,7 +495,7 @@ const handlePauseFileUpload = (file) => {
   checkUploadTasks();
   file.status = {
     name: 'paused',
-    text: i18n.global.t('components.uploader.status.paused'),
+    text: 'components.uploader.status.paused',
     progress: file.status.progress,
   };
 };
@@ -505,7 +505,7 @@ const handleResumeFileUpload = (file) => {
   if (uploadingFile) {
     file.status = {
       name: 'waiting',
-      text: i18n.global.t('components.uploader.status.waiting'),
+      text: 'components.uploader.status.waiting',
       progress: file.status.progress,
     };
   } else {
@@ -516,7 +516,7 @@ const handleResumeFileUpload = (file) => {
 const resumeFileUpload = (file) => {
   file.status = {
     name: 'uploading',
-    text: i18n.global.t('components.uploader.status.uploading'),
+    text: 'components.uploader.status.uploading',
     speed: size2Str(file.currentSpeed),
     progress: Math.floor(file.progress() * 100),
   };
@@ -526,7 +526,7 @@ const resumeFileUpload = (file) => {
 const handleMergeFile = (file) => {
   file.status = {
     name: 'merging',
-    text: i18n.global.t('components.uploader.status.merging'),
+    text: 'components.uploader.status.merging',
     progress: 100,
   };
   checkUploadTasks();

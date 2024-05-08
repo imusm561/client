@@ -32,7 +32,7 @@
               @click="mails.menu = menu.value"
             >
               <i :class="`mdi ${menu.icon} me-3 align-middle fw-medium`"></i>
-              <span>{{ menu.title }}</span>
+              <span>{{ $t(menu.title) }}</span>
               <span v-if="menu.count !== 0" :class="`badge badge-soft-${menu.variant} ms-auto`">
                 {{ menu.count }}
               </span>
@@ -821,43 +821,43 @@ const new_mail = ref({
 
 const menus = reactive([
   {
-    title: i18n.global.t('app.mail.menu.all'),
+    title: 'app.mail.menu.all',
     value: 'all',
     variant: 'primary',
     icon: 'mdi-email-multiple',
   },
   {
-    title: i18n.global.t('app.mail.menu.inbox'),
+    title: 'app.mail.menu.inbox',
     value: 'inbox',
     variant: 'info',
     icon: 'mdi-email-receive',
   },
   {
-    title: i18n.global.t('app.mail.menu.draft'),
+    title: 'app.mail.menu.draft',
     value: 'draft',
     variant: 'warning',
     icon: 'mdi-email-edit-outline',
   },
   {
-    title: i18n.global.t('app.mail.menu.sent'),
+    title: 'app.mail.menu.sent',
     value: 'sent',
     variant: 'success',
     icon: 'mdi-email-send',
   },
   {
-    title: i18n.global.t('app.mail.menu.trash'),
+    title: 'app.mail.menu.trash',
     value: 'trash',
     variant: 'danger',
     icon: 'mdi-trash-can',
   },
   {
-    title: i18n.global.t('app.mail.menu.star'),
+    title: 'app.mail.menu.star',
     value: 'star',
     variant: 'warning',
     icon: 'mdi-star',
   },
   {
-    title: i18n.global.t('app.mail.menu.important'),
+    title: 'app.mail.menu.important',
     value: 'important',
     variant: 'warning',
     icon: 'mdi-label',

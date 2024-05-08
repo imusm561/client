@@ -882,7 +882,7 @@ const generateColumnDef = (column) => {
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: i18n.global.t('data.list.cellEdit.error'),
+            text: 'data.list.cellEdit.error',
           },
         });
         return;
@@ -1657,7 +1657,7 @@ const handleFileInput = (e) => {
     props: {
       variant: 'success',
       icon: 'mdi-check-circle',
-      text: i18n.global.t('data.list.importing'),
+      text: 'data.list.importing',
     },
   });
   importData(formData).then(({ code, msg, data }) => {

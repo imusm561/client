@@ -49,7 +49,6 @@
 <script setup>
 import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
-import i18n from '@utils/i18n';
 import ToastificationContent from '@components/ToastificationContent';
 import Breadcrumb from '@layouts/breadcrumb';
 import MonacoEditor from '@components/MonacoEditor';
@@ -75,7 +74,7 @@ const handleQuery = () => {
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.global.t('layout.navbar.helper.sql.query.error'),
+        text: 'layout.navbar.helper.sql.query.error',
       },
     });
     return;

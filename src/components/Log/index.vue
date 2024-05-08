@@ -28,7 +28,7 @@
                 class="fs-12 text-decoration-underline text-primary cursor-pointer"
                 @click="handleViewLogData(log)"
               >
-                {{ log_types[log.type] }}
+                {{ $t(log_types[log.type]) }}
               </span>
             </div>
           </div>
@@ -73,7 +73,6 @@ import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getUserInfo } from '@utils';
-import i18n from '@utils/i18n';
 import dayjs from '@utils/dayjs';
 import Empty from '@components/Empty';
 import Avatar from '@components/Avatar';
@@ -102,18 +101,18 @@ const props = defineProps({
 });
 
 const log_types = {
-  10: i18n.global.t('components.log.type.createForm'),
-  11: i18n.global.t('components.log.type.updateForm'),
-  12: i18n.global.t('components.log.type.backupForm'),
-  13: i18n.global.t('components.log.type.truncateForm'),
-  20: i18n.global.t('components.log.type.createColumns'),
-  21: i18n.global.t('components.log.type.updateColumns'),
-  30: i18n.global.t('components.log.type.createData'),
-  31: i18n.global.t('components.log.type.importData'),
-  32: i18n.global.t('components.log.type.viewData'),
-  33: i18n.global.t('components.log.type.updateData'),
-  34: i18n.global.t('components.log.type.batchUpdate'),
-  35: i18n.global.t('components.log.type.deleteData'),
+  10: 'components.log.type.createForm',
+  11: 'components.log.type.updateForm',
+  12: 'components.log.type.backupForm',
+  13: 'components.log.type.truncateForm',
+  20: 'components.log.type.createColumns',
+  21: 'components.log.type.updateColumns',
+  30: 'components.log.type.createData',
+  31: 'components.log.type.importData',
+  32: 'components.log.type.viewData',
+  33: 'components.log.type.updateData',
+  34: 'components.log.type.batchUpdate',
+  35: 'components.log.type.deleteData',
 };
 
 const toast = useToast();

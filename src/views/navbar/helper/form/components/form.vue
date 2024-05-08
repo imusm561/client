@@ -1309,7 +1309,7 @@ const handleClickForm = (node, stat) => {
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.form.modified'),
+            text: 'layout.navbar.helper.form.modified',
           },
         });
         return;
@@ -1320,7 +1320,7 @@ const handleClickForm = (node, stat) => {
           props: {
             variant: 'danger',
             icon: 'mdi-alert',
-            text: i18n.global.t('layout.navbar.helper.form.column.modified'),
+            text: 'layout.navbar.helper.form.column.modified',
           },
         });
         return;
@@ -1342,7 +1342,7 @@ const handleEditFormTitle = (node) => {
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.global.t('layout.navbar.helper.form.modified'),
+        text: 'layout.navbar.helper.form.modified',
       },
     });
     return;
@@ -1416,7 +1416,7 @@ const handleAddForm = (stat) => {
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.global.t('layout.navbar.helper.form.modified'),
+        text: 'layout.navbar.helper.form.modified',
       },
     });
     return;
@@ -1427,7 +1427,7 @@ const handleAddForm = (stat) => {
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.global.t('layout.navbar.helper.form.column.modified'),
+        text: 'layout.navbar.helper.form.column.modified',
       },
     });
     return;
@@ -1620,7 +1620,7 @@ const handleSaveFormInfo = () => {
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.global.t('layout.navbar.helper.form.tab.approvalFlow.error'),
+        text: 'layout.navbar.helper.form.tab.approvalFlow.error',
       },
     });
     return;

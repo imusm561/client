@@ -1,4 +1,4 @@
-import { createI18n } from 'vue-i18n';
+import { createI18n } from 'vue-i18n/index';
 
 /**
  * Load locale messages
@@ -59,6 +59,8 @@ const i18n = createI18n({
   fallbackLocale: 'en-us',
   messages: loadLocaleMessages(),
   dateTimeFormats,
+  silentTranslationWarn: true,
+  silentFallbackWarn: true,
 });
 
 i18n.global.te = (key) => {

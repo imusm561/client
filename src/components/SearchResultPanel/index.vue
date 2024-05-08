@@ -258,7 +258,6 @@ import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { size2Str, replaceHtml, copyToClipboard } from '@utils';
-import i18n from '@utils/i18n';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
 // eslint-disable-next-line
@@ -310,7 +309,7 @@ const handleClickIcon = (icon) => {
         props: {
           variant: 'success',
           icon: 'mdi-check-circle',
-          text: i18n.global.t('layout.navbar.search.icon.copy.success'),
+          text: 'layout.navbar.search.icon.copy.success',
         },
       });
     })

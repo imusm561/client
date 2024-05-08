@@ -28,6 +28,12 @@
             label="text"
             :options="statusOptions"
           >
+            <template v-slot:selected-option="{ text }">
+              <span>{{ $t(text?.toString()) }}</span>
+            </template>
+            <template v-slot:option="{ text }">
+              <span>{{ $t(text) }}</span>
+            </template>
             <template v-slot:no-options="{ search, searching }">
               <template v-if="searching">
                 <span v-html="$t('components.vs.search', { search })"></span>
@@ -127,7 +133,7 @@
             <div class="d-flex">
               <div class="flex-grow-1">
                 <span class="badge text-uppercase" :class="resolveJobStatus(job).badge">
-                  {{ resolveJobStatus(job).text }}
+                  {{ $t(resolveJobStatus(job).text) }}
                 </span>
               </div>
               <div class="flex-shrink-0">

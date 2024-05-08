@@ -296,7 +296,6 @@ import { Draggable, dragContext } from '@he-tree/vue';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
 import { getFileExt, getUserInfo } from '@utils';
-import i18n from '@utils/i18n';
 import dayjs from '@utils/dayjs';
 import Breadcrumb from '@layouts/breadcrumb';
 import MonacoEditor from '@components/MonacoEditor';
@@ -547,7 +546,7 @@ const handleClickPath = (node, stat) => {
             props: {
               variant: 'danger',
               icon: 'mdi-alert',
-              text: i18n.global.t('layout.navbar.helper.code.editing'),
+              text: 'layout.navbar.helper.code.editing',
             },
           });
         } else {
@@ -581,7 +580,7 @@ const handleEditFileName = (node) => {
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.global.t('layout.navbar.helper.code.editing'),
+        text: 'layout.navbar.helper.code.editing',
       },
     });
     return;
@@ -618,7 +617,7 @@ const handleSaveFileName = (node, stat) => {
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.global.t('layout.navbar.helper.code.name.illegal'),
+        text: 'layout.navbar.helper.code.name.illegal',
       },
     });
     nextTick(() => document.querySelector('.tree_node_input')?.focus());
@@ -634,7 +633,7 @@ const handleSaveFileName = (node, stat) => {
       props: {
         variant: 'danger',
         icon: 'mdi-alert',
-        text: i18n.global.t('layout.navbar.helper.code.name.duplicate'),
+        text: 'layout.navbar.helper.code.name.duplicate',
       },
     });
     nextTick(() => document.querySelector('.tree_node_input')?.focus());
@@ -711,7 +710,7 @@ const handleFileInput = (e) => {
     props: {
       variant: 'success',
       icon: 'mdi-upload',
-      text: i18n.global.t('layout.navbar.helper.code.uploading'),
+      text: 'layout.navbar.helper.code.uploading',
     },
   });
   const formData = new FormData();
@@ -732,7 +731,7 @@ const handleFileInput = (e) => {
         props: {
           variant: 'success',
           icon: 'mdi-check-circle',
-          text: i18n.global.t('layout.navbar.helper.code.upload.success'),
+          text: 'layout.navbar.helper.code.upload.success',
         },
       });
     } else {
@@ -757,7 +756,7 @@ const handleInstallPackage = (node, stat) => {
     props: {
       variant: 'success',
       icon: 'mdi-package-down',
-      text: i18n.global.t('layout.navbar.helper.code.package.installing'),
+      text: 'layout.navbar.helper.code.package.installing',
     },
   });
   installing.value = node.key;
@@ -771,7 +770,7 @@ const handleInstallPackage = (node, stat) => {
         props: {
           variant: 'success',
           icon: 'mdi-check-circle',
-          text: i18n.global.t('layout.navbar.helper.code.package.install.success'),
+          text: 'layout.navbar.helper.code.package.install.success',
         },
       });
     } else {
@@ -816,7 +815,7 @@ const handleSaveCode = () => {
         props: {
           variant: 'success',
           icon: 'mdi-check-circle',
-          text: i18n.global.t('layout.navbar.helper.code.edit.success'),
+          text: 'layout.navbar.helper.code.edit.success',
         },
       });
     } else {
