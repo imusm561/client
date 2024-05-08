@@ -2,6 +2,7 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const { styles } = require('@ckeditor/ckeditor5-dev-utils');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
   publicPath: process.env.VUE_APP_BASE_URL,
@@ -52,6 +53,13 @@ module.exports = {
   },
   transpileDependencies: [/ckeditor5-[^/\\]+[/\\]src[/\\].+\.js$/],
   configureWebpack: (config) => {
+
+    config.plugins.push(
+      new MonacoWebpackPlugin({
+        filename: `static/js/[name].worker.js`,
+      }),
+    );
+
     if (process.env.NODE_ENV === 'production') {
       // config.module.rules.push({
       //   test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,

@@ -4,8 +4,9 @@
 
 <script setup>
 import { onMounted, ref, watch, computed } from 'vue';
-import loader from '@monaco-editor/loader';
+import * as monaco from 'monaco-editor';
 import store from '@store';
+
 // eslint-disable-next-line
 const props = defineProps({
   modelValue: {
@@ -36,58 +37,40 @@ const props = defineProps({
 // eslint-disable-next-line
 const emits = defineEmits(['update:modelValue', 'blur', 'error']);
 
-const editorRef = ref(null);
-let monaco, editor;
-
-// mkdir -p public/static/js/monaco-editor/min && cp -r node_modules/monaco-editor/min public/static/js/monaco-editor
-const { BASE_URL } = process.env;
-const config = {
-  paths: {
-    vs: `${BASE_URL}static/js/monaco-editor/min/vs`,
+monaco.editor.defineTheme('vs-dark', {
+  base: 'vs-dark',
+  inherit: true,
+  rules: [{ background: '#212529' }],
+  colors: {
+    'editor.background': '#212529',
   },
-};
-if (store.state.sys.lang === 'zh-cn') {
-  config['vs/nls'] = {
-    availableLanguages: {
-      '*': 'zh-cn',
-    },
-  };
-}
-loader.config(config);
+});
+monaco.editor.setTheme('vs-dark');
 
-onMounted(async () => {
-  monaco = await loader.init();
+monaco.editor.defineTheme('vs-readonly', {
+  base: 'vs',
+  inherit: true,
+  rules: [{ background: '#eff2f6' }],
+  colors: {
+    'editor.background': '#eff2f6',
+  },
+});
+monaco.editor.setTheme('vs-readonly');
 
-  monaco.editor.defineTheme('vs-dark', {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [{ background: '#212529' }],
-    colors: {
-      'editor.background': '#212529',
-    },
-  });
-  monaco.editor.setTheme('vs-dark');
+monaco.editor.defineTheme('vs-dark-readonly', {
+  base: 'vs-dark',
+  inherit: true,
+  rules: [{ background: '#262a2f' }],
+  colors: {
+    'editor.background': '#262a2f',
+  },
+});
+monaco.editor.setTheme('vs-dark-readonly');
 
-  monaco.editor.defineTheme('vs-readonly', {
-    base: 'vs',
-    inherit: true,
-    rules: [{ background: '#eff2f6' }],
-    colors: {
-      'editor.background': '#eff2f6',
-    },
-  });
-  monaco.editor.setTheme('vs-readonly');
+const editorRef = ref(null);
+let editor;
 
-  monaco.editor.defineTheme('vs-dark-readonly', {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [{ background: '#262a2f' }],
-    colors: {
-      'editor.background': '#262a2f',
-    },
-  });
-  monaco.editor.setTheme('vs-dark-readonly');
-
+onMounted(() => {
   editor = monaco.editor[props.options?.diff ? 'createDiffEditor' : 'create'](editorRef.value, {
     language: props.language,
     theme: theme.value,
