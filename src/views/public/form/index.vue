@@ -264,13 +264,13 @@ const formData = computed(() => {
   return JSON.parse(JSON.stringify(data.value));
 });
 
-const initialized = ref(false);
+let initialized = false;
 
 const { BASE_URL } = process.env;
 const fetchPubForm = async (uuid) => {
   const { code, data: res, msg } = await getPubForm({ uuid });
   if (code === 200) {
-    initialized.value = false;
+    initialized = false;
     sessionStorage.setItem(`${BASE_URL.replace(/\//g, '_')}pubtk`, res.token);
     sessionStorage.setItem(`${BASE_URL.replace(/\//g, '_')}pubun`, res.username);
     socket.emit('login', { username: res.username });
@@ -286,7 +286,7 @@ const fetchPubForm = async (uuid) => {
     await setFormColumns();
 
     current_tab.value = current_tab.value || 0;
-    initialized.value = true;
+    initialized = true;
   } else {
     toast({
       component: ToastificationContent,
@@ -312,7 +312,7 @@ watch(
 watch(
   () => formData.value,
   (newVal = {}, oldVal = {}) => {
-    if (initialized.value) {
+    if (initialized) {
       const changes = getChanges(newVal, oldVal);
       for (let field in changes) {
         columns.value
@@ -413,8 +413,8 @@ const setFormColumns = async () => {
       column._editable = true;
       column.key = hashData(JSON.stringify(column));
       replaceColumnVariables(column);
-      await setColumnConfiguration(column);
       await setColumnRules(column);
+      await setColumnConfiguration(column);
     });
     tab.columns = tab.children;
   });
@@ -435,8 +435,8 @@ const replaceColumnVariables = (column) => {
 };
 
 const setColumnConfiguration = async (column) => {
-  if (column.default) {
-    if (Number(data.value.id) === 0 || initialized.value) {
+  if (Number(data.value.id) === 0 || initialized) {
+    if (column.default && (!initialized || column.__default?.includes('data.'))) {
       const val = await getDataByFormula(data.value, column.__default);
       const res =
         column.component === 'SelectTags'
@@ -466,12 +466,15 @@ const setColumnConfiguration = async (column) => {
         column.cfg.placeholder = res;
       else data.value[column.field] = res;
     }
+
+    if (column.alias && route.query[column.alias])
+      data.value[column.field] = route.query[column.alias];
   }
 
   if (column.cfg?.source) {
     column.cfg.search = [];
     column.cfg.options = await getDataByFormula(data.value, column.cfg.__source, {
-      value: !initialized.value ? data.value[column.field] : null,
+      value: !initialized ? data.value[column.field] : null,
     });
 
     column.cfg.selected = [];
@@ -516,7 +519,7 @@ const setColumnConfiguration = async (column) => {
   }
 };
 
-const setColumnRules = async (column) => {
+const setColumnRules = async (column, setColumnCfg = false) => {
   const { visible, required, editable } = getRulesByFormula(data.value, column);
   if (column._visible != visible || column._required != required || column._editable != editable)
     column.key = hashData(JSON.stringify(column));
@@ -525,16 +528,16 @@ const setColumnRules = async (column) => {
   column._required = required;
   column._editable = editable;
 
-  // if (column._visible != visible) {
-  column._visible = visible;
-  if (column._visible) await setColumnConfiguration(column);
-  else
-    data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
-      column.component,
-    )
-      ? []
-      : null;
-  // }
+  if (column._visible != visible || setColumnCfg) {
+    column._visible = visible;
+    if (column._visible) await setColumnConfiguration(column);
+    else
+      data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
+        column.component,
+      )
+        ? []
+        : null;
+  }
 };
 
 const handleSelecterSearch = async ({ search, loading, column }) => {

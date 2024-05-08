@@ -769,7 +769,7 @@ const formData = computed(() => {
   return JSON.parse(JSON.stringify(data.value));
 });
 
-const initialized = ref(false);
+let initialized = false;
 
 onUnmounted(() => {
   if (Number(init_data.value.id))
@@ -780,7 +780,7 @@ const { BASE_URL } = process.env;
 const fetchDataEdit = async (tid, rid) => {
   const { code, data: res, msg } = await getDataEdit({ tid, rid });
   if (code === 200) {
-    initialized.value = false;
+    initialized = false;
     form.value = res.form;
     columns.value = res.columns;
     alias.value = res.alias;
@@ -791,7 +791,7 @@ const fetchDataEdit = async (tid, rid) => {
     await setFormColumns();
     fetchDataTitle();
     current_tab.value = current_tab.value || 0;
-    initialized.value = true;
+    initialized = true;
     const staged = localStorage.getItem(
       `${BASE_URL.replace(/\//g, '_')}${hashData(
         `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
@@ -834,10 +834,13 @@ watch(
   { immediate: true, deep: true },
 );
 
+let timer;
+let applying = false;
+
 watch(
   () => formData.value,
   (newVal = {}, oldVal = {}) => {
-    if (initialized.value) {
+    if (initialized) {
       const changes = getChanges(newVal, oldVal);
       for (let field in changes) {
         columns.value
@@ -859,10 +862,16 @@ watch(
               column.required?.includes(`data.${field}`) ||
               column.editable?.includes(`data.${field}`)
             )
-              await setColumnRules(column);
+              await setColumnRules(column, column.__default?.includes(`data.${field}`));
             else await setColumnConfiguration(column);
           });
       }
+    }
+    if (applying) {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        applying = false;
+      }, 500);
     }
   },
   { immediate: true, deep: true },
@@ -1034,8 +1043,8 @@ const setFormColumns = async () => {
       column._editable = true;
       column.key = hashData(JSON.stringify(column));
       replaceColumnVariables(column);
-      await setColumnConfiguration(column);
       await setColumnRules(column);
+      await setColumnConfiguration(column);
     });
     tab.columns = tab.children;
   });
@@ -1056,7 +1065,7 @@ const replaceColumnVariables = (column) => {
 };
 
 const setColumnConfiguration = async (column, refresh = false) => {
-  if (Number(data.value.id) === 0 || initialized.value) {
+  if ((Number(data.value.id) === 0 || initialized) && !applying) {
     if (column.default) {
       const val = await getDataByFormula(data.value, column.__default);
       const res =
@@ -1096,7 +1105,7 @@ const setColumnConfiguration = async (column, refresh = false) => {
   if (column.cfg?.source) {
     column.cfg.search = [];
     column.cfg.options = await getDataByFormula(data.value, column.cfg.__source, {
-      value: !initialized.value ? data.value[column.field] : null,
+      value: !initialized ? data.value[column.field] : null,
     });
 
     column.cfg.selected = [];
@@ -1142,7 +1151,7 @@ const setColumnConfiguration = async (column, refresh = false) => {
   }
 };
 
-const setColumnRules = async (column) => {
+const setColumnRules = async (column, setColumnCfg = false) => {
   const { visible, required, editable } = getRulesByFormula(data.value, column);
   if (column._visible != visible || column._required != required || column._editable != editable)
     column.key = hashData(JSON.stringify(column));
@@ -1151,16 +1160,16 @@ const setColumnRules = async (column) => {
   column._required = required;
   column._editable = editable;
 
-  // if (column._visible != visible) {
-  column._visible = visible;
-  if (column._visible) await setColumnConfiguration(column);
-  else
-    data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
-      column.component,
-    )
-      ? []
-      : null;
-  // }
+  if (column._visible != visible || setColumnCfg) {
+    column._visible = visible;
+    if (column._visible) await setColumnConfiguration(column);
+    else
+      data.value[column.field] = ['SelectMultiple', 'SelectTags', 'SelectFile'].includes(
+        column.component,
+      )
+        ? []
+        : null;
+  }
 };
 
 const handleSelectDataTitle = (e) => {
@@ -1288,6 +1297,7 @@ const handleStagedUpdate = (callback) => {
 };
 
 const handleApplyStagedData = () => {
+  applying = true;
   const staged = localStorage.getItem(
     `${BASE_URL.replace(/\//g, '_')}${hashData(
       `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
@@ -1298,11 +1308,11 @@ const handleApplyStagedData = () => {
   } catch (error) {
     // console.error(error);
   }
-  localStorage.removeItem(
-    `${BASE_URL.replace(/\//g, '_')}${hashData(
-      `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
-    )}`,
-  );
+  // localStorage.removeItem(
+  //   `${BASE_URL.replace(/\//g, '_')}${hashData(
+  //     `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+  //   )}`,
+  // );
 };
 
 const handleDiscardStagedData = () => {

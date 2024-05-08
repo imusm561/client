@@ -1338,8 +1338,8 @@ const setFormColumnDefs = async () => {
 
   columns.value.forEach((column) => {
     replaceColumnVariables(column);
-    setColumnConfiguration(column);
     setColumnRules(column);
+    // setColumnConfiguration(column);
 
     if (
       !column.component.includes('Basic') &&
