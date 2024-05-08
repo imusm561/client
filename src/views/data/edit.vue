@@ -1308,11 +1308,11 @@ const handleApplyStagedData = () => {
   } catch (error) {
     // console.error(error);
   }
-  // localStorage.removeItem(
-  //   `${BASE_URL.replace(/\//g, '_')}${hashData(
-  //     `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
-  //   )}`,
-  // );
+  localStorage.removeItem(
+    `${BASE_URL.replace(/\//g, '_')}${hashData(
+      `data_edit_${form.value.id}_${data.value.id}_${store.state.user.data.username}_staged`,
+    )}`,
+  );
 };
 
 const handleDiscardStagedData = () => {

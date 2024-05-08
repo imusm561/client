@@ -328,17 +328,14 @@ watch(
               (typeof column.cfg?.min === 'string' && column.cfg?.min?.includes(`data.${field}`)) ||
               (typeof column.cfg?.max === 'string' && column.cfg?.max?.includes(`data.${field}`)),
           )
-          .map(async (column) => {
+          .forEach(async (column) => {
             if (
               column.visible?.includes(`data.${field}`) ||
               column.required?.includes(`data.${field}`) ||
               column.editable?.includes(`data.${field}`)
-            ) {
-              await setColumnRules(column);
-            }
-            if (column._visible) {
-              await setColumnConfiguration(column);
-            }
+            )
+              await setColumnRules(column, column.__default?.includes(`data.${field}`));
+            else await setColumnConfiguration(column);
           });
       }
     }
@@ -436,7 +433,7 @@ const replaceColumnVariables = (column) => {
 
 const setColumnConfiguration = async (column) => {
   if (Number(data.value.id) === 0 || initialized) {
-    if (column.default && (!initialized || column.__default?.includes('data.'))) {
+    if (column.default) {
       const val = await getDataByFormula(data.value, column.__default);
       const res =
         column.component === 'SelectTags'
