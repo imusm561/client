@@ -130,6 +130,12 @@
                       :clearable="false"
                       :options="categories"
                     >
+                      <template v-slot:selected-option="{ title }">
+                        <span>{{ $t(title?.toString()) }}</span>
+                      </template>
+                      <template v-slot:option="{ title }">
+                        <span>{{ $t(title) }}</span>
+                      </template>
                       <template v-slot:no-options="{ search, searching }">
                         <template v-if="searching">
                           <span v-html="$t('components.vs.search', { search })"></span>
