@@ -51,22 +51,18 @@ onBeforeMount(async () => {
   if (
     column.cfg?.__source &&
     (!isNaN(parseInt(props.params.value)) ||
-      (Array.isArray(props.params.value) &&
-        props.params.value.length &&
-        props.params.value.every((item) => !isNaN(parseInt(item)))))
+      (Array.isArray(props.params.value) && props.params.value.length))
   ) {
-    if (sessionStorage.getItem(props.params.data.uuid)) {
-      let cache = JSON.parse(sessionStorage.getItem(props.params.data.uuid));
-      data.value = cache[props.params.data.uuid];
+    const CACHE_KEY = `CACHE_${props.params._form.id}_${props.params.data.id}_${props.params._column.id}`;
+    if (sessionStorage.getItem(CACHE_KEY)) {
+      let cache = JSON.parse(sessionStorage.getItem(CACHE_KEY));
+      data.value = cache.value;
     } else {
       data.value = await getDataByFormula(props.params.data, column.cfg.__source, {
         view: true,
         value: props.params.value,
       });
-      sessionStorage.setItem(
-        props.params.data.uuid,
-        JSON.stringify({ [props.params.data.uuid]: data.value }),
-      );
+      sessionStorage.setItem(CACHE_KEY, JSON.stringify({ value: data.value }));
     }
   } else {
     data.value = JSON.parse(JSON.stringify(props.params.value || null));
