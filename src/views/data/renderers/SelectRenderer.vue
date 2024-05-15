@@ -48,11 +48,26 @@ const column = JSON.parse(JSON.stringify(props.params._column));
 const data = ref(null);
 
 onBeforeMount(async () => {
-  if (column.cfg?.__source) {
-    data.value = await getDataByFormula(props.params.data, column.cfg.__source, {
-      view: true,
-      value: props.params.value,
-    });
+  if (
+    column.cfg?.__source &&
+    (!isNaN(parseInt(props.params.value)) ||
+      (Array.isArray(props.params.value) &&
+        props.params.value.length &&
+        props.params.value.every((item) => !isNaN(parseInt(item)))))
+  ) {
+    if (sessionStorage.getItem(props.params.data.uuid)) {
+      let cache = JSON.parse(sessionStorage.getItem(props.params.data.uuid));
+      data.value = cache[props.params.data.uuid];
+    } else {
+      data.value = await getDataByFormula(props.params.data, column.cfg.__source, {
+        view: true,
+        value: props.params.value,
+      });
+      sessionStorage.setItem(
+        props.params.data.uuid,
+        JSON.stringify({ [props.params.data.uuid]: data.value }),
+      );
+    }
   } else {
     data.value = JSON.parse(JSON.stringify(props.params.value || null));
   }
