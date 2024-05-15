@@ -786,24 +786,13 @@ const setFormColumns = () => {
   });
 };
 
-const { BASE_URL } = process.env;
-
 const setColumnValue = async (column) => {
   if (column.cfg?.source && data.value[column.field]) {
-    const CACHE_KEY = `${BASE_URL.replace(/\//g, '_')}${hashData(
-      JSON.stringify({ source: column.cfg.source, data: data.value[column.field] }),
-    )}`;
-    if (sessionStorage.getItem(CACHE_KEY)) {
-      let cache = JSON.parse(sessionStorage.getItem(CACHE_KEY));
-      data.value[column.field] = cache.value;
-    } else {
-      column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
-      data.value[column.field] = await getDataByFormula(data.value, column.cfg.__source, {
-        view: true,
-        value: data.value[column.field],
-      });
-      sessionStorage.setItem(CACHE_KEY, JSON.stringify({ value: data.value[column.field] }));
-    }
+    column.cfg.__source = replaceVariables(column.cfg.source, alias.value);
+    data.value[column.field] = await getDataByFormula(data.value, column.cfg.__source, {
+      view: true,
+      value: data.value[column.field],
+    });
   }
 
   if (column.cfg?.href) {

@@ -320,7 +320,12 @@ export const parseExpr2Params = (data, expr) => {
     params.script = TIDORSCRIPT;
     params.function = RIDORFUNCTION;
     if (COLORQUERY) {
-      COLORQUERY.split(',').forEach((param, index) => {
+      let query = COLORQUERY.split(',');
+      if (query[0] === 'raw') {
+        params.raw = true;
+        query = query.slice(1);
+      }
+      query.forEach((param, index) => {
         if (param.includes('data.'))
           params[`val_${index + 1}`] = data?.[param.replace('data.', '')];
         else params[`val_${index + 1}`] = param;
@@ -372,34 +377,50 @@ export const getDataByFormula = async (
       }
     } else {
       const params = parseExpr2Params(data, expr.replace('*==', ''));
-      if (params.tid) {
-        params.value = type === 'Single' ? (options.value ? [options.value] : []) : options.value;
-        if (params.value.length) {
-          const res = await getDataValue(params);
-          if (res.code === 200) {
-            return params.value.map((v) => {
-              const item = res.data.find((item) => item.value == Number(v));
-              return item || v;
-            });
-          } else return options.value;
+      if (params.tid || params.raw) {
+        const CACHE_KEY = `${BASE_URL.replace(/\//g, '_')}${hashData(
+          JSON.stringify({ params, value: options.value }),
+        )}`;
+        let cache = JSON.parse(sessionStorage.getItem(CACHE_KEY))?.value;
+        if (cache) return cache;
+        else {
+          if (params.tid) {
+            params.value =
+              type === 'Single' ? (options.value ? [options.value] : []) : options.value;
+            if (params.value.length) {
+              const res = await getDataValue(params);
+              if (res.code === 200) {
+                cache = params.value.map((v) => {
+                  const item = res.data.find((item) => item.value == Number(v));
+                  return item || v;
+                });
+                sessionStorage.setItem(CACHE_KEY, JSON.stringify({ value: cache }));
+                return cache;
+              } else return options.value;
+            }
+          } else {
+            const res = await getDataSource(params);
+            if (res.code === 200) {
+              if (typeof res.data === 'object' && Array.isArray(res.data)) {
+                const data = res.data
+                  .map((item) => {
+                    if (typeof item === 'object' && 'text' in item) {
+                      item.value = item.value || item.text;
+                      return item;
+                    } else {
+                      return { text: item, value: item };
+                    }
+                  })
+                  .find((item) => item.value === options.value);
+                cache = data ? (data.raw ? data : data.text) : options.value;
+                sessionStorage.setItem(CACHE_KEY, JSON.stringify({ value: cache }));
+                return cache;
+              } else return options.value;
+            } else return options.value;
+          }
         }
       } else {
-        const res = await getDataSource(params);
-        if (res.code === 200) {
-          if (typeof res.data === 'object' && Array.isArray(res.data)) {
-            const data = res.data
-              .map((item) => {
-                if (typeof item === 'object' && 'text' in item) {
-                  item.value = item.value || item.text;
-                  return item;
-                } else {
-                  return { text: item, value: item };
-                }
-              })
-              .find((item) => item.value === options.value);
-            return data ? (data.raw ? data : data.text) : options.value;
-          } else return options.value;
-        } else return options.value;
+        return options.value;
       }
     }
   } else {
