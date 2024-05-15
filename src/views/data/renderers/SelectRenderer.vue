@@ -39,7 +39,7 @@
 <script setup>
 import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { getDataByFormula } from '@utils';
+import { getDataByFormula, hashData } from '@utils';
 
 // eslint-disable-next-line
 const props = defineProps(['params']);
@@ -47,13 +47,13 @@ const props = defineProps(['params']);
 const column = JSON.parse(JSON.stringify(props.params._column));
 const data = ref(null);
 
+const { BASE_URL } = process.env;
+
 onBeforeMount(async () => {
-  if (
-    column.cfg?.__source &&
-    (!isNaN(parseInt(props.params.value)) ||
-      (Array.isArray(props.params.value) && props.params.value.length))
-  ) {
-    const CACHE_KEY = `CACHE_${props.params._form.id}_${props.params.data.id}_${props.params._column.id}`;
+  if (column.cfg?.__source && props.params.value) {
+    const CACHE_KEY = `${BASE_URL.replace(/\//g, '_')}${hashData(
+      JSON.stringify({ source: column.cfg.__source, data: props.params.value }),
+    )}`;
     if (sessionStorage.getItem(CACHE_KEY)) {
       let cache = JSON.parse(sessionStorage.getItem(CACHE_KEY));
       data.value = cache.value;

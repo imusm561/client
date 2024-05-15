@@ -786,13 +786,13 @@ const setFormColumns = () => {
   });
 };
 
+const { BASE_URL } = process.env;
+
 const setColumnValue = async (column) => {
-  if (
-    column.cfg?.source &&
-    (!isNaN(parseInt(data.value[column.field])) ||
-      (Array.isArray(data.value[column.field]) && data.value[column.field].length))
-  ) {
-    const CACHE_KEY = `CACHE_${form.value.id}_${data.value.id}_${column.id}`;
+  if (column.cfg?.source && data.value[column.field]) {
+    const CACHE_KEY = `${BASE_URL.replace(/\//g, '_')}${hashData(
+      JSON.stringify({ source: column.cfg.source, data: data.value[column.field] }),
+    )}`;
     if (sessionStorage.getItem(CACHE_KEY)) {
       let cache = JSON.parse(sessionStorage.getItem(CACHE_KEY));
       data.value[column.field] = cache.value;
