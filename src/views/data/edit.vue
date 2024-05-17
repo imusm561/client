@@ -1091,7 +1091,7 @@ const setColumnConfiguration = async (column, refresh = false) => {
         res &&
         typeof res === 'string' &&
         (res.includes('Error: ') ||
-          (column.component === 'SelectDatetime' && res === 'Invalid date'))
+          (column.component === 'SelectDatetime' && res === 'Invalid Date'))
       ) {
         column.cfg.placeholder = res;
         if (refresh) data.value[column.field] = null;

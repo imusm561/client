@@ -484,6 +484,10 @@ export const getDataByFormula = async (
                   });
           }
         }
+        if (params.function && Object.keys(params).some((key) => !params[key])) {
+          const key = Object.keys(params).find((key) => !params[key]);
+          return [{ text: `${key}?`, value: 'Error: ' }];
+        }
         const res = await getDataSource(params);
         if (res.code === 200) {
           if (typeof res.data === 'object' && Array.isArray(res.data))
