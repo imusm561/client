@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import i18n from '@utils/i18n';
 import store from '@store';
 import { getDataDefault, getDataSource, getDataValue } from '@api/data';
 const { BASE_URL } = process.env;
@@ -127,27 +128,19 @@ export const randomVariant = () => {
   return variants[Math.floor(Math.random() * (variants.length - 1))];
 };
 
+import { transform, isEqual } from 'lodash'; // isObject, isArray
 export const getChanges = (newObj, oldObj) => {
-  // Helper function to check if a value is an object
-  const isObject = (obj) => obj && typeof obj === 'object';
-  // Recursive function to find changes
   const changes = (obj1, obj2) => {
-    const result = {};
-    Object.keys(obj1).forEach((key) => {
-      const val1 = obj1[key];
+    return transform(obj1, (result, value, key) => {
+      const val1 = value;
       const val2 = obj2[key];
-      // If the values are objects, do a deep comparison
-      if (isObject(val1) && isObject(val2)) {
-        const valueChanges = changes(val1, val2);
-        if (Object.keys(valueChanges).length > 0) {
-          result[key] = valueChanges;
-        }
-      } else if (!Object.is(val1, val2)) {
-        // Using Object.is for comparison
+      if (!isEqual(val1, val2)) {
         result[key] = val1;
+        // if (isArray(val1)) result[key] = val1.filter((val) => !val2.includes(val));
+        // else if (isObject(val1) && isObject(val2)) result[key] = changes(val1, val2);
+        // else result[key] = val1;
       }
     });
-    return result;
   };
   return changes(newObj, oldObj);
 };
@@ -484,9 +477,18 @@ export const getDataByFormula = async (
                   });
           }
         }
-        if (params.function && Object.keys(params).some((key) => !params[key])) {
-          const key = Object.keys(params).find((key) => !params[key]);
-          return [{ text: `${key}?`, value: 'Error: ' }];
+        if (params.script) {
+          const param = Object.keys(params).find((key) => !params[key] || params[key].length === 0);
+          if (param) {
+            return [
+              {
+                text: i18n.global.t('utils.getDataByFormula.param.empty', {
+                  param,
+                }),
+                value: 'Error: ',
+              },
+            ];
+          }
         }
         const res = await getDataSource(params);
         if (res.code === 200) {

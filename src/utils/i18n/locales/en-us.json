@@ -1051,5 +1051,7 @@
   "vee.validate.fullname": "The fullname consists of 2-20 uppercase and lowercase letters or Chinese characters.",
   "vee.validate.email": "Incorrect email address",
   "vee.validate.phone": "Incorrect cell-phone number",
-  "vee.validate.password": "The password consists of 8 or more uppercase and lowercase letters, numbers, and special characters."
+  "vee.validate.password": "The password consists of 8 or more uppercase and lowercase letters, numbers, and special characters.",
+
+  "utils.getDataByFormula.param.empty": "The parameter [{param}] cannot be empty."
 }
