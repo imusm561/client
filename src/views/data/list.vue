@@ -24,7 +24,7 @@
             </div>
             <div
               v-if="
-                $store.state.user.data?.permissions?.[$route.params.tid]?.batch &&
+                $store.state.user.data?.permissions?.[form.id]?.batch &&
                 selectedRows.length &&
                 (!form.flow || form.flow?.length === 0)
               "
@@ -100,10 +100,10 @@
               </div>
             </div>
             <button
-              v-if="$store.state.user.data?.permissions?.[$route.params.tid]?.create"
+              v-if="$store.state.user.data?.permissions?.[form.id]?.create"
               type="button"
               class="btn btn-sm btn-primary"
-              @click="$router.push({ name: 'edit', params: { tid: $route.params.tid, rid: 0 } })"
+              @click="$router.push({ name: 'edit', params: { tid: form.id, rid: 0 } })"
             >
               <!-- <i class="mdi mdi-plus"></i> -->
               {{ $t('data.list.data.create') }}
@@ -122,7 +122,7 @@
         </div>
         <AgGridVue
           v-else
-          :key="$route.params.tid"
+          :key="form.id"
           class="ag-height"
           :class="
             $store.state.sys.theme === 'dark'
@@ -470,7 +470,7 @@ const ready = reactive({
 });
 
 const refetchDataListHandler = (res) => {
-  if (res.tid == route.params.tid) handleRefetchDataList();
+  if (res.tid === form.value.id) handleRefetchDataList();
 };
 
 onMounted(() => {
@@ -503,12 +503,12 @@ const fetchDataForm = async (callback) => {
         };
       });
     } else {
-      const { data: _theme } = await getCustomTheme({ tid: Number(route.params.tid) });
+      const { data: _theme } = await getCustomTheme({ tid: form.value.id });
       theme.value = _theme || { data: 'alpine' };
-      const { data: _customs } = await getCustomColumn({ tid: Number(route.params.tid) });
+      const { data: _customs } = await getCustomColumn({ tid: form.value.id });
       customs.value = _customs;
       const { data: _pagination } = await getCustomPagination({
-        tid: Number(route.params.tid),
+        tid: form.value.id,
       });
       pagination.value = _pagination
         ? { ..._pagination, ...{ pageSize: _pagination.data } }
@@ -620,7 +620,7 @@ const onGridReady = (params) => {
     return theme.value.data;
   };
   gridApi.setTheme = async (data) => {
-    const tid = Number(route.params.tid);
+    const tid = form.value.id;
     if (tid) {
       if (theme.value.id) {
         await updateCustomTheme({
@@ -655,7 +655,7 @@ const onGridReady = (params) => {
 let timer = null;
 const handleColumnChanged = () => {
   if (!ready.setCustom) return;
-  const tid = Number(route.params.tid);
+  const tid = form.value.id;
   if (tid) {
     const data = gridApi.getColumnState();
     if (timer) clearTimeout(timer);
@@ -680,7 +680,7 @@ const handleColumnChanged = () => {
 
 const handlePaginationChanged = (params) => {
   const data = params.api.paginationGetPageSize();
-  const tid = Number(route.params.tid);
+  const tid = form.value.id;
   if (data && tid) {
     if (data != pagination.value.pageSize) {
       if (timer) clearTimeout(timer);
@@ -797,45 +797,29 @@ const generateColumnDef = (column) => {
       }
     }
 
-    checkData({ tid: Number(route.params.tid), rid: params.data.id }).then(
-      ({ code, data: editing, msg }) => {
-        if (code === 200) {
-          if (editing === null || editing === store.state.user.data.username) {
-            updateData({
-              tid: Number(route.params.tid),
-              id: params.data.id,
-              [params.column.colId]: params.newValue,
-              flow: form.value.flow,
-            }).then((res) => {
-              if (res.code != 200) {
-                params.data[params.colDef.field] = params.oldValue;
-                params.api.applyTransaction({ update: [params.data] });
-                params.api.refreshCells();
-                toast({
-                  component: ToastificationContent,
-                  props: {
-                    variant: 'danger',
-                    icon: 'mdi-alert',
-                    text: res.msg,
-                  },
-                });
-              }
-            });
-          } else {
-            params.data[params.colDef.field] = params.oldValue;
-            params.api.applyTransaction({ update: [params.data] });
-            params.api.refreshCells();
-            toast({
-              component: ToastificationContent,
-              props: {
-                variant: 'danger',
-                icon: 'mdi-alert',
-                text: i18n.global.t('data.list.cellEdit.conflicts', {
-                  user: getUserInfo(editing).fullname,
-                }),
-              },
-            });
-          }
+    checkData({ tid: form.value.id, rid: params.data.id }).then(({ code, data: editing, msg }) => {
+      if (code === 200) {
+        if (editing === null || editing === store.state.user.data.username) {
+          updateData({
+            tid: form.value.id,
+            id: params.data.id,
+            [params.column.colId]: params.newValue,
+            flow: form.value.flow,
+          }).then((res) => {
+            if (res.code != 200) {
+              params.data[params.colDef.field] = params.oldValue;
+              params.api.applyTransaction({ update: [params.data] });
+              params.api.refreshCells();
+              toast({
+                component: ToastificationContent,
+                props: {
+                  variant: 'danger',
+                  icon: 'mdi-alert',
+                  text: res.msg,
+                },
+              });
+            }
+          });
         } else {
           params.data[params.colDef.field] = params.oldValue;
           params.api.applyTransaction({ update: [params.data] });
@@ -845,12 +829,26 @@ const generateColumnDef = (column) => {
             props: {
               variant: 'danger',
               icon: 'mdi-alert',
-              text: msg,
+              text: i18n.global.t('data.list.cellEdit.conflicts', {
+                user: getUserInfo(editing).fullname,
+              }),
             },
           });
         }
-      },
-    );
+      } else {
+        params.data[params.colDef.field] = params.oldValue;
+        params.api.applyTransaction({ update: [params.data] });
+        params.api.refreshCells();
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
   };
   // columnDef.onCellClicked = (params) => {
   //   console.log('onCellClicked', params);
@@ -868,7 +866,7 @@ const generateColumnDef = (column) => {
         ) &&
       (column?.tags?.includes('cellEdit') ||
         ['BasicDataState', 'BasicAclView', 'BasicAclEdit'].includes(column.component)) &&
-      store.state.user.data?.permissions?.[route.params.tid]?.edit &&
+      store.state.user.data?.permissions?.[form.value.id]?.edit &&
       (params.data.created_by === store.state.user.data.username ||
         params.data.updated_by === store.state.user.data.username ||
         params.data.acl_edit.includes(store.state.user.data.username) ||
@@ -947,7 +945,7 @@ const generateColumnDef = (column) => {
     columnDef.filterParams = {
       values: async (params) => {
         const { data } = await getDataSets({
-          tid: Number(route.params.tid),
+          tid: form.value.id,
           field: column.field,
         });
         params.success(
@@ -993,7 +991,7 @@ const generateColumnDef = (column) => {
           params.success(column.cfg.options);
         } else {
           const { data } = await getDataSets({
-            tid: Number(route.params.tid),
+            tid: form.value.id,
             field: column.field,
           });
           params.success(
@@ -1028,7 +1026,7 @@ const generateColumnDef = (column) => {
     columnDef.filterParams = {
       values: async (params) => {
         const { data } = await getDataSets({
-          tid: Number(route.params.tid),
+          tid: form.value.id,
           field: column.field,
         });
         params.success(
@@ -1260,7 +1258,7 @@ const batch = reactive({
 });
 
 const handleSubmitBatchUpdate = (action) => {
-  const tid = Number(route.params.tid);
+  const tid = form.value.id;
   const ids = selectedRows.value.map((row) => {
     return row.id;
   });
@@ -1415,7 +1413,7 @@ const serverSideDatasource = {
     if (ready.getRows || Object.keys(params.request.filterModel).length) {
       ready.getRows = true;
       document.getElementById('handleSetCurrentFilter').click();
-      getDataList({ ...{ tid: Number(route.params.tid) }, ...params.request })
+      getDataList({ ...{ tid: form.value.id }, ...params.request })
         .then((res) => {
           params.success({
             rowData: res.data.rows || [],
@@ -1468,7 +1466,7 @@ const getContextMenuItems = (params) => {
 
     if (
       (!form.value.flow?.length || params.node?.data?.data_state === 'drafted') &&
-      store.state.user.data?.permissions?.[route.params.tid]?.edit &&
+      store.state.user.data?.permissions?.[form.value.id]?.edit &&
       (params.node?.data?.created_by === store.state.user.data.username ||
         params.node?.data?.updated_by === store.state.user.data.username ||
         params.node?.data?.acl_edit.includes(store.state.user.data.username) ||
@@ -1520,7 +1518,7 @@ const getContextMenuItems = (params) => {
     // 'export', // excelExport
   );
 
-  if (store.state.user.data?.permissions?.[route.params.tid]?.export) {
+  if (store.state.user.data?.permissions?.[form.value.id]?.export) {
     const menu_export = {
       name: i18n.global.t('data.list.contextMenu.export'),
       subMenu: [
@@ -1583,7 +1581,7 @@ const getContextMenuItems = (params) => {
     menu.push(menu_export);
   }
 
-  if (!form.value.flow?.length && store.state.user.data?.permissions?.[route.params.tid]?.import) {
+  if (!form.value.flow?.length && store.state.user.data?.permissions?.[form.value.id]?.import) {
     const menu_import = {
       name: i18n.global.t('data.list.contextMenu.import'),
       subMenu: [
@@ -1597,7 +1595,7 @@ const getContextMenuItems = (params) => {
         {
           name: i18n.global.t('data.list.contextMenu.import.download'),
           action: () => {
-            getDataTemplate({ tid: route.params.tid }).then((res) => {
+            getDataTemplate({ tid: form.value.id }).then((res) => {
               const blob = new Blob([res]);
               let href = window.URL.createObjectURL(blob);
               let downloadElement = document.createElement('a');
@@ -1695,7 +1693,7 @@ const handlePaginationChange = ({ pageNum, pageSize }) => {
 
 const getDataListForHtml = () => {
   getDataList({
-    tid: Number(route.params.tid),
+    tid: form.value.id,
     pageNum: pagination.value.pageNum,
     pageSize: pagination.value.pageSize,
   }).then(({ code, data, msg }) => {
