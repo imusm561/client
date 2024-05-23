@@ -3,8 +3,8 @@
   "version": "3.6.1",
   "private": true,
   "scripts": {
-    "serve": "cross-env NODE_ENV=development vue-cli-service serve",
-    "build": "cross-env NODE_ENV=production vue-cli-service build",
+    "serve": "cross-env NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider vue-cli-service serve",
+    "build": "cross-env NODE_ENV=production NODE_OPTIONS=--openssl-legacy-provider vue-cli-service build",
     "lint": "vue-cli-service lint",
     "prettier": "prettier --write .",
     "deploy": "cd ../ && chmod +x ./server/deploy.sh && ./server/deploy.sh"
@@ -93,12 +93,12 @@
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0",
     "monaco-editor-webpack-plugin": "6.0.0",
-    "node-sass": "6.0.1",
+    "node-sass": "^8.0.0",
     "postcss": "^7.0.0",
     "postcss-loader": "^4.3.0",
     "prettier": "^2.8.1",
     "raw-loader": "^4.0.1",
-    "sass-loader": "^10.2.1",
+    "sass-loader": "^10.4.1",
     "webpack": "^4.5.0"
   },
   "eslintConfig": {
