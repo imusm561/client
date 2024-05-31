@@ -67,12 +67,9 @@
                       {{ node.name }}
                     </span>
                   </span>
-                  <span
-                    class="tree-node-actions me-2"
-                    v-if="!node.edit && node.path.includes('/') && !node.path.startsWith('logs')"
-                  >
+                  <span class="tree-node-actions me-2" v-if="!node.edit && node.path.includes('/')">
                     <i
-                      v-if="node.type === 'directory'"
+                      v-if="node.type === 'directory' && !node.path.startsWith('logs')"
                       class="fs-16 text-primary mdi mdi-cloud-upload-outline ms-1"
                       @click.stop="handleUpload(node)"
                     ></i>
@@ -85,7 +82,7 @@
                       @click.stop="handleInstallPackage(node, stat)"
                     ></i>
                     <i
-                      v-if="!dirs.includes(node.path)"
+                      v-if="!dirs.includes(node.path) && !node.path.startsWith('logs/pm2')"
                       class="fs-16 text-danger mdi mdi-delete-outline ms-1"
                       @click.stop="confirm = node"
                       data-bs-toggle="modal"
