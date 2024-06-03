@@ -1,5 +1,7 @@
 <template>
   <div ref="dropRef">
+    <div ref="fileUploadRef" class="d-none"></div>
+    <div ref="folderUploadRef" class="d-none"></div>
     <div id="file-list" data-simplebar style="max-height: 30vh">
       <div class="d-flex align-items-center mb-2" v-for="file in files" :key="file.identifier">
         <div class="flex-shrink-0 me-2 mt-1">
@@ -112,7 +114,7 @@
           :disabled="disabled"
           class="btn btn-sm"
           :class="fieldClass"
-          ref="uploadRef"
+          @click="fileUploadRef.click()"
         >
           {{ placeholder }}
         </button>
@@ -128,7 +130,11 @@
         ></button>
         <ul class="dropdown-menu">
           <li>
-            <a class="dropdown-item cursor-pointer" :class="{ disabled }" ref="fileUploadRef">
+            <a
+              class="dropdown-item cursor-pointer"
+              :class="{ disabled }"
+              @click="fileUploadRef.click()"
+            >
               <i class="mdi mdi-file-upload" />
               <span class="ms-1">
                 {{
@@ -140,10 +146,14 @@
             </a>
           </li>
           <li v-if="accept == '*' && multiple">
-            <a class="dropdown-item cursor-pointer" :class="{ disabled }" ref="folderUploadRef">
+            <span
+              class="dropdown-item cursor-pointer"
+              :class="{ disabled }"
+              @click="folderUploadRef.click()"
+            >
               <i class="mdi mdi-folder-upload" />
               <span class="ms-1">{{ $t('components.uploader.selectFolder') }}</span>
-            </a>
+            </span>
           </li>
           <div v-if="qrable && !isMobile()">
             <div class="dropdown-divider"></div>
@@ -288,45 +298,43 @@ watch(
 );
 
 const dropRef = ref(null);
-const uploadRef = ref(null);
 const fileUploadRef = ref(null);
 const folderUploadRef = ref(null);
 
 onMounted(() => {
-  socket.on('fileChanged', fileChangedHandler);
-
-  if (dropRef.value) uploader.assignDrop(dropRef.value);
-  if (uploadRef.value)
-    uploader.assignBrowse(uploadRef.value, false, props.multiple, { accept: props.accept });
-  if (fileUploadRef.value)
+  if (!props.readonly) {
+    socket.on('fileChanged', fileChangedHandler);
+    uploader.assignDrop(dropRef.value);
     uploader.assignBrowse(fileUploadRef.value, false, props.multiple, { accept: props.accept });
-  if (folderUploadRef.value)
     uploader.assignBrowse(folderUploadRef.value, true, props.multiple, { accept: props.accept });
 
-  uploader.on('fileAdded', onFileAdded);
-  uploader.on('fileProgress', onFileProgress);
-  uploader.on('fileSuccess', onFileSuccess);
+    uploader.on('fileAdded', onFileAdded);
+    uploader.on('fileProgress', onFileProgress);
+    uploader.on('fileSuccess', onFileSuccess);
 
-  const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
-  if (uploadDropdownMenu) {
-    uploadDropdownMenu.addEventListener('show.bs.dropdown', uploadDropdownMenuShowHandler);
-    uploadDropdownMenu.addEventListener('hide.bs.dropdown', uploadDropdownMenuHideHandler);
+    const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
+    if (uploadDropdownMenu) {
+      uploadDropdownMenu.addEventListener('show.bs.dropdown', uploadDropdownMenuShowHandler);
+      uploadDropdownMenu.addEventListener('hide.bs.dropdown', uploadDropdownMenuHideHandler);
+    }
   }
 });
 
 onUnmounted(() => {
-  socket.off('fileChanged', fileChangedHandler);
+  if (!props.readonly) {
+    socket.off('fileChanged', fileChangedHandler);
 
-  uploader.off('fileAdded', onFileAdded);
-  uploader.off('fileProgress', onFileProgress);
-  uploader.off('fileSuccess', onFileSuccess);
+    uploader.off('fileAdded', onFileAdded);
+    uploader.off('fileProgress', onFileProgress);
+    uploader.off('fileSuccess', onFileSuccess);
 
-  uploader = null;
+    uploader = null;
 
-  const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
-  if (uploadDropdownMenu) {
-    uploadDropdownMenu.removeEventListener('show.bs.dropdown', uploadDropdownMenuShowHandler);
-    uploadDropdownMenu.removeEventListener('hide.bs.dropdown', uploadDropdownMenuHideHandler);
+    const uploadDropdownMenu = document.getElementById(`${props.id}_uploadDropdownMenu`);
+    if (uploadDropdownMenu) {
+      uploadDropdownMenu.removeEventListener('show.bs.dropdown', uploadDropdownMenuShowHandler);
+      uploadDropdownMenu.removeEventListener('hide.bs.dropdown', uploadDropdownMenuHideHandler);
+    }
   }
 });
 
