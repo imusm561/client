@@ -1,6 +1,5 @@
 <template>
   <TreeSelect
-    :key="users"
     :options="options"
     :placeholder="placeholder"
     v-model="users"

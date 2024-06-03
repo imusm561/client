@@ -363,6 +363,7 @@
                         {{ $t('layout.navbar.helper.form.tab.basicInfo.aclView') }}
                       </label>
                       <UserSelector
+                        :key="`acl_view_${current_form.id}`"
                         v-model="current_form.acl_view"
                         :disabled="current_form.redirect || current_form.children"
                         :placeholder="
@@ -377,6 +378,7 @@
                         {{ $t('layout.navbar.helper.form.tab.basicInfo.aclEdit') }}
                       </label>
                       <UserSelector
+                        :key="`acl_edit_${current_form.id}`"
                         v-model="current_form.acl_edit"
                         :disabled="current_form.redirect || current_form.children"
                         :placeholder="
