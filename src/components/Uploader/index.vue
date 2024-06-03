@@ -139,7 +139,7 @@
               <span class="ms-1">
                 {{
                   $t('components.uploader.selectFile', {
-                    count: accept == '*' && multiple ? 2 : 1,
+                    count: multiple ? 2 : 1,
                   })
                 }}
               </span>
@@ -305,8 +305,8 @@ onMounted(() => {
   if (!props.readonly) {
     socket.on('fileChanged', fileChangedHandler);
     uploader.assignDrop(dropRef.value);
-    uploader.assignBrowse(fileUploadRef.value, false, props.multiple, { accept: props.accept });
-    uploader.assignBrowse(folderUploadRef.value, true, props.multiple, { accept: props.accept });
+    uploader.assignBrowse(fileUploadRef.value, false, !props.multiple, { accept: props.accept });
+    uploader.assignBrowse(folderUploadRef.value, true, !props.multiple, { accept: props.accept });
 
     uploader.on('fileAdded', onFileAdded);
     uploader.on('fileProgress', onFileProgress);
