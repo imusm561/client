@@ -39,9 +39,9 @@ export const initSocket = () => {
   });
 
   socket.on('forcedLogout', async () => {
+    // Clean user information
+    clearUserData();
     if (router.currentRoute.value?.meta?.auth) {
-      // Clean user information
-      clearUserData();
       // Redirect to login page
       router.replace({ name: 'login', query: { redirect: router.currentRoute.value.path } });
     }
