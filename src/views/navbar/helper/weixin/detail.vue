@@ -82,7 +82,7 @@
                   </Form>
                 </div>
                 <button
-                  v-if="account.platform"
+                  v-if="account.service_type === '3rdPartyPlatform'"
                   class="btn btn-sm p-0 ms-2"
                   @click="handleAuthorize"
                 >
@@ -1406,13 +1406,11 @@ const handleRefreshAccount = (key) => {
 const { BASE_URL } = process.env;
 const handleAuthorize = () => {
   const api = `${location.origin}${BASE_URL}cor/weixin/auth/url`;
-  const { platform, app_id: appid } = account.value;
+  const appid = account.value.app_id;
   const redirect = `${location.origin}${BASE_URL}cor/weixin/auth/${appid}`;
   const timestamp = new Date().getTime();
   const a = document.createElement('a');
-  a.href = `${api}?platform=${platform}&redirect=${encodeURIComponent(
-    redirect,
-  )}&timestamp=${timestamp}`;
+  a.href = `${api}?appid=${appid}&redirect=${encodeURIComponent(redirect)}&timestamp=${timestamp}`;
   a.target = '_blank';
   document.body.appendChild(a);
   a.click();
