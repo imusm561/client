@@ -500,6 +500,8 @@
   "layout.navbar.helper.weixin.detail.refreshTokenTime": "Refresh Token 更新时间",
   "layout.navbar.helper.weixin.detail.jsapiTicket": "Jsapi Ticket",
   "layout.navbar.helper.weixin.detail.jsapiTicketTime": "Jsapi Ticket 更新时间",
+  "layout.navbar.helper.weixin.detail.verifyTicket": "Verify Ticket",
+  "layout.navbar.helper.weixin.detail.verifyTicketTime": "Verify Ticket 更新时间",
   "layout.navbar.helper.weixin.detail.tags": "标签",
   "layout.navbar.helper.weixin.detail.config": "配置",
   "layout.navbar.helper.weixin.detail.qr.form.scene": "场景值",

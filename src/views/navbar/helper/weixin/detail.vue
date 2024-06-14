@@ -82,7 +82,7 @@
                   </Form>
                 </div>
                 <button
-                  v-if="account.service_type === '3rdPartyPlatform'"
+                  v-if="account.platform"
                   class="btn btn-sm p-0 ms-2"
                   @click="handleAuthorize"
                 >
@@ -191,7 +191,7 @@
                       @click="handleRefreshAccount('access_token')"
                     ></i>
                   </dt>
-                  <dd class="col-sm-9 mb-3" style="word-break: break-all">
+                  <dd class="col-sm-9 mb-3 text-truncate" style="word-break: break-all">
                     {{ account.access_token || '-' }}
                   </dd>
                   <dt class="col-sm-3 text-uppercase">
@@ -205,11 +205,11 @@
                     }}
                   </dd>
                 </dl>
-                <dl class="row mb-0" v-if="account.service_type === '3rdPartyPlatform'">
+                <dl class="row mb-0" v-if="account.platform">
                   <dt class="col-sm-3 text-uppercase">
                     {{ $t('layout.navbar.helper.weixin.detail.refreshToken') }}
                   </dt>
-                  <dd class="col-sm-9 mb-3" style="word-break: break-all">
+                  <dd class="col-sm-9 mb-3 text-truncate" style="word-break: break-all">
                     {{ account.refresh_token || '-' }}
                   </dd>
                   <dt class="col-sm-3 text-uppercase">
@@ -223,6 +223,24 @@
                     }}
                   </dd>
                 </dl>
+                <dl class="row mb-0" v-if="account.service_type === '3rdPartyPlatform'">
+                  <dt class="col-sm-3 text-uppercase">
+                    {{ $t('layout.navbar.helper.weixin.detail.verifyTicket') }}
+                  </dt>
+                  <dd class="col-sm-9 mb-3 text-truncate" style="word-break: break-all">
+                    {{ account.verify_ticket || '-' }}
+                  </dd>
+                  <dt class="col-sm-3 text-uppercase">
+                    {{ $t('layout.navbar.helper.weixin.detail.verifyTicketTime') }}
+                  </dt>
+                  <dd class="col-sm-9 mb-3">
+                    {{
+                      account.verify_ticket_time
+                        ? dayjs(account.verify_ticket_time).format('llll')
+                        : '-'
+                    }}
+                  </dd>
+                </dl>
                 <dl class="row mb-0" v-else>
                   <dt class="col-sm-3 text-uppercase">
                     {{ $t('layout.navbar.helper.weixin.detail.jsapiTicket') }}
@@ -231,7 +249,7 @@
                       @click="handleRefreshAccount('jsapi_ticket')"
                     ></i>
                   </dt>
-                  <dd class="col-sm-9 mb-3" style="word-break: break-all">
+                  <dd class="col-sm-9 mb-3 text-truncate" style="word-break: break-all">
                     {{ account.jsapi_ticket || '-' }}
                   </dd>
                   <dt class="col-sm-3 text-uppercase">
@@ -1388,11 +1406,13 @@ const handleRefreshAccount = (key) => {
 const { BASE_URL } = process.env;
 const handleAuthorize = () => {
   const api = `${location.origin}${BASE_URL}cor/weixin/auth/url`;
-  const appid = account.value.app_id;
+  const { platform, app_id: appid } = account.value;
   const redirect = `${location.origin}${BASE_URL}cor/weixin/auth/${appid}`;
   const timestamp = new Date().getTime();
   const a = document.createElement('a');
-  a.href = `${api}?appid=${appid}&redirect=${encodeURIComponent(redirect)}&timestamp=${timestamp}`;
+  a.href = `${api}?platform=${platform}&redirect=${encodeURIComponent(
+    redirect,
+  )}&timestamp=${timestamp}`;
   a.target = '_blank';
   document.body.appendChild(a);
   a.click();
