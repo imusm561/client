@@ -429,7 +429,7 @@ const tree = computed(() => {
                 newNode.language = /.log(.\d{1,2})?$/.test(newNode.name) ? 'log' : 'plaintext';
                 break;
             }
-            newNode.editable = !newNode.path.startsWith('logs');
+            newNode.editable = !newNode.path.startsWith('logs') || newNode.path.startsWith('logs/pm2');
           }
           currentNode.push(newNode);
           currentNode = newNode.children;
