@@ -122,7 +122,7 @@ onUnmounted(() => {
 
 const resolveLayoutVariant = computed(() => {
   const layout = route.path == '/' || route.meta.layout === 'blank' ? Blank : Vertical;
-  document.documentElement.setAttribute('data-layout', layout);
+  document.documentElement.setAttribute('data-layout', layout.name);
   return layout;
 });
 </script>

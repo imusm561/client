@@ -941,6 +941,9 @@ const theme = computed({
   set: (value) => {
     store.dispatch('sys/toggleTheme', value);
     localStorage.setItem(`${BASE_URL.replace(/\//g, '_')}theme`, value);
+    if (store.state.sys.cfg.waterMark && store.state.user.data.id) {
+      createWatermark(store.state.user.data);
+    }
   },
 });
 

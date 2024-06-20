@@ -41,6 +41,11 @@ import Menu from './menu';
 import Footer from './footer';
 import store from '@store';
 
+// eslint-disable-next-line
+defineOptions({
+  name: 'vertical',
+});
+
 const { BASE_URL } = process.env;
 
 const activeParentCollapseDiv = (element) => {
