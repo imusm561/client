@@ -78,7 +78,8 @@
     "vue3-apexcharts": "^1.4.1",
     "vue3-calendar-heatmap": "^2.0.0",
     "vue3-treeselect": "^0.1.10",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "watermark-js-plus": "^1.5.1"
   },
   "devDependencies": {
     "@ckeditor/ckeditor5-dev-utils": "27.1.0",

@@ -16,8 +16,7 @@ import { computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import jwt from 'jsonwebtoken';
 import { clearUserData } from '@utils';
-import { setWatermark } from '@utils/watermark';
-import dayjs from '@utils/dayjs';
+import { createWatermark } from '@utils/watermark';
 import { initSocket } from '@utils/socket';
 import store from '@store';
 import Vertical from '@layouts/vertical';
@@ -97,10 +96,7 @@ const backToTop = () => {
 
 const windowResizeHandler = () => {
   if (store.state.sys.cfg.waterMark && store.state.user.data.id)
-    setWatermark(
-      `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
-      dayjs().format('ll'),
-    );
+    createWatermark(store.state.user.data);
 };
 
 const windowScrollHandler = () => {

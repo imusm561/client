@@ -10787,6 +10787,11 @@ watchpack@^1.7.4:
     chokidar "^3.4.1"
     watchpack-chokidar2 "^2.0.1"
 
+watermark-js-plus@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/watermark-js-plus/-/watermark-js-plus-1.5.1.tgz#3d05e4ed5612e5ed445096d35181e4bffe45a876"
+  integrity sha512-fj82XgrJkqP0a7kcG6U591YT6E0GFq9zdUrqbijbkE9l8aHhOpOogQwk5jaoTaWVqQsBSNFRIc6QWRkHBfHNsA==
+
 wbuf@^1.1.0, wbuf@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/wbuf/-/wbuf-1.7.3.tgz#c1d8d149316d3ea852848895cb6a0bfe887b87df"

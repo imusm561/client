@@ -1,6 +1,5 @@
 import { listToTree, getUserInfo } from '@utils';
-import dayjs from '@utils/dayjs';
-import { setWatermark, removeWatermark } from '@utils/watermark';
+import { createWatermark, destroyWatermark } from '@utils/watermark';
 import store from '@store';
 import app from '../menu/app';
 import data from '../menu/data';
@@ -60,9 +59,8 @@ export default {
   actions: {
     setUser({ commit }, value) {
       commit('SET_USER', value);
-      if (store.state.sys.cfg.waterMark && value.id)
-        setWatermark(`${value.username} - ${value.fullname}`, dayjs().format('ll'));
-      else removeWatermark();
+      if (store.state.sys.cfg.waterMark && value.id) createWatermark(value);
+      else destroyWatermark();
     },
     addNotice({ commit, state }, value) {
       const val = {

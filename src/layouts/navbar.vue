@@ -562,7 +562,7 @@ import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { parseMessage } from '@utils';
-import { setWatermark } from '@utils/watermark';
+import { createWatermark } from '@utils/watermark';
 import ToastificationContent from '@components/ToastificationContent';
 import {
   clearUserData,
@@ -966,10 +966,7 @@ const lang = computed({
       document.title = i18n.global.t(route.meta.title) + ' - ' + store.state.sys.name;
     }
     if (store.state.sys.cfg.waterMark && store.state.user.data.id) {
-      setWatermark(
-        `${store.state.user.data.username} - ${store.state.user.data.fullname}`,
-        dayjs().format('ll'),
-      );
+      createWatermark(store.state.user.data);
     }
   },
 });
