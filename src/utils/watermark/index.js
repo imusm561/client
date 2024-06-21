@@ -7,7 +7,7 @@ let watermark;
 export const createWatermark = (userinfo) => {
   watermark?.destroy();
   watermark = new Watermark({
-    parent: '#app',
+    parent: 'html',
     width: 320,
     height: 150,
     rotate: 32,
