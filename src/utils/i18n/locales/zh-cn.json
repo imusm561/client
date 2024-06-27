@@ -905,7 +905,7 @@
   "data.list.batchUpdate.conflicts": "批量更新冲突：{count}条数据【{ids}】正在被其他用户编辑中",
   "data.list.loading": "加载中...",
   "data.list.importing": "导入中...",
-  "data.list.import.success": "成功导入 {count} 条数据",
+  "data.list.import.success": "异步导入任务已生成，共 {count} 条数据，结果请在表单日志中查看",
   "data.list.sideBar.toolPanels.customization": "个性化",
   "data.list.sideBar.toolPanels.customization.search": "搜索...",
   "data.list.sideBar.toolPanels.customization.theme": "主题",
