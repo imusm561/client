@@ -1650,14 +1650,17 @@ const handleFileInput = (e) => {
   const formData = new FormData();
   formData.append('file', e.target.files[0], e.target.files[0].name);
   formData.append('tid', form.value.id);
-  toast({
-    component: ToastificationContent,
-    props: {
-      variant: 'success',
-      icon: 'mdi-check-circle',
-      text: 'data.list.importing',
+  toast(
+    {
+      component: ToastificationContent,
+      props: {
+        variant: 'success',
+        icon: 'mdi-check-circle',
+        text: 'data.list.importing',
+      },
     },
-  });
+    { timeout: false },
+  );
   importData(formData).then(({ code, msg, data }) => {
     toast.clear();
     e.target.value = null;
