@@ -25,6 +25,7 @@
         :placeholder="$t('layout.navbar.helper.form.column.config.type')"
         :options="[
           { label: 'Int', value: 'int' },
+          { label: 'BigInt', value: 'bigint' },
           { label: 'Float', value: 'float' },
           { label: 'Double', value: 'double' },
           { label: 'Decimal', value: 'decimal' },
