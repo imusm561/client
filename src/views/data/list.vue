@@ -1643,10 +1643,10 @@ const handleDeselectAllRows = () => {
 };
 
 const handleFileInput = (e) => {
-  overlayLoadingTemplate.value = `<span class='ag-overlay-loading-center'>${i18n.global.t(
-    'data.list.importing',
-  )}</span>`;
-  gridApi.showLoadingOverlay();
+  // overlayLoadingTemplate.value = `<span class='ag-overlay-loading-center'>${i18n.global.t(
+  //   'data.list.importing',
+  // )}</span>`;
+  // gridApi.showLoadingOverlay();
   const formData = new FormData();
   formData.append('file', e.target.files[0], e.target.files[0].name);
   formData.append('tid', form.value.id);
@@ -1662,7 +1662,7 @@ const handleFileInput = (e) => {
     toast.clear();
     e.target.value = null;
     if (code === 200) {
-      gridApi.refreshServerSide({ purge: true });
+      // gridApi.refreshServerSide({ purge: true });
       toast({
         component: ToastificationContent,
         props: {
@@ -1681,7 +1681,7 @@ const handleFileInput = (e) => {
         },
       });
     }
-    gridApi.hideOverlay();
+    // gridApi.hideOverlay();
   });
 };
 

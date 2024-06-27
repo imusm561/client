@@ -904,7 +904,7 @@
   "data.list.cellEdit.conflicts": "Update Conflicts: {user} is editing this data",
   "data.list.batchUpdate.conflicts": "Batch Update Conflicts: {count} data [{ids}] is being edited by another user | Batch Update Conflicts: {count} data [{ids}] are being edited by another user",
   "data.list.loading": "Loading...",
-  "data.list.importing": "Importing...",
+  "data.list.importing": "The file is being uploaded, please do not refresh the current page...",
   "data.list.import.success": "The asynchronous import task has been generated with a total of {count} data, the results can be seen in the form logs",
   "data.list.sideBar.toolPanels.customization": "Customization",
   "data.list.sideBar.toolPanels.customization.search": "Search...",
