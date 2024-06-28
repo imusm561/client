@@ -369,6 +369,7 @@
                                   class="form-check-input"
                                   type="checkbox"
                                   v-model="current_role.permissions[node.id].all"
+                                  @change="(event) => handleChangeAllPermissions(event, node)"
                                 />
                                 <label class="form-check-label">
                                   {{
@@ -705,5 +706,13 @@ const handleDelRole = () => {
   }).then(() => {
     document.getElementById('hideDeleteRoleModalBtn').click();
   });
+};
+
+const handleChangeAllPermissions = (event, node) => {
+  current_role.value.permissions[node.id].create = event.target.checked;
+  current_role.value.permissions[node.id].edit = event.target.checked;
+  current_role.value.permissions[node.id].batch = event.target.checked;
+  current_role.value.permissions[node.id].export = event.target.checked;
+  current_role.value.permissions[node.id].import = event.target.checked;
 };
 </script>
