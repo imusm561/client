@@ -1,6 +1,6 @@
 {
   "name": "lcdp",
-  "version": "3.6.1",
+  "version": "3.7.1",
   "private": true,
   "scripts": {
     "serve": "cross-env NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider vue-cli-service serve",
