@@ -37,6 +37,10 @@ export default {
       let flow_notices = JSON.parse(JSON.stringify(state.notices.flow || []));
       return flow_notices;
     },
+    import_notices: (state) => {
+      let import_notices = JSON.parse(JSON.stringify(state.notices.import || []));
+      return import_notices;
+    },
   },
   mutations: {
     SET_USER(state, value) {
@@ -65,7 +69,7 @@ export default {
     addNotice({ commit, state }, value) {
       const val = {
         app: value.app,
-        data: JSON.parse(JSON.stringify(state.notices[value.app])),
+        data: JSON.parse(JSON.stringify(state.notices[value.app] || [])),
       };
       if (val.app == 'chat') {
         const idx = val.data.findIndex((item) => item.username == value.data.sender);
@@ -76,6 +80,13 @@ export default {
             username: value.data.sender,
             chat_data: [value.data],
           });
+        }
+      } else if (val.app == 'import') {
+        const idx = val.data.findIndex((item) => item.file == value.data.file);
+        if (idx !== -1) {
+          val.data[idx] = value.data;
+        } else {
+          val.data.unshift(value.data);
         }
       } else {
         val.data.unshift(value.data);

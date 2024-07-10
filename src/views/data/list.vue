@@ -1661,7 +1661,7 @@ const handleFileInput = (e) => {
     },
     { timeout: false },
   );
-  importData(formData).then(({ code, msg, data }) => {
+  importData(formData).then(({ code, msg }) => {
     toast.clear();
     e.target.value = null;
     if (code === 200) {
@@ -1671,7 +1671,7 @@ const handleFileInput = (e) => {
         props: {
           variant: 'success',
           icon: 'mdi-check-circle',
-          text: i18n.global.tc('data.list.import.success', { count: data }),
+          text: i18n.global.t('data.list.import.success'),
         },
       });
     } else {
@@ -1744,11 +1744,13 @@ watch(
 <style lang="scss" scoped>
 .quick-filter {
   display: contents;
+
   span {
     position: relative;
     left: 27px;
     top: 4px;
   }
+
   input {
     padding-left: 20px;
   }

@@ -203,6 +203,13 @@ export const initSocket = () => {
     }
   });
 
+  socket.on('addImportNotify', (data) => {
+    store.dispatch('user/addNotice', {
+      app: 'import',
+      data,
+    });
+  });
+
   socket.on('disconnect', () => {
     socket._disconnected = true;
   });

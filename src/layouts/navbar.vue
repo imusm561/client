@@ -186,7 +186,8 @@
                   chat_notices.length +
                     mail_notices.length +
                     comment_notices.length +
-                    flow_notices.length !==
+                    flow_notices.length +
+                    import_notices.length !==
                   0
                 "
               >
@@ -194,7 +195,8 @@
                   chat_notices.length +
                   mail_notices.length +
                   comment_notices.length +
-                  flow_notices.length
+                  flow_notices.length +
+                  import_notices.length
                 }}
               </span>
             </button>
@@ -213,7 +215,8 @@
                         chat_notices.length +
                           mail_notices.length +
                           comment_notices.length +
-                          flow_notices.length !==
+                          flow_notices.length +
+                          import_notices.length !==
                         0
                       "
                     >
@@ -224,7 +227,8 @@
                               chat_notices.length +
                               mail_notices.length +
                               comment_notices.length +
-                              flow_notices.length,
+                              flow_notices.length +
+                              import_notices.length,
                           })
                         }}
                       </span>
@@ -294,6 +298,20 @@
                         </span>
                       </a>
                     </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link"
+                        data-bs-toggle="tab"
+                        href="#tasks-tab"
+                        role="tab"
+                        @click.capture.stop
+                      >
+                        {{ $t('layout.navbar.notifications.imports') }}
+                        <span v-if="import_notices.length > 0" class="badge bg-danger">
+                          {{ import_notices.length }}
+                        </span>
+                      </a>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -307,7 +325,7 @@
                     class="pe-2"
                   >
                     <div
-                      class="text-reset notification-item d-block dropdown-item cursor-pointer"
+                      class="text-reset notification-item p-2 d-block dropdown-item cursor-pointer"
                       v-for="(item, index) in chat_notices"
                       :key="index"
                     >
@@ -356,7 +374,7 @@
                     class="pe-2"
                   >
                     <div
-                      class="text-reset notification-item d-block dropdown-item cursor-pointer"
+                      class="text-reset notification-item p-2 d-block dropdown-item cursor-pointer"
                       v-for="(mail, index) in mail_notices"
                       :key="index"
                     >
@@ -392,7 +410,7 @@
                     class="pe-2"
                   >
                     <div
-                      class="text-reset notification-item d-block dropdown-item cursor-pointer"
+                      class="text-reset notification-item p-2 d-block dropdown-item cursor-pointer"
                       v-for="(comment, index) in comment_notices"
                       :key="index"
                     >
@@ -428,7 +446,7 @@
                     class="pe-2"
                   >
                     <div
-                      class="text-reset notification-item d-block dropdown-item cursor-pointer"
+                      class="text-reset notification-item p-2 d-block dropdown-item cursor-pointer"
                       v-for="(flow, index) in flow_notices"
                       :key="index"
                     >
@@ -456,6 +474,50 @@
                     </div>
                   </div>
                   <Empty :text="$t('layout.navbar.notifications.approvals.empty')" v-else />
+                </div>
+                <div class="tab-pane fade py-2 ps-2" id="tasks-tab" role="tabpanel">
+                  <div
+                    data-simplebar
+                    v-if="import_notices.length"
+                    style="max-height: 300px"
+                    class="pe-2"
+                  >
+                    <div
+                      class="text-reset notification-item p-2 d-block dropdown-item cursor-pointer"
+                      v-for="(item, index) in import_notices"
+                      :key="index"
+                      :title="item.error || item.file"
+                    >
+                      <span class="stretched-link">
+                        <h6 class="mt-0 mb-1 fs-13 fw-semibold">
+                          {{ $store.state.user.forms.find((form) => form.id === item.tid)?.title }}
+                        </h6>
+                      </span>
+                      <div class="fs-10 text-muted">
+                        <p class="mb-1 text-truncate">
+                          {{ item.file }}
+                        </p>
+                      </div>
+                      <p class="mb-0 fs-11 fw-medium d-flex justify-content-between">
+                        <span>
+                          {{ $t(`layout.navbar.notifications.imports.${item.status}`) }}
+                        </span>
+                        <span v-if="item.status === 'failed'">
+                          {{ item.error }}
+                        </span>
+                        <span v-else-if="item.status === 'parsing'">
+                          {{ size2Str(item.size) }}
+                        </span>
+                        <span v-else-if="item.status === 'importing'">
+                          {{ ((item.current / item.total) * 100).toFixed(2) }}%
+                        </span>
+                        <span v-else>
+                          {{ item.total }}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <Empty :text="$t('layout.navbar.notifications.imports.empty')" v-else />
                 </div>
               </div>
             </div>
@@ -571,6 +633,7 @@ import {
   decryptData,
   copyToClipboard,
   debounce,
+  size2Str,
 } from '@utils';
 import { icons } from '@utils/icons';
 import i18n from '@utils/i18n';
@@ -924,6 +987,10 @@ const handleClickCommentNotice = (comment) => {
 
 const flow_notices = computed(() => {
   return store.getters['user/flow_notices'];
+});
+
+const import_notices = computed(() => {
+  return store.getters['user/import_notices'];
 });
 
 const handleClickFlowNotice = (flow) => {
