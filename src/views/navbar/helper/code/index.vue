@@ -115,19 +115,32 @@
                     <code>{{ current.path }}</code>
                   </h5>
                   <div class="d-none d-md-flex">
-                    <select
-                      v-if="current?.history?.length"
-                      class="me-2"
+                    <VueSelect
+                      v-if="current.history?.length"
+                      class="history-select"
                       v-model="current.hid"
-                      @change="handleChangeHid"
+                      :options="current.history"
+                      :reduce="(item) => item.id"
+                      label="created_at"
+                      :clearable="false"
+                      @option:selected="handleSelectHistory"
                     >
-                      <option v-for="item in current.history" :key="item.id" :value="item.id">
-                        {{ dayjs(item.created_at).format('YYYY-MM-DD HH:mm:ss') }}
-                      </option>
-                    </select>
+                      <template v-slot:selected-option="{ created_at }">
+                        <span>{{ dayjs(created_at).format('YYYY-MM-DD HH:mm:ss') }}</span>
+                      </template>
+                      <template v-slot:option="{ created_at }">
+                        <span>{{ dayjs(created_at).format('YYYY-MM-DD HH:mm:ss') }}</span>
+                      </template>
+                      <template v-slot:no-options="{ search, searching }">
+                        <template v-if="searching">
+                          <span v-html="$t('components.vs.search', { search })"></span>
+                        </template>
+                        <em v-else style="opacity: 0.5">{{ $t('components.vs.searchOption') }}</em>
+                      </template>
+                    </VueSelect>
                     <button
                       v-if="current.editable && current.data != current.file"
-                      class="btn btn-sm btn-primary btn-icon waves-effect waves-light"
+                      class="btn btn-sm btn-primary btn-icon waves-effect waves-light ms-2"
                       data-bs-toggle="modal"
                       data-bs-target="#codeDiffModal"
                     >
@@ -562,7 +575,7 @@ const handleClickPath = (node, stat) => {
           getCodeData({ path: node.path }).then(({ code, data, msg }) => {
             if (code === 200) {
               current.value = { ...data, ...node };
-              if (current.value.history.length) current.value.hid = current.value.history[0].id;
+              if (data.history && data.history.length) current.value.hid = data.history[0].id;
               document.getElementById('showCodeDataOffcanvasBtn').click();
             } else {
               toast({
@@ -581,23 +594,21 @@ const handleClickPath = (node, stat) => {
   }, 100);
 };
 
-const handleChangeHid = (e) => {
-  getCodeData({ path: current.value.path, hid: parseInt(e.target.value) }).then(
-    ({ code, data, msg }) => {
-      if (code === 200) {
-        current.value.data = data || current.value.file;
-      } else {
-        toast({
-          component: ToastificationContent,
-          props: {
-            variant: 'danger',
-            icon: 'mdi-alert',
-            text: msg,
-          },
-        });
-      }
-    },
-  );
+const handleSelectHistory = (item) => {
+  getCodeData({ path: current.value.path, hid: parseInt(item.id) }).then(({ code, data, msg }) => {
+    if (code === 200) {
+      current.value.data = data || current.value.file;
+    } else {
+      toast({
+        component: ToastificationContent,
+        props: {
+          variant: 'danger',
+          icon: 'mdi-alert',
+          text: msg,
+        },
+      });
+    }
+  });
 };
 const handleEditFileName = (node) => {
   clearTimeout(timer);
@@ -841,8 +852,10 @@ const handleSaveCode = () => {
       if (data.refresh) handleGetCodeDirs();
       document.getElementById('hideCodeDiffModalBtn').click();
       current.value.file = current.value.data;
-      current.value.history = data.history;
-      if (current.value.history.length) current.value.hid = current.value.history[0].id;
+      if (data.history) {
+        current.value.history = data.history;
+        if (data.history.length) current.value.hid = data.history[0].id;
+      }
       toast({
         component: ToastificationContent,
         props: {
@@ -864,3 +877,29 @@ const handleSaveCode = () => {
   });
 };
 </script>
+
+<style lang="scss">
+.history-select {
+  width: 200px;
+  height: 27px;
+  min-height: 27px;
+  .vs__dropdown-toggle {
+    height: 27px;
+    min-height: 27px;
+  }
+
+  .vs__selected {
+    height: 24px;
+    // padding-left: 5px;
+  }
+
+  .vs__dropdown-menu {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .vs__dropdown-option {
+      padding: 7px 15px;
+    }
+  }
+}
+</style>
