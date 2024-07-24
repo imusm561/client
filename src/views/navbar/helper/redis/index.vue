@@ -272,7 +272,7 @@ const handleClickKey = (node, stat) => {
           });
         }
       });
-    }
+    } else document.getElementById('showKeyDataOffcanvasBtn').click();
   }
 };
 

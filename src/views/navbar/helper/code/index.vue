@@ -561,35 +561,35 @@ const handleClickPath = (node, stat) => {
         //   });
       }
     } else {
-      if (current.value.path != node.path) {
-        if (current.value?.path && current.value?.data != current.value?.file) {
-          toast({
-            component: ToastificationContent,
-            props: {
-              variant: 'danger',
-              icon: 'mdi-alert',
-              text: 'layout.navbar.helper.code.editing',
-            },
-          });
-        } else {
-          getCodeData({ path: node.path }).then(({ code, data, msg }) => {
-            if (code === 200) {
-              current.value = { ...data, ...node };
-              if (data.history && data.history.length) current.value.hid = data.history[0].id;
-              document.getElementById('showCodeDataOffcanvasBtn').click();
-            } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-            }
-          });
-        }
+      if (current.value?.path && current.value?.data != current.value?.file) {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: 'layout.navbar.helper.code.editing',
+          },
+        });
+        return;
       }
+      if (current.value.path != node.path) {
+        getCodeData({ path: node.path }).then(({ code, data, msg }) => {
+          if (code === 200) {
+            current.value = { ...data, ...node };
+            if (data.history && data.history.length) current.value.hid = data.history[0].id;
+            document.getElementById('showCodeDataOffcanvasBtn').click();
+          } else {
+            toast({
+              component: ToastificationContent,
+              props: {
+                variant: 'danger',
+                icon: 'mdi-alert',
+                text: msg,
+              },
+            });
+          }
+        });
+      } else document.getElementById('showCodeDataOffcanvasBtn').click();
     }
   }, 100);
 };
