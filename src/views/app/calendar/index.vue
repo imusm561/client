@@ -330,8 +330,10 @@
                   <div class="flex-shrink-0 me-3">
                     <i class="mdi mdi-comment-multiple-outline text-muted fs-16"></i>
                   </div>
-                  <div class="flex-grow-1">
-                    <p class="d-block text-muted mb-0">{{ current_event.description }}</p>
+                  <div class="flex-grow-1 text-truncate">
+                    <p class="d-block text-muted mb-0 text-truncate-three-lines">
+                      {{ current_event.description }}
+                    </p>
                   </div>
                 </div>
               </div>

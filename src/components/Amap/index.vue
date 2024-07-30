@@ -107,7 +107,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
@@ -168,21 +168,6 @@ onMounted(async () => {
 
     amap.setMapStyle(`amap://styles/${store.state.sys.theme === 'dark' ? 'dark' : 'normal'}`);
     amap.on('click', onClickMap);
-  }
-
-  if (props.id === 'event-location') {
-    const amapOffcanvas = document.getElementById(`amapOffcanvas_${props.id}`);
-    amapOffcanvas.style['z-index'] = 1080;
-    amapOffcanvas.parentNode.removeChild(amapOffcanvas);
-    const viewAndEditEventModal = document.getElementById('viewAndEditEventModal');
-    viewAndEditEventModal.parentNode.insertBefore(amapOffcanvas, viewAndEditEventModal);
-  }
-});
-
-onUnmounted(() => {
-  if (props.id === 'event-location') {
-    const amapOffcanvas = document.getElementById(`amapOffcanvas_${props.id}`);
-    amapOffcanvas.parentNode.removeChild(amapOffcanvas);
   }
 });
 
