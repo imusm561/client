@@ -83,6 +83,11 @@ export default function useWeixin() {
       value: 'SCAN',
       for: ['serviceAccount', 'subscriptionAccount', 'miniProgram'],
     },
+    {
+      text: 'layout.navbar.helper.weixin.detail.strategies.msgType.EVENT',
+      value: 'EVENT',
+      for: ['miniProgram'],
+    },
   ];
 
   const replyTypeOptions = [

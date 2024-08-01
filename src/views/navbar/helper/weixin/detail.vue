@@ -400,6 +400,11 @@
                           $t(
                             `layout.navbar.helper.weixin.detail.strategies.msgType.${strategy.msg_type}`,
                           )
+                        }}{{
+                          ['miniProgram'].includes(account.service_type) &&
+                          strategy.msg_type === 'EVENT'
+                            ? `:${strategy.msg_event}`
+                            : ''
                         }}
                       </td>
                       <td>{{ strategy.msg_keyword }}</td>
@@ -679,9 +684,39 @@
                     <span class="invalid-feedback">{{ $te(errors.msg_type) }}</span>
                   </div>
                   <div
+                    v-if="
+                      ['miniProgram'].includes(account.service_type) &&
+                      current_strategy.msg_type === 'EVENT'
+                    "
+                    class="col-md-6"
+                  >
+                    <label class="form-label">
+                      {{
+                        $t(
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.msgEvent',
+                        )
+                      }}
+                    </label>
+                    <Field
+                      name="msg_event"
+                      v-model="current_strategy.msg_event"
+                      type="text"
+                      :placeholder="
+                        $t(
+                          'layout.navbar.helper.weixin.detail.strategies.viewAndEditStrategyModal.form.msgEvent',
+                        )
+                      "
+                      :class="['form-control', errors.msg_event && 'is-invalid']"
+                      rules="required"
+                    />
+                    <span class="invalid-feedback">{{ $te(errors.msg_event) }}</span>
+                  </div>
+                  <div
                     :class="
-                      ['serviceAccount', 'subscriptionAccount'].includes(account.service_type) &&
-                      current_strategy.msg_keyword?.charAt(0) === '@'
+                      (['miniProgram'].includes(account.service_type) &&
+                        current_strategy.msg_type === 'EVENT') ||
+                      (['serviceAccount', 'subscriptionAccount'].includes(account.service_type) &&
+                        current_strategy.msg_keyword?.charAt(0) === '@')
                         ? 'col-md-6'
                         : 'col-12'
                     "
@@ -916,6 +951,11 @@
                       $t(
                         `layout.navbar.helper.weixin.detail.strategies.msgType.${current_strategy.msg_type}`,
                       )
+                    }}{{
+                      ['miniProgram'].includes(account.service_type) &&
+                      current_strategy.msg_type === 'EVENT'
+                        ? `:${current_strategy.msg_event}`
+                        : ''
                     }}
                   </span>
                 </div>
