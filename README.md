@@ -4,6 +4,7 @@
 
 ```
 yarn config set sass_binary_site https://npm.taobao.org/mirrors/node-sass
+yarn config set ignore-engines true
 yarn install
 ```
 
