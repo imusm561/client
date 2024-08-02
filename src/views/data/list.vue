@@ -663,15 +663,12 @@ const onGridReady = (params) => {
   pageJummperInput.type = 'number';
   pageJummperInput.value = 1;
   pageJummperInput.className = 'ag-text-field ag-paging-page-jumper-panel-input';
-  pageJummperInput.addEventListener(
-    'input',
-    debounce((e) => {
-      if (e.target.value < 1) e.target.value = 1;
-      if (e.target.value > gridApi.paginationGetTotalPages())
-        e.target.value = gridApi.paginationGetTotalPages();
-      gridApi.paginationGoToPage(e.target.value - 1);
-    }, 500),
-  );
+  pageJummperInput.addEventListener('blur', (e) => {
+    if (e.target.value < 1) e.target.value = 1;
+    if (e.target.value > gridApi.paginationGetTotalPages())
+      e.target.value = gridApi.paginationGetTotalPages();
+    gridApi.paginationGoToPage(e.target.value - 1);
+  });
   pageJumperPanel.appendChild(pageJummperInput);
 
   document
@@ -706,54 +703,57 @@ const handleColumnChanged = () => {
 };
 
 const handlePaginationChanged = (params) => {
-  const data = params.api.paginationGetPageSize();
+  const pageNum = params.api.paginationGetCurrentPage() + 1;
+  const pageJummperInputEl = document.querySelector(
+    '.ag-text-field.ag-paging-page-jumper-panel-input',
+  );
+  if (pageJummperInputEl) pageJummperInputEl.value = pageNum;
   const tid = form.value.id;
-  if (data && tid) {
-    if (data != pagination.value.pageSize) {
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(async () => {
-        if (pagination.value.id) {
-          updateCustomPagination({
-            id: pagination.value.id,
-            tid,
-            data,
-          }).then(({ code, msg }) => {
-            if (code === 200) {
-              pagination.value.pageSize = data;
-            } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-            }
-          });
-        } else {
-          createCustomPagination({
-            tid,
-            data,
-          }).then(({ code, data, msg }) => {
-            if (code === 200) {
-              pagination.value = { ...data, ...{ pageSize: data.data } };
-            } else {
-              toast({
-                component: ToastificationContent,
-                props: {
-                  variant: 'danger',
-                  icon: 'mdi-alert',
-                  text: msg,
-                },
-              });
-            }
-          });
-        }
-      }, 500);
-    }
+  const pageSize = params.api.paginationGetPageSize();
+  if (tid && pageSize && pageSize != pagination.value.pageSize) {
+    pagination.value.pageSize = pageSize;
+    handleSaveCustomPagination(tid, pageSize);
   }
 };
+
+const handleSaveCustomPagination = debounce((tid, data) => {
+  if (pagination.value.id) {
+    updateCustomPagination({
+      id: pagination.value.id,
+      tid,
+      data,
+    }).then(({ code, msg }) => {
+      if (code != 200) {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  } else {
+    createCustomPagination({
+      tid,
+      data,
+    }).then(({ code, data, msg }) => {
+      if (code === 200) {
+        pagination.value = { ...pagination.value, ...data };
+      } else {
+        toast({
+          component: ToastificationContent,
+          props: {
+            variant: 'danger',
+            icon: 'mdi-alert',
+            text: msg,
+          },
+        });
+      }
+    });
+  }
+}, 500);
 
 const generateColumnDef = (column) => {
   const columnDef = {};
