@@ -21,23 +21,25 @@
                 </span>
               </a>
             </li>
-            <li
-              class="breadcrumb-item text-truncate"
-              style="max-width: 200px"
-              v-for="(item, index) in items"
-              :key="index"
-            >
-              <a
-                :class="{ active: index === items.length - 1, 'cursor-pointer': item.path }"
-                :title="$t(item.title)"
-                @click="item.path && handleChangeRoute(item)"
+            <template v-if="$route.name != 'home'">
+              <li
+                class="breadcrumb-item text-truncate"
+                style="max-width: 200px"
+                v-for="(item, index) in items"
+                :key="index"
               >
-                <i v-if="item.icon" :class="`mdi ${item.icon} me-1`"></i>
-                <span>
-                  {{ $t(item.title) }}
-                </span>
-              </a>
-            </li>
+                <a
+                  :class="{ active: index === items.length - 1, 'cursor-pointer': item.path }"
+                  :title="$t(item.title)"
+                  @click="item.path && handleChangeRoute(item)"
+                >
+                  <i v-if="item.icon" :class="`mdi ${item.icon} me-1`"></i>
+                  <span>
+                    {{ $t(item.title) }}
+                  </span>
+                </a>
+              </li>
+            </template>
           </ol>
         </div>
       </div>
