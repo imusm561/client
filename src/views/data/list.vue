@@ -650,6 +650,33 @@ const onGridReady = (params) => {
     }, 1000);
     gridApi.refreshServerSide({ purge: true });
   };
+
+  const pageJumperPanel = document.createElement('span');
+  pageJumperPanel.className = 'ag-paging-page-jumper-panel';
+
+  const pageJummperInputLabel = document.createElement('div');
+  pageJummperInputLabel.className = 'ag-label d-none d-sm-block';
+  pageJummperInputLabel.innerHTML = i18n.global.t('data.list.pagination.jumpto');
+  pageJumperPanel.appendChild(pageJummperInputLabel);
+
+  const pageJummperInput = document.createElement('input');
+  pageJummperInput.type = 'number';
+  pageJummperInput.value = 1;
+  pageJummperInput.className = 'ag-text-field ag-paging-page-jumper-panel-input';
+  pageJummperInput.addEventListener(
+    'input',
+    debounce((e) => {
+      if (e.target.value < 1) e.target.value = 1;
+      if (e.target.value > gridApi.paginationGetTotalPages())
+        e.target.value = gridApi.paginationGetTotalPages();
+      gridApi.paginationGoToPage(e.target.value - 1);
+    }, 500),
+  );
+  pageJumperPanel.appendChild(pageJummperInput);
+
+  document
+    .querySelector('.ag-paging-page-summary-panel')
+    ?.parentElement?.appendChild(pageJumperPanel);
 };
 
 let timer = null;
@@ -1419,36 +1446,6 @@ const serverSideDatasource = {
             rowData: res.data.rows || [],
             rowCount: res.data.count || 0,
           });
-          if (document.querySelector('.ag-paging-page-jumper-panel')) {
-            document.querySelector('.ag-text-field.ag-paging-page-jumper-panel-input').value =
-              gridApi.paginationGetCurrentPage() + 1;
-          } else {
-            const pageJumperPanel = document.createElement('span');
-            pageJumperPanel.className = 'ag-paging-page-jumper-panel';
-
-            const pageJummperInputLabel = document.createElement('div');
-            pageJummperInputLabel.className = 'ag-label d-none d-sm-block';
-            pageJummperInputLabel.innerHTML = i18n.global.t('data.list.pagination.jumpto');
-            pageJumperPanel.appendChild(pageJummperInputLabel);
-
-            const pageJummperInput = document.createElement('input');
-            pageJummperInput.type = 'number';
-            pageJummperInput.className = 'ag-text-field ag-paging-page-jumper-panel-input';
-            pageJummperInput.value = gridApi.paginationGetCurrentPage() + 1;
-            pageJummperInput.addEventListener(
-              'input',
-              debounce((e) => {
-                e.target.value = Number(e.target.value) < 1 ? 1 : Number(e.target.value);
-                gridApi.paginationGoToPage(e.target.value - 1);
-              }, 500),
-            );
-
-            pageJumperPanel.appendChild(pageJummperInput);
-
-            document
-              .querySelector('.ag-paging-page-summary-panel')
-              .parentElement.appendChild(pageJumperPanel);
-          }
         })
         .catch(() => {
           params.fail();
