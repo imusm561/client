@@ -947,6 +947,7 @@
   "data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.confirm": "确定要删除此过滤吗？",
   "data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.cancel": "取消",
   "data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.confirmed": "确定",
+  "data.list.pagination.jumpto": "跳转:",
 
   "data.view.flow.creation": "发起流转",
   "data.view.flow.revoke": "撤销",

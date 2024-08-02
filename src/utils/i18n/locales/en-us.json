@@ -947,6 +947,7 @@
   "data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.confirm": "Are you sure to delete this filter ?",
   "data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.cancel": "Cancel",
   "data.list.sideBar.toolPanels.customization.deleteFilterConfirmModal.confirmed": "Confirm",
+  "data.list.pagination.jumpto": "Jump to:",
 
   "data.view.flow.creation": "Create the approval flow.",
   "data.view.flow.revoke": "Revoke",
