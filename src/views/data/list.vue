@@ -111,7 +111,7 @@
           </div>
         </div>
         <div v-if="form.html" class="d-flex flex-column">
-          <iframe :id="`iframe_${form.id}`" class="iframe-height"></iframe>
+          <iframe :id="`iframe_${form.id}`" class="h-list-iframe"></iframe>
           <Pagination
             class="p-2 pb-0"
             :total="pagination.totalCount"

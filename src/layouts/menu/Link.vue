@@ -14,6 +14,25 @@
         {{ item.badge.text }}
       </span>
     </span>
+    <router-link
+      v-if="item.redirect?.startsWith('iframe:')"
+      :to="{
+        name: 'iframe',
+        params: {
+          url: encodeURIComponent(item.redirect.replace('iframe:', '')),
+        },
+      }"
+      class="nav-link"
+    >
+      <i :class="['fs-16 mdi', item.icon || 'mdi-circle-medium']"></i>
+      <span class="text-truncate" :title="$t(item.title)">{{ $t(item.title) }}</span>
+      <span
+        v-if="item?.badge?.text"
+        :class="['badge', 'rounded-pill', `bg-${item.badge.variant || 'primary'}`]"
+      >
+        {{ item.badge.text }}
+      </span>
+    </router-link>
     <a
       v-else-if="item.redirect"
       class="nav-link menu-link"

@@ -272,7 +272,11 @@ input:-webkit-autofill {
   }
 }
 
-.iframe-height {
+.h-iframe {
+  height: calc(100vh - #{$header-height} - #{$footer-height} - 3rem);
+}
+
+.h-list-iframe {
   min-height: 500px;
   height: calc(100vh - #{$header-height} - #{$footer-height} - 195.5px);
 
