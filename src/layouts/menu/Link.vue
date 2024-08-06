@@ -19,7 +19,7 @@
       :to="{
         name: 'iframe',
         params: {
-          url: encodeURIComponent(item.redirect.replace('iframe:', '')),
+          code: encodeURIComponent(encryptData(item.redirect.replace('iframe:', ''))),
         },
       }"
       class="nav-link"
@@ -84,6 +84,7 @@
   </li>
 </template>
 <script setup>
+import { encryptData } from '@utils';
 // eslint-disable-next-line
 defineProps({
   item: {

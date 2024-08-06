@@ -24,9 +24,9 @@ export default [
     },
   },
   {
-    path: '/iframe/:url',
+    path: '/data/iframe/:code',
     name: 'iframe',
-    component: () => import('@/views/iframe'),
+    component: () => import('@/views/data/iframe'),
     meta: {
       auth: [],
     },
