@@ -623,7 +623,7 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import { parseMessage } from '@utils';
+import { parseMessage, encryptData } from '@utils';
 import { createWatermark } from '@utils/watermark';
 import ToastificationContent from '@components/ToastificationContent';
 import {
@@ -801,6 +801,15 @@ const handleEnter = () => {
       return;
     }
     if (forms?.[0]?.redirect) {
+      if (forms[0].redirect.startsWith('iframe:')) {
+        router.push({
+          name: 'iframe',
+          params: {
+            code: encodeURIComponent(encryptData(forms[0].redirect.replace('iframe:', ''))),
+          },
+        });
+        return;
+      }
       window.open(forms[0].redirect, '_blank');
       return;
     }

@@ -73,6 +73,30 @@
             {{ item.badge.text }}
           </span>
         </span>
+        <router-link
+          v-if="item.redirect?.startsWith('iframe:')"
+          :to="{
+            name: 'iframe',
+            params: {
+              code: encodeURIComponent(encryptData(item.redirect.replace('iframe:', ''))),
+            },
+          }"
+          class="d-flex align-items-center justify-content-between"
+        >
+          <span class="text-truncate">
+            <i
+              class="mdi align-middle fs-18 text-muted me-2"
+              :class="item.icon || 'mdi-circle-medium'"
+            ></i>
+            <span>{{ $t(item.title) }}</span>
+          </span>
+          <span
+            v-if="item.rid === undefined && item?.badge?.text"
+            :class="['badge', 'rounded-pill', `bg-${item.badge.variant || 'primary'}`]"
+          >
+            {{ item.badge.text }}
+          </span>
+        </router-link>
         <a
           v-else-if="item.redirect"
           class="d-flex align-items-center justify-content-between"
@@ -257,7 +281,7 @@
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import ToastificationContent from '@components/ToastificationContent';
-import { size2Str, replaceHtml, copyToClipboard } from '@utils';
+import { size2Str, replaceHtml, copyToClipboard, encryptData } from '@utils';
 import Avatar from '@components/Avatar';
 import Empty from '@components/Empty';
 // eslint-disable-next-line
