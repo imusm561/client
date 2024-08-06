@@ -589,10 +589,10 @@ const fetchDataForm = async (callback) => {
           customs.value.data.map((column) => column.colId),
           0,
         );
-        setTimeout(() => {
-          ready.setCustom = true;
-        }, 1000);
       }
+      setTimeout(() => {
+        ready.setCustom = true;
+      }, 1000);
       callback && callback();
     }
   } else {
@@ -676,31 +676,27 @@ const onGridReady = (params) => {
     ?.parentElement?.appendChild(pageJumperPanel);
 };
 
-let timer = null;
-const handleColumnChanged = () => {
+const handleColumnChanged = debounce(async () => {
   if (!ready.setCustom) return;
   const tid = form.value.id;
   if (tid) {
     const data = gridApi.getColumnState();
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(async () => {
-      if (customs.value) {
-        await updateCustomColumn({
-          id: customs.value.id,
-          tid,
-          data,
-        });
-        customs.value.data = data;
-      } else {
-        const { data: _customs } = await createCustomColumn({
-          tid,
-          data,
-        });
-        customs.value = _customs;
-      }
-    }, 500);
+    if (customs.value) {
+      await updateCustomColumn({
+        id: customs.value.id,
+        tid,
+        data,
+      });
+      customs.value.data = data;
+    } else {
+      const { data: _customs } = await createCustomColumn({
+        tid,
+        data,
+      });
+      customs.value = _customs;
+    }
   }
-};
+}, 500);
 
 const handlePaginationChanged = (params) => {
   const pageNum = params.api.paginationGetCurrentPage() + 1;
